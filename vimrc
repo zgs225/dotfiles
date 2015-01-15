@@ -2,8 +2,13 @@
 " possible, as it has side effects.
 set nocompatible
 
+" Highlight current line
+au WinLeave * set nocursorline nocursorcolumn
+au WinEnter * set cursorline cursorcolumn
+set cursorline cursorcolumn
+
 " Leader
-let mapleader = " "
+let mapleader = ","
 
 set backspace=2   " Backspace deletes like most programs in insert mode
 set nobackup
@@ -15,6 +20,8 @@ set showcmd       " display incomplete commands
 set incsearch     " do incremental searching
 set laststatus=2  " Always display the status line
 set autowrite     " Automatically :write before running commands
+set confirm       " Need confrimation while exit
+set fileencodings=utf-8,gb18030,gbk,big5
 
 " Switch syntax highlighting on, when the terminal has colors
 " Also switch on highlighting the last used search pattern.
@@ -76,7 +83,7 @@ if executable('ag')
 endif
 
 " Color scheme
-colorscheme github
+colorscheme molokai
 highlight NonText guibg=#060606
 highlight Folded  guibg=#0A0A0A guifg=#9090D0
 
@@ -142,6 +149,54 @@ nnoremap <C-l> <C-w>l
 " configure syntastic syntax checking to check on open as well as save
 let g:syntastic_check_on_open=1
 let g:syntastic_html_tidy_ignore_errors=[" proprietary attribute \"ng-"]
+
+autocmd Syntax javascript set syntax=jquery " JQuery syntax support
+
+set matchpairs+=<:>
+set statusline+=%{fugitive#statusline()} "  Git Hotness
+
+" Nerd Tree
+let NERDChristmasTree=0
+let NERDTreeWinSize=40
+let NERDTreeChDirMode=2
+let NERDTreeIgnore=['\~$', '\.pyc$', '\.swp$']
+let NERDTreeShowBookmarks=1
+let NERDTreeWinPos="right"
+autocmd vimenter * if !argc() | NERDTree | endif " Automatically open a NERDTree if no files where specified
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif " Close vim if the only window left open is a NERDTree
+nmap <F5> :NERDTreeToggle<cr>
+
+" Emmet
+let g:user_emmet_mode='i' " enable for insert mode
+
+" Search results high light
+set hlsearch
+
+" nohlsearch shortcut
+nmap -hl :nohlsearch<cr>
+nmap +hl :set hlsearch<cr>
+
+" Javascript syntax hightlight
+syntax enable
+
+" ctrap
+set wildignore+=*/tmp/*,*.so,*.swp,*.zip     " MacOSX/Linux"
+let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
+
+nnoremap <leader>w :w<CR>
+nnoremap <leader>q :q<CR>
+
+" RSpec.vim mappings
+map <Leader>t :call RunCurrentSpecFile()<CR>
+map <Leader>s :call RunNearestSpec()<CR>
+map <Leader>l :call RunLastSpec()<CR>
+map <Leader>a :call RunAllSpecs()<CR>
+
+" Vim-instant-markdown doesn't work in zsh
+set shell=bash\ -i
+
+" Snippets author
+let g:snips_author = 'Yuez'
 
 " Local config
 if filereadable($HOME . "/.vimrc.local")
