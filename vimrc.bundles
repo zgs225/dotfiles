@@ -42,6 +42,9 @@ Bundle "groenewege/vim-less"
 Bundle "evanmiller/nginx-vim-syntax"
 Bundle "Lokaltog/vim-easymotion"
 Bundle "tomasr/molokai"
+Bundle "suan/vim-instant-markdown"
+Bundle "cakebaker/scss-syntax.vim"
+Bundle "majutsushi/tagbar"
 
 if filereadable(expand("~/.vimrc.bundles.local"))
   source ~/.vimrc.bundles.local
