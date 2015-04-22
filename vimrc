@@ -157,11 +157,11 @@ set statusline+=%{fugitive#statusline()} "  Git Hotness
 
 " Nerd Tree
 let NERDChristmasTree=0
-let NERDTreeWinSize=40
+let NERDTreeWinSize=35
 let NERDTreeChDirMode=2
 let NERDTreeIgnore=['\~$', '\.pyc$', '\.swp$']
 let NERDTreeShowBookmarks=1
-let NERDTreeWinPos="right"
+let NERDTreeWinPos="left"
 autocmd vimenter * if !argc() | NERDTree | endif " Automatically open a NERDTree if no files where specified
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif " Close vim if the only window left open is a NERDTree
 nmap <F5> :NERDTreeToggle<cr>
@@ -204,4 +204,7 @@ if filereadable($HOME . "/.vimrc.local")
 endif
 
 " Tagbar
+let g:tagbar_width = 35
+let g:tagbar_autofocus = 1
+
 nmap <F6> :TagbarToggle<CR>
