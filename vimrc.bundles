@@ -45,6 +45,7 @@ Bundle "tomasr/molokai"
 Bundle "suan/vim-instant-markdown"
 Bundle "cakebaker/scss-syntax.vim"
 Bundle "majutsushi/tagbar"
+Bundle "brendonrapp/smyck-vim"
 
 if filereadable(expand("~/.vimrc.bundles.local"))
   source ~/.vimrc.bundles.local
