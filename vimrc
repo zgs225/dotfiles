@@ -186,7 +186,7 @@ nmap +hl :set hlsearch<cr>
 syntax enable
 
 " ctrap
-set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.png,*.jpg,*.jpeg,*.gif  " MacOSX/Linux
+set wildignore+=*/tmp/*,*.so,*.swp,*.zip  " MacOSX/Linux
 let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
 
 nnoremap <leader>w :w<CR>
