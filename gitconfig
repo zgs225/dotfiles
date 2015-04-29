@@ -15,6 +15,9 @@
   pr = !hub pull-request
   st = status
   up = !git fetch origin && git rebase origin/master
+  l  = log --pretty=colored
+[pretty]
+  colored = format:%Cred%h%Creset %s %Cgreen(%cr) %C(bold blue)%an%Creset
 [core]
   excludesfile = ~/.gitignore
   autocrlf = input
@@ -27,9 +30,9 @@
 [fetch]
   prune = true
 [user]
-  name = zgs225
+  name  = zgs225
   email = zgs225@gmail.com
 [credential]
-	helper = osxkeychain
+  helper = osxkeychain
 [github]
-	user = zgs225
+  user = zgs225
