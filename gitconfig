@@ -33,6 +33,6 @@
   name  = zgs225
   email = zgs225@gmail.com
 [credential]
-  helper = osxkeychain
+	helper = osxkeychain
 [github]
   user = zgs225
