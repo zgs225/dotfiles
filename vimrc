@@ -119,7 +119,7 @@ let g:Tlist_Ctags_Cmd="ctags --exclude='*.js'"
 map <Leader>ct :!ctags -R .<CR>
 
 " Switch between the last two files
-nnoremap <leader><leader> <c-^>
+nnoremap <leader><space> <c-^>
 
 " Get off my lawn
 nnoremap <Left> :echoe "Use h"<CR>
@@ -149,13 +149,14 @@ nnoremap <C-h> <C-w>h
 nnoremap <C-l> <C-w>l
 
 " configure syntastic syntax checking to check on open as well as save
-let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_open = 0
 let g:syntastic_html_tidy_ignore_errors = [" proprietary attribute \"ng-"]
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_loc_list_height = 5
 let g:syntastic_check_on_wq = 0
-let g:syntastic_mode_map = { 'passive_filetypes': ['sass', 'scss', 'less', 'html', 'python'] }
+let g:syntastic_mode_map = { 'passive_filetypes': ['sass', 'scss', 'less', 'html', 'python'], 'mode': 'passive' }
+let g:syntastic_php_checkers = ['php', 'phpcs', 'phpmd']
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
@@ -170,7 +171,6 @@ nnoremap <leader><leader>p :PymodeLint
 
 autocmd Syntax javascript set syntax=jquery " JQuery syntax support
 
-set matchpairs+=<:>
 set statusline+=%{fugitive#statusline()} "  Git Hotness
 
 " Nerd Tree
@@ -239,6 +239,8 @@ nnoremap <leader>m  :<c-u><c-r>='let @'. v:register .' = '. string(getreg(v:regi
 " insert mode
 imap <C-b> <Left>
 imap <C-f> <Right>
+imap <C-e> <Esc>A
+imap <C-a> <Esc>I
 
 " <Leader>f{char} to move to {char}
 map  <Leader>f <Plug>(easymotion-bd-f)
@@ -254,6 +256,22 @@ nmap <Leader>L <Plug>(easymotion-overwin-line)
 " Tab navigation
 nmap tp :tabp<cr>
 nmap tn :tabn<cr>
+nmap tm :tabmove 
+
+" Jump to definition in new tab
+nmap <silent><Leader><c-]> <c-w><c-]><c-w>T
 
 " vim-buffergator
 let buffergator_viewport_split_policy = "b"
+
+" ack
+let g:ackprg = 'ag --vimgrep --smart-case'
+cnoreabbrev ag Ack
+cnoreabbrev aG Ack
+cnoreabbrev Ag Ack
+cnoreabbrev AG Ack
+
+" fugitive
+nmap gs :Gstatus<cr>
+nmap gps :!git ps<cr>
+nmap gpl :!git pl<cr>

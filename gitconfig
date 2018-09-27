@@ -11,11 +11,13 @@
   br = branch
   create-branch = !sh -c 'git push origin HEAD:refs/heads/$1 && git fetch origin && git branch --track $1 origin/$1 && cd . && git checkout $1' -
   delete-branch = !sh -c 'git push origin :refs/heads/$1 && git branch -D $1' -
-  merge-branch = !git checkout master && git merge @{-1}
+  merge-branch  = !git checkout master && git merge --no-ff @{-1}
   pr = !hub pull-request
   st = status
   up = !git fetch origin && git rebase origin/master
   l  = log --pretty=colored
+  pl = !sh -c 'git pull --no-ff origin $(git rev-parse --abbrev-ref HEAD)'
+  ps = !sh -c 'git push origin $(git rev-parse --abbrev-ref HEAD)'
 [pretty]
   colored = format:%Cred%h%Creset %s %Cgreen(%cr) %C(bold blue)%an%Creset
 [core]
