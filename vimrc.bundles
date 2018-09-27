@@ -45,6 +45,7 @@ Bundle "Chiel92/vim-autoformat"
 Bundle "terryma/vim-multiple-cursors"
 Bundle "christoomey/vim-tmux-navigator"
 Bundle "zgs225/vim-conf"
+Bundle "mileszs/ack.vim"
 
 " Languages
 Bundle "fatih/vim-go"
@@ -63,6 +64,8 @@ Bundle "xsbeats/vim-blade"
 Bundle 'kchmck/vim-coffee-script'
 Bundle "vim-ruby/vim-ruby"
 Bundle "python-mode/python-mode"
+Bundle "cespare/vim-toml"
+Bundle "martinda/Jenkinsfile-vim-syntax"
 
 " Coloschemes
 Bundle "morhetz/gruvbox"
