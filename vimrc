@@ -59,6 +59,7 @@ augroup vimrcEx
 
   " Automatically wrap at 80 characters for Markdown
   autocmd BufRead,BufNewFile *.md setlocal textwidth=80
+  autocmd BufRead,BufNewFile *.go setlocal textwidth=800
 augroup END
 
 " Softtabs, 4 spaces
@@ -275,3 +276,8 @@ cnoreabbrev AG Ack
 nmap gs :Gstatus<cr>
 nmap gps :!git ps<cr>
 nmap gpl :!git pl<cr>
+
+" deoplete
+let g:deoplete#enable_at_startup = 1
+let g:deoplete#sources#go#gocode_binary = $GOPATH.'/bin/gocode'
+let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']

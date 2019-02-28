@@ -16,7 +16,7 @@
   st = status
   up = !git fetch origin && git rebase origin/master
   l  = log --pretty=colored
-  pl = !sh -c 'git pull --no-ff origin $(git rev-parse --abbrev-ref HEAD)'
+  pl = !sh -c 'git pull origin $(git rev-parse --abbrev-ref HEAD)'
   ps = !sh -c 'git push origin $(git rev-parse --abbrev-ref HEAD)'
 [pretty]
   colored = format:%Cred%h%Creset %s %Cgreen(%cr) %C(bold blue)%an%Creset
