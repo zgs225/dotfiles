@@ -38,6 +38,8 @@ Plug 'tpope/vim-surround'
 Plug 'vim-scripts/tComment'
 Plug 'scrooloose/nerdtree'
 Plug 'Lokaltog/vim-powerline'
+Plug 'sainnhe/gruvbox-material'
+Plug 'joshdick/onedark.vim'
 
 if g:has_async
   Plug 'dense-analysis/ale'
