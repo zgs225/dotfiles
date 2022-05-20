@@ -122,7 +122,7 @@ endif
 
 " Color scheme
 set background=dark
-colorscheme jellybeans
+" colorscheme jellybeans
 
 highlight NonText guibg=#060606
 highlight Folded  guibg=#0A0A0A guifg=#9090D0
@@ -236,9 +236,6 @@ set spellfile=$HOME/.vim-spell-en.utf-8.add
 
 " Autocomplete with dictionary words when spell check is on
 set complete+=kspell
-
-" Always use vertical diffs
-set diffopt+=vertical
 
 " Local config
 if filereadable($HOME . "/.vimrc.local")
