@@ -46,3 +46,4 @@ export NVM_DIR="/Users/Yuez/.nvm"
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+[ -f ~/.antigen.zsh ] && source ~/.antigen.zsh
