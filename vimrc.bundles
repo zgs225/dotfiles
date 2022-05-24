@@ -40,6 +40,8 @@ Plug 'scrooloose/nerdtree'
 Plug 'Lokaltog/vim-powerline'
 Plug 'sainnhe/gruvbox-material'
 Plug 'joshdick/onedark.vim'
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
+Plug 'mileszs/ack.vim'
 
 if g:has_async
   Plug 'dense-analysis/ale'
