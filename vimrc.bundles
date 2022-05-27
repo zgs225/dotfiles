@@ -43,6 +43,8 @@ Plug 'joshdick/onedark.vim'
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
 Plug 'mileszs/ack.vim'
 
+Plug 'zgs225/vim-conf'
+
 if g:has_async
   Plug 'dense-analysis/ale'
 endif
