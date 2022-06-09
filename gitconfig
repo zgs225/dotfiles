@@ -49,3 +49,6 @@
   path = ~/.gitconfig.local
 [diff]
   colorMoved = zebra
+[pull]
+	rebase = false
+	ff = only
