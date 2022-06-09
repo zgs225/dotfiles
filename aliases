@@ -5,9 +5,14 @@ alias mkdir="mkdir -p"
 alias e="$EDITOR"
 alias v="$VISUAL"
 alias vim="nvim"
+alias tree="tree --gitignore -a -I .git/ --dirsfirst"
 
 # Pretty print the path
 alias path='echo $PATH | tr -s ":" "\n"'
+
+# Shadowsocks proxy
+alias proxy="export http_proxy=http://127.0.0.1:1087;export https_proxy=http://127.0.0.1:1087;"
+alias unproxy="unset http_proxy;unset https_proxy"
 
 # Include custom aliases
 if [[ -f ~/.aliases.local ]]; then
