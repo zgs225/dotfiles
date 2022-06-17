@@ -11,8 +11,8 @@ alias tree="tree --gitignore -a -I .git/ --dirsfirst"
 alias path='echo $PATH | tr -s ":" "\n"'
 
 # Shadowsocks proxy
-alias proxy="export http_proxy=http://127.0.0.1:1087;export https_proxy=http://127.0.0.1:1087;"
-alias unproxy="unset http_proxy;unset https_proxy"
+alias proxy="export https_proxy=http://127.0.0.1:7890 http_proxy=http://127.0.0.1:7890 all_proxy=socks5://127.0.0.1:7890"
+alias unproxy="unset http_proxy;unset https_proxy;unset all_proxy"
 
 # Include custom aliases
 if [[ -f ~/.aliases.local ]]; then

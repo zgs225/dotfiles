@@ -304,3 +304,30 @@ let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const
 let g:go_highlight_types = 1
 let g:go_highlight_fields = 1
 let g:go_highlight_functions = 1
+let g:go_highlight_extra_types = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_function_parameters = 1
+let g:go_highlight_function_calls = 1
+let g:go_highlight_format_strings = 1
+let g:go_highlight_variable_declarations = 1
+let g:go_highlight_variable_assignments = 1
+let g:go_highlight_debug = 0
+
+let g:go_debug_windows = {
+          \ 'vars':       'botright 30vnew',
+          \ 'stack':      'topleft 30vnew',
+          \ 'goroutines': 'leftabove 20new',
+          \ 'out':        'botright 5new',
+\}
+
+let g:go_debug_breakpoint_sign_text = '✑'
+
+let g:go_debug_mappings = {
+  \ '(go-debug-continue)': {'key': 'c', 'arguments': '<nowait>'},
+  \ '(go-debug-print)': {'key': 'p'},
+  \ '(go-debug-breakpoint)': {'key': '<F9>'},
+  \ '(go-debug-stop)': {'key': '<F7>', 'arguments': '<nowait>'},
+  \ '(go-debug-next)': {'key': 'n', 'arguments': '<nowait>'},
+  \ '(go-debug-step)': {'key': 's'},
+  \ '(go-debug-stepout)': {'key': 'o'},
+\}
