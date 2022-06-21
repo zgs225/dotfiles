@@ -22,7 +22,6 @@ set confirm       " Need confrimation while exit
 set fileencodings=utf-8,gb18030,gbk,big5
 set modelines=0   " Disable modelines as a security precaution
 set nomodeline
-set guifont=Hack_Nerd_Font_Mono:h11
 
 " Switch syntax highlighting on, when the terminal has colors
 " Also switch on highlighting the last used search pattern.
