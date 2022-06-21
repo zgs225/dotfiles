@@ -38,18 +38,27 @@ Plug 'tpope/vim-surround'
 Plug 'vim-scripts/tComment'
 Plug 'scrooloose/nerdtree'
 Plug 'Lokaltog/vim-powerline'
-Plug 'joshdick/onedark.vim'
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
 Plug 'mileszs/ack.vim'
 Plug 'raimondi/delimitmate'
 Plug 'majutsushi/tagbar'
+Plug 'ryanoasis/vim-devicons'
 
 Plug 'zgs225/vim-conf'
 
+Plug 'joshdick/onedark.vim'
 Plug 'sainnhe/gruvbox-material'
 
 if g:has_async
   Plug 'dense-analysis/ale'
+endif
+
+if has('nvim')
+  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+else
+  Plug 'Shougo/deoplete.nvim'
+  Plug 'roxma/nvim-yarp'
+  Plug 'roxma/vim-hug-neovim-rpc'
 endif
 
 if filereadable(expand("~/.vimrc.bundles.local"))
