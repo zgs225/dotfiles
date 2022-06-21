@@ -22,6 +22,7 @@ set confirm       " Need confrimation while exit
 set fileencodings=utf-8,gb18030,gbk,big5
 set modelines=0   " Disable modelines as a security precaution
 set nomodeline
+set guifont=Hack_Nerd_Font_Mono:h11
 
 " Switch syntax highlighting on, when the terminal has colors
 " Also switch on highlighting the last used search pattern.
@@ -122,7 +123,7 @@ endif
 
 " Color scheme
 set background=dark
-colorscheme onedark
+colorscheme gruvbox-material
 
 highlight NonText guibg=#060606
 highlight Folded  guibg=#0A0A0A guifg=#9090D0
@@ -261,17 +262,6 @@ imap <C-f> <Right>
 imap <C-e> <Esc>A
 imap <C-a> <Esc>I
 
-" <Leader>f{char} to move to {char}
-map  <Leader>f <Plug>(easymotion-bd-f)
-nmap <Leader>f <Plug>(easymotion-overwin-f)
-
-" s{char}{char} to move to {char}{char}
-nmap s <Plug>(easymotion-overwin-f2)
-
-" Move to line
-map <Leader>L <Plug>(easymotion-bd-jk)
-nmap <Leader>L <Plug>(easymotion-overwin-line)
-
 " Tab navigation
 nmap tp :tabp<cr>
 nmap tn :tabn<cr>
@@ -280,9 +270,6 @@ nmap tm :tabmove
 " Jump to definition in new tab
 nmap <silent><Leader><c-]> <c-w><c-]><c-w>T
 
-" vim-buffergator
-let buffergator_viewport_split_policy = "b"
-
 " ack
 let g:ackprg = 'ag --vimgrep --smart-case'
 cnoreabbrev ag Ack
@@ -290,15 +277,9 @@ cnoreabbrev aG Ack
 cnoreabbrev Ag Ack
 cnoreabbrev AG Ack
 
-" fugitive
-nmap gs :Gstatus<cr>
-nmap gps :!git ps<cr>
-nmap gpl :!git pl<cr>
-
 " deoplete
 let g:deoplete#enable_at_startup = 1
-let g:deoplete#sources#go#gocode_binary = $GOPATH.'/bin/gocode'
-let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
+call deoplete#custom#source('_', 'smart_case', v:true)
 
 " vim-go
 let g:go_highlight_types = 1
