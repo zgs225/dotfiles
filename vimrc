@@ -124,6 +124,7 @@ endif
 " Color scheme
 set background=dark
 colorscheme gruvbox-material
+let g:airline_theme='gruvbox_material'
 
 highlight NonText guibg=#060606
 highlight Folded  guibg=#0A0A0A guifg=#9090D0
@@ -218,9 +219,6 @@ nnoremap <leader>q :q<CR>
 " Allow saving of files as sudo when I forgot to start vim using sudo.
 cmap w!! w !sudo tee > /dev/null %
 
-" Vim-instant-markdown doesn't work in zsh
-set shell=bash\ -i
-
 " Snippets author
 let g:snips_author = 'Yuez'
 
@@ -279,7 +277,6 @@ cnoreabbrev AG Ack
 
 " deoplete
 let g:deoplete#enable_at_startup = 1
-call deoplete#custom#source('_', 'smart_case', v:true)
 
 " vim-go
 let g:go_highlight_types = 1
