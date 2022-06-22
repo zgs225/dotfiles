@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "coc-actions": ">=1.5.0",
+    "coc-java": ">=1.5.5",
+    "coc-json": ">=1.4.2",
+    "coc-lists": ">=1.4.3"
+  }
+}
