@@ -2,3 +2,4 @@
 vim/bundle/
 config/coc/mru
 config/coc/extensions/node_modules
+config/coc/extensions/coc-java-data
