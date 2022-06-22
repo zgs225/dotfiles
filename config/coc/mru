@@ -1,3 +1,7 @@
+/Users/lucky/Development/Shell/dotfiles/.gitignore
+/Users/lucky/Development/Golang/dubbo-go-samples/rpc/dubbo/java-server/pom.xml
+/Users/lucky/Development/Golang/dubbo-go-samples/rpc/dubbo/java-server/src/main/resources/META-INF/spring/dubbo.provider.xml
+/Users/lucky/Development/Golang/dubbo-go-samples/rpc/dubbo/java-server/src/main/resources/META-INF/spring/dubbo.provider.xml
 /Users/lucky/Development/Golang/dubbo-go-scaffold/cmd/server.go
 /Users/lucky/Development/Golang/dubbo-go-scaffold/cmd/server.go
 /Users/lucky/Development/Golang/dubbo-go-scaffold/cmd/server.go
