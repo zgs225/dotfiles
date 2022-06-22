@@ -112,6 +112,7 @@ endif
 " Color scheme
 set background=dark
 colorscheme gruvbox-material
+hi MsgArea ctermbg=Black
 let g:airline_theme='gruvbox_material'
 
 highlight NonText guibg=#060606
