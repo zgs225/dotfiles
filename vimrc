@@ -22,6 +22,8 @@ set confirm       " Need confrimation while exit
 set fileencodings=utf-8,gb18030,gbk,big5
 set modelines=0   " Disable modelines as a security precaution
 set nomodeline
+set hidden
+set signcolumn=number
 
 " Switch syntax highlighting on, when the terminal has colors
 " Also switch on highlighting the last used search pattern.
@@ -31,6 +33,10 @@ endif
 
 if filereadable(expand("~/.vimrc.bundles"))
   source ~/.vimrc.bundles
+endif
+
+if filereadable(expand("~/.vimrc.coc"))
+  source ~/.vimrc.coc
 endif
 
 " Load matchit.vim, but only if the user hasn't installed a newer version.
@@ -76,23 +82,6 @@ augroup END
 set tabstop=4
 set shiftwidth=4
 
-" ALE linting events
-augroup ale
-  autocmd!
-
-  if g:has_async
-    autocmd VimEnter *
-      \ set updatetime=1000 |
-      \ let g:ale_lint_on_text_changed = 0
-    autocmd CursorHold * call ale#Queue(0)
-    autocmd CursorHoldI * call ale#Queue(0)
-    autocmd InsertEnter * call ale#Queue(0)
-    autocmd InsertLeave * call ale#Queue(0)
-  else
-    echoerr "The thoughtbot dotfiles require NeoVim or Vim 8"
-  endif
-augroup END
-
 " When the type of shell script is /bin/sh, assume a POSIX-compatible
 " shell for syntax highlighting purposes.
 let g:is_posix = 1
@@ -135,21 +124,6 @@ set colorcolumn=+1
 " Numbers
 set number
 set numberwidth=5
-
-" Tab completion
-" will insert tab at beginning of line,
-" will use completion if not at beginning
-set wildmode=list:longest,list:full
-function! InsertTabWrapper()
-    let col = col('.') - 1
-    if !col || getline('.')[col - 1] !~ '\k'
-        return "\<Tab>"
-    else
-        return "\<C-p>"
-    endif
-endfunction
-inoremap <Tab> <C-r>=InsertTabWrapper()<CR>
-inoremap <S-Tab> <C-n>
 
 " Switch between the last two files
 nnoremap <Leader><Leader> <C-^>
@@ -273,9 +247,6 @@ cnoreabbrev ag Ack
 cnoreabbrev aG Ack
 cnoreabbrev Ag Ack
 cnoreabbrev AG Ack
-
-" deoplete
-let g:deoplete#enable_at_startup = 1
 
 " vim-go
 let g:go_highlight_types = 1

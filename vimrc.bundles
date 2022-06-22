@@ -44,23 +44,12 @@ Plug 'mileszs/ack.vim'
 Plug 'raimondi/delimitmate'
 Plug 'majutsushi/tagbar'
 Plug 'ryanoasis/vim-devicons'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 Plug 'zgs225/vim-conf'
 
 Plug 'joshdick/onedark.vim'
 Plug 'sainnhe/gruvbox-material'
-
-if g:has_async
-  Plug 'dense-analysis/ale'
-endif
-
-if has('nvim')
-  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-else
-  Plug 'Shougo/deoplete.nvim'
-  Plug 'roxma/nvim-yarp'
-  Plug 'roxma/vim-hug-neovim-rpc'
-endif
 
 if filereadable(expand("~/.vimrc.bundles.local"))
   source ~/.vimrc.bundles.local
