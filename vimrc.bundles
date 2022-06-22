@@ -50,6 +50,7 @@ Plug 'zgs225/vim-conf'
 
 Plug 'joshdick/onedark.vim'
 Plug 'sainnhe/gruvbox-material'
+Plug 'altercation/vim-colors-solarized'
 
 if filereadable(expand("~/.vimrc.bundles.local"))
   source ~/.vimrc.bundles.local
