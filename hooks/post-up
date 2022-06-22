@@ -33,3 +33,11 @@ rename the file to \`zprofile':
 
 MSG
 fi
+
+# Install coc extensions
+if [ -e "$HOME"/.config/coc/extensions/package.json ]; then
+    dir=$PWD
+    cd "$HOME"/.config/coc/extensions/
+    yarn install
+    cd $dir
+fi
