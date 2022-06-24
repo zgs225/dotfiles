@@ -3,6 +3,8 @@
     "coc-git": ">=2.4.10",
     "coc-java": ">=1.5.5",
     "coc-json": ">=1.4.2",
-    "coc-lists": ">=1.4.3"
+    "coc-lists": ">=1.4.3",
+    "coc-pyright": ">=1.1.255",
+    "coc-vimlsp": ">=0.12.8"
   }
 }

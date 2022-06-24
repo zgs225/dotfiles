@@ -68,14 +68,11 @@ augroup vimrcEx
   autocmd BufRead,BufNewFile gitconfig.local set filetype=gitconfig
   autocmd BufRead,BufNewFile tmux.conf.local set filetype=tmux
   autocmd BufRead,BufNewFile vimrc.local set filetype=vim
-augroup END
 
   " Enable spellchecking for Markdown
-  " autocmd FileType markdown setlocal spell
-
+  autocmd FileType markdown setlocal spell
   " Automatically wrap at 80 characters for Markdown
   autocmd BufRead,BufNewFile *.md setlocal textwidth=80
-  autocmd BufRead,BufNewFile *.go setlocal textwidth=800
 augroup END
 
 " Softtabs, 4 spaces
@@ -115,9 +112,6 @@ colorscheme gruvbox-material
 hi MsgArea ctermbg=Black
 let g:airline_theme='gruvbox_material'
 
-highlight NonText guibg=#060606
-highlight Folded  guibg=#0A0A0A guifg=#9090D0
-
 " Make it obvious where 80 characters is
 set textwidth=80
 set colorcolumn=+1
@@ -128,6 +122,9 @@ set numberwidth=5
 
 " Switch between the last two files
 nnoremap <Leader><Leader> <C-^>
+
+" Reload vimrc
+nmap <Leader>R :so $MYVIMRC<CR><BAR>:echo "Reloaded"<CR>
 
 " Get off my lawn
 nnoremap <Left> :echoe "Use h"<CR>
