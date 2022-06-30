@@ -6,9 +6,16 @@ git_prompt_info() {
   fi
 }
 
+# modify the prompt to contain proxy infomation
+proxy_prompt_info() {
+    if [[ -n $http_proxy ]]; then
+        echo " 🌏"
+    fi
+}
+
 setopt promptsubst
 
 # Allow exported PS1 variable to override default prompt.
 if ! env | grep -q '^PS1='; then
-  PS1='${SSH_CONNECTION+"%{$fg_bold[green]%}%n@%m:"}%{$fg_bold[blue]%}%c%{$reset_color%}$(git_prompt_info) %# '
+    PS1='${SSH_CONNECTION+"%{$fg_bold[green]%}%n@%m:"}%{$fg_bold[blue]%}%c%{$reset_color%}$(git_prompt_info)$(proxy_prompt_info) %# '
 fi

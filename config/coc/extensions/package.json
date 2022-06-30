@@ -5,6 +5,7 @@
     "coc-json": ">=1.4.2",
     "coc-lists": ">=1.4.3",
     "coc-pyright": ">=1.1.255",
-    "coc-vimlsp": ">=0.12.8"
+    "coc-vimlsp": ">=0.12.8",
+    "coc-xml": ">=1.14.1"
   }
 }
