@@ -31,11 +31,38 @@ nmap <Leader>rn <Plug>(coc-rename)
 " List buffers
 nmap <Leader>b :CocList --normal buffers<cr>
 
-" Formatting selected code.
-xmap <Leader>f  <Plug>(coc-format-selected)
-nmap <Leader>f  <Plug>(coc-format-selected)
+nmap <Leader>f <Plug>(coc-codeaction-cursor)
 
 set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 
 " Add `:Format` command to format current buffer.
 command! -nargs=0 Format :call CocActionAsync('format')
+
+" Add `:Prettier` command to format current buffer.
+command! -nargs=0 Prettier :CocCommand prettier.forceFormatDocument
+
+" Use tab for trigger completion with characters ahead and navigate.
+" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
+" other plugin before putting this into your config.
+inoremap <silent><expr> <TAB>
+      \ coc#pum#visible() ? coc#pum#next(1):
+      \ CheckBackspace() ? "\<Tab>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+
+" Make <CR> to accept selected completion item or notify coc.nvim to format
+" <C-g>u breaks current undo, please make your own choice.
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+function! CheckBackspace() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+" Use <c-space> to trigger completion.
+if has('nvim')
+  inoremap <silent><expr> <c-space> coc#refresh()
+else
+  inoremap <silent><expr> <c-@> coc#refresh()
+endif

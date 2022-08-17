@@ -27,3 +27,4 @@ MSG
 fi
 
 unset _old_path
+. "$HOME/.cargo/env"
