@@ -1,10 +1,13 @@
 {
   "dependencies": {
-    "coc-git": ">=2.4.10",
+    "coc-git": ">=2.5.1",
     "coc-java": ">=1.5.5",
-    "coc-json": ">=1.4.2",
-    "coc-lists": ">=1.4.3",
-    "coc-pyright": ">=1.1.255",
+    "coc-json": ">=1.6.1",
+    "coc-lists": ">=1.4.4",
+    "coc-prettier": ">=9.3.1",
+    "coc-pyright": ">=1.1.266",
+    "coc-styled-components": ">=0.5.0",
+    "coc-tsserver": ">=1.11.3",
     "coc-vimlsp": ">=0.12.8",
     "coc-xml": ">=1.14.1"
   }

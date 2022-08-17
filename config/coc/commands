@@ -1,2 +1,10 @@
+prettier.forceFormatDocument
+prettier.forceFormatDocument
+prettier.forceFormatDocument
+prettier.forceFormatDocument
+xml.updateLanguageServer
+git.toggleGutters
+tags.generate
+editor.action.organizeImport
 extensions.toggleAutoUpdate
 editor.action.formatDocument
