@@ -20,12 +20,24 @@ function set_proxy() {
     hostname=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}')
   fi
 
-  export http_proxy="http://${hostname}:${port}" https_proxy="https://${hostname}:${port}" all_proxy="socks5://${hostname}:${port}"
+  local proxy_addr="${hostname}:${port}"
+
+  export http_proxy="http://${proxy_addr}" https_proxy="http://${proxy_addr}" all_proxy="socks5://${proxy_addr}"
+
+  echo "Set proxy to ${proxy_addr}"
+}
+
+function unset_proxy() {
+  unset http_proxy
+  unset https_proxy
+  unset all_proxy
+  
+  echo "Unset proxy"
 }
 
 # Shadowsocks proxy
 alias proxy="set_proxy"
-alias unproxy="unset http_proxy;unset https_proxy;unset all_proxy"
+alias unproxy="unset_proxy"
 
 # Include custom aliases
 if [[ -f ~/.aliases.local ]]; then
