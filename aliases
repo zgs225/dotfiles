@@ -10,8 +10,21 @@ alias tree="tree --gitignore -a -I .git/ --dirsfirst"
 # Pretty print the path
 alias path='echo $PATH | tr -s ":" "\n"'
 
+function set_proxy() {
+  local release=$(uname -r)
+  local wsl="WSL"
+  local hostname="127.0.0.1"
+  local port=7890
+
+  if [[ "$release" == *"$wsl"* ]]; then
+    hostname=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}')
+  fi
+
+  export http_proxy="http://${hostname}:${port}" https_proxy="https://${hostname}:${port}" all_proxy="socks5://${hostname}:${port}"
+}
+
 # Shadowsocks proxy
-alias proxy="export https_proxy=http://127.0.0.1:7890 http_proxy=http://127.0.0.1:7890 all_proxy=socks5://127.0.0.1:7890"
+alias proxy="set_proxy"
 alias unproxy="unset http_proxy;unset https_proxy;unset all_proxy"
 
 # Include custom aliases
