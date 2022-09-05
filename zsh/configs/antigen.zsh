@@ -9,7 +9,7 @@ if [ -e "$HOME"/.bin/antigen.zsh ]; then
     antigen bundle zsh-users/zsh-autosuggestions
     antigen bundle zsh-users/zsh-syntax-highlighting
 
-    antigen theme robbyrussell
+    antigen theme romkatv/powerlevel10k
 
     antigen apply
 fi
