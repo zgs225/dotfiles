@@ -1,5 +1,15 @@
 prettier.forceFormatDocument
 prettier.forceFormatDocument
+editor.action.organizeImport
+editor.action.organizeImport
+editor.action.organizeImport
+editor.action.organizeImport
+editor.action.formatDocument
+clangd.memoryUsage
+clangd.switchSourceHeader
+clangd.switchSourceHeader
+prettier.forceFormatDocument
+prettier.forceFormatDocument
 prettier.forceFormatDocument
 prettier.forceFormatDocument
 prettier.forceFormatDocument
