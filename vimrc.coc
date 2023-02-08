@@ -41,6 +41,9 @@ command! -nargs=0 Format :call CocActionAsync('format')
 " Add `:Prettier` command to format current buffer.
 command! -nargs=0 Prettier :CocCommand prettier.forceFormatDocument
 
+" Add `:OR` command for organize imports of the current buffer
+command! -nargs=0 OR   :call     CocActionAsync('runCommand', 'editor.action.organizeImport')
+
 " Use tab for trigger completion with characters ahead and navigate.
 " NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
 " other plugin before putting this into your config.

@@ -1,7 +1,4 @@
 {
-    "coc.preferences.formatOnSaveFiletypes": [
-        "json"
-    ],
     "coc.preferences.jumpCommand": "drop",
     "languageserver": {
         "go": {
@@ -51,5 +48,6 @@
     "diagnostic.refreshOnInsertMode": true,
     "python.formatting.provider": "black",
     "coc.preferences.extensionUpdateCheck": "daily",
-    "git.enableGutters": false
+    "git.enableGutters": false,
+    "clangd.path": "clangd-15"
 }

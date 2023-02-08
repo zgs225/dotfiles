@@ -68,6 +68,7 @@ augroup vimrcEx
   autocmd BufRead,BufNewFile gitconfig.local set filetype=gitconfig
   autocmd BufRead,BufNewFile tmux.conf.local set filetype=tmux
   autocmd BufRead,BufNewFile vimrc.local set filetype=vim
+  autocmd BufRead,BufNewFile *.sshconfig set filetype=sshconfig
 
   " Enable spellchecking for Markdown
   autocmd FileType markdown setlocal spell
@@ -247,6 +248,8 @@ cnoreabbrev Ag Ack
 cnoreabbrev AG Ack
 
 " vim-go
+let g:go_code_completion_enabled = 0
+let g:go_def_mapping_enabled = 0
 let g:go_highlight_types = 1
 let g:go_highlight_fields = 1
 let g:go_highlight_functions = 1
