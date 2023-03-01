@@ -249,6 +249,8 @@ cnoreabbrev AG Ack
 
 " vim-go
 let g:go_code_completion_enabled = 0
+" Disable gopls at vim-go, will start a gopls process at coc-vim for golang
+let g:go_gopls_enabled = 0
 let g:go_def_mapping_enabled = 0
 let g:go_highlight_types = 1
 let g:go_highlight_fields = 1
