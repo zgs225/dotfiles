@@ -11,11 +11,6 @@
         "fileName": "d39aec69debdd6d26331e1de0cfddea3.schema.json",
         "updateTime": 1675414675430
       },
-      "https://json.schemastore.org/package.json": {
-        "etag": "\"0ff6ca2e030d91:0\"",
-        "fileName": "473f72b44c2905902dfbcc770aab7f7a.schema.json",
-        "updateTime": 1675749349298
-      },
       "https://json.schemastore.org/semantic-release.json": {
         "etag": "\"808cdec3a9a4d81:0\"",
         "fileName": "fbc95702ba6eddb3e2de4f52e31ca82a.schema.json",
