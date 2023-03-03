@@ -46,6 +46,7 @@ Plug 'raimondi/delimitmate'
 Plug 'majutsushi/tagbar'
 Plug 'ryanoasis/vim-devicons'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'github/copilot.vim'
 
 Plug 'zgs225/vim-conf'
 
