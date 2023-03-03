@@ -39,6 +39,8 @@ function unset_proxy() {
 alias proxy="set_proxy"
 alias unproxy="unset_proxy"
 
+alias rm="rm -i"
+
 # Include custom aliases
 if [[ -f ~/.aliases.local ]]; then
   source ~/.aliases.local
