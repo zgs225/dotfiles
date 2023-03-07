@@ -42,6 +42,7 @@ Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
 Plug 'junegunn/goyo.vim', { 'for': 'markdown' }
+Plug 'junegunn/limelight.vim'
 Plug 'mileszs/ack.vim'
 Plug 'raimondi/delimitmate'
 Plug 'majutsushi/tagbar'
