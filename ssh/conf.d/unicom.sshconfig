@@ -1,0 +1,53 @@
+Host vm89
+    HostName 172.16.35.89
+
+Host vm94
+    HostName 172.16.21.94
+
+Host vm102
+    HostName 172.16.21.102
+
+Host vm101
+    HostName 172.16.21.101
+
+Host vm103
+    HostName 172.16.21.103
+
+Host vm104
+    HostName 172.16.21.104
+
+Host vm105
+    HostName 172.16.21.105
+
+Host vm106
+    HostName 172.16.21.106
+
+Host vm11
+    HostName 172.16.21.11
+
+Host vm139
+    HostName 172.16.21.139
+
+Host vm207
+    HostName 172.16.21.207
+
+Host vm250
+    HostName 172.16.21.250
+
+Host vm59
+    HostName 172.16.21.59
+
+Host vm95
+    HostName 172.16.21.95
+
+Host vm96
+    HostName 172.16.21.96
+
+Host vm45
+    HostName 172.16.35.45
+
+Host vm84
+    HostName 172.16.35.84
+
+Host vm*
+    User root
