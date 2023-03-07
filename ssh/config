@@ -1,0 +1,27 @@
+Include conf.d/*
+
+Host sg1
+    HostName 18.139.21.123
+    User ubuntu
+    IdentityFile ~/.ssh/LightsailDefaultKey-ap-southeast-1.pem
+    ForwardAgent yes
+    ProxyCommand nc -v -x 127.0.0.1:7890 %h %p
+
+Host 172.20.10.3
+    User root
+    PubkeyAcceptedAlgorithms +ssh-rsa
+    HostkeyAlgorithms +ssh-rsa
+
+Host router
+    User root
+    HostName 192.168.2.1
+
+Host *
+    StrictHostKeyChecking no
+    ServerAliveInterval 10
+
+Host github.com
+    Hostname github.com
+    ProxyCommand nc -v -x 127.0.0.1:7890 %h %p
+    ServerAliveInterval 55
+    ForwardAgent yes
