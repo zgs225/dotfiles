@@ -42,3 +42,7 @@ rename the file to \`zprofile':
 
 MSG
 fi
+
+if [ -f "${HOME}/.config/coc/extensions/package.json" ]; then
+    yarn --cwd "${HOME}/.config/coc/extensions" install --frozen-lockfile
+fi
