@@ -47,6 +47,7 @@ Plug 'majutsushi/tagbar'
 Plug 'ryanoasis/vim-devicons'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'github/copilot.vim'
+Plug 'martinda/Jenkinsfile-vim-syntax'
 
 Plug 'zgs225/vim-conf'
 
