@@ -74,6 +74,8 @@ augroup vimrcEx
   autocmd FileType markdown setlocal spell
   " Automatically wrap at 80 characters for Markdown
   autocmd BufRead,BufNewFile *.md setlocal textwidth=80
+  " Automatically use goyo mode for Markdown
+  autocmd BufRead,BufNewFile *.md Goyo
 augroup END
 
 " Softtabs, 4 spaces
