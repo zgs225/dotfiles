@@ -1,11 +1,6 @@
 {
   "coc-json|global": {
     "json-schema-cache": {
-      "https://json.schemastore.org/config.json": {
-        "etag": "\"bcd1f6fd316ad81:0\"",
-        "fileName": "ee050b74d016c5f06e4024d2dce36b54.schema.json",
-        "updateTime": 1675155254734
-      },
       "https://json.schemastore.org/compile-commands.json": {
         "etag": "\"5e48edfd316ad81:0\"",
         "fileName": "d39aec69debdd6d26331e1de0cfddea3.schema.json",
@@ -50,6 +45,11 @@
         "etag": "\"80e08ca9849bd81:0\"",
         "fileName": "000bfbdd14d2fb8ec5b0d59bec32ef98.schema.json",
         "updateTime": 1677810739161
+      },
+      "https://json.schemastore.org/config.json": {
+        "etag": "\"bcd1f6fd316ad81:0\"",
+        "fileName": "ee050b74d016c5f06e4024d2dce36b54.schema.json",
+        "updateTime": 1678186283481
       }
     }
   }
