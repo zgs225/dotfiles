@@ -7,6 +7,12 @@ Host sg1
     ForwardAgent yes
     ProxyCommand nc -v -x 127.0.0.1:7890 %h %p
 
+Host vi1
+    HostName 86.106.183.54
+    User alwyzon
+    ForwardAgent yes
+    ProxyCommand nc -v -x 127.0.0.1:7890 %h %p
+
 Host 172.20.10.3
     User root
     PubkeyAcceptedAlgorithms +ssh-rsa
@@ -15,6 +21,12 @@ Host 172.20.10.3
 Host router
     User root
     HostName 192.168.2.1
+
+Host home
+    User root
+    HostName home.yuez.me
+    ForwardAgent yes
+    ProxyCommand nc -v -x 127.0.0.1:7890 %h %p
 
 Host *
     StrictHostKeyChecking no
