@@ -1,13 +1,12 @@
-set encoding=utf-8
+" Leader
+let mapleader = ","
 
 " Highlight current line
 au WinLeave * set nocursorline nocursorcolumn
 au WinEnter * set cursorline cursorcolumn
 set cursorline cursorcolumn
 
-" Leader
-let mapleader = ","
-
+set encoding=utf-8
 set backspace=2   " Backspace deletes like most programs in insert mode
 set nobackup
 set nowritebackup
@@ -24,6 +23,15 @@ set modelines=0   " Disable modelines as a security precaution
 set nomodeline
 set hidden
 set signcolumn=number
+set tabstop=4
+set shiftwidth=4
+set shiftround
+set expandtab
+set list listchars=tab:»·,trail:·,nbsp:·
+set nojoinspaces
+
+let g:is_posix = 1
+
 
 " Switch syntax highlighting on, when the terminal has colors
 " Also switch on highlighting the last used search pattern.
@@ -69,7 +77,8 @@ augroup vimrcEx
   autocmd BufRead,BufNewFile tmux.conf.local set filetype=tmux
   autocmd BufRead,BufNewFile vimrc.local set filetype=vim
   autocmd BufRead,BufNewFile *.sshconfig set filetype=sshconfig
-  autocmd BufRead,BufNewFile Makefile.* set filetype=make
+  autocmd BufRead,BufNewFile Makefile.* setlocal filetype=make
+  autocmd FileType make setlocal noexpandtab shiftwidth=4 softtabstop=4
   autocmd BufRead,BufNewFile Dockerfile.* set filetype=dockerfile
 
   " Enable spellchecking for Markdown
@@ -115,23 +124,6 @@ augroup vimrcEx
   autocmd! User GoyoEnter nested call <SID>goyo_enter()
   autocmd! User GoyoLeave nested call <SID>goyo_leave()
 augroup END
-
-" Softtabs, 4 spaces
-set tabstop=4
-set shiftwidth=4
-
-" When the type of shell script is /bin/sh, assume a POSIX-compatible
-" shell for syntax highlighting purposes.
-let g:is_posix = 1
-
-set shiftround
-set expandtab
-
-" Display extra whitespace
-set list listchars=tab:»·,trail:·,nbsp:·
-
-" Use one space, not two, after punctuation.
-set nojoinspaces
 
 " Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
 if executable('ag')
