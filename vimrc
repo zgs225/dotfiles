@@ -69,6 +69,8 @@ augroup vimrcEx
   autocmd BufRead,BufNewFile tmux.conf.local set filetype=tmux
   autocmd BufRead,BufNewFile vimrc.local set filetype=vim
   autocmd BufRead,BufNewFile *.sshconfig set filetype=sshconfig
+  autocmd BufRead,BufNewFile Makefile.* set filetype=make
+  autocmd BufRead,BufNewFile Dockerfile.* set filetype=dockerfile
 
   " Enable spellchecking for Markdown
   autocmd FileType markdown setlocal spell
@@ -320,3 +322,7 @@ let g:go_debug_mappings = {
   \ '(go-debug-step)': {'key': 's'},
   \ '(go-debug-stepout)': {'key': 'o'},
 \}
+
+" copilot
+imap <silent><script><expr> <C-j> copilot#Accept("\<CR>")
+let g:copilot_no_tab_map = v:true

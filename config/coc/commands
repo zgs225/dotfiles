@@ -1,3 +1,7 @@
+pyright.organizeimports
+pyright.organizeimports
+python.sortImports
+python.sortImports
 prettier.forceFormatDocument
 prettier.forceFormatDocument
 editor.action.organizeImport
