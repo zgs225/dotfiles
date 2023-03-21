@@ -15,11 +15,11 @@ function get_fan_rpm() {
 if [ "$1" == "--tmux" ]; then
     fan_rpm=$(get_fan_rpm cpu)
     if [ $fan_rpm -gt 3000 ]; then
-        echo "#[fg=colour196]${fan_rpm}RPM"
+        echo "#[fg=colour1]${fan_rpm}RPM"
     elif [ $fan_rpm -gt 2000 ]; then
-        echo "#[fg=colour202]${fan_rpm}RPM"
+        echo "#[fg=colour3]${fan_rpm}RPM"
     else
-        echo "#[fg=colour118]${fan_rpm}RPM"
+        echo "#[fg=colour34]${fan_rpm}RPM"
     fi
 else
     echo "$(get_fan_rpm cpu)RPM"
