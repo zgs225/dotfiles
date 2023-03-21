@@ -18,8 +18,8 @@ if [ $# -gt 0 ]; then
         i=$((i - 1))
     done
 
-    # increment the index
     index=$((index + 1))
+    index=$((index % $#))
 
     # save the index
     echo $index > ~/.roundrobin
