@@ -1,0 +1,24 @@
+#!/bin/bash
+
+if [ ! command -v sensors &> /dev/null ]; then
+    echo "N/A"
+    exit 1
+fi
+
+function get_max_temperature() {
+    local temperature=$(sensors | grep "Core " | awk '{print $3}' | sort -ir | head -n 1 | sed 's/+//g' | sed 's/°C//g')
+    echo $temperature
+}
+
+if [ "$1" = "--tmux" ]; then
+    temperature=$(get_max_temperature)
+    if [ $(echo "$temperature > 70" | bc -l) -ne "0" ]; then
+        echo "#[fg=colour1]${temperature}°C"
+    elif [ $(echo "$temperature > 50" | bc -l) -ne "0" ]; then 
+        echo "#[fg=colour3]${temperature}°C"
+    else
+        echo "#[fg=colour34]${temperature}°C"
+    fi
+else
+    echo "$(get_max_temperature)°C"
+fi
