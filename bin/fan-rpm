@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if [ ! command -v sensors &> /dev/null ]; then
+    echo "sensors not found"
+    exit
+fi
+
+function get_fan_rpm() {
+    local fan=$1
+    local fan_rpm=$(sensors | grep "${fan}_fan:" | awk '{print $2}' | sed 's/[^0-9]*//g')
+    echo $fan_rpm
+}
+
+# if --tmux is passed as an argument, output in tmux format
+if [ "$1" == "--tmux" ]; then
+    fan_rpm=$(get_fan_rpm cpu)
+    if [ $fan_rpm -gt 3000 ]; then
+        echo "#[fg=colour196]${fan_rpm}RPM"
+    elif [ $fan_rpm -gt 2000 ]; then
+        echo "#[fg=colour202]${fan_rpm}RPM"
+    else
+        echo "#[fg=colour118]${fan_rpm}RPM"
+    fi
+else
+    echo "$(get_fan_rpm cpu)RPM"
+fi
