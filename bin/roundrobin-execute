@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# if arguments is not empty, then execute the command
+if [ $# -gt 0 ]; then
+    # get the index from the file
+    if [ -f ~/.roundrobin ]; then
+        index=$(cat ~/.roundrobin)
+    else
+        index=0
+    fi
+
+    i=$((index % $#))
+    for arg in "$@"; do
+        if [ $i -eq 0 ]; then
+            $arg
+            break
+        fi
+        i=$((i - 1))
+    done
+
+    # increment the index
+    index=$((index + 1))
+
+    # save the index
+    echo $index > ~/.roundrobin
+fi
