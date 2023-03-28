@@ -3,14 +3,10 @@
     "languageserver": {
         "go": {
             "command": "gopls",
-            "args": [
-                "-remote=auto"
-            ],
             "rootPatterns": [
                 "go.mod",
                 "main.go"
             ],
-            "trace.server": "verbose",
             "filetypes": [
                 "go"
             ]

@@ -29,6 +29,7 @@ set shiftround
 set expandtab
 set list listchars=tab:»·,trail:·,nbsp:·
 set nojoinspaces
+set updatetime=300
 
 let g:is_posix = 1
 
