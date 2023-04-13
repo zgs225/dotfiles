@@ -14,9 +14,9 @@
     "coc-xml": ">=1.14.1",
     "coc-clangd": ">=0.27.0",
     "coc-yaml": ">=1.9.0",
-    "coc-vetur": ">=1.2.5"
+    "@yaegassy/coc-volar": ">=0.28.9"
   },
   "disabled": [],
   "locked": [],
-  "lastUpdate": 1679900687651
+  "lastUpdate": 1681349793484
 }

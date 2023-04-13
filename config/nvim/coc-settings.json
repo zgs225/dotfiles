@@ -49,5 +49,6 @@
     "python.formatting.provider": "black",
     "coc.preferences.extensionUpdateCheck": "daily",
     "git.enableGutters": false,
-    "clangd.path": "clangd-15"
+    "clangd.path": "clangd-15",
+    "vetur.useWorkspaceDependencies": true
 }
