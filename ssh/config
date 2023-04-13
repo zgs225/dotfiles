@@ -20,7 +20,7 @@ Host vi1
     ProxyCommand nc -v -x 127.0.0.1:7890 %h %p
 
 Host vi1-direct
-    HostName vi1.yuez.me
+    HostName 10.247.113.1
     User alwyzon
     ForwardAgent yes
 
