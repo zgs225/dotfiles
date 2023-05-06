@@ -7,15 +7,21 @@ Host sg1
     ForwardAgent yes
     ProxyCommand nc -v -x 127.0.0.1:7890 %h %p
 
-Host sg2
-    HostName 139.59.192.15
-    User root
-
-Host sg1-direct
-    HostName 18.139.21.123
+Host sg1-vpc
+    HostName sg1.yuez.my.local
     User ubuntu
     IdentityFile ~/.ssh/LightsailDefaultKey-ap-southeast-1.pem
     ForwardAgent yes
+
+Host sg2
+    HostName 139.59.192.15
+    User root
+    ForwardAgent yes
+    ProxyCommand nc -v -x 127.0.0.1:7890 %h %p
+
+Host sg2-vpc
+    HostName sg2.yuez.my.local
+    User root
 
 Host vi1
     HostName 86.106.183.54
@@ -23,8 +29,8 @@ Host vi1
     ForwardAgent yes
     ProxyCommand nc -v -x 127.0.0.1:7890 %h %p
 
-Host vi1-direct
-    HostName 10.247.114.4
+Host vi1-vpc
+    HostName vi1.yuez.my.local
     User alwyzon
     ForwardAgent yes
 
@@ -33,8 +39,8 @@ Host bj1
     User root
     ForwardAgent yes
 
-Host bj1-direct
-    Hostname 10.247.114.7
+Host bj1-vpc
+    Hostname bj1.yuez.my.local
     User root
     ForwardAgent yes
 
@@ -46,6 +52,10 @@ Host 172.20.10.3
 Host router
     User root
     HostName 192.168.2.1
+
+Host router-vpc
+    User root
+    HostName router.yuez.my.local
 
 Host home
     User root
