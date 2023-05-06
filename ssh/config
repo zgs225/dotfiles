@@ -7,6 +7,10 @@ Host sg1
     ForwardAgent yes
     ProxyCommand nc -v -x 127.0.0.1:7890 %h %p
 
+Host sg2
+    HostName 139.59.192.15
+    User root
+
 Host sg1-direct
     HostName 18.139.21.123
     User ubuntu
@@ -20,8 +24,18 @@ Host vi1
     ProxyCommand nc -v -x 127.0.0.1:7890 %h %p
 
 Host vi1-direct
-    HostName 10.247.113.1
+    HostName 10.247.114.4
     User alwyzon
+    ForwardAgent yes
+
+Host bj1
+    Hostname 47.93.5.61
+    User root
+    ForwardAgent yes
+
+Host bj1-direct
+    Hostname 10.247.114.7
+    User root
     ForwardAgent yes
 
 Host 172.20.10.3
