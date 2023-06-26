@@ -1,4 +1,7 @@
 editor.action.organizeImport
+editor.action.organizeImport
+rust-analyzer.analyzerStatus
+editor.action.organizeImport
 volar.initializeTakeOverMode
 vetur.restartVLS
 pyright.organizeimports

@@ -50,5 +50,9 @@
     "coc.preferences.extensionUpdateCheck": "daily",
     "git.enableGutters": false,
     "clangd.path": "clangd-15",
-    "vetur.useWorkspaceDependencies": true
+    "workspace.ignoredFolders": [
+        "$HOME",
+        "$HOME/.cargo/**",
+        "$HOME/.rustup/**"
+    ]
 }

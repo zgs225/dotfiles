@@ -8,6 +8,7 @@ if [ -e "$HOME"/.bin/antigen.zsh ]; then
     antigen bundle command-not-found
     antigen bundle zsh-users/zsh-autosuggestions
     antigen bundle zsh-users/zsh-syntax-highlighting
+    antigen bundle kubectl
 
     antigen theme romkatv/powerlevel10k
 
