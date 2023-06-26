@@ -13,9 +13,10 @@
     "coc-vimlsp": ">=0.12.8",
     "coc-xml": ">=1.14.1",
     "coc-clangd": ">=0.27.0",
-    "@yaegassy/coc-volar": ">=0.28.9"
+    "@yaegassy/coc-volar": ">=0.28.9",
+    "coc-rust-analyzer": ">=0.73.0"
   },
   "disabled": [],
   "locked": [],
-  "lastUpdate": 1683358217464
+  "lastUpdate": 1687740142143
 }

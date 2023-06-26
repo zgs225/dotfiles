@@ -2,6 +2,7 @@ Include conf.d/*
 
 Host sg1
     HostName 18.139.21.123
+    Port 28888
     User ubuntu
     IdentityFile ~/.ssh/LightsailDefaultKey-ap-southeast-1.pem
     ForwardAgent yes
@@ -56,6 +57,14 @@ Host router
 Host router-vpc
     User root
     HostName router.yuez.my.local
+
+Host pve
+    User root
+    HostName 192.168.2.254
+
+Host dsm
+    User yuez
+    HostName 192.168.2.183
 
 Host *
     StrictHostKeyChecking no
