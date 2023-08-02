@@ -122,8 +122,8 @@ augroup vimrcEx
       endif
   endfunction
 
-  autocmd! User GoyoEnter nested call <SID>goyo_enter()
-  autocmd! User GoyoLeave nested call <SID>goyo_leave()
+  autocmd User GoyoEnter nested call <SID>goyo_enter()
+  autocmd User GoyoLeave nested call <SID>goyo_leave()
 augroup END
 
 " Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
@@ -319,3 +319,6 @@ let g:go_debug_mappings = {
 " copilot
 imap <silent><script><expr> <C-j> copilot#Accept("\<CR>")
 let g:copilot_no_tab_map = v:true
+
+" GitGutter
+command! -nargs=0 GG :GitGutter
