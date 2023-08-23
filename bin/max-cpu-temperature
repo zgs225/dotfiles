@@ -1,12 +1,28 @@
 #!/bin/bash
 
-if [ ! command -v sensors &> /dev/null ]; then
-    echo "N/A"
-    exit 1
-fi
-
 function get_max_temperature() {
+    if [ "$(uname)" == "Darwin" ]; then
+        get_max_temperature_macos
+    elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+        get_max_temperature_linux
+    else
+        echo "N/A"
+        exit 1
+    fi
+}
+
+function get_max_temperature_linux() {
+    if ! command -v sensors &> /dev/null; then
+        echo "N/A"
+        exit 1
+    fi
     local temperature=$(sensors | grep "Core " | awk '{print $3}' | sort -ir | head -n 1 | sed 's/+//g' | sed 's/°C//g')
+    echo $temperature
+}
+
+# 由于macos的powermetrics命令需要root权限，所以需要在sudoers中添加 NOPASSWD: /usr/bin/powermetrics
+function get_max_temperature_macos() {
+    local temperature=$(sudo powermetrics -n 1 -i 100 --samplers smc | grep 'CPU die temperature' | cut -d ':' -f 2 | tr -C -d '[:digit:].')
     echo $temperature
 }
 
