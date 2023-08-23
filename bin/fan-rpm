@@ -1,19 +1,31 @@
 #!/bin/bash
 
-if [ ! command -v sensors &> /dev/null ]; then
-    echo "sensors not found"
-    exit
-fi
-
 function get_fan_rpm() {
-    local fan=$1
+    if [ "$(uname)" == "Darwin" ]; then
+        get_fan_rpm_macos
+    elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+        get_fan_rpm_linux
+    fi
+}
+
+function get_fan_rpm_linux() {
+    if ! command -v sensors &> /dev/null; then
+        echo "N/A"
+        exit
+    fi
+    local fan="cpu"
     local fan_rpm=$(sensors | grep "${fan}_fan:" | awk '{print $2}' | sed 's/[^0-9]*//g')
+    echo $fan_rpm
+}
+
+function get_fan_rpm_macos() {
+    local fan_rpm=$(sudo powermetrics -n 1 -i 100 --samplers smc | grep Fan | tr -C -d '[:digit:]')
     echo $fan_rpm
 }
 
 # if --tmux is passed as an argument, output in tmux format
 if [ "$1" == "--tmux" ]; then
-    fan_rpm=$(get_fan_rpm cpu)
+    fan_rpm=$(get_fan_rpm)
     if [ $fan_rpm -gt 3500 ]; then
         echo "#[fg=colour1]${fan_rpm}RPM"
     elif [ $fan_rpm -gt 2500 ]; then
@@ -22,5 +34,5 @@ if [ "$1" == "--tmux" ]; then
         echo "#[fg=colour34]${fan_rpm}RPM"
     fi
 else
-    echo "$(get_fan_rpm cpu)RPM"
+    echo "$(get_fan_rpm)RPM"
 fi
