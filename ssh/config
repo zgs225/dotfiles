@@ -45,11 +45,6 @@ Host bj1-vpc
     User root
     ForwardAgent yes
 
-Host 172.20.10.3
-    User root
-    PubkeyAcceptedAlgorithms +ssh-rsa
-    HostkeyAlgorithms +ssh-rsa
-
 Host router
     User root
     HostName 192.168.2.1
