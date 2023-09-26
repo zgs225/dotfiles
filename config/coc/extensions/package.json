@@ -14,9 +14,10 @@
     "coc-xml": ">=1.14.1",
     "coc-clangd": ">=0.27.0",
     "@yaegassy/coc-volar": ">=0.28.9",
-    "coc-rust-analyzer": ">=0.73.0"
+    "coc-rust-analyzer": ">=0.73.0",
+    "@nomicfoundation/coc-solidity": ">=0.7.3"
   },
   "disabled": [],
   "locked": [],
-  "lastUpdate": 1688095258091
+  "lastUpdate": 1695698297863
 }

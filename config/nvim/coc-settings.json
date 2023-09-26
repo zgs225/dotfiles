@@ -10,7 +10,7 @@
             "filetypes": [
                 "go"
             ]
-        }
+        },
     },
     "suggest.noselect": false,
     "suggest.detailField": "abbr",
@@ -54,5 +54,8 @@
         "$HOME",
         "$HOME/.cargo/**",
         "$HOME/.rustup/**"
-    ]
+    ],
+    "@nomicfoundation/coc-solidity.telemetry": true,
+    "rust-analyzer.cachePriming.numThreads": 2,
+    "rust-analyzer.numThreads": 2
 }
