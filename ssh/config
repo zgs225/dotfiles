@@ -1,7 +1,7 @@
 Include conf.d/*
 
 Host sg1
-    HostName 18.139.21.123
+    HostName sg1.yuez.me
     Port 28888
     User ubuntu
     IdentityFile ~/.ssh/LightsailDefaultKey-ap-southeast-1.pem
