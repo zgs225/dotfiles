@@ -1,3 +1,10 @@
+workspace.showOutput
+editor.action.organizeImport
+editor.action.organizeImport
+python.sortImports
+pyright.organizeimports
+rust-analyzer.reloadWorkspace
+rust-analyzer.reloadWorkspace
 document.checkBuffer
 document.toggleCodeLens
 editor.action.organizeImport

@@ -7,7 +7,7 @@
     "coc-java": ">=1.5.5",
     "coc-json": ">=1.6.1",
     "coc-lists": ">=1.4.4",
-    "coc-pyright": ">=1.1.267",
+    "coc-pyright": ">=1.1.365",
     "coc-styled-components": ">=0.5.0",
     "coc-tsserver": ">=2.1.3",
     "coc-vimlsp": ">=0.12.8",
@@ -19,5 +19,5 @@
   },
   "disabled": [],
   "locked": [],
-  "lastUpdate": 1696639737244
+  "lastUpdate": 1719228098238
 }

@@ -45,6 +45,12 @@ Host bj1-vpc
     User root
     ForwardAgent yes
 
+Host la1
+    HostName 74.48.175.7
+    User root
+    ForwardAgent yes
+    ProxyCommand nc -v -x 127.0.0.1:7890 %h %p
+
 Host router
     User root
     HostName 192.168.2.1
@@ -64,6 +70,8 @@ Host dsm
 Host *
     StrictHostKeyChecking no
     ServerAliveInterval 10
+    PubkeyAcceptedAlgorithms +ssh-rsa
+    HostkeyAlgorithms +ssh-rsa
 
 Host github.com
     Hostname github.com
