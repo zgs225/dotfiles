@@ -77,3 +77,8 @@ augroup VimCocEx
   " Update signature help on jump placeholder
   autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 augroup end
+
+aug python
+  au!
+  au BufWrite *.py call CocActionAsync('format')
+aug END

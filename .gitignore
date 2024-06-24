@@ -6,6 +6,7 @@ config/coc/extensions/coc-java-data
 config/coc/list-commands-history.json
 config/coc/memos.json
 config/coc/memos.json
+config/coc/commands
 yarn.lock
 ssh/conf.d/unicom-ppc.sshconfig
 ssh/conf.d/unicom.sshconfig
