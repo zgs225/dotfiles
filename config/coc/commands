@@ -1,4 +1,6 @@
 workspace.showOutput
+workspace.showOutput
+workspace.showOutput
 editor.action.organizeImport
 editor.action.organizeImport
 python.sortImports
