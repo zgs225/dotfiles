@@ -55,11 +55,6 @@
         "$HOME/.cargo/**",
         "$HOME/.rustup/**"
     ],
-    "@nomicfoundation/coc-solidity.telemetry": true,
     "rust-analyzer.cachePriming.numThreads": 2,
-    "rust-analyzer.numThreads": 2,
-    "python.analysis.extraPaths": [
-        "/home/yuez/.pyenv/versions/3.9.16/lib/python3.9/site-packages"
-    ],
-    "python.formatting.blackPath": "/home/yuez/.pyenv/shims/black"
+    "rust-analyzer.numThreads": 2
 }
