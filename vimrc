@@ -87,6 +87,8 @@ augroup vimrcEx
   " Automatically wrap at 80 characters for Markdown
   autocmd BufRead,BufNewFile *.md setlocal textwidth=80
 
+  au FileType python setlocal textwidth=0
+
   function! s:goyo_enter()
       if executable('tmux') && strlen($TMUX)
           silent !tmux set status off

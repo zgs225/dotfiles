@@ -6,7 +6,10 @@ alias e="$EDITOR"
 alias v="$VISUAL"
 alias vim="nvim"
 alias tree="tree --gitignore -a -I .git/ --dirsfirst"
-alias bat="batcat"
+
+if command -v batcat &> /dev/null; then
+  alias bat="batcat"
+fi
 
 # Pretty print the path
 alias path='echo $PATH | tr -s ":" "\n"'
