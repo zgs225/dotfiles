@@ -35,7 +35,7 @@ M.ui = {
   },
 
   statusline = {
-    theme = "vscode_colored",
+    theme = "default",
   },
 }
 

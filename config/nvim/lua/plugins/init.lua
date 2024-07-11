@@ -74,4 +74,25 @@ return {
       vim.api.nvim_create_user_command("MarkdownPreviewClose", peek.close, { desc = " Markdown close preview window" })
     end,
   },
+
+  {
+    "rcarriga/nvim-dap-ui",
+    dependencies = {
+      "mfussenegger/nvim-dap",
+      "nvim-neotest/nvim-nio",
+      "jay-babu/mason-nvim-dap.nvim",
+      "williamboman/mason.nvim",
+    },
+    cmd = {
+      "DapToggleBreakpoint",
+      "DapContinue",
+    },
+    keys = {
+      { "<F8>", "<cmd>DapContinue<CR>", { desc = "Debugger: Continue" } },
+      { "<F9>", "<cmd>DapToggleBreakpoint<CR>", { desc = "Debugger: Toggle Breakpoint" } },
+    },
+    config = function()
+      require "configs.dap"
+    end,
+  },
 }
