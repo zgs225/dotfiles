@@ -5,6 +5,8 @@ local options = {
     css = { "prettier" },
     html = { "prettier" },
     python = { "isort", "black" },
+    rust = { "rustfmt" },
+    proto = { "buf" },
   },
 
   format_on_save = {

@@ -14,6 +14,8 @@ opts.ensure_installed = {
   "goctl",
   "python",
   "pymanifest",
+  "rust",
+  "proto",
 }
 
 return opts
