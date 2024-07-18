@@ -51,6 +51,9 @@ return {
       { "<F6>", "<cmd>Outline<CR>", desc = "Toggle outline" },
     },
     opts = {},
+    config = function()
+      require "configs.outline"
+    end,
   },
 
   {

@@ -6,9 +6,11 @@ local map = vim.keymap.set
 local opts = {
   ensure_installed = {
     "delve",
+    "codelldb",
   },
   automatic_installation = true,
 
+  -- https://github.com/mfussenegger/nvim-dap/wiki/Debug-Adapter-installation
   adapters = {
     delve = {
       type = "server",
@@ -16,6 +18,20 @@ local opts = {
       executable = {
         command = "dlv",
         args = { "dap", "-l", "127.0.0.1:${port}" },
+        detached = vim.fn.has "win32" == 0,
+      },
+
+      options = {
+        initialize_timeout_sec = 30,
+      },
+    },
+
+    codelldb = {
+      type = "server",
+      port = "${port}",
+      executable = {
+        command = "codelldb",
+        args = { "--port", "${port}" },
         detached = vim.fn.has "win32" == 0,
       },
 
