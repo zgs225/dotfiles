@@ -16,6 +16,10 @@ opts.ensure_installed = {
   "pymanifest",
   "rust",
   "proto",
+  "yaml",
+  "json",
+  "xml",
+  "csv",
 }
 
 return opts
