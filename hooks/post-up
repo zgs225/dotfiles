@@ -24,3 +24,45 @@ rename the file to \`zprofile':
 
 MSG
 fi
+
+OS=$(uname)
+
+if [ "$OS" = "Linux" ]; then
+  if [ -f /etc/debian_version ]; then
+    OS_TYPE="Debian"
+  elif [ -f /etc/centos-release]; then
+    OS_TYPE="CentOS"
+  elif [ -f /etc/redhat-release];  then
+    OS_TYPE="RedHat"
+  else
+    OS_TYPE="Unknown Linux"
+  fi
+elif [ "$OS" = "Darwin" ]; then
+  OS_TYPE="MacOS"
+else
+  OS_TYPE="Unknown"
+fi
+
+install_package() {
+  local pkg=$1
+
+  case "$OS_TYPE" in
+    "Debian")
+      sudo apt-get install -y "${pkg}"
+      ;;
+    "CentOS" | "RedHat")
+      sudo yum instal -y "${pkg}"
+      ;;
+    "MacOS")
+      brew install "${pkg}"
+      ;;
+    *)
+      echo "install_package: 不支持的操作系统类型 ${OS_TYPE}"
+      ;;
+  esac
+}
+
+# Neovim
+install_package luarocks
+
+sudo luarocks install jsregexp
