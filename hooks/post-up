@@ -63,6 +63,6 @@ install_package() {
 }
 
 # Neovim
-install_package luarocks
+# install_package luarocks
 
-sudo luarocks install jsregexp
+# sudo luarocks install jsregexp
