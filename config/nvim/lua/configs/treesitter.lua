@@ -20,6 +20,8 @@ opts.ensure_installed = {
   "json",
   "xml",
   "csv",
+  "javascript",
+  "typescript",
 }
 
 return opts
