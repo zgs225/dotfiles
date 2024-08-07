@@ -98,4 +98,31 @@ return {
       require "configs.dap"
     end,
   },
+
+  {
+    "nvim-neotest/neotest",
+    dependencies = {
+      "nvim-neotest/nvim-nio",
+      "nvim-lua/plenary.nvim",
+      "antoinemadec/FixCursorHold.nvim",
+      "nvim-treesitter/nvim-treesitter",
+      "fredrikaverpil/neotest-golang",
+    },
+
+    cmd = {
+      "TestNearest",
+      "TestFile",
+      "TestDebugNearest",
+    },
+
+    keys = {
+      "<leader>tt",
+      "<leader>tf",
+      "<leader>td",
+    },
+
+    config = function()
+      require "configs.neotest"
+    end,
+  },
 }
