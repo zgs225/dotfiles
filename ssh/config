@@ -6,7 +6,6 @@ Host sg1
     User ubuntu
     IdentityFile ~/.ssh/LightsailDefaultKey-ap-southeast-1.pem
     ForwardAgent yes
-    ProxyCommand nc -v -x 127.0.0.1:7890 %h %p
 
 Host sg1-vpc
     HostName sg1.yuez.my.local
@@ -18,7 +17,6 @@ Host sg2
     HostName 139.59.192.15
     User root
     ForwardAgent yes
-    ProxyCommand nc -v -x 127.0.0.1:7890 %h %p
 
 Host sg2-vpc
     HostName sg2.yuez.my.local
@@ -28,7 +26,6 @@ Host vi1
     HostName 86.106.183.54
     User alwyzon
     ForwardAgent yes
-    ProxyCommand nc -v -x 127.0.0.1:7890 %h %p
 
 Host vi1-vpc
     HostName vi1.yuez.my.local
@@ -49,7 +46,6 @@ Host la1
     HostName 74.48.175.7
     User root
     ForwardAgent yes
-    ProxyCommand nc -v -x 127.0.0.1:7890 %h %p
 
 Host router
     User root
@@ -72,9 +68,3 @@ Host *
     ServerAliveInterval 10
     # PubkeyAcceptedAlgorithms +ssh-rsa
     # HostkeyAlgorithms +ssh-rsa
-
-Host github.com
-    Hostname github.com
-    ProxyCommand nc -v -x 127.0.0.1:7890 %h %p
-    ServerAliveInterval 55
-    ForwardAgent yes
