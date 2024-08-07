@@ -15,6 +15,7 @@ for _, lsp in ipairs(servers) do
 end
 
 --- rust
+--- vim.lsp.set_log_level "debug"
 lspconfig.rust_analyzer.setup {
   on_attach = function(client, bufnr)
     on_attach(client, bufnr)
