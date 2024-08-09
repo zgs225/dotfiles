@@ -113,12 +113,14 @@ return {
       "TestNearest",
       "TestFile",
       "TestDebugNearest",
+      "TestToggleSummaryPannel",
     },
 
     keys = {
       "<leader>tt",
       "<leader>tf",
       "<leader>td",
+      "<leader>ts",
     },
 
     config = function()
