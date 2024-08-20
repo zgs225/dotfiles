@@ -14,6 +14,22 @@ for _, lsp in ipairs(servers) do
   }
 end
 
+-- yamlls
+-- To use a schema for validation, there are two options:
+--    1. Add a modeline to the file. A modeline is a comment of the form:
+--    `# yaml-language-server: $schema=<urlToTheSchema|relativeFilePath|absoluteFilePath}>`
+--    2. Associated a schema url, relative , or absolute path
+lspconfig.yamlls.setup {
+  settings = {
+    yaml = {
+      schemas = {
+        ["https://json.schemastore.org/chart.json"] = "Chart.yaml",
+        ["https://json.schemastore.org/chart-lock.json"] = "Chart.lock",
+      },
+    },
+  },
+}
+
 --- rust
 --- vim.lsp.set_log_level "debug"
 lspconfig.rust_analyzer.setup {
