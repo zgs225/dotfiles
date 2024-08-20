@@ -19,6 +19,7 @@ end
 --    1. Add a modeline to the file. A modeline is a comment of the form:
 --    `# yaml-language-server: $schema=<urlToTheSchema|relativeFilePath|absoluteFilePath}>`
 --    2. Associated a schema url, relative , or absolute path
+-- Most schema files can found at https://www.schemastore.org/json/
 lspconfig.yamlls.setup {
   settings = {
     yaml = {
