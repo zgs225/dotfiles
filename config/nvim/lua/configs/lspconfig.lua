@@ -26,6 +26,7 @@ lspconfig.yamlls.setup {
       schemas = {
         ["https://json.schemastore.org/chart.json"] = "Chart.yaml",
         ["https://json.schemastore.org/chart-lock.json"] = "Chart.lock",
+        ["https://json.schemastore.org/kustomization.json"] = "kustomization.yaml",
       },
     },
   },
