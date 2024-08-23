@@ -22,6 +22,7 @@ opts.ensure_installed = {
   "csv",
   "javascript",
   "typescript",
+  "bash",
 }
 
 return opts
