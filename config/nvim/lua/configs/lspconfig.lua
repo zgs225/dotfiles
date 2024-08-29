@@ -4,33 +4,54 @@ local on_init = require("nvchad.configs.lspconfig").on_init
 local capabilities = require("nvchad.configs.lspconfig").capabilities
 
 local lspconfig = require "lspconfig"
-local servers = { "html", "cssls", "gopls", "bashls", "pyright", "tsserver" }
 
-for _, lsp in ipairs(servers) do
-  lspconfig[lsp].setup {
-    on_attach = on_attach,
-    on_init = on_init,
-    capabilities = capabilities,
-  }
-end
+local servers = { "html", "cssls", "gopls", "bashls", "pyright", "tsserver", "yamlls" }
+local lsp_settings = {
+  gopls = {
+    hints = {
+      compositeLiteralFields = true,
+      constantValues = true,
+      parameterNames = true,
+      assignVariableTypes = true,
+      functionTypeParameters = true,
+      rangeVariableTypes = true,
+    },
 
--- yamlls
--- To use a schema for validation, there are two options:
---    1. Add a modeline to the file. A modeline is a comment of the form:
---    `# yaml-language-server: $schema=<urlToTheSchema|relativeFilePath|absoluteFilePath}>`
---    2. Associated a schema url, relative , or absolute path
--- Most schema files can found at https://www.schemastore.org/json/
-lspconfig.yamlls.setup {
-  settings = {
-    yaml = {
-      schemas = {
-        ["https://json.schemastore.org/chart.json"] = "Chart.yaml",
-        ["https://json.schemastore.org/chart-lock.json"] = "Chart.lock",
-        ["https://json.schemastore.org/kustomization.json"] = "kustomization.yaml",
-      },
+    codelenses = {
+      test = true,
+    },
+  },
+
+  -- yamlls
+  -- To use a schema for validation, there are two options:
+  --    1. Add a modeline to the file. A modeline is a comment of the form:
+  --    `# yaml-language-server: $schema=<urlToTheSchema|relativeFilePath|absoluteFilePath}>`
+  --    2. Associated a schema url, relative , or absolute path
+  -- Most schema files can found at https://www.schemastore.org/json/
+  yamlls = {
+    schemas = {
+      ["https://json.schemastore.org/chart.json"] = "Chart.yaml",
+      ["https://json.schemastore.org/chart-lock.json"] = "Chart.lock",
+      ["https://json.schemastore.org/kustomization.json"] = "kustomization.yaml",
     },
   },
 }
+
+for _, lsp in ipairs(servers) do
+  local settings = lsp_settings[lsp]
+
+  lspconfig[lsp].setup {
+    on_attach = function(client, bufnr)
+      on_attach(client, bufnr)
+      vim.lsp.inlay_hint.enable(true)
+    end,
+    on_init = on_init,
+    capabilities = capabilities,
+    settings = {
+      [lsp] = settings,
+    },
+  }
+end
 
 --- rust
 --- vim.lsp.set_log_level "debug"
