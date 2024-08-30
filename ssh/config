@@ -14,16 +14,6 @@ Host sg1-vpc
     IdentityFile ~/.ssh/LightsailDefaultKey-ap-southeast-1.pem
     ForwardAgent yes
 
-Host vi1
-    HostName 86.106.183.54
-    User alwyzon
-    ForwardAgent yes
-
-Host vi1-vpc
-    HostName vi1.yuez.my.local
-    User alwyzon
-    ForwardAgent yes
-
 Host bj1
     Hostname 47.93.5.61
     User root
