@@ -1,5 +1,5 @@
 # ensure dotfiles bin directory is loaded first
-PATH="$HOME/.bin:/usr/local/sbin:$PATH"
+PATH="$HOME/.bin:/usr/local/sbin:$HOME/.local/bin:$PATH"
 
 # Try loading ASDF from the regular home dir location
 if [ -f "$HOME/.asdf/asdf.sh" ]; then
