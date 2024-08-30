@@ -66,15 +66,12 @@ return {
   },
 
   {
-    "toppair/peek.nvim",
+    "MeanderingProgrammer/render-markdown.nvim",
     ft = "markdown",
-    build = "deno task --quiet build:fast",
+    cmd = { "RenderMarkdown" },
+    dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
     config = function()
-      local peek = require "peek"
-
-      peek.setup { app = "browser" }
-      vim.api.nvim_create_user_command("MarkdownPreview", peek.open, { desc = "Markdown preview" })
-      vim.api.nvim_create_user_command("MarkdownPreviewClose", peek.close, { desc = " Markdown close preview window" })
+      require("render-markdown").setup {}
     end,
   },
 
