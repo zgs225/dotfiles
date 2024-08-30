@@ -9,18 +9,10 @@ Host sg1
 
 Host sg1-vpc
     HostName sg1.yuez.my.local
+    Port 28888
     User ubuntu
     IdentityFile ~/.ssh/LightsailDefaultKey-ap-southeast-1.pem
     ForwardAgent yes
-
-Host sg2
-    HostName 139.59.192.15
-    User root
-    ForwardAgent yes
-
-Host sg2-vpc
-    HostName sg2.yuez.my.local
-    User root
 
 Host vi1
     HostName 86.106.183.54
