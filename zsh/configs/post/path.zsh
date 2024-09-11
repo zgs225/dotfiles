@@ -10,6 +10,12 @@ elif which brew >/dev/null &&
   . "$BREW_DIR/opt/asdf/asdf.sh"
 fi
 
+# Try loading protoc
+PROTOC_HOME="/opt/protoc"
+if [ -d "${PROTOC_HOME}" ]; then
+  PATH="${PROTOC_HOME}/bin:${PATH}"
+fi
+
 # mkdir .git/safe in the root of repositories you trust
 PATH=".git/safe/../../bin:$PATH"
 
