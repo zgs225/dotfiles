@@ -23,6 +23,7 @@ opts.ensure_installed = {
   "javascript",
   "typescript",
   "bash",
+  "astro",
 }
 
 return opts

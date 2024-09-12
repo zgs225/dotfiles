@@ -5,7 +5,7 @@ local capabilities = require("nvchad.configs.lspconfig").capabilities
 
 local lspconfig = require "lspconfig"
 
-local servers = { "html", "cssls", "gopls", "bashls", "pyright", "ts_ls", "yamlls", "clangd" }
+local servers = { "html", "cssls", "gopls", "bashls", "pyright", "ts_ls", "yamlls", "clangd", "astro", "tailwindcss" }
 local lsp_settings = {
   gopls = {
     hints = {
