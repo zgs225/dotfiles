@@ -7,3 +7,10 @@ for DIR in $GO_DIRS[@]; do
 done
 
 export PATH="$PATH:$(go env GOPATH)/bin"
+
+# Go Version Manager
+# https://github.com/moovweb/gvm
+
+GVMRC="${HOME}/.gvm/scripts/gvm"
+
+[[ -s "${GVMRC}" ]] && source "${GVMRC}"
