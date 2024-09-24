@@ -14,7 +14,7 @@ local function button_prepend_leader(key)
 end
 
 M.ui = {
-  theme = "onedark",
+  theme = "solarized_dark",
 
   hl_override = {
     Comment = { italic = true },
