@@ -14,13 +14,6 @@ local function button_prepend_leader(key)
 end
 
 M.ui = {
-  theme = "solarized_dark",
-
-  hl_override = {
-    Comment = { italic = true },
-    ["@comment"] = { italic = true },
-  },
-
   nvdash = {
     load_on_startup = true,
 
@@ -34,8 +27,23 @@ M.ui = {
     },
   },
 
+  tabufline = {
+    order = { "treeOffset", "buffers", "tabs" },
+  },
+
   statusline = {
     theme = "default",
+  },
+}
+
+M.base46 = {
+  theme = "solarized_osaka",
+
+  transparency = true,
+
+  hl_override = {
+    Comment = { italic = true },
+    ["@comment"] = { italic = true },
   },
 }
 
