@@ -77,7 +77,7 @@ vim.api.nvim_create_autocmd("FileType", {
         "--package",
         "rust-protobuf-analyzer",
         "--manifest-path",
-        "/Users/lucky/Development/Rust/rust-protobuf-analyzer/Cargo.toml",
+        "${HOME}/Development/Rust/rust-protobuf-analyzer/Cargo.toml",
       },
       cmd_env = { RPA_LOG = "debug", RUST_BACKTRACE = "full" },
       root_dir = vim.fs.root(args.buf, { ".git" }),

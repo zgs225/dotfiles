@@ -22,6 +22,7 @@ return {
     opts = function()
       return require "nvchad.configs.nvimtree"
     end,
+    dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function(_, opts)
       for k, v in pairs(require "configs.nvimtree") do
         opts[k] = v
