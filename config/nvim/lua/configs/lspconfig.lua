@@ -64,7 +64,7 @@ lspconfig.rust_analyzer.setup {
   capabilities = capabilities,
 }
 
---- rust-protobuf-analyzer
+-- rust-protobuf-analyzer
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "proto",
   callback = function(args)
@@ -83,4 +83,18 @@ vim.api.nvim_create_autocmd("FileType", {
       root_dir = vim.fs.root(args.buf, { ".git" }),
     }
   end,
+})
+
+-- 绑定 CursorHold 事件, 在光标当前行存在诊断信息时，则弹出窗口
+vim.api.nvim_create_autocmd("CursorHold", {
+  callback = function()
+    local line = vim.fn.line "." - 1 -- 当前行（从0开始）
+    local diagnostics = vim.diagnostic.get(0, { lnum = line })
+
+    -- 如果存在诊断信息，则弹出窗口
+    if #diagnostics > 0 then
+      vim.diagnostic.open_float(nil, { scope = "line" })
+    end
+  end,
+  desc = "Show diagnostics on cursor hold",
 })
