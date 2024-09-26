@@ -28,7 +28,7 @@ return {
    },
 
    -- scrollbar
-   enable_scroll_bar = true,
+   enable_scroll_bar = false,
 
    -- tab bar
    enable_tab_bar = true,
@@ -41,9 +41,9 @@ return {
    -- window
    window_padding = {
       left = 5,
-      right = 10,
-      top = 12,
-      bottom = 7,
+      right = 5,
+      top = 10,
+      bottom = 5,
    },
    window_close_confirmation = 'NeverPrompt',
    window_frame = {
