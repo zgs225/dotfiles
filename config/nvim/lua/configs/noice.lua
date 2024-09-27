@@ -11,6 +11,10 @@ require("noice").setup {
     signature = {
       enabled = false,
     },
+
+    hover = {
+      enabled = true,
+    },
   },
 
   routes = {
@@ -21,6 +25,25 @@ require("noice").setup {
         find = "written",
       },
       opts = { skip = true },
+    },
+    {
+      filter = {
+        event = "notify",
+        kind = "info",
+        find = "was properly",
+      },
+      opts = { skip = true },
+    },
+    { -- send annoying msgs to mini
+      filter = {
+        event = "msg_show",
+        any = {
+          { find = "; after #%d+" },
+          { find = "; before #%d+" },
+          { find = "fewer lines" },
+        },
+      },
+      view = "mini",
     },
   },
 
