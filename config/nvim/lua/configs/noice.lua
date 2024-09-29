@@ -34,6 +34,16 @@ require("noice").setup {
       },
       opts = { skip = true },
     },
+    {
+      filter = {
+        event = "notify",
+        kind = "error",
+        any = {
+          { find = "rust_analyzer: -32603" },
+        },
+      },
+      view = "mini",
+    },
     { -- send annoying msgs to mini
       filter = {
         event = "msg_show",
