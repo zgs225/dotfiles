@@ -5,7 +5,7 @@ local capabilities = require("nvchad.configs.lspconfig").capabilities
 
 local lspconfig = require "lspconfig"
 
-local servers = { "html", "cssls", "gopls", "bashls", "pyright", "ts_ls", "yamlls", "clangd", "astro", "tailwindcss" }
+local servers = { "html", "cssls", "gopls", "bashls", "pyright", "ts_ls", "yamlls", "astro", "tailwindcss" }
 local lsp_settings = {
   gopls = {
     hints = {
@@ -68,6 +68,7 @@ lspconfig.rust_analyzer.setup {
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "proto",
   callback = function(args)
+    local cargo_file = vim.fn.expand "~" .. "/Development/Rust/rust-protobuf-analyzer/Cargo.toml"
     vim.lsp.set_log_level "debug"
     vim.lsp.start {
       name = "rust-protobuf-analyzer",
@@ -77,24 +78,10 @@ vim.api.nvim_create_autocmd("FileType", {
         "--package",
         "rust-protobuf-analyzer",
         "--manifest-path",
-        "${HOME}/Development/Rust/rust-protobuf-analyzer/Cargo.toml",
+        cargo_file,
       },
       cmd_env = { RPA_LOG = "debug", RUST_BACKTRACE = "full" },
       root_dir = vim.fs.root(args.buf, { ".git" }),
     }
   end,
-})
-
--- 绑定 CursorHold 事件, 在光标当前行存在诊断信息时，则弹出窗口
-vim.api.nvim_create_autocmd("CursorHold", {
-  callback = function()
-    local line = vim.fn.line "." - 1 -- 当前行（从0开始）
-    local diagnostics = vim.diagnostic.get(0, { lnum = line })
-
-    -- 如果存在诊断信息，则弹出窗口
-    if #diagnostics > 0 then
-      vim.diagnostic.open_float(nil, { scope = "line" })
-    end
-  end,
-  desc = "Show diagnostics on cursor hold",
 })
