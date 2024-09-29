@@ -16,3 +16,8 @@ map("n", "tm", ":tabmove", { desc = "Tab move" })
 map("n", "<F5>", "<cmd>NvimTreeToggle<CR>", { desc = "nvimtree toggle window" })
 map("n", "<leader>n", "<cmd>NvimTreeFocus<CR>", { desc = "nvimtree focus" })
 -- map({ "n", "i", "v" }, "<C-s>", "<cmd> w <cr>")
+
+-- Show Diagnostics under the line in popup window
+map("n", "<leader>dp", function()
+  vim.diagnostic.open_float { scope = "l" }
+end, { desc = "LSP Diagnostics under the line" })
