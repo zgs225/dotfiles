@@ -18,9 +18,10 @@ local keys = {
    -- misc/useful --
    { key = 'C',   mods = mod.SUPER, action = 'ActivateCopyMode' },
    { key = 'P',   mods = mod.SUPER, action = act.ActivateCommandPalette },
-   { key = 'T',   mods =mod.SUPER,  action = act.ShowLauncher },
+   { key = 'T',   mods = mod.SUPER, action = act.ShowLauncher },
    { key = 'F11', mods = 'NONE',    action = act.ToggleFullScreen },
    { key = 'F12', mods = 'NONE',    action = act.ShowDebugOverlay },
+   { key = 'd',   mods = mod.SUPER, action = act.Hide },
    { key = 'f',   mods = mod.SUPER, action = act.Search({ CaseInSensitiveString = '' }) },
    {
       key = 'u',

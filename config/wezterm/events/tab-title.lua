@@ -30,6 +30,10 @@ local _set_title = function(process_name, base_title, max_width, inset)
    local title
    inset = inset or 6
 
+   if max_width <= inset then
+      max_width = inset + 2
+   end
+
    if process_name:len() > 0 then
       title = process_name .. ' ~ ' .. base_title
    else
@@ -38,6 +42,7 @@ local _set_title = function(process_name, base_title, max_width, inset)
 
    if title:len() > max_width - inset then
       local diff = title:len() - max_width + inset
+
       title = wezterm.truncate_right(title, title:len() - diff)
    end
 
