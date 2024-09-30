@@ -50,6 +50,8 @@ local keys = {
    -- copy/paste --
    { key = 'c',          mods = mod.SUPER,  action = act.CopyTo('Clipboard') },
    { key = 'v',          mods = mod.SUPER,  action = act.PasteFrom('Clipboard') },
+   { key = "Insert",     mods = "SHIFT",    action = act.PasteFrom("Clipboard") },
+
 
    -- tabs --
    -- tabs: spawn+close
@@ -70,6 +72,7 @@ local keys = {
    { key = '-',          mods = mod.SUPER_REV, action = act.DecreaseFontSize },
    { key = '=',          mods = mod.SUPER_REV, action = act.IncreaseFontSize },
    { key = '+',          mods = mod.SUPER_REV, action = act.IncreaseFontSize },
+   { key = '0',          mods = mod.SUPER_REV, action = act.ResetFontSize },
 
    -- background controls --
    {
