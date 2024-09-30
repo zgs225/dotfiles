@@ -24,6 +24,7 @@ opts.ensure_installed = {
   "typescript",
   "bash",
   "astro",
+  "toml",
 }
 
 return opts
