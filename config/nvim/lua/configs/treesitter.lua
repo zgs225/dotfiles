@@ -25,6 +25,14 @@ opts.ensure_installed = {
   "bash",
   "astro",
   "toml",
+  "make",
+  "dockerfile",
+  "cpp",
+  "css",
+  "html",
+  "git_config",
+  "git_rebase",
+  "gitattributes",
 }
 
 return opts
