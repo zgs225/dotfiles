@@ -7,7 +7,8 @@ output=""
 
 # 打印使用说明
 usage() {
-    echo "用法: $0 [选项] 输入文件"
+    local exe=$(basename $0)
+    echo "用法: $exe [选项] 输入文件"
     echo
     echo "选项："
     echo "  -o <输出文件>     指定输出 GIF 文件名称 (默认与输入文件同名)"
@@ -16,7 +17,7 @@ usage() {
     echo "  -h                 显示此帮助信息"
     echo
     echo "示例："
-    echo "  $0 -o output.gif -w 320 -f 15 input.mp4"
+    echo "  $exe -o output.gif -w 320 -f 15 input.mp4"
 }
 
 # 解析命令行参数
