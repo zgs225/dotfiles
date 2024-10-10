@@ -9,6 +9,7 @@ local options = {
     python = { "isort", "black" },
     rust = { "rustfmt" },
     proto = { "buf" },
+    sh = { "shfmt" },
   },
 
   format_on_save = {
