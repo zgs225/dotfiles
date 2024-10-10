@@ -59,21 +59,21 @@ fi
 input_file=$1
 
 # 检查输入文件是否存在
-if [ ! -f "$input_file" ]; then
+if [ ! -f "$input_file" ];then
     echo "错误: 输入文件不存在" >&2
     exit 1
 fi
 
 # 如果没有指定输出文件，则使用输入文件的名称并将扩展名改为 .gif
-if [ -z "$output" ]; then
+if [ -z "$output" ];then
     output="${input_file%.*}.gif"
 fi
 
-# 使用 mktemp 生成临时调色板文件
-palette=$(mktemp)
+# 使用 mktemp 生成带 .png 扩展名的临时调色板文件
+palette=$(mktemp --suffix=.png)
 
 # 生成调色板
-ffmpeg -i "$input_file" -vf "fps=$fps,scale=$width:-1:flags=lanczos,palettegen" "$palette"
+ffmpeg -i "$input_file" -vf "fps=$fps,scale=$width:-1:flags=lanczos,palettegen" -y "$palette"
 
 # 生成 GIF 文件
 ffmpeg -i "$input_file" -i "$palette" -filter_complex "fps=$fps,scale=$width:-1:flags=lanczos[x];[x][1:v]paletteuse" "$output"
@@ -82,4 +82,3 @@ ffmpeg -i "$input_file" -i "$palette" -filter_complex "fps=$fps,scale=$width:-1:
 rm -f "$palette"
 
 echo "GIF 文件已生成: $output"
-
