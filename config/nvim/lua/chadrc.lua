@@ -13,20 +13,34 @@ local function button_prepend_leader(key)
   return leader .. " " .. key:gsub("^%s*(.-)%s*$", "%1")
 end
 
-M.ui = {
-  nvdash = {
-    load_on_startup = true,
+M.nvdash = {
+  load_on_startup = true,
 
-    buttons = {
-      { "  Find File", button_prepend_leader "f f", "Telescope find_files" },
-      { "󰈚  Recent Files", button_prepend_leader "f o", "Telescope oldfiles" },
-      { "󰈭  Find Word", button_prepend_leader "f w", "Telescope live_grep" },
-      { "  Bookmarks", button_prepend_leader "f a", "Telescope marks" },
-      { "  Themes", button_prepend_leader "t h", "Telescope themes" },
-      { "  Mappings", button_prepend_leader "c h", "NvCheatsheet" },
+  buttons = {
+    { txt = "  Find File", keys = button_prepend_leader "f f", cmd = "Telescope find_files" },
+    { txt = "󰈚  Recent Files", keys = button_prepend_leader "f o", cmd = "Telescope oldfiles" },
+    { txt = "󰈭  Find Word", keys = button_prepend_leader "f w", cmd = "Telescope live_grep" },
+    { txt = "  Bookmarks", keys = button_prepend_leader "f a", cmd = "Telescope marks" },
+    { txt = "  Themes", keys = button_prepend_leader "t h", cmd = "Telescope themes" },
+    { txt = "  Mappings", keys = button_prepend_leader "c h", cmd = "NvCheatsheet" },
+
+    { txt = "─", hl = "NvDashLazy", no_gap = true, rep = true },
+
+    {
+      txt = function()
+        local stats = require("lazy").stats()
+        local ms = math.floor(stats.startuptime) .. " ms"
+        return "  Loaded " .. stats.loaded .. "/" .. stats.count .. " plugins in " .. ms
+      end,
+      hl = "NvDashLazy",
+      no_gap = true,
     },
-  },
 
+    { txt = "─", hl = "NvDashLazy", no_gap = true, rep = true },
+  },
+}
+
+M.ui = {
   tabufline = {
     order = { "treeOffset", "buffers", "tabs" },
   },
