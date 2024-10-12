@@ -28,6 +28,7 @@ opts.ensure_installed = {
   "python",
   "rust",
   "starlark",
+  "tmux",
   "toml",
   "typescript",
   "vim",
