@@ -22,7 +22,10 @@ require("noice").setup {
       filter = {
         event = "msg_show",
         kind = "",
-        find = "written",
+        any = {
+          { find = "written" },
+          { find = "no parser for" },
+        },
       },
       opts = { skip = true },
     },
