@@ -72,10 +72,10 @@ return {
     },
 
     keys = {
-      "<leader>tt",
-      "<leader>tf",
-      "<leader>td",
-      "<leader>ts",
+      { "<leader>tt", "<cmd>TestNearest<CR>", { desc = "Test Nearest" } },
+      { "<leader>tf", "<cmd>TestFile<CR>", { desc = "Test File" } },
+      { "<leader>td", "<cmd>TestDebugNearest<CR>", { desc = "Test Debug nearest" } },
+      { "<leader>ts", "<cmd>TestToggleSummaryPannel<CR>", { desc = "Test Toggle summary pannel" } },
     },
 
     config = function()
