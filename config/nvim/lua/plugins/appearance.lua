@@ -27,18 +27,6 @@ return {
       require "configs.outline"
     end,
   },
-  -- Display frame
-  {
-    "folke/noice.nvim",
-    event = "VeryLazy",
-    dependencies = {
-      "MunifTanjim/nui.nvim",
-      "rcarriga/nvim-notify",
-    },
-    config = function()
-      require "configs.noice"
-    end,
-  },
   -- Breadcrumbs
   {
     "Bekaboo/dropbar.nvim",
@@ -48,6 +36,13 @@ return {
     },
     config = function()
       require "configs.dropbar"
+    end,
+  },
+  {
+    "stevearc/dressing.nvim",
+    event = "VeryLazy",
+    config = function()
+      require("dressing").setup()
     end,
   },
 }
