@@ -45,18 +45,12 @@ Host dsm
     User yuez
     HostName 192.168.2.183
 
+Host pi-hole
+    User root
+    HostName 192.168.2.3
+
 Host *
     StrictHostKeyChecking no
     ServerAliveInterval 10
     # PubkeyAcceptedAlgorithms +ssh-rsa
     # HostkeyAlgorithms +ssh-rsa
-
-# --- START CODER VSCODE coder.in.yuez.me ---
-Host coder-vscode.coder.in.yuez.me--*
-  ConnectTimeout 0
-  LogLevel ERROR
-  ProxyCommand "/home/yuez/.config/Code/User/globalStorage/coder.coder-remote/coder.in.yuez.me/bin/coder-linux-amd64" vscodessh --network-info-dir "/home/yuez/.config/Code/User/globalStorage/coder.coder-remote/net" --session-token-file "/home/yuez/.config/Code/User/globalStorage/coder.coder-remote/coder.in.yuez.me/session_token" --url-file "/home/yuez/.config/Code/User/globalStorage/coder.coder-remote/coder.in.yuez.me/url" %h
-  SetEnv  CODER_SSH_SESSION_TYPE=vscode
-  StrictHostKeyChecking no
-  UserKnownHostsFile /dev/null
-# --- END CODER VSCODE coder.in.yuez.me ---
