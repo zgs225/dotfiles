@@ -27,6 +27,7 @@ return {
       return require "configs.treesitter"
     end,
     config = function(_, opts)
+      dofile(vim.g.base46_cache .. "treesitter")
       require("nvim-treesitter.configs").setup(opts)
     end,
   },
@@ -49,6 +50,7 @@ return {
       { "<F9>", "<cmd>DapToggleBreakpoint<CR>", { desc = "Debugger: Toggle Breakpoint" } },
     },
     config = function()
+      dofile(vim.g.base46_cache .. "dap")
       require "configs.dap"
     end,
   },
