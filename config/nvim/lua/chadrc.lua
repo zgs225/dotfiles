@@ -59,6 +59,15 @@ M.base46 = {
     Comment = { italic = true },
     ["@comment"] = { italic = true },
   },
+
+  integrations = {
+    "dap",
+    "mason",
+    "nvimtree",
+    "tbline",
+    "telescope",
+    "treesitter",
+  },
 }
 
 return M

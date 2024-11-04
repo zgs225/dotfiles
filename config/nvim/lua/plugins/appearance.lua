@@ -8,6 +8,8 @@ return {
     end,
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function(_, opts)
+      dofile(vim.g.base46_cache .. "nvimtree")
+
       for k, v in pairs(require "configs.nvimtree") do
         opts[k] = v
       end
