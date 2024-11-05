@@ -42,11 +42,14 @@ M.nvdash = {
 
 M.ui = {
   tabufline = {
+    lazyload = true,
     order = { "treeOffset", "buffers", "tabs" },
   },
 
   statusline = {
     theme = "default",
+
+    separator_style = "arrow",
   },
 }
 
