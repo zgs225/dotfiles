@@ -94,61 +94,73 @@ pager = 'less'
 
 # Custom colors for the completion menu, toolbar, etc.
 [colors]
-completion-menu.completion.current = 'bg:#ffffff #000000'
-completion-menu.completion = 'bg:#008888 #ffffff'
-completion-menu.meta.completion.current = 'bg:#44aaaa #000000'
-completion-menu.meta.completion = 'bg:#448888 #ffffff'
-completion-menu.multi-column-meta = 'bg:#aaffff #000000'
-scrollbar.arrow = 'bg:#003333'
-scrollbar = 'bg:#00aaaa'
-selected = '#ffffff bg:#6666aa'
-search = '#ffffff bg:#4444aa'
-search.current = '#ffffff bg:#44aa44'
-bottom-toolbar = 'bg:#222222 #aaaaaa'
-bottom-toolbar.off = 'bg:#222222 #888888'
-bottom-toolbar.on = 'bg:#222222 #ffffff'
+# Completion menu
+completion-menu.completion.current = 'bg:#002b36 #93a1a1'
+completion-menu.completion = 'bg:#002b36 #839496'
+completion-menu.meta.completion.current = 'bg:#073642 #93a1a1'
+completion-menu.meta.completion = 'bg:#073642 #839496'
+completion-menu.multi-column-meta = 'bg:#586e75 #002b36'
+
+# Scrollbar
+scrollbar.arrow = 'bg:#002b36'
+scrollbar = 'bg:#268bd2'
+
+# Selection
+selected = '#93a1a1 bg:#586e75'
+search = '#93a1a1 bg:#268bd2'
+search.current = '#93a1a1 bg:#2aa198'
+
+# Bottom toolbar
+bottom-toolbar = 'bg:#002b36 #93a1a1'
+bottom-toolbar.off = 'bg:#073642 #586e75'
+bottom-toolbar.on = 'bg:#002b36 #93a1a1'
+
+# Search toolbar
 search-toolbar = 'noinherit bold'
 search-toolbar.text = 'nobold'
 system-toolbar = 'noinherit bold'
 arg-toolbar = 'noinherit bold'
 arg-toolbar.text = 'nobold'
-bottom-toolbar.transaction.valid = 'bg:#222222 #00ff5f bold'
-bottom-toolbar.transaction.failed = 'bg:#222222 #ff005f bold'
 
-# style classes for colored table output
-output.header = "#00ff5f bold"
+# Transaction indicators
+bottom-toolbar.transaction.valid = 'bg:#002b36 #859900 bold'
+bottom-toolbar.transaction.failed = 'bg:#002b36 #dc322f bold'
+
+# Output header (bold, green)
+output.header = "#859900 bold"
 output.odd-row = ""
 output.even-row = ""
-output.null = "#808080"
+output.null = "#93a1a1"
+
 
 # SQL syntax highlighting overrides
-# sql.comment = 'italic #408080'
-# sql.comment.multi-line = ''
-# sql.comment.single-line = ''
-# sql.comment.optimizer-hint = ''
-# sql.escape = 'border:#FF0000'
-# sql.keyword = 'bold #008000'
-# sql.datatype = 'nobold #B00040'
-# sql.literal = ''
-# sql.literal.date = ''
-# sql.symbol = ''
-# sql.quoted-schema-object = ''
-# sql.quoted-schema-object.escape = ''
-# sql.constant = '#880000'
-# sql.function = '#0000FF'
-# sql.variable = '#19177C'
-# sql.number = '#666666'
-# sql.number.binary = ''
-# sql.number.float = ''
-# sql.number.hex = ''
-# sql.number.integer = ''
-# sql.operator = '#666666'
-# sql.punctuation = ''
-# sql.string = '#BA2121'
-# sql.string.double-quouted = ''
-# sql.string.escape = 'bold #BB6622'
-# sql.string.single-quoted = ''
-# sql.whitespace = ''
+sql.comment = 'italic #93a1a1'
+sql.comment.multi-line = 'italic #586e75'
+sql.comment.single-line = 'italic #586e75'
+sql.comment.optimizer-hint = 'italic #839496'
+sql.escape = 'border:#d33682'
+sql.keyword = 'bold #859900'
+sql.datatype = 'nobold #b58900'
+sql.literal = '#2aa198'
+sql.literal.date = '#268bd2'
+sql.symbol = '#6c71c4'
+sql.quoted-schema-object = '#268bd2'
+sql.quoted-schema-object.escape = '#b58900'
+sql.constant = '#dc322f'
+sql.function = '#268bd2'
+sql.variable = '#839496'
+sql.number = '#93a1a1'
+sql.number.binary = '#d33682'
+sql.number.float = '#268bd2'
+sql.number.hex = '#859900'
+sql.number.integer = '#93a1a1'
+sql.operator = '#859900'
+sql.punctuation = '#2aa198'
+sql.string = '#d33682'
+sql.string.double-quouted = '#cb4b16'
+sql.string.escape = 'bold #d75f00'
+sql.string.single-quoted = '#d33682'
+sql.whitespace = '#586e75'
 
 # Favorite queries.
 [favorite_queries]
