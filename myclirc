@@ -87,7 +87,7 @@ auto_vertical_output = False
 keyword_casing = auto
 
 # disabled pager on startup
-enable_pager = True
+enable_pager = False
 
 # Choose a specific pager
 pager = 'less'
