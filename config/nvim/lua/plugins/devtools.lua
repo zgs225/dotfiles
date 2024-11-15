@@ -46,7 +46,7 @@ return {
       "DapContinue",
     },
     keys = {
-      { "<F8>", "<cmd>DapContinue<CR>", { desc = "Debugger: Continue" } },
+      { "<F8>", "<cmd>DapContinue<CR>",         { desc = "Debugger: Continue" } },
       { "<F9>", "<cmd>DapToggleBreakpoint<CR>", { desc = "Debugger: Toggle Breakpoint" } },
     },
     config = function()
@@ -79,9 +79,9 @@ return {
     },
 
     keys = {
-      { "<leader>tt", "<cmd>TestNearest<CR>", { desc = "Test Nearest" } },
-      { "<leader>tf", "<cmd>TestFile<CR>", { desc = "Test File" } },
-      { "<leader>td", "<cmd>TestDebugNearest<CR>", { desc = "Test Debug nearest" } },
+      { "<leader>tt", "<cmd>TestNearest<CR>",             { desc = "Test Nearest" } },
+      { "<leader>tf", "<cmd>TestFile<CR>",                { desc = "Test File" } },
+      { "<leader>td", "<cmd>TestDebugNearest<CR>",        { desc = "Test Debug nearest" } },
       { "<leader>ts", "<cmd>TestToggleSummaryPannel<CR>", { desc = "Test Toggle summary pannel" } },
     },
 
@@ -97,6 +97,17 @@ return {
     config = function()
       vim.diagnostic.config { virtual_text = false }
       require("tiny-inline-diagnostic").setup()
+    end,
+  },
+
+  {
+    "zgs225/gomodifytags.nvim",
+    cmd = { "GoAddTags", "GoRemoveTags", "GoInstallModifyTagsBin" },
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+    },
+    config = function()
+      require("gomodifytags").setup()
     end,
   },
 }
