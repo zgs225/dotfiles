@@ -47,4 +47,12 @@ return {
       require("dressing").setup()
     end,
   },
+  {
+    "nvim-treesitter/nvim-treesitter-context",
+    event = "User FilePost",
+    cmd = { "TSContextEnable", "TSContextDisable", "TSContextToggle" },
+    config = function()
+      require "treesitter-context".setup()
+    end
+  },
 }
