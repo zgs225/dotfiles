@@ -7,7 +7,7 @@ local capabilities = require("nvchad.configs.lspconfig").capabilities
 
 local lspconfig = require "lspconfig"
 
-local servers = { "html", "cssls", "gopls", "bashls", "pyright", "ts_ls", "yamlls", "astro", "tailwindcss" }
+local servers = { "html", "cssls", "gopls", "bashls", "basedpyright", "ts_ls", "yamlls", "astro", "tailwindcss" }
 local lsp_settings = {
   gopls = {
     hints = {
@@ -22,6 +22,10 @@ local lsp_settings = {
     codelenses = {
       test = true,
     },
+
+    basedpyright = {
+      ["analysis.inlayHints.genericTypes"] = true,
+    }
   },
 
   -- yamlls
@@ -35,6 +39,8 @@ local lsp_settings = {
       ["https://json.schemastore.org/chart.json"] = "Chart.yaml",
       ["https://json.schemastore.org/chart-lock.json"] = "Chart.lock",
       ["https://json.schemastore.org/kustomization.json"] = "kustomization.yaml",
+      ["https://gitlab.com/gitlab-org/gitlab/-/raw/master/app/assets/javascripts/editor/schema/ci.json"] =
+      ".gitlab-ci.yml",
     },
   },
 }
@@ -46,6 +52,8 @@ for _, lsp in ipairs(servers) do
     on_attach = function(client, bufnr)
       on_attach(client, bufnr)
       vim.lsp.inlay_hint.enable(true)
+      -- use plugin to display diagnostic messages
+      vim.diagnostic.config { virtual_text = false }
     end,
     on_init = on_init,
     capabilities = capabilities,
@@ -70,7 +78,7 @@ lspconfig.rust_analyzer.setup {
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "proto",
   callback = function(args)
-    local cargo_file = vim.fn.expand "~" .. "/Development/Rust/rust-protobuf-analyzer/Cargo.toml"
+    local cargo_file = vim.fn.expand "~" .. "/Workspace/Development/Rust/rust-protobuf-analyzer/Cargo.toml"
     vim.lsp.set_log_level "debug"
     vim.lsp.start {
       name = "rust-protobuf-analyzer",
