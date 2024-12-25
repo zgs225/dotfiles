@@ -17,6 +17,7 @@ opts.ensure_installed = {
   "gotmpl",
   "gowork",
   "html",
+  "java",
   "javascript",
   "json",
   "lua",
