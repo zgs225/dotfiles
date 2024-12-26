@@ -22,10 +22,10 @@ local lsp_settings = {
     codelenses = {
       test = true,
     },
+  },
 
-    basedpyright = {
-      ["analysis.inlayHints.genericTypes"] = true,
-    },
+  basedpyright = {
+    ["analysis.inlayHints.genericTypes"] = true,
   },
 
   -- yamlls
