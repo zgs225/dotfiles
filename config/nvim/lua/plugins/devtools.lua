@@ -7,13 +7,26 @@ return {
       require "configs.conform"
     end,
   },
+  {
+    "nvim-java/nvim-java",
+    ft = "java",
+    keys = {
+      "JavaBuildBuildWorkspace",
+      "JavaBuildCleanWorkspace",
+      "JavaRunnerRunMain",
+      "JavaSettingsChangeRuntime",
+    },
+    config = function()
+      require "configs.java"
+    end,
+  },
   -- LSP 配置
   {
     "neovim/nvim-lspconfig",
     event = "User FilePost",
     config = function()
       require("nvchad.configs.lspconfig").defaults()
-      require "configs.lspconfig"
+      require "configs.lsp"
     end,
   },
 
@@ -46,7 +59,7 @@ return {
       "DapContinue",
     },
     keys = {
-      { "<F8>", "<cmd>DapContinue<CR>",         { desc = "Debugger: Continue" } },
+      { "<F8>", "<cmd>DapContinue<CR>", { desc = "Debugger: Continue" } },
       { "<F9>", "<cmd>DapToggleBreakpoint<CR>", { desc = "Debugger: Toggle Breakpoint" } },
     },
     config = function()
@@ -79,9 +92,9 @@ return {
     },
 
     keys = {
-      { "<leader>tt", "<cmd>TestNearest<CR>",             { desc = "Test Nearest" } },
-      { "<leader>tf", "<cmd>TestFile<CR>",                { desc = "Test File" } },
-      { "<leader>td", "<cmd>TestDebugNearest<CR>",        { desc = "Test Debug nearest" } },
+      { "<leader>tt", "<cmd>TestNearest<CR>", { desc = "Test Nearest" } },
+      { "<leader>tf", "<cmd>TestFile<CR>", { desc = "Test File" } },
+      { "<leader>td", "<cmd>TestDebugNearest<CR>", { desc = "Test Debug nearest" } },
       { "<leader>ts", "<cmd>TestToggleSummaryPannel<CR>", { desc = "Test Toggle summary pannel" } },
     },
 

@@ -58,11 +58,6 @@ M.base46 = {
 
   transparency = true,
 
-  hl_override = {
-    Comment = { italic = true },
-    ["@comment"] = { italic = true },
-  },
-
   integrations = {
     "dap",
     "mason",
