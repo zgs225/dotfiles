@@ -8,3 +8,25 @@ o.swapfile = false
 vim.cmd [[
 hi NotifyBackground guibg = #000000
 ]]
+
+-- file type detects
+
+local detect_gotmpl = {
+  function()
+    if vim.fn.search("{{.+}}", "nw") then
+      return "gotmpl"
+    end
+  end,
+  { priority = 200 },
+}
+
+vim.filetype.add {
+  extension = {
+    gotmpl = "gotmpl",
+  },
+
+  pattern = {
+    [".*/templates/.*%.tmpl"] = detect_gotmpl,
+    [".*/templates/.*%.yaml"] = detect_gotmpl,
+  },
+}
