@@ -7,7 +7,7 @@ local capabilities = require("nvchad.configs.lspconfig").capabilities
 require("lspconfig").jdtls.setup {
   on_attach = function(client, bufnr)
     on_attach(client, bufnr)
-    vim.lsp.inlay_hint.enable(true)
+    -- vim.lsp.inlay_hint.enable(true)
     -- use plugin to display diagnostic messages
     vim.diagnostic.config { virtual_text = false }
 

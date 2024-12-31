@@ -1,5 +1,9 @@
 local M = {}
 
+M.renderer = {
+  group_empty = true,
+}
+
 M.on_attach = function(bufnr)
   local api = require "nvim-tree.api"
   local map = vim.keymap.set
