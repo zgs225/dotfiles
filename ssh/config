@@ -20,7 +20,7 @@ Host bj1
     ForwardAgent yes
 
 Host bj1-vpc
-    Hostname bj1.yuez.my.local
+    Hostname 100.64.0.6
     User root
     ForwardAgent yes
 
