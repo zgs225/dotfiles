@@ -7,12 +7,15 @@ local capabilities = require("nvchad.configs.lspconfig").capabilities
 require("lspconfig").jdtls.setup {
   on_attach = function(client, bufnr)
     on_attach(client, bufnr)
-    -- vim.lsp.inlay_hint.enable(true)
     -- use plugin to display diagnostic messages
     vim.diagnostic.config { virtual_text = false }
 
     vim.opt_local.tabstop = 4
     vim.opt_local.shiftwidth = 4
+
+    if client.server_capabilities.inlayHintProvider then
+      vim.lsp.buf.inlay_hints(bufnr, true)
+    end
   end,
   on_init = on_init,
   capabilities = capabilities,
@@ -30,6 +33,18 @@ require("lspconfig").jdtls.setup {
       inlayHints = {
         parameterNames = {
           enabled = "all", -- 启用所有参数名称提示
+        },
+        typeHints = {
+          enabled = true,
+        },
+      },
+      saveActions = {
+        organizeImports = true,
+      },
+      format = {
+        enabled = true,
+        settings = {
+          profile = "GoogleStyle",
         },
       },
     },
