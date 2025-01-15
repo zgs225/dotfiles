@@ -65,4 +65,12 @@ return {
       },
     },
   },
+
+  {
+    "smoka7/hop.nvim",
+    event = { "BufNewFile", "BufRead" },
+    config = function()
+      require "configs.hop"
+    end,
+  },
 }
