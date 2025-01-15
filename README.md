@@ -176,22 +176,52 @@ regardless of the file name:
 What's in it?
 -------------
 
-[vim](http://www.vim.org/) configuration:
+### Neovim Plugins Overview
 
-* [fzf](https://github.com/junegunn/fzf.vim) for fuzzy file/buffer/tag finding.
-* [Rails.vim](https://github.com/tpope/vim-rails) for enhanced navigation of
-  Rails file structure via `gf` and `:A` (alternate), `:Rextract` partials,
-  `:Rinvert` migrations, etc.
-* Run many kinds of tests [from vim]([https://github.com/janko-m/vim-test)
-* Set `<leader>` to a single space.
-* Switch between the last two files with space-space.
-* Syntax highlighting for Markdown, HTML, JavaScript, Ruby, Go, Elixir, more.
-* Use [Ag](https://github.com/ggreer/the_silver_searcher) instead of Grep when
-  available.
-* Map `<leader>ct` to re-index ctags.
-* Use [vim-mkdir](https://github.com/pbrisbin/vim-mkdir) for automatically
-  creating non-existing directories before writing the buffer.
-* Use [vim-plug](https://github.com/junegunn/vim-plug) to manage plugins.
+#### Core Development Tools
+- **LSP & Debugging**:
+  - `nvim-lspconfig`: Language Server Protocol support
+  - `nvim-dap-ui`: Debug Adapter Protocol with UI
+  - `mason.nvim`: LSP/DAP/formatter management
+
+- **Code Navigation**:
+  - `hop.nvim`: Precise cursor movement
+  - `outline.nvim`: Code structure overview
+  - `nvim-treesitter`: Advanced syntax parsing
+
+- **Testing**:
+  - `neotest`: Unified test runner
+  - `neotest-golang`: Go language test support
+
+#### Productivity Enhancements
+- **Code Formatting**:
+  - `conform.nvim`: Auto-formatting on save
+
+- **AI Assistance**:
+  - `avante.nvim`: AI-powered code suggestions
+
+- **Diagnostics**:
+  - `tiny-inline-diagnostic`: Inline error display
+
+#### UI & Navigation
+- **File Explorer**:
+  - `nvim-tree`: File tree with icons
+
+- **Code Context**:
+  - `treesitter-context`: Current code block context
+  - `dropbar.nvim`: Breadcrumb navigation
+
+- **Markdown Support**:
+  - `render-markdown.nvim`: Markdown preview
+
+#### Essential Utilities
+- **File Operations**:
+  - `vim-mkdir`: Auto-create directories
+  - `vim-surround`: Text surround operations
+
+- **Language Specific**:
+  - `nvim-java`: Java development tools
+  - `gomodifytags`: Go struct tags management
 
 [tmux](http://robots.thoughtbot.com/a-tmux-crash-course)
 configuration:
@@ -213,23 +243,7 @@ configuration:
   config.
 * Adds `trust-bin` alias to append a project's `bin/` directory to `$PATH`.
 
-[Ruby](https://www.ruby-lang.org/en/) configuration:
-
-* Add trusted binstubs to the `PATH`.
-* Load the ASDF version manager.
-
-Shell aliases and scripts:
-
-* `b` for `bundle`.
-* `g` with no arguments is `git status` and with arguments acts like `git`.
-* `migrate` for `bin/rails db:migrate db:rollback && bin/rails db:migrate db:test:prepare`.
-* `mcd` to make a directory and change into it.
-* `replace foo bar **/*.rb` to find and replace within a given list of files.
-* `tat` to attach to tmux session named the same as the current directory.
-* `v` for `$VISUAL`.
-
 License
--------
 
 dotfiles is copyright © 2009-2018 thoughtbot. It is free software, and may be
 redistributed under the terms specified in the [`LICENSE`] file.
