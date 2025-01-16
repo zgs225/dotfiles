@@ -52,7 +52,30 @@ return {
     event = "User FilePost",
     cmd = { "TSContextEnable", "TSContextDisable", "TSContextToggle" },
     config = function()
-      require "treesitter-context".setup()
-    end
+      require("treesitter-context").setup()
+    end,
+  },
+  -- TODO
+  {
+    "folke/todo-comments.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    event = "BufReadPre",
+    keys = {
+      {
+        "]t",
+        function()
+          require("todo-comments").jump_next()
+        end,
+        desc = "Next todo comment",
+      },
+      {
+        "[t",
+        function()
+          require("todo-comments").jump_prev()
+        end,
+        desc = "Previous todo comment",
+      },
+    },
+    opts = {},
   },
 }
