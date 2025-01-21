@@ -46,3 +46,6 @@ _load_settings "$HOME/.zsh/configs"
 
 # aliases
 [[ -f ~/.aliases ]] && source ~/.aliases
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/yuez/.lmstudio/bin"
