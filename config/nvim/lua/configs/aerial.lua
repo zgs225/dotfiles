@@ -79,3 +79,19 @@ aerial.setup {
     update_delay = 300, -- 更新延迟为300ms
   },
 }
+
+-- 监听窗口关闭事件
+vim.api.nvim_create_autocmd("WinClosed", {
+  callback = function()
+    -- 获取当前所有窗口的列表
+    local windows = vim.api.nvim_list_wins()
+    -- 如果只剩下一个窗口
+    if #windows == 1 then
+      -- 检查 aerial 窗口是否打开
+      if aerial.is_open() then
+        -- 关闭 aerial 窗口
+        aerial.close()
+      end
+    end
+  end,
+})
