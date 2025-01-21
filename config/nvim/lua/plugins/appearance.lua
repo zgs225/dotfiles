@@ -19,14 +19,18 @@ return {
   },
   -- Code structure
   {
-    "hedyhli/outline.nvim",
-    cmd = { "Outline", "OutlineOpen" },
+    "stevearc/aerial.nvim",
+    cmd = { "AerialToggle" },
     keys = {
-      { "<F6>", "<cmd>Outline<CR>", desc = "Toggle outline" },
+      { "<F6>", "<cmd>AerialToggle!<CR>", desc = "Toggle outline" },
     },
-    opts = {},
+    -- Optional dependencies
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "nvim-tree/nvim-web-devicons",
+    },
     config = function()
-      require "configs.outline"
+      require "configs.aerial"
     end,
   },
   -- Breadcrumbs

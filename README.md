@@ -186,7 +186,7 @@ What's in it?
 
 - **Code Navigation**:
   - `hop.nvim`: Precise cursor movement
-  - `outline.nvim`: Code structure overview
+  - `aerial.nvim`: Code structure overview
   - `nvim-treesitter`: Advanced syntax parsing
 
 - **Testing**:
