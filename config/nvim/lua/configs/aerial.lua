@@ -1,4 +1,6 @@
-require("aerial").setup {
+local aerial = require "aerial"
+
+aerial.setup {
   -- 布局配置
   layout = {
     max_width = { 40, 0.3 }, -- 最大宽度为40列或30%的编辑器宽度
@@ -10,7 +12,7 @@ require("aerial").setup {
   },
 
   -- 自动关闭事件
-  close_automatic_events = { "unsupported" },
+  close_automatic_events = { "unsupported", "unfocus" },
 
   -- 过滤显示的符号类型
   filter_kind = {
