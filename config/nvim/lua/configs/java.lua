@@ -1,4 +1,29 @@
-require("java").setup {}
+require("java").setup {
+  jdtls = {
+    version = "v1.43.0",
+  },
+
+  lombok = {
+    version = "nightly",
+  },
+
+  -- load java test plugins
+  java_test = {
+    enable = true,
+    version = "0.43.0",
+  },
+
+  -- load java debugger plugins
+  java_debug_adapter = {
+    enable = true,
+    version = "0.58.1",
+  },
+
+  spring_boot_tools = {
+    enable = true,
+    version = "1.59.0",
+  },
+}
 
 local on_attach = require("nvchad.configs.lspconfig").on_attach
 local on_init = require("nvchad.configs.lspconfig").on_init
