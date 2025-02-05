@@ -4,13 +4,13 @@ return {
   provider = "openai",
   auto_suggestions_provider = "openai",
   ["openai"] = {
-    endpoint = "https://api.deepseek.com/v1",
-    model = "deepseek-chat",
-    temperature = 0,
+    endpoint = "https://api.siliconflow.cn/v1",
+    model = "deepseek-ai/DeepSeek-V3",
+    temperature = 0.5,
     max_tokens = 4096,
   },
   behaviour = {
-    auto_suggestions = false,
+    auto_suggestions = true,
     auto_set_highlight_group = true,
     auto_set_keymaps = true,
     auto_apply_diff_after_generation = false,
