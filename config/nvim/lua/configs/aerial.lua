@@ -15,19 +15,7 @@ aerial.setup {
   close_automatic_events = { "unsupported", "unfocus" },
 
   -- 过滤显示的符号类型
-  filter_kind = {
-    "Class",
-    "Constant",
-    "Constructor",
-    "Enum",
-    "EnumMember",
-    "Field",
-    "Function",
-    "Interface",
-    "Method",
-    "Module",
-    "Struct",
-  },
+  filter_kind = false,
 
   -- 高亮模式
   highlight_mode = "split_width", -- 每个窗口的光标位置都会在 aerial 窗口中部分高亮

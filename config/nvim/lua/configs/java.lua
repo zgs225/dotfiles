@@ -1,6 +1,6 @@
 require("java").setup {
   jdtls = {
-    version = "v1.43.0",
+    version = "v1.44.0",
   },
 
   lombok = {
@@ -21,7 +21,7 @@ require("java").setup {
 
   spring_boot_tools = {
     enable = true,
-    version = "1.59.0",
+    version = "1.60.0",
   },
 }
 
