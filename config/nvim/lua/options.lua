@@ -19,15 +19,15 @@ local detect_gotmpl = {
   end,
   { priority = 200 },
 }
---
--- vim.filetype.add {
---   extension = {
---     gotmpl = "gotmpl",
---   },
---
---   pattern = {
---     [".*/templates/.*%.tmpl"] = detect_gotmpl,
---     [".*/templates/.*%.yaml"] = detect_gotmpl,
---     [".*%.yaml.tmpl"] = detect_gotmpl,
---   },
--- }
+
+vim.filetype.add {
+  extension = {
+    gotmpl = "gotmpl",
+  },
+
+  pattern = {
+    [".*/templates/.*%.tmpl"] = detect_gotmpl,
+    [".*/templates/.*%.yaml"] = detect_gotmpl,
+    [".*%.yaml.tmpl"] = detect_gotmpl,
+  },
+}
