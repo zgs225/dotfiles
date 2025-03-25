@@ -49,6 +49,7 @@ Host pve
 Host dsm
     User yuez
     HostName 192.168.2.183
+    SetEnv TERM=xterm-256color
 
 Host pi-hole
     User root

@@ -1,15 +1,15 @@
 ---Full config see https://github.com/yetone/avante.nvim/blob/main/lua/avante/config.lua
 return {
   ---@alias Provider "claude" | "openai" | "azure" | "gemini" | "cohere" | "copilot" | string
-  provider = "silicon_deepseek",
-  auto_suggestions_provider = "silicon_deepseek",
+  provider = "deepseek",
+  auto_suggestions_provider = "deepseek",
 
   vendors = {
     deepseek = {
       __inherited_from = "openai",
       api_key_name = "DEEPSEEK_API_KEY",
       endpoint = "https://api.deepseek.com",
-      model = "deepseek-coder",
+      model = "deepseek-chat",
     },
 
     silicon_deepseek = {
@@ -24,6 +24,13 @@ return {
       api_key_name = "TIONE_API_KEY",
       endpoint = "https://api.lkeap.cloud.tencent.com/v1",
       model = "deepseek-v3",
+    },
+
+    ark_deepseek = {
+      __inherited_from = "openai",
+      api_key_name = "ARK_API_KEY",
+      endpoint = "https://ark.cn-beijing.volces.com/api/v3",
+      model = "deepseek-v3-241226",
     },
   },
 
