@@ -1,8 +1,8 @@
 ---Full config see https://github.com/yetone/avante.nvim/blob/main/lua/avante/config.lua
 return {
   ---@alias Provider "claude" | "openai" | "azure" | "gemini" | "cohere" | "copilot" | string
-  provider = "deepseek",
-  auto_suggestions_provider = "deepseek",
+  provider = "ark_deepseek",
+  auto_suggestions_provider = "ark_deepseek",
 
   vendors = {
     deepseek = {
@@ -10,6 +10,7 @@ return {
       api_key_name = "DEEPSEEK_API_KEY",
       endpoint = "https://api.deepseek.com",
       model = "deepseek-chat",
+      max_tokens = 8192,
     },
 
     silicon_deepseek = {
@@ -17,6 +18,7 @@ return {
       api_key_name = "SILICONFLOW_API_KEY",
       endpoint = "https://api.siliconflow.cn/v1",
       model = "deepseek-ai/DeepSeek-V3",
+      max_tokens = 8192,
     },
 
     tione_deepseek = {
@@ -24,6 +26,7 @@ return {
       api_key_name = "TIONE_API_KEY",
       endpoint = "https://api.lkeap.cloud.tencent.com/v1",
       model = "deepseek-v3",
+      max_tokens = 8192,
     },
 
     ark_deepseek = {
@@ -31,6 +34,7 @@ return {
       api_key_name = "ARK_API_KEY",
       endpoint = "https://ark.cn-beijing.volces.com/api/v3",
       model = "deepseek-v3-241226",
+      max_tokens = 8192,
     },
   },
 
