@@ -46,6 +46,10 @@ Host pve
     User root
     HostName 192.168.2.254
 
+Host pve-253
+    User root
+    HostName 192.168.2.253
+
 Host dsm
     User yuez
     HostName 192.168.2.183
