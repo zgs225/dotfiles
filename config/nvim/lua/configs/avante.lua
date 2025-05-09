@@ -33,7 +33,7 @@ return {
       __inherited_from = "openai",
       api_key_name = "ARK_API_KEY",
       endpoint = "https://ark.cn-beijing.volces.com/api/v3",
-      model = "deepseek-v3-241226",
+      model = "deepseek-v3-250324",
       max_tokens = 8192,
     },
   },

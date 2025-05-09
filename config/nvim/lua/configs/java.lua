@@ -1,6 +1,6 @@
 require("java").setup {
   jdtls = {
-    version = "v1.44.0",
+    version = "v1.43.0",
   },
 
   lombok = {
@@ -10,7 +10,7 @@ require("java").setup {
   -- load java test plugins
   java_test = {
     enable = true,
-    version = "0.43.0",
+    version = "0.40.1",
   },
 
   -- load java debugger plugins
@@ -21,7 +21,13 @@ require("java").setup {
 
   spring_boot_tools = {
     enable = true,
-    version = "1.60.0",
+    version = "1.55.1",
+  },
+
+  jdk = {
+    -- install jdk using mason.nvim
+    auto_install = true,
+    version = "17.0.2",
   },
 }
 
@@ -46,6 +52,13 @@ require("lspconfig").jdtls.setup {
   capabilities = capabilities,
   settings = {
     java = {
+      runtimes = {
+        {
+          name = "OpenJDK-21",
+          path = "/opt/homebrew/Cellar/openjdk@21/21.0.7/libexec/openjdk.jdk/Contents/Home",
+          default = true,
+        },
+      },
       eclipse = {
         downloadSources = true, -- 启用下载源代码功能
       },
