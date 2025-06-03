@@ -1,16 +1,18 @@
 ---Full config see https://github.com/yetone/avante.nvim/blob/main/lua/avante/config.lua
 return {
-  ---@alias Provider "claude" | "openai" | "azure" | "gemini" | "cohere" | "copilot" | string
-  provider = "ark_deepseek",
-  auto_suggestions_provider = "ark_deepseek",
+  provider = "deepseek",
+  auto_suggestions_provider = "deepseek",
 
-  vendors = {
+  providers = {
     deepseek = {
       __inherited_from = "openai",
       api_key_name = "DEEPSEEK_API_KEY",
       endpoint = "https://api.deepseek.com",
       model = "deepseek-chat",
       max_tokens = 8192,
+      extra_request_body = {
+        temperature = 0,
+      },
     },
 
     silicon_deepseek = {
