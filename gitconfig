@@ -22,6 +22,7 @@
   pl = !sh -c 'git pull origin $(git rev-parse --abbrev-ref HEAD)'
   ps = !sh -c 'git push origin $(git rev-parse --abbrev-ref HEAD)'
   sm = submodule
+  cp = cherry-pick
 [pretty]
   colored = format:%Cred%h%Creset %s %Cgreen(%cr) %C(bold blue)%an%Creset
 [core]
