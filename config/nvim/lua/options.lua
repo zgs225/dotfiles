@@ -31,3 +31,7 @@ vim.filetype.add {
     [".*%.yaml.tmpl"] = detect_gotmpl,
   },
 }
+
+if vim.fn.exists "&messagesopt" == 1 then
+  o.messagesopt = "wait:150,history:500"
+end
