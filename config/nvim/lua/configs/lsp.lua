@@ -1,11 +1,12 @@
 -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
 require("nvchad.configs.lspconfig").defaults()
 
+local keymap = vim.keymap.set
+local opts = { noremap = true, silent = true }
+
 local on_attach = require("nvchad.configs.lspconfig").on_attach
 local on_init = require("nvchad.configs.lspconfig").on_init
 local capabilities = require("nvchad.configs.lspconfig").capabilities
-
-local lspconfig = require "lspconfig"
 
 local servers = { "html", "cssls", "gopls", "bashls", "basedpyright", "ts_ls", "yamlls", "astro", "tailwindcss" }
 local lsp_settings = {
@@ -47,31 +48,34 @@ local lsp_settings = {
 for _, lsp in ipairs(servers) do
   local settings = lsp_settings[lsp]
 
-  lspconfig[lsp].setup {
+  vim.lsp.config(lsp, {
     on_attach = function(client, bufnr)
       on_attach(client, bufnr)
       -- use plugin to display diagnostic messages
       vim.diagnostic.config { virtual_text = false }
       vim.lsp.inlay_hint.enable(true)
+
+      keymap("n", "<leader>ca", vim.lsp.buf.code_action, opts)
+      keymap("v", "<leader>ca", vim.lsp.buf.code_action, opts)
     end,
     on_init = on_init,
     capabilities = capabilities,
     settings = {
       [lsp] = settings,
     },
-  }
+  })
 end
 
 --- rust
 --- vim.lsp.set_log_level "debug"
-lspconfig.rust_analyzer.setup {
+vim.lsp.config("rust_analyzer", {
   on_attach = function(client, bufnr)
     on_attach(client, bufnr)
     vim.lsp.inlay_hint.enable(true)
   end,
   on_init = on_init,
   capabilities = capabilities,
-}
+})
 
 -- rust-protobuf-analyzer
 vim.api.nvim_create_autocmd("FileType", {
