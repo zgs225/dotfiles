@@ -35,7 +35,7 @@ local on_attach = require("nvchad.configs.lspconfig").on_attach
 local on_init = require("nvchad.configs.lspconfig").on_init
 local capabilities = require("nvchad.configs.lspconfig").capabilities
 
-require("lspconfig").jdtls.setup {
+require("nvim.lsp").config("jdtls", {
   on_attach = function(client, bufnr)
     on_attach(client, bufnr)
     -- use plugin to display diagnostic messages
@@ -87,4 +87,4 @@ require("lspconfig").jdtls.setup {
       },
     },
   },
-}
+})

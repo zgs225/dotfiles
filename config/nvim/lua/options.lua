@@ -3,6 +3,7 @@ require "nvchad.options"
 local o = vim.o
 o.cursorlineopt = "both" -- to enable cursorline!
 o.swapfile = false
+o.cmdheight = 0
 
 -- to fix nvim-notify bug, see https://github.com/rcarriga/nvim-notify/issues/188
 vim.cmd [[
