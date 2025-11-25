@@ -64,6 +64,8 @@ for _, lsp in ipairs(servers) do
       [lsp] = settings,
     },
   })
+
+  vim.lsp.enable(lsp)
 end
 
 --- rust
