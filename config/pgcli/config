@@ -170,3 +170,4 @@ sql.whitespace = '#586e75'
 [alias_dsn]
 # example_dsn = postgres://[user[:password]@][host][:port][/dbname]
 sw = postgresql://postgres:BQruhQ0ZAdK7RJEB@localhost:5432/project-ai-screenwriter-t3
+cc_qa = postgresql://root:54321@192.168.36.56:5002/hotline_review_db
