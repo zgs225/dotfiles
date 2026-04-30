@@ -120,8 +120,22 @@ return {
     keys = {
       { "<leader>cc", "<cmd>ClaudeCode<CR>", { desc = "Toggle Claude Code" } },
     },
+    init = function()
+      -- 当 Claude Code 是唯一窗口时自动退出
+      vim.api.nvim_create_autocmd("WinClosed", {
+        callback = function()
+          if #vim.api.nvim_list_wins() == 1 then
+            local winid = vim.api.nvim_get_current_win()
+            local bufnr = vim.api.nvim_win_get_buf(winid)
+            if vim.api.nvim_buf_get_name(bufnr):match "^Claude Code" then
+              vim.cmd "qa"
+            end
+          end
+        end,
+      })
+    end,
     opts = {
-      window = { position = "vertical", split_ratio = 0.3 },
+      window = { position = "vertical", split_ratio = 0.35 },
       refresh = { enable = true, updatetime = 100 },
     },
   },
