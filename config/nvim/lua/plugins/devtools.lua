@@ -112,6 +112,20 @@ return {
     end,
   },
 
+  -- Claude Code 集成
+  {
+    "greggh/claude-code.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    cmd = { "ClaudeCode", "ClaudeCodeVersion" },
+    keys = {
+      { "<leader>cc", "<cmd>ClaudeCode<CR>", { desc = "Toggle Claude Code" } },
+    },
+    opts = {
+      window = { position = "vertical", split_ratio = 0.3 },
+      refresh = { enable = true, updatetime = 100 },
+    },
+  },
+
   {
     "zgs225/gomodifytags.nvim",
     cmd = { "GoAddTags", "GoRemoveTags", "GoInstallModifyTagsBin" },
