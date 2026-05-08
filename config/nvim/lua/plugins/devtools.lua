@@ -140,6 +140,49 @@ return {
     },
   },
 
+  -- OpenCode 集成
+  {
+    "nickjvandyke/opencode.nvim",
+    version = "*",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    keys = {
+      { "<leader>aa", function() require("opencode").toggle() end, { desc = "Toggle OpenCode" } },
+    },
+    init = function()
+      -- 当 opencode 是唯一窗口时自动退出
+      vim.api.nvim_create_autocmd("WinClosed", {
+        callback = function()
+          if #vim.api.nvim_list_wins() == 1 then
+            local winid = vim.api.nvim_get_current_win()
+            local bufnr = vim.api.nvim_win_get_buf(winid)
+            if vim.api.nvim_buf_get_name(bufnr):match "^opencode" then
+              vim.cmd "qa"
+            end
+          end
+        end,
+      })
+    end,
+    opts = {
+      server = {
+        start = function()
+          require("opencode.terminal").open("opencode --port", {
+            split = "right",
+            width = math.floor(vim.o.columns * 0.35),
+          })
+        end,
+        stop = function()
+          require("opencode.terminal").close()
+        end,
+        toggle = function()
+          require("opencode.terminal").toggle("opencode --port", {
+            split = "right",
+            width = math.floor(vim.o.columns * 0.35),
+          })
+        end,
+      },
+    },
+  },
+
   {
     "zgs225/gomodifytags.nvim",
     cmd = { "GoAddTags", "GoRemoveTags", "GoInstallModifyTagsBin" },
