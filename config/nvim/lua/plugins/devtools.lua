@@ -147,6 +147,7 @@ return {
     dependencies = { "nvim-lua/plenary.nvim" },
     keys = {
       { "<leader>aa", function() require("opencode").toggle() end, { desc = "Toggle OpenCode" } },
+      { "<leader>aA", function() require("opencode").ask("@this: ", { submit = true }) end, mode = { "n", "x" }, { desc = "Ask opencode" } },
     },
     init = function()
       -- 当 opencode 是唯一窗口时自动退出
