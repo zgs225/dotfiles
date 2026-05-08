@@ -21,3 +21,9 @@ map("n", "<leader>n", "<cmd>NvimTreeFocus<CR>", { desc = "nvimtree focus" })
 map("n", "<leader>dp", function()
   vim.diagnostic.open_float { scope = "l" }
 end, { desc = "LSP Diagnostics under the line" })
+
+-- Terminal mode window navigation
+map("t", "<C-h>", "<C-\\><C-n><C-w>h", { desc = "terminal switch window left" })
+map("t", "<C-l>", "<C-\\><C-n><C-w>l", { desc = "terminal switch window right" })
+map("t", "<C-j>", "<C-\\><C-n><C-w>j", { desc = "terminal switch window down" })
+map("t", "<C-k>", "<C-\\><C-n><C-w>k", { desc = "terminal switch window up" })
