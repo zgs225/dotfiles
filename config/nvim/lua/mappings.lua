@@ -22,8 +22,32 @@ map("n", "<leader>dp", function()
   vim.diagnostic.open_float { scope = "l" }
 end, { desc = "LSP Diagnostics under the line" })
 
--- Terminal mode window navigation
-map("t", "<C-h>", "<C-\\><C-n><C-w>h", { desc = "terminal switch window left" })
-map("t", "<C-l>", "<C-\\><C-n><C-w>l", { desc = "terminal switch window right" })
-map("t", "<C-j>", "<C-\\><C-n><C-w>j", { desc = "terminal switch window down" })
-map("t", "<C-k>", "<C-\\><C-n><C-w>k", { desc = "terminal switch window up" })
+-- Terminal mode window navigation with state restore
+local term_nav_group = vim.api.nvim_create_augroup("TermNavRestore", {})
+local restore_on_enter = {}
+
+local function terminal_navigate(dir)
+  local bufnr = vim.api.nvim_get_current_buf()
+  local was_term_mode = (vim.api.nvim_get_mode().mode == "t")
+  if was_term_mode then
+    restore_on_enter[bufnr] = true
+    vim.cmd("stopinsert")
+  end
+  vim.cmd("wincmd " .. dir)
+end
+
+vim.api.nvim_create_autocmd("BufEnter", {
+  group = term_nav_group,
+  callback = function()
+    local bufnr = vim.api.nvim_get_current_buf()
+    if restore_on_enter[bufnr] then
+      restore_on_enter[bufnr] = nil
+      vim.schedule(function() vim.cmd("startinsert") end)
+    end
+  end,
+})
+
+map("t", "<C-h>", function() terminal_navigate("h") end, { desc = "terminal switch window left" })
+map("t", "<C-l>", function() terminal_navigate("l") end, { desc = "terminal switch window right" })
+map("t", "<C-j>", function() terminal_navigate("j") end, { desc = "terminal switch window down" })
+map("t", "<C-k>", function() terminal_navigate("k") end, { desc = "terminal switch window up" })
