@@ -135,7 +135,7 @@ return {
       })
     end,
     opts = {
-      window = { position = "vertical", split_ratio = 0.35 },
+      window = { position = "vertical", split_ratio = 0.40 },
       refresh = { enable = true, updatetime = 100 },
     },
   },
@@ -146,10 +146,39 @@ return {
     version = "*",
     dependencies = { "nvim-lua/plenary.nvim" },
     keys = {
-      { "<leader>aa", function() require("opencode").toggle() end, { desc = "Toggle OpenCode" } },
-      { "<leader>aA", function() require("opencode").ask("@this: ", { submit = true }) end, mode = { "n", "x" }, { desc = "Ask opencode" } },
+      {
+        "<leader>aa",
+        function()
+          require("opencode").toggle()
+        end,
+        { desc = "Toggle OpenCode" },
+      },
+      {
+        "<leader>aA",
+        function()
+          require("opencode").ask("@this: ", { submit = true })
+        end,
+        mode = { "n", "x" },
+        { desc = "Ask opencode" },
+      },
     },
     init = function()
+      vim.g.opencode_opts = {
+        server = {
+          start = function()
+            require("opencode.terminal").open("opencode --port", {
+              split = "right",
+              width = math.floor(vim.o.columns * 0.40),
+            })
+          end,
+          toggle = function()
+            require("opencode.terminal").toggle("opencode --port", {
+              split = "right",
+              width = math.floor(vim.o.columns * 0.40),
+            })
+          end,
+        },
+      }
       -- 当 opencode 是唯一窗口时自动退出
       vim.api.nvim_create_autocmd("WinClosed", {
         callback = function()
@@ -163,25 +192,6 @@ return {
         end,
       })
     end,
-    opts = {
-      server = {
-        start = function()
-          require("opencode.terminal").open("opencode --port", {
-            split = "right",
-            width = math.floor(vim.o.columns * 0.35),
-          })
-        end,
-        stop = function()
-          require("opencode.terminal").close()
-        end,
-        toggle = function()
-          require("opencode.terminal").toggle("opencode --port", {
-            split = "right",
-            width = math.floor(vim.o.columns * 0.35),
-          })
-        end,
-      },
-    },
   },
 
   {
