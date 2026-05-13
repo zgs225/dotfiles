@@ -204,4 +204,77 @@ return {
       require("gomodifytags").setup()
     end,
   },
+
+  -- Git worktree 管理
+  {
+    "ThePrimeagen/git-worktree.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    keys = {
+      -- 列出并切换/删除 worktree
+      {
+        "<leader>gw",
+        function()
+          require("telescope").extensions.git_worktree.git_worktrees()
+        end,
+        desc = "Git worktree list/switch/delete",
+      },
+      -- 创建新的 worktree
+      {
+        "<leader>gW",
+        function()
+          require("telescope").extensions.git_worktree.create_git_worktree()
+        end,
+        desc = "Git worktree create",
+      },
+    },
+    config = function()
+      local Worktree = require("git-worktree")
+
+      Worktree.setup({
+        -- 切换 worktree 时使用的目录变更命令
+        -- "cd" 为全局, "tcd" 为仅当前 tab, "lcd" 为仅当前窗口
+        change_directory_command = "cd",
+        -- 切换 worktree 时自动更新当前 buffer 指向新工作树中的文件
+        update_on_change = true,
+        -- 如果当前文件在新 worktree 中不存在, 执行此命令
+        update_on_change_command = "e .",
+        -- 切换分支时清除 jumplist, 防止跳回其他分支的文件
+        clearjumps_on_change = true,
+        -- 创建 worktree 时自动 push 分支并 rebase (建议保持 false)
+        autopush = false,
+      })
+
+      -- 注册 telescope 扩展
+      require("telescope").load_extension("git_worktree")
+
+      -- Hook: 切换 worktree 后的回调
+      Worktree.on_tree_change(function(op, metadata)
+        if op == Worktree.Operations.Switch then
+          vim.notify(
+            string.format("Switched worktree: %s -> %s", metadata.prev_path, metadata.path),
+            vim.log.levels.INFO,
+            { title = "Git Worktree" }
+          )
+
+          -- 自动更新 nvim-tree 根目录到新 worktree
+          local ok, api = pcall(require, "nvim-tree.api")
+          if ok then
+            api.tree.change_root(metadata.path)
+          end
+        elseif op == Worktree.Operations.Create then
+          vim.notify(
+            string.format("Created worktree: %s (branch: %s)", metadata.path, metadata.branch),
+            vim.log.levels.INFO,
+            { title = "Git Worktree" }
+          )
+        elseif op == Worktree.Operations.Delete then
+          vim.notify(
+            string.format("Deleted worktree: %s", metadata.path),
+            vim.log.levels.INFO,
+            { title = "Git Worktree" }
+          )
+        end
+      end)
+    end,
+  },
 }
