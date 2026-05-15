@@ -53,14 +53,17 @@ return {
       "nvim-neotest/nvim-nio",
       "jay-babu/mason-nvim-dap.nvim",
       "williamboman/mason.nvim",
+      "theHamsta/nvim-dap-virtual-text",
+      "leoluz/nvim-dap-go",
     },
     cmd = {
-      "DapToggleBreakpoint",
       "DapContinue",
+      "DapToggleBreakpoint",
     },
     keys = {
-      { "<F8>", "<cmd>DapContinue<CR>", { desc = "Debugger: Continue" } },
-      { "<F9>", "<cmd>DapToggleBreakpoint<CR>", { desc = "Debugger: Toggle Breakpoint" } },
+      { "<F5>", function() require("dap").continue() end, { desc = "Debugger: Continue" } },
+      { "<leader>b", function() require("dap").toggle_breakpoint() end, { desc = "Debugger: Toggle Breakpoint" } },
+      { "<leader>du", function() require("dapui").toggle() end, { desc = "Debugger: Toggle UI" } },
     },
     config = function()
       dofile(vim.g.base46_cache .. "dap")
@@ -154,6 +157,13 @@ return {
         { desc = "Toggle OpenCode" },
       },
       {
+        "<leader>as",
+        function()
+          require("opencode").select_server()
+        end,
+        { desc = "OpenCode select server" },
+      },
+      {
         "<leader>aA",
         function()
           require("opencode").ask("@this: ", { submit = true })
@@ -228,9 +238,9 @@ return {
       },
     },
     config = function()
-      local Worktree = require("git-worktree")
+      local Worktree = require "git-worktree"
 
-      Worktree.setup({
+      Worktree.setup {
         -- 切换 worktree 时使用的目录变更命令
         -- "cd" 为全局, "tcd" 为仅当前 tab, "lcd" 为仅当前窗口
         change_directory_command = "cd",
@@ -242,10 +252,10 @@ return {
         clearjumps_on_change = true,
         -- 创建 worktree 时自动 push 分支并 rebase (建议保持 false)
         autopush = false,
-      })
+      }
 
       -- 注册 telescope 扩展
-      require("telescope").load_extension("git_worktree")
+      require("telescope").load_extension "git_worktree"
 
       -- Hook: 切换 worktree 后的回调
       Worktree.on_tree_change(function(op, metadata)
