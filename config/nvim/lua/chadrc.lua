@@ -61,6 +61,7 @@ M.base46 = {
   integrations = {
     "dap",
     "mason",
+    "notify",
     "nvimtree",
     "tbline",
     "telescope",

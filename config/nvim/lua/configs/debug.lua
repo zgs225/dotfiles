@@ -3,11 +3,6 @@ local map = vim.keymap.set
 
 require("nvim-dap-virtual-text").setup()
 
-require("dap.ext.vscode").load_launchjs(nil, {
-  codelldb = { "c", "cpp", "rust" },
-  delve = { "go" },
-})
-
 require("dap-go").setup({
   dap_configurations = {
     {

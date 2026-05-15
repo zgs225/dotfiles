@@ -6,10 +6,6 @@ o.swapfile = false
 o.cmdheight = 0
 o.autoread = true
 
--- to fix nvim-notify bug, see https://github.com/rcarriga/nvim-notify/issues/188
-vim.cmd [[
-hi NotifyBackground guibg = #000000
-]]
 
 -- file type detects
 
