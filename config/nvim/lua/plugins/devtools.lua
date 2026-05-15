@@ -67,7 +67,7 @@ return {
     },
     config = function()
       dofile(vim.g.base46_cache .. "dap")
-      require "configs.dap"
+      require "configs.debug"
     end,
   },
 
