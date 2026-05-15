@@ -13,7 +13,6 @@ map("n", "tp", ":tabprevious<CR>", { desc = "Tab previous" })
 map("n", "tn", ":tabnext<CR>", { desc = "Tab next" })
 map("n", "tm", ":tabmove", { desc = "Tab move" })
 
-map("n", "<F5>", "<cmd>NvimTreeToggle<CR>", { desc = "nvimtree toggle window" })
 map("n", "<leader>n", "<cmd>NvimTreeFocus<CR>", { desc = "nvimtree focus" })
 -- map({ "n", "i", "v" }, "<C-s>", "<cmd> w <cr>")
 
