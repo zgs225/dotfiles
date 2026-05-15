@@ -1,95 +1,42 @@
 local dap, dapui = require "dap", require "dapui"
-
-local utils = require "configs.utils"
 local map = vim.keymap.set
 
-local opts = {
-  ensure_installed = {
-    "delve",
-    "codelldb",
+require("nvim-dap-virtual-text").setup()
+
+require("dap.ext.vscode").load_launchjs(nil, {
+  codelldb = { "c", "cpp", "rust" },
+  delve = { "go" },
+})
+
+require("dap-go").setup({
+  dap_configurations = {
+    {
+      type = "go",
+      name = "Debug Workspace (Arguments)",
+      request = "launch",
+      program = "${workspaceFolder}",
+      args = require("dap-go").get_arguments,
+    },
   },
+})
+
+require("mason-nvim-dap").setup({
+  ensure_installed = { "delve", "codelldb" },
   automatic_installation = true,
+})
 
-  -- https://github.com/mfussenegger/nvim-dap/wiki/Debug-Adapter-installation
-  adapters = {
-    delve = {
-      type = "server",
-      port = "${port}",
-      executable = {
-        command = "dlv",
-        args = { "dap", "-l", "127.0.0.1:${port}" },
-        detached = vim.fn.has "win32" == 0,
-      },
-
-      options = {
-        initialize_timeout_sec = 30,
-      },
-    },
-
-    codelldb = {
-      type = "server",
-      port = "${port}",
-      executable = {
-        command = "codelldb",
-        args = { "--port", "${port}" },
-        detached = vim.fn.has "win32" == 0,
-      },
-
-      options = {
-        initialize_timeout_sec = 30,
-      },
-    },
+dap.adapters.codelldb = {
+  type = "server",
+  port = "${port}",
+  executable = {
+    command = "codelldb",
+    args = { "--port", "${port}" },
+    detached = vim.fn.has "win32" == 0,
   },
-
-  configurations = {
-    go = {
-      {
-        type = "delve",
-        name = "Debug",
-        request = "launch",
-        program = "${file}",
-      },
-      {
-        type = "delve",
-        name = "Debug (Arguments)",
-        request = "launch",
-        args = utils.get_arguments,
-        program = "${file}",
-      },
-      {
-        type = "delve",
-        name = "Debug Workspace",
-        request = "launch",
-        program = "${workspaceFolder}",
-      },
-      {
-        type = "delve",
-        name = "Debug Workspace (Arguments)",
-        request = "launch",
-        program = "${workspaceFolder}",
-        args = utils.get_arguments,
-      },
-      {
-        type = "delve",
-        name = "Debug test", -- configuration for debugging test files
-        request = "launch",
-        mode = "test",
-        program = "${file}",
-      },
-      -- works with go.mod packages and sub packages
-      {
-        type = "delve",
-        name = "Debug test (go.mod)",
-        request = "launch",
-        mode = "test",
-        program = "./${relativeFileDirname}",
-      },
-    },
-  },
+  options = { initialize_timeout_sec = 30 },
 }
 
 map("n", "<M-r>", function()
-  vim.api.nvim_echo({ { "Restarting debugger...", "None" } }, false, {})
   dap.restart()
 end, { desc = "Debugger: Restart" })
 
@@ -97,13 +44,20 @@ map("n", "<M-s>", function()
   dap.terminate()
 end, { desc = "Debugger: Terminate" })
 
-require("mason-nvim-dap").setup {
-  ensure_installed = opts.ensure_installed,
-  automatic_installation = opts.automatic_installation,
-}
+dap.listeners.after.event_initialized["dap_keys"] = function()
+  map("n", "<F10>", dap.step_over, { desc = "Step Over" })
+  map("n", "<F11>", dap.step_into, { desc = "Step Into" })
+  map("n", "<F12>", dap.step_out, { desc = "Step Out" })
+end
 
-dap.adapters = opts.adapters
-dap.configurations = opts.configurations
+local function clear_dap_keys()
+  pcall(vim.keymap.del, "n", "<F10>")
+  pcall(vim.keymap.del, "n", "<F11>")
+  pcall(vim.keymap.del, "n", "<F12>")
+end
+
+dap.listeners.after.event_terminated["dap_keys"] = clear_dap_keys
+dap.listeners.after.event_exited["dap_keys"] = clear_dap_keys
 
 dap.listeners.before.attach.dapui_config = function()
   dapui.open()
@@ -118,39 +72,24 @@ dap.listeners.before.event_exited.dapui_config = function()
   dapui.close()
 end
 
-dapui.setup {
+dapui.setup({
   layouts = {
     {
       elements = {
-        {
-          id = "scopes",
-          size = 0.25,
-        },
-        {
-          id = "breakpoints",
-          size = 0.25,
-        },
-        {
-          id = "stacks",
-          size = 0.25,
-        },
-        {
-          id = "watches",
-          size = 0.25,
-        },
+        { id = "scopes", size = 0.25 },
+        { id = "breakpoints", size = 0.25 },
+        { id = "stacks", size = 0.25 },
+        { id = "watches", size = 0.25 },
       },
       position = "left",
       size = 40,
     },
     {
       elements = {
-        {
-          id = "repl",
-          size = 1,
-        },
+        { id = "repl", size = 1 },
       },
       position = "bottom",
       size = 10,
     },
   },
-}
+})
