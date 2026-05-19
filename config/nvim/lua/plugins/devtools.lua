@@ -33,15 +33,14 @@ return {
   -- 语法解析
   {
     "nvim-treesitter/nvim-treesitter",
-    event = { "BufReadPost", "BufNewFile" },
-    cmd = { "TSInstall", "TSBufEnable", "TSBufDisable", "TSModuleInfo" },
+    lazy = false,
     build = ":TSUpdate",
     opts = function()
       return require "configs.treesitter"
     end,
     config = function(_, opts)
       dofile(vim.g.base46_cache .. "treesitter")
-      require("nvim-treesitter.configs").setup(opts)
+      require("nvim-treesitter").setup(opts)
     end,
   },
 
@@ -265,6 +264,15 @@ return {
             vim.log.levels.INFO,
             { title = "Git Worktree" }
           )
+
+          -- 终止 DAP 调试会话并清除所有断点
+          pcall(function()
+            local dap = require("dap")
+            dap.clear_breakpoints()
+            if dap.session() then
+              dap.close()
+            end
+          end)
 
           -- 自动更新 nvim-tree 根目录到新 worktree
           local ok, api = pcall(require, "nvim-tree.api")
