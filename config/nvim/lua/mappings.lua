@@ -6,7 +6,9 @@ local map = vim.keymap.set
 map("n", ";", ":", { desc = "CMD enter command mode" })
 map("n", "<leader>q", ":q<CR>", { desc = "General quit current buffer" })
 map("n", "<leader>w", ":w<CR>", { desc = "General save current buffer" })
-map("n", "<C-p>", ":Telescope find_files<CR>")
+map("n", "<C-p>", function()
+  require("telescope").extensions.frecency.frecency {}
+end, { desc = "Frecency file search" })
 
 -- Tab navigation
 map("n", "tp", ":tabprevious<CR>", { desc = "Tab previous" })

@@ -60,9 +60,27 @@ return {
       "DapToggleBreakpoint",
     },
     keys = {
-      { "<F5>", function() require("dap").continue() end, { desc = "Debugger: Continue" } },
-      { "<leader>b", function() require("dap").toggle_breakpoint() end, { desc = "Debugger: Toggle Breakpoint" } },
-      { "<leader>du", function() require("dapui").toggle() end, { desc = "Debugger: Toggle UI" } },
+      {
+        "<F5>",
+        function()
+          require("dap").continue()
+        end,
+        { desc = "Debugger: Continue" },
+      },
+      {
+        "<leader>b",
+        function()
+          require("dap").toggle_breakpoint()
+        end,
+        { desc = "Debugger: Toggle Breakpoint" },
+      },
+      {
+        "<leader>du",
+        function()
+          require("dapui").toggle()
+        end,
+        { desc = "Debugger: Toggle UI" },
+      },
     },
     config = function()
       dofile(vim.g.base46_cache .. "dap")
@@ -176,13 +194,13 @@ return {
           start = function()
             require("opencode.terminal").open("opencode --port", {
               split = "right",
-              width = math.floor(vim.o.columns * 0.40),
+              width = math.floor(vim.o.columns * 0.45),
             })
           end,
           toggle = function()
             require("opencode.terminal").toggle("opencode --port", {
               split = "right",
-              width = math.floor(vim.o.columns * 0.40),
+              width = math.floor(vim.o.columns * 0.45),
             })
           end,
         },
@@ -210,6 +228,32 @@ return {
     },
     config = function()
       require("gomodifytags").setup()
+    end,
+  },
+
+  -- 智能文件历史 (Frecency 算法)
+  {
+    "nvim-telescope/telescope-frecency.nvim",
+    version = "*",
+    lazy = false,
+    config = function()
+      require("frecency.config").setup {
+        db_safe_mode = false,
+        auto_validate = true,
+        path_display = { "filename_first" },
+        hide_current_buffer = true,
+        preceding = "opened",
+        enable_prompt_mappings = true,
+        default_workspace = "CWD",
+        ignore_patterns = {
+          "*.git/*",
+          "*/tmp/*",
+          "term://*",
+          "*/vendor/*",
+        },
+        workspace_scan_cmd = { "fd", "-Htf", "-E", ".git", "-E", "vendor" },
+      }
+      require("telescope").load_extension "frecency"
     end,
   },
 
@@ -266,7 +310,7 @@ return {
 
           -- 终止 DAP 调试会话并清除所有断点
           pcall(function()
-            local dap = require("dap")
+            local dap = require "dap"
             dap.clear_breakpoints()
             if dap.session() then
               dap.close()
