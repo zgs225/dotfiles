@@ -24,7 +24,7 @@ return {
         "netrwPlugin",
         "netrwSettings",
         "netrwFileHandlers",
-        "matchit",
+
         "tar",
         "tarPlugin",
         "rrhelper",
@@ -40,7 +40,7 @@ return {
         "optwin",
         "compiler",
         "bugreport",
-        "ftplugin",
+
       },
     },
   },

@@ -50,7 +50,7 @@ From time to time you should pull down any updates to these dotfiles, and run
 
     rcup
 
-to link any new files and install new vim plugins. **Note** You _must_ run
+to link any new files and install new Neovim plugins. **Note** You _must_ run
 `rcup` after pulling to ensure that all files in plugins are properly installed,
 but you can safely run `rcup` multiple times so update early and update often!
 
@@ -69,8 +69,6 @@ Put your customizations in `~/dotfiles-local` appended with `.local`:
 * `~/dotfiles-local/psqlrc.local` (we supply a blank `.psqlrc.local` to prevent `psql` from
   throwing an error, but you should overwrite the file with your own copy)
 * `~/dotfiles-local/tmux.conf.local`
-* `~/dotfiles-local/vimrc.local`
-* `~/dotfiles-local/vimrc.bundles.local`
 * `~/dotfiles-local/zshrc.local`
 * `~/dotfiles-local/zsh/configs/*`
 
@@ -89,45 +87,12 @@ Your `~/dotfiles-local/gitconfig.local` might look like this:
       name = Dan Croak
       email = dan@thoughtbot.com
 
-Your `~/dotfiles-local/vimrc.local` might look like this:
-
-    " Color scheme
-    colorscheme github
-    highlight NonText guibg=#060606
-    highlight Folded  guibg=#0A0A0A guifg=#9090D0
-
-If you don't wish to install a vim plugin from the default set of vim plugins in
-`.vimrc.bundles`, you can ignore the plugin by calling it out with `UnPlug` in
-your `~/.vimrc.bundles.local`.
-
-    " Don't install vim-scripts/tComment
-    UnPlug 'tComment'
-
-`UnPlug` can be used to install your own fork of a plugin or to install a shared
-plugin with different custom options.
-
-    " Only load vim-coffee-script if a Coffeescript buffer is created
-    UnPlug 'vim-coffee-script'
-    Plug 'kchmck/vim-coffee-script', { 'for': 'coffee' }
-
-    " Use a personal fork of vim-run-interactive
-    UnPlug 'vim-run-interactive'
-    Plug '$HOME/plugins/vim-run-interactive'
-
-To extend your `git` hooks, create executable scripts in
-`~/dotfiles-local/git_template.local/hooks/*` files.
-
 Your `~/dotfiles-local/zshrc.local` might look like this:
 
     # load pyenv if available
     if which pyenv &>/dev/null ; then
       eval "$(pyenv init -)"
     fi
-
-Your `~/dotfiles-local/vimrc.bundles.local` might look like this:
-
-    Plug 'Lokaltog/vim-powerline'
-    Plug 'stephenmckinney/vim-solarized-powerline'
 
 zsh Configurations
 ------------------
@@ -159,33 +124,39 @@ can add the `virtualenv` file, another `keys`, and a third `chpwd`.
 
 The `~/dotfiles-local/zshrc.local` is loaded after `~/dotfiles-local/zsh/configs`.
 
-vim Configurations
-------------------
-
-Similarly to the zsh configuration directory as described above, vim
-automatically loads all files in the `~/dotfiles-local/vim/plugin` directory. This does not
-have the same `pre` or `post` subdirectory support that our `zshrc` has.
-
-This is an example `~/dotfiles-local/vim/plugin/c.vim`. It is loaded every time vim starts,
-regardless of the file name:
-
-    # Indent C programs according to BSD style(9)
-    set cinoptions=:0,t0,+4,(4
-    autocmd BufNewFile,BufRead *.[ch] setlocal sw=0 ts=8 noet
-
 What's in it?
 -------------
 
-### Neovim Plugins Overview
+### Neovim Configuration
+
+This configuration is built on [NvChad](https://nvchad.com/) v2.5 with [lazy.nvim](https://github.com/folke/lazy.nvim) as the plugin manager.
+
+#### Architecture
+
+```
+config/nvim/
+├── init.lua              # Entry point
+├── lua/
+│   ├── plugins/          # Plugin definitions
+│   │   ├── init.lua      # Base plugins
+│   │   ├── devtools.lua  # Development tools
+│   │   ├── appearance.lua # UI plugins
+│   │   ├── flash.lua     # Quick navigation
+│   │   └── jupyter.lua   # Jupyter support
+│   ├── configs/          # Plugin configurations
+│   ├── mappings.lua      # Key mappings
+│   ├── options.lua       # Neovim options
+│   └── chadrc.lua        # NvChad configuration
+```
 
 #### Core Development Tools
 - **LSP & Debugging**:
-  - `nvim-lspconfig`: Language Server Protocol support
+  - `nvim-lspconfig`: Language Server Protocol support (Go, Python, TypeScript, Rust, Java, etc.)
   - `nvim-dap-ui`: Debug Adapter Protocol with UI
   - `mason.nvim`: LSP/DAP/formatter management
 
 - **Code Navigation**:
-  - `hop.nvim`: Precise cursor movement
+  - `flash.nvim`: Precise cursor movement with labels
   - `aerial.nvim`: Code structure overview
   - `nvim-treesitter`: Advanced syntax parsing
 
@@ -193,15 +164,16 @@ What's in it?
   - `neotest`: Unified test runner
   - `neotest-golang`: Go language test support
 
-#### Productivity Enhancements
 - **Code Formatting**:
   - `conform.nvim`: Auto-formatting on save
 
-- **AI Assistance**:
-  - `avante.nvim`: AI-powered code suggestions
+#### AI Integration
+- `claude-code.nvim`: Claude Code integration
+- `opencode.nvim`: OpenCode integration
+- `avante.nvim`: AI-powered code suggestions
 
-- **Diagnostics**:
-  - `tiny-inline-diagnostic`: Inline error display
+#### Git Tools
+- `git-worktree.nvim`: Git worktree management with Telescope integration
 
 #### UI & Navigation
 - **File Explorer**:
@@ -211,17 +183,43 @@ What's in it?
   - `treesitter-context`: Current code block context
   - `dropbar.nvim`: Breadcrumb navigation
 
+- **Appearance**:
+  - Theme: `solarized_osaka` with transparency
+  - `dressing.nvim`: Enhanced UI for input/select
+  - `todo-comments.nvim`: TODO comment highlighting
+
 - **Markdown Support**:
   - `render-markdown.nvim`: Markdown preview
 
-#### Essential Utilities
-- **File Operations**:
-  - `vim-mkdir`: Auto-create directories
-  - `vim-surround`: Text surround operations
+#### Language Specific
+- `nvim-java`: Java development tools
+- `gomodifytags.nvim`: Go struct tags management
 
-- **Language Specific**:
-  - `nvim-java`: Java development tools
-  - `gomodifytags`: Go struct tags management
+#### Key Mappings
+
+| Key | Description |
+|-----|-------------|
+| `<leader>gw` | List/switch/delete git worktrees |
+| `<leader>gW` | Create new git worktree |
+| `<F8>` | Debugger: Continue |
+| `<F9>` | Debugger: Toggle breakpoint |
+| `<leader>tt` | Test: Run nearest |
+| `<leader>tf` | Test: Run file |
+| `<leader>td` | Test: Debug nearest |
+| `<leader>ts` | Test: Toggle summary panel |
+| `<leader>cc` | Toggle Claude Code |
+| `<leader>aa` | Toggle OpenCode |
+| `<leader>aA` | Ask OpenCode |
+| `s` | Flash jump |
+| `S` | Flash treesitter |
+| `<C-h/j/k/l>` | Navigate windows in terminal mode |
+| `<F5>` | Toggle nvim-tree |
+| `<leader>n` | Focus nvim-tree |
+| `<F6>` | Toggle aerial (code outline) |
+| `<C-p>` | Find files (Telescope) |
+| `<leader>dp` | Show diagnostics popup |
+| `<leader>ca` | Code action |
+| `]t` / `[t` | Next/previous TODO comment |
 
 [tmux](http://robots.thoughtbot.com/a-tmux-crash-course)
 configuration:

@@ -5,11 +5,6 @@ return {
   },
 
   {
-    "pbrisbin/vim-mkdir",
-    event = "BufNewFile",
-  },
-
-  {
     "MeanderingProgrammer/render-markdown.nvim",
     ft = "markdown",
     cmd = { "RenderMarkdown" },
