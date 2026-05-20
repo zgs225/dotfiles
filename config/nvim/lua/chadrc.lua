@@ -17,7 +17,7 @@ M.nvdash = {
   load_on_startup = true,
 
   buttons = {
-    { txt = "  Find File", keys = button_prepend_leader "f f", cmd = "Telescope frecency workspace=CWD" },
+    { txt = "  Find File", keys = button_prepend_leader "f f", cmd = "Telescope find_files" },
     { txt = "󰈚  Recent Files", keys = button_prepend_leader "f o", cmd = "Telescope oldfiles" },
     { txt = "󰈭  Find Word", keys = button_prepend_leader "f w", cmd = "Telescope live_grep" },
     { txt = "  Bookmarks", keys = button_prepend_leader "f a", cmd = "Telescope marks" },
@@ -54,7 +54,7 @@ M.ui = {
 }
 
 M.base46 = {
-  theme = "solarized_osaka",
+  theme = "tokyonight",
 
   transparency = true,
 
