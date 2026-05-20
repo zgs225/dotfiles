@@ -231,32 +231,6 @@ return {
     end,
   },
 
-  -- 智能文件历史 (Frecency 算法)
-  {
-    "nvim-telescope/telescope-frecency.nvim",
-    version = "*",
-    lazy = false,
-    config = function()
-      require("frecency.config").setup {
-        db_safe_mode = false,
-        auto_validate = true,
-        path_display = { "filename_first" },
-        hide_current_buffer = true,
-        preceding = "opened",
-        enable_prompt_mappings = true,
-        default_workspace = "CWD",
-        ignore_patterns = {
-          "*.git/*",
-          "*/tmp/*",
-          "term://*",
-          "*/vendor/*",
-        },
-        workspace_scan_cmd = { "fd", "-Htf", "-E", ".git", "-E", "vendor" },
-      }
-      require("telescope").load_extension "frecency"
-    end,
-  },
-
   -- Git worktree 管理
   {
     "ThePrimeagen/git-worktree.nvim",

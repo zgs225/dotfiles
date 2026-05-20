@@ -1,0 +1,68 @@
+-- Single source of truth for the color palette.
+-- Consumed by both WezTerm (via custom.lua) and the tmux sync script.
+-- No external dependencies: safe to dofile() from any Lua environment.
+
+local palette = {
+   -- Tokyo Night
+   background = '#1a1b26',
+   foreground = '#c0caf5',
+   black = '#15161e',
+   red = '#f7768e',
+   green = '#9ece6a',
+   yellow = '#e0af68',
+   blue = '#7aa2f7',
+   magenta = '#bb9af7',
+   cyan = '#7dcfff',
+   white = '#a9b1d6',
+   bright_black = '#414868',
+   bright_red = '#f7768e',
+   bright_green = '#9ece6a',
+   bright_yellow = '#e0af68',
+   bright_blue = '#7aa2f7',
+   bright_magenta = '#bb9af7',
+   bright_cyan = '#7dcfff',
+   bright_white = '#c0caf5',
+}
+
+-- Mapping from palette keys -> tmux_conf_theme_colour_N semantics.
+-- colour_1  = main background (status bar, window status background)
+-- colour_2  = pane border, focused pane background
+-- colour_3  = status bar text, window status text
+-- colour_4  = active pane border, highlights, left-status background
+-- colour_5  = message/mode background, bell foreground (yellow)
+-- colour_6  = status-left content foreground
+-- colour_7  = light text
+-- colour_8  = dark background (status-left secondary)
+-- colour_9  = mode pane border background, status-left primary background (yellow)
+-- colour_10 = purple accent (status-left background)
+-- colour_11 = green accent
+-- colour_12 = status-right foreground (light gray)
+-- colour_13 = white text
+-- colour_14 = status-right background base
+-- colour_15 = status-right background base
+-- colour_16 = window-current foreground (red)
+-- colour_17 = status-right background highlight
+local tmux_mapping = {
+   colour_1 = 'background',
+   colour_2 = 'bright_black',
+   colour_3 = 'white',
+   colour_4 = 'blue',
+   colour_5 = 'yellow',
+   colour_6 = 'foreground',
+   colour_7 = 'foreground',
+   colour_8 = 'background',
+   colour_9 = 'yellow',
+   colour_10 = 'magenta',
+   colour_11 = 'green',
+   colour_12 = 'white',
+   colour_13 = 'foreground',
+   colour_14 = 'background',
+   colour_15 = 'background',
+   colour_16 = 'red',
+   colour_17 = 'bright_white',
+}
+
+return {
+   palette = palette,
+   tmux_mapping = tmux_mapping,
+}

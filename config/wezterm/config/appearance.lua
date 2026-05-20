@@ -1,6 +1,6 @@
 local wezterm = require('wezterm')
 local gpu_adapters = require('utils.gpu_adapter')
-local colors = require('colors.custom')
+local colors = require('colors.custom').build_colors('Tokyo Night')
 
 return {
    animation_fps = 60,
@@ -10,7 +10,7 @@ return {
    webgpu_preferred_adapter = gpu_adapters:pick_best(),
 
    -- color scheme
-   color_scheme = 'Solarized Dark (Gogh)',
+   color_scheme = 'Tokyo Night',
    colors = colors,
 
    -- background
