@@ -45,6 +45,9 @@ alias unproxy="unset_proxy"
 
 alias rm="rm -i"
 
+# linstor
+alias linstor='kubectl -n piraeus-datastore exec -it deploy/linstor-controller -- linstor'
+
 # Include custom aliases
 if [[ -f ~/.aliases.local ]]; then
   source ~/.aliases.local

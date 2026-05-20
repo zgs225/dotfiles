@@ -8,6 +8,8 @@ local on_attach = require("nvchad.configs.lspconfig").on_attach
 local on_init = require("nvchad.configs.lspconfig").on_init
 local capabilities = require("nvchad.configs.lspconfig").capabilities
 
+vim.diagnostic.config { virtual_text = false }
+
 local servers = { "html", "cssls", "gopls", "bashls", "basedpyright", "ts_ls", "yamlls", "astro", "tailwindcss" }
 local lsp_settings = {
   gopls = {
@@ -51,8 +53,6 @@ for _, lsp in ipairs(servers) do
   vim.lsp.config(lsp, {
     on_attach = function(client, bufnr)
       on_attach(client, bufnr)
-      -- use plugin to display diagnostic messages
-      vim.diagnostic.config { virtual_text = false }
       vim.lsp.inlay_hint.enable(true)
 
       keymap("n", "<leader>ca", vim.lsp.buf.code_action, opts)

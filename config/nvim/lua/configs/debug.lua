@@ -3,7 +3,12 @@ local map = vim.keymap.set
 
 require("nvim-dap-virtual-text").setup()
 
+vim.api.nvim_set_hl(0, "debugPC", { bg = "#2a3158", default = true })
+
 require("dap-go").setup({
+  delve = {
+    args = { "--check-go-version=false" },
+  },
   dap_configurations = {
     {
       type = "go",
@@ -81,7 +86,8 @@ dapui.setup({
     },
     {
       elements = {
-        { id = "repl", size = 1 },
+        { id = "console", size = 0.5 },
+        { id = "repl", size = 0.5 },
       },
       position = "bottom",
       size = 10,

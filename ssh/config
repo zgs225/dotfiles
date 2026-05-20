@@ -7,6 +7,13 @@ Host sg1
     IdentityFile ~/.ssh/LightsailDefaultKey-ap-southeast-1.pem
     ForwardAgent yes
 
+Host jp1
+    HostName jp1.yuez.me
+    Port 28888
+    User ubuntu
+    IdentityFile ~/.ssh/LightsailDefaultKey-ap-southeast-1.pem
+    ForwardAgent yes
+
 Host sg1-vpc
     HostName 100.64.0.3
     Port 28888
@@ -14,19 +21,24 @@ Host sg1-vpc
     IdentityFile ~/.ssh/LightsailDefaultKey-ap-southeast-1.pem
     ForwardAgent yes
 
-Host bj1
-    Hostname 47.93.5.61
+Host bj1-root
+    Hostname 123.57.100.82
     User root
     ForwardAgent yes
 
-Host bj1-vpc
-    Hostname 100.64.0.6
-    User root
+Host bj1
+    Hostname 123.57.100.82
+    User yuez
     ForwardAgent yes
 
 Host bj2
-    Hostname 47.94.225.232
+    Hostname 123.57.100.82
     User yuez
+    ForwardAgent yes
+
+Host bj3
+    Hostname 39.105.18.61
+    User root
     ForwardAgent yes
 
 Host la1
@@ -38,9 +50,10 @@ Host router
     User root
     HostName 192.168.2.1
 
-Host router-vpc
+Host router-proxy
     User root
-    HostName router.yuez.my.local
+    HostName 192.168.2.1
+    ProxyJump bj2
 
 Host pve
     User root
@@ -49,6 +62,11 @@ Host pve
 Host pve-253
     User root
     HostName 192.168.2.253
+
+Host clawbuntu
+    User yuez
+    HostName 192.168.2.16
+    ProxyJump bj2
 
 Host dsm
     User yuez
