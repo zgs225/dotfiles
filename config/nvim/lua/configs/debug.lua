@@ -1,5 +1,4 @@
 local dap, dapui = require "dap", require "dapui"
-local map = vim.keymap.set
 
 require("nvim-dap-virtual-text").setup()
 
@@ -35,29 +34,6 @@ dap.adapters.codelldb = {
   },
   options = { initialize_timeout_sec = 30 },
 }
-
-map("n", "<M-r>", function()
-  dap.restart()
-end, { desc = "Debugger: Restart" })
-
-map("n", "<M-s>", function()
-  dap.terminate()
-end, { desc = "Debugger: Terminate" })
-
-dap.listeners.after.event_initialized["dap_keys"] = function()
-  map("n", "<F10>", dap.step_over, { desc = "Step Over" })
-  map("n", "<F11>", dap.step_into, { desc = "Step Into" })
-  map("n", "<F12>", dap.step_out, { desc = "Step Out" })
-end
-
-local function clear_dap_keys()
-  pcall(vim.keymap.del, "n", "<F10>")
-  pcall(vim.keymap.del, "n", "<F11>")
-  pcall(vim.keymap.del, "n", "<F12>")
-end
-
-dap.listeners.after.event_terminated["dap_keys"] = clear_dap_keys
-dap.listeners.after.event_exited["dap_keys"] = clear_dap_keys
 
 dap.listeners.before.attach.dapui_config = function()
   dapui.open()

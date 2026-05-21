@@ -60,27 +60,26 @@ return {
       "DapToggleBreakpoint",
     },
     keys = {
+      { "<leader>dc", function() require("dap").continue() end, { desc = "DAP: Continue" } },
+      { "<leader>db", function() require("dap").toggle_breakpoint() end, { desc = "DAP: Toggle Breakpoint" } },
       {
-        "<F5>",
+        "<leader>dB",
         function()
-          require("dap").continue()
+          local condition = vim.fn.input("Breakpoint condition: ")
+          if condition ~= "" then
+            require("dap").set_breakpoint(condition)
+          end
         end,
-        { desc = "Debugger: Continue" },
+        { desc = "DAP: Conditional Breakpoint" },
       },
-      {
-        "<leader>b",
-        function()
-          require("dap").toggle_breakpoint()
-        end,
-        { desc = "Debugger: Toggle Breakpoint" },
-      },
-      {
-        "<leader>du",
-        function()
-          require("dapui").toggle()
-        end,
-        { desc = "Debugger: Toggle UI" },
-      },
+      { "<leader>du", function() require("dapui").toggle() end, { desc = "DAP: Toggle UI" } },
+      { "<leader>dr", function() require("dap").restart() end, { desc = "DAP: Restart Session" } },
+      { "<leader>dt", function() require("dap").terminate() end, { desc = "DAP: Terminate Session" } },
+      { "<leader>do", function() require("dap").step_over() end, { desc = "DAP: Step Over" } },
+      { "<leader>di", function() require("dap").step_into() end, { desc = "DAP: Step Into" } },
+      { "<leader>dO", function() require("dap").step_out() end, { desc = "DAP: Step Out" } },
+      { "<leader>dR", function() require("dap").run_to_cursor() end, { desc = "DAP: Run to Cursor" } },
+      { "<leader>dh", function() require("dap.ui.widgets").hover() end, { desc = "DAP: Evaluate/Hover" } },
     },
     config = function()
       dofile(vim.g.base46_cache .. "dap")
