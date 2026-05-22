@@ -162,21 +162,21 @@ return {
   {
     "nickjvandyke/opencode.nvim",
     version = "*",
-    dependencies = { "nvim-lua/plenary.nvim" },
     keys = {
       {
         "<leader>aa",
         function()
           require("opencode").toggle()
         end,
-        { desc = "Toggle OpenCode" },
+        mode = { "n", "t" },
+        desc = "Toggle OpenCode",
       },
       {
         "<leader>as",
         function()
-          require("opencode").select_server()
+          require("opencode").select()
         end,
-        { desc = "OpenCode select server" },
+        desc = "OpenCode select",
       },
       {
         "<leader>aA",
@@ -184,10 +184,28 @@ return {
           require("opencode").ask("@this: ", { submit = true })
         end,
         mode = { "n", "x" },
-        { desc = "Ask opencode" },
+        desc = "Ask opencode",
+      },
+      {
+        "<leader>ao",
+        function()
+          return require("opencode").operator("@this ") .. "_"
+        end,
+        mode = { "n", "x" },
+        desc = "Add range to opencode",
+        expr = true,
+      },
+      {
+        "<leader>aoo",
+        function()
+          return require("opencode").operator("@this ") .. "_"
+        end,
+        desc = "Add line to opencode",
+        expr = true,
       },
     },
     init = function()
+      vim.o.autoread = true
       vim.g.opencode_opts = {
         server = {
           start = function()
