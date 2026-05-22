@@ -25,7 +25,7 @@ wk.add({
   { "<leader>th", desc = "Themes",          icon = { icon = "", color = "magenta" } },
   { "<leader>D",  desc = "Type Definition", icon = { icon = "", color = "cyan" } },
   { "<leader>rn", desc = "Relative Number", icon = { icon = "#", color = "grey" } },
-  { "<leader>ra", desc = "Rename",          icon = { icon = "", color = "yellow" } },
+
   { "<leader>ma", desc = "Marks",           icon = { icon = "", color = "cyan" } },
   { "<leader>h",  desc = "Term Horizontal", icon = { icon = "", color = "green" } },
   { "<leader>v",  desc = "Term Vertical",   icon = { icon = "", color = "green" } },
@@ -85,6 +85,7 @@ wk.add({
 wk.add({
   { "<leader>ca", desc = "Code Action",        icon = { icon = "", color = "cyan" } },
   { "<leader>cc", desc = "Claude Code",        icon = { icon = "", color = "magenta" } },
+  { "<leader>cr", desc = "Rename",             icon = { icon = "", color = "yellow" } },
   { "<leader>cm", desc = "Git Commits",        icon = { icon = "", color = "orange" } },
   { "<leader>ch", desc = "Cheatsheet",         icon = { icon = "", color = "cyan" } },
 })
