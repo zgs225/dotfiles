@@ -1,5 +1,13 @@
 return {
   {
+    "folke/which-key.nvim",
+    lazy = false,
+    config = function()
+      require "configs.which-key"
+    end,
+  },
+
+  {
     "tpope/vim-surround",
     event = "User FilePost",
   },

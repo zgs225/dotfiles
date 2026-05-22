@@ -6,7 +6,6 @@ o.swapfile = false
 o.cmdheight = 0
 o.autoread = true
 
-
 -- file type detects
 
 local detect_gotmpl = {
@@ -29,10 +28,6 @@ vim.filetype.add {
     [".*%.yaml.tmpl"] = detect_gotmpl,
   },
 }
-
-if vim.fn.exists "&messagesopt" == 1 then
-  o.messagesopt = "wait:150,history:500"
-end
 
 -- Makefile 特定设置
 vim.api.nvim_create_autocmd("FileType", {
