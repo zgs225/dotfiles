@@ -10,6 +10,16 @@ local capabilities = require("nvchad.configs.lspconfig").capabilities
 
 vim.diagnostic.config { virtual_text = false }
 
+vim.api.nvim_create_autocmd("LspAttach", {
+  callback = function(args)
+    local bufnr = args.buf
+    pcall(vim.keymap.del, "n", "<leader>ra", { buffer = bufnr })
+    vim.keymap.set("n", "<leader>cr", function()
+      vim.lsp.buf.rename()
+    end, { buffer = bufnr, desc = "LSP Rename" })
+  end,
+})
+
 local servers = { "html", "cssls", "gopls", "bashls", "basedpyright", "ts_ls", "yamlls", "astro", "tailwindcss" }
 local lsp_settings = {
   gopls = {
