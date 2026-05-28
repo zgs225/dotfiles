@@ -15,7 +15,7 @@ wk.add({
   { "<leader>n",  desc = "NvimTree Focus",  icon = { icon = "", color = "blue" } },
   { "<leader>b",  desc = "New Buffer",      icon = { icon = "", color = "green" } },
   { "<leader>x",  desc = "Close Buffer",    icon = { icon = "", color = "red" } },
-  { "<leader>e",  desc = "NvimTree Focus",  icon = { icon = "", color = "blue" } },
+  { "<leader>e",  desc = "NvimTree Toggle", icon = { icon = "", color = "blue" } },
   { "<leader>/",  desc = "Comment",         icon = { icon = "", color = "yellow" } },
   { "<leader>wK", desc = "WhichKey",        icon = { icon = "", color = "cyan" } },
   { "<leader>wk", desc = "WhichKey Query",  icon = { icon = "", color = "cyan" } },
@@ -29,7 +29,6 @@ wk.add({
   { "<leader>ma", desc = "Marks",           icon = { icon = "", color = "cyan" } },
   { "<leader>h",  desc = "Term Horizontal", icon = { icon = "", color = "green" } },
   { "<leader>v",  desc = "Term Vertical",   icon = { icon = "", color = "green" } },
-  { "<leader>pt", desc = "Pick Terminal",   icon = { icon = "", color = "green" } },
 })
 
 -- +debug children
@@ -57,6 +56,8 @@ wk.add({
   { "<leader>fo", desc = "Oldfiles",           icon = { icon = "", color = "blue" } },
   { "<leader>fz", desc = "Fuzzy Find Buffer",  icon = { icon = "", color = "blue" } },
   { "<leader>fn", desc = "Notifications",      icon = { icon = "", color = "yellow" } },
+  { "<leader>ft", desc = "Switch Tab",          icon = { icon = "", color = "blue" } },
+  { "<leader>fT", desc = "Pick Terminal",       icon = { icon = "", color = "green" } },
 })
 
 -- +git children
