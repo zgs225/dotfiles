@@ -1,12 +1,5 @@
 Include conf.d/*
 
-Host sg1
-    HostName sg1.yuez.me
-    Port 28888
-    User ubuntu
-    IdentityFile ~/.ssh/LightsailDefaultKey-ap-southeast-1.pem
-    ForwardAgent yes
-
 Host jp1
     HostName jp1.yuez.me
     Port 28888
@@ -14,35 +7,13 @@ Host jp1
     IdentityFile ~/.ssh/LightsailDefaultKey-ap-southeast-1.pem
     ForwardAgent yes
 
-Host sg1-vpc
-    HostName 100.64.0.3
-    Port 28888
-    User ubuntu
-    IdentityFile ~/.ssh/LightsailDefaultKey-ap-southeast-1.pem
-    ForwardAgent yes
-
-Host bj1-root
-    Hostname 123.57.100.82
-    User root
-    ForwardAgent yes
-
-Host bj1
-    Hostname 123.57.100.82
-    User yuez
-    ForwardAgent yes
-
 Host bj2
-    Hostname 123.57.100.82
+    Hostname bj2.yuez.me
     User yuez
-    ForwardAgent yes
-
-Host bj3
-    Hostname 39.105.18.61
-    User root
     ForwardAgent yes
 
 Host la1
-    HostName 74.48.175.7
+    HostName la1.yuez.me
     User root
     ForwardAgent yes
 

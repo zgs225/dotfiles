@@ -2,6 +2,8 @@
   "$schema": "https://opencode.ai/tui.json",
   "keybinds": {
     "leader": "ctrl+g",
-    "messages_first": "home"
+    "messages_first": "home",
+    "session_list": "<leader>s",
+    "status_view": "<leader>l"
   }
 }

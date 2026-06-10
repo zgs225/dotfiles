@@ -6,7 +6,7 @@ return {
       {
         "<leader>aa",
         function()
-          require("opencode").toggle()
+          vim.g.opencode_opts.server.toggle()
         end,
         mode = { "n", "t" },
         desc = "Toggle OpenCode",
