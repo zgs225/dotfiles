@@ -99,6 +99,14 @@ return {
                 end
               end
               opencode_buf = nil
+              vim.schedule(function()
+                if vim.api.nvim_buf_is_valid(buf) then
+                  for _, w in ipairs(vim.fn.win_findbuf(buf)) do
+                    pcall(vim.api.nvim_win_close, w, true)
+                  end
+                  pcall(vim.api.nvim_buf_delete, buf, { force = true })
+                end
+              end)
             end,
           })
 
