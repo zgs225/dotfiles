@@ -8,121 +8,99 @@ Set zsh as your login shell:
 
     chsh -s $(which zsh)
 
+Install [chezmoi](https://www.chezmoi.io/):
+
+    brew install chezmoi
+
 Install
 -------
 
-Clone onto your laptop:
+Clone onto your laptop and apply:
 
     git clone https://github.com/zgs225/dotfiles.git ~/dotfiles
+    chezmoi init --source ~/dotfiles --apply
+
+Or, if you've already set up chezmoi on another machine:
+
+    chezmoi init --apply zgs225/dotfiles
 
 (Or, [fork and keep your fork
 updated](http://robots.thoughtbot.com/keeping-a-github-fork-updated)).
 
-Install [rcm](https://github.com/thoughtbot/rcm):
-
-    brew install rcm
-
-Install the dotfiles:
-
-    env RCRC=$HOME/dotfiles/rcrc rcup
-
-After the initial installation, you can run `rcup` without the one-time variable
-`RCRC` being set (`rcup` will symlink the repo's `rcrc` to `~/.rcrc` for future
-runs of `rcup`). [See
-example](https://github.com/thoughtbot/dotfiles/blob/master/rcrc).
-
-This command will create symlinks for config files in your home directory.
-Setting the `RCRC` environment variable tells `rcup` to use standard
-configuration options:
-
-* Exclude the `README.md`, `README-ES.md` and `LICENSE` files, which are part of
-  the `dotfiles` repository but do not need to be symlinked in.
-* Give precedence to personal overrides which by default are placed in
-  `~/dotfiles-local`
-* Please configure the `rcrc` file if you'd like to make personal
-  overrides in a different directory
-
+Chezmoi will create the appropriate files in your home directory and run
+post-install hooks (dependency checks, psqlrc setup, etc.).
 
 Update
 ------
 
 From time to time you should pull down any updates to these dotfiles, and run
 
-    rcup
+    chezmoi update
 
-to link any new files and install new Neovim plugins. **Note** You _must_ run
-`rcup` after pulling to ensure that all files in plugins are properly installed,
-but you can safely run `rcup` multiple times so update early and update often!
+to apply any new files and install new Neovim plugins. Chezmoi applies
+changes idempotently, so you can run it as often as you like.
 
 Make your own customizations
 ----------------------------
 
-Create a directory for your personal customizations:
+Chezmoi supports per-machine overrides via template conditions and data files.
+Create a `~/.config/chezmoi/chezmoi.yaml` with your personal data:
 
-    mkdir ~/dotfiles-local
+```yaml
+data:
+  user:
+    name: "Your Name"
+    email: "your@email.com"
+```
 
-Put your customizations in `~/dotfiles-local` appended with `.local`:
+For machine-specific zsh configs, add numbered files to `~/.zsh/configs/`:
 
-* `~/dotfiles-local/aliases.local`
-* `~/dotfiles-local/git_template.local/*`
-* `~/dotfiles-local/gitconfig.local`
-* `~/dotfiles-local/psqlrc.local` (we supply a blank `.psqlrc.local` to prevent `psql` from
-  throwing an error, but you should overwrite the file with your own copy)
-* `~/dotfiles-local/tmux.conf.local`
-* `~/dotfiles-local/zshrc.local`
-* `~/dotfiles-local/zsh/configs/*`
-
-For example, your `~/dotfiles-local/aliases.local` might look like this:
-
-    # Productivity
+    # ~/.zsh/configs/96-my-stuff.zsh
     alias todo='$EDITOR ~/.todo'
 
-Your `~/dotfiles-local/gitconfig.local` might look like this:
+For Git-specific overrides, use `~/.gitconfig.local` which is included by the
+template:
 
-    [alias]
-      l = log --pretty=colored
-    [pretty]
-      colored = format:%Cred%h%Creset %s %Cgreen(%cr) %C(bold blue)%an%Creset
     [user]
-      name = Dan Croak
-      email = dan@thoughtbot.com
+      name = Your Name
+      email = your@email.com
 
-Your `~/dotfiles-local/zshrc.local` might look like this:
+For secrets (API keys, tokens), use chezmoi's age encryption:
 
-    # load pyenv if available
-    if which pyenv &>/dev/null ; then
-      eval "$(pyenv init -)"
-    fi
+    chezmoi add --encrypt ~/.zshrc.local
 
 zsh Configurations
 ------------------
 
-Additional zsh configuration can go under the `~/dotfiles-local/zsh/configs` directory. This
-has two special subdirectories: `pre` for files that must be loaded first, and
-`post` for files that must be loaded last.
+Zsh configs are loaded in numeric order from `~/.zsh/configs/`:
 
-For example, `~/dotfiles-local/zsh/configs/pre/virtualenv` makes use of various shell
-features which may be affected by your settings, so load it first:
+```
+00-xdg.zsh           # XDG base directories
+05-options.zsh        # Shell options
+10-color.zsh          # Color settings
+15-completion.zsh     # Completion engine
+20-history.zsh        # History settings
+25-keybindings.zsh    # Key bindings
+30-fzf.zsh            # FZF integration
+35-antigen.zsh        # Antigen plugin manager
+40-homebrew.zsh       # Homebrew (macOS only)
+45-go.zsh             # Go environment
+50-nvm.zsh            # Node version manager
+55-rbenv.zsh          # Ruby version manager
+60-pyenv.zsh          # Python version manager
+65-java.zsh           # Java environment
+70-uv.zsh             # UV Python toolchain
+75-editor.zsh         # Editor defaults
+80-yarn.zsh           # Yarn global path
+85-bat.zsh            # Bat/cat aliases
+90-p10k.zsh           # Powerlevel10k theme
+94-path.zsh           # PATH configuration
+95-windsurf.zsh       # Windsurf editor
+99-completion.zsh     # Custom completions
+```
 
-    # Load the virtualenv wrapper
-    . /usr/local/bin/virtualenvwrapper.sh
-
-Setting a key binding can happen in `~/dotfiles-local/zsh/configs/keys`:
-
-    # Grep anywhere with ^G
-    bindkey -s '^G' ' | grep '
-
-Some changes, like `chpwd`, must happen in `~/dotfiles-local/zsh/configs/post/chpwd`:
-
-    # Show the entries in a directory whenever you cd in
-    function chpwd {
-      ls
-    }
-
-This directory is handy for combining dotfiles from multiple teams; one team
-can add the `virtualenv` file, another `keys`, and a third `chpwd`.
-
-The `~/dotfiles-local/zshrc.local` is loaded after `~/dotfiles-local/zsh/configs`.
+Add your own numbered files for custom configs. Higher numbers load last,
+so they can override earlier settings.
 
 What's in it?
 -------------
@@ -134,7 +112,7 @@ This configuration is built on [NvChad](https://nvchad.com/) v2.5 with [lazy.nvi
 #### Architecture
 
 ```
-config/nvim/
+dot_config/nvim/
 ├── init.lua              # Entry point
 ├── lua/
 │   ├── plugins/          # Plugin definitions
