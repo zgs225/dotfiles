@@ -1,5 +1,12 @@
 sourceDir: {{ .chezmoi.sourceDir | quote }}
 
+encryption: "age"
+age:
+  identities:
+    - "{{ .chezmoi.homeDir }}/.config/chezmoi/key.txt"
+  recipients:
+    - "age1jjdyduf7mc8lrmd9c7273hdlzhea88zs65ydy266yn4xjnwm6gyqkh75k3"
+
 data:
   isMacOS: {{ eq .chezmoi.os "darwin" }}
   isLinux: {{ eq .chezmoi.os "linux" }}
