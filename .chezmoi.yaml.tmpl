@@ -1,13 +1,9 @@
 sourceDir: {{ .chezmoi.sourceDir | quote }}
 
 data:
-  {{- if eq .chezmoi.os "darwin" }}
-  isMacOS: true
-  {{- else if eq .chezmoi.os "linux" }}
-  isLinux: true
-  {{- else if eq .chezmoi.os "windows" }}
-  isWindows: true
-  {{- end }}
+  isMacOS: {{ eq .chezmoi.os "darwin" }}
+  isLinux: {{ eq .chezmoi.os "linux" }}
+  isWindows: {{ eq .chezmoi.os "windows" }}
 
   user:
     name: "yuez"
