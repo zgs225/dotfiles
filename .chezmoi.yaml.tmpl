@@ -1,0 +1,16 @@
+sourceDir: {{ .chezmoi.sourceDir | quote }}
+
+data:
+  {{- if eq .chezmoi.os "darwin" }}
+  isMacOS: true
+  {{- else if eq .chezmoi.os "linux" }}
+  isLinux: true
+  {{- else if eq .chezmoi.os "windows" }}
+  isWindows: true
+  {{- end }}
+
+  user:
+    name: "yuez"
+    email: "i@yuez.me"
+
+  defaultEditor: "nvim"

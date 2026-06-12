@@ -1,0 +1,12 @@
+README*.md
+LICENSE
+CODE_OF_CONDUCT.md
+.gitignore
+.git/
+.worktrees/
+.opencode/
+.DS_Store
+*.swp
+docs/
+cursor/
+scripts/
