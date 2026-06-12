@@ -11,3 +11,4 @@ docs/
 cursor/
 scripts/
 dot_zshrc.local
+dot_config/opencode/opencode.json
