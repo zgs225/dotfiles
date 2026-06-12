@@ -31,6 +31,16 @@ echo "Optional tools:"
 check_cmd age
 
 echo ""
+echo "Secret management:"
+if [ -f "$HOME/.config/chezmoi/key.txt" ]; then
+  printf "  ${GREEN}✓${NC} chezmoi age key found\n"
+else
+  printf "  ${YELLOW}!${NC} chezmoi age key not found\n"
+  printf "       Run: age-keygen -o ~/.config/chezmoi/key.txt\n"
+  printf "       Then add your public key to chezmoi.toml recipients\n"
+fi
+
+echo ""
 echo "OS: $(uname -s)"
 echo "Arch: $(uname -m)"
 
