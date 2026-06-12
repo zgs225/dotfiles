@@ -1,10 +1,17 @@
+[user]
+  name  = {{ .user.name }}
+  email = {{ .user.email }}
+
 [init]
   defaultBranch = main
   templatedir = ~/.git_template
+
 [push]
   default = current
+
 [color]
   ui = auto
+
 [alias]
   aa = add --all
   ap = add --patch
@@ -23,37 +30,50 @@
   ps = !sh -c 'git push origin $(git rev-parse --abbrev-ref HEAD)'
   sm = submodule
   cp = cherry-pick
+
 [pretty]
   colored = format:%Cred%h%Creset %s %Cgreen(%cr) %C(bold blue)%an%Creset
+
 [core]
-  excludesfile = ~/.gitignore
+  editor = {{ .defaultEditor }}
+{{- if .isMacOS }}
   autocrlf = input
+{{- end }}
+  excludesfile = ~/.gitignore
+
 [merge]
   ff = only
+
 [commit]
   template = ~/.gitmessage
+
 [fetch]
   prune = true
-[user]
-  name  = zgs225
-  email = zgs225@gmail.com
+
 [credential]
-	helper = osxkeychain
+  helper = osxkeychain
+
 [github]
   user = zgs225
+
 [filter "lfs"]
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	required = true
-	process = git-lfs filter-process
+  clean = git-lfs clean -- %f
+  smudge = git-lfs smudge -- %f
+  required = true
+  process = git-lfs filter-process
+
 [rebase]
   autosquash = true
+
 [include]
   path = ~/.gitconfig.local
+
 [diff]
   colorMoved = zebra
+
 [pull]
-	rebase = false
-	ff = only
+  rebase = false
+  ff = only
+
 [safe]
-	directory = *
+  directory = *
