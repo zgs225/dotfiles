@@ -10,3 +10,4 @@ CODE_OF_CONDUCT.md
 docs/
 cursor/
 scripts/
+dot_zshrc.local
