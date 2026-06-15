@@ -8,7 +8,15 @@ fi
 killall -q polybar
 
 # Wait until the processes have been shut down
-while pgrep -u $UID -x polybar >/dev/null; do sleep 1; done
+timeout=10
+elapsed=0
+while pgrep -u $UID -x polybar >/dev/null; do
+    if [ "$elapsed" -ge "$timeout" ]; then
+        break
+    fi
+    sleep 1
+    elapsed=$((elapsed + 1))
+done
 
 # Launch bar(s) — one per monitor
 if type "xrandr" > /dev/null; then
