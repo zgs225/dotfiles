@@ -1,0 +1,150 @@
+[colors]
+background = {{ .colors.base }}
+background-alt = {{ .colors.surface0 }}
+foreground = {{ .colors.text }}
+foreground-alt = {{ .colors.subtext0 }}
+primary = {{ .colors.lavender }}
+secondary = {{ .colors.mauve }}
+alert = {{ .colors.red }}
+warning = {{ .colors.yellow }}
+success = {{ .colors.green }}
+disabled = {{ .colors.overlay0 }}
+
+[bar/main]
+monitor = ${env:MONITOR:}
+width = 100%
+height = 30
+offset-x = 0
+offset-y = 0
+radius = 0
+fixed-center = true
+
+background = ${colors.background}
+foreground = ${colors.foreground}
+
+line-size = 2
+line-color = ${colors.primary}
+
+border-size = 0
+border-color = ${colors.background}
+
+padding-left = 1
+padding-right = 1
+
+module-margin-left = 1
+module-margin-right = 1
+
+font-0 = Noto Sans CJK SC;2
+font-1 = DejaVu Sans Mono;2
+
+modules-left = i3 xwindow
+modules-center =
+modules-right = cpu memory network pulseaudio battery date
+
+tray-position = right
+tray-padding = 2
+tray-background = ${colors.background}
+
+cursor-click = pointer
+cursor-scroll = ns-resize
+
+[module/i3]
+type = internal/i3
+format = <label-state> <label-mode>
+index-sort = true
+strip-wsnumbers = true
+label-mode = %mode%
+label-mode-padding = 2
+label-mode-background = ${colors.alert}
+label-mode-foreground = ${colors.background}
+label-focused = %index%
+label-focused-background = ${colors.primary}
+label-focused-foreground = ${colors.background}
+label-focused-padding = 2
+label-unfocused = %index%
+label-unfocused-padding = 2
+label-unfocused-foreground = ${colors.foreground-alt}
+label-visible = %index%
+label-visible-background = ${colors.background-alt}
+label-visible-padding = 2
+label-urgent = %index%
+label-urgent-background = ${colors.alert}
+label-urgent-padding = 2
+
+[module/xwindow]
+type = internal/xwindow
+label = %title:0:50:...%
+label-foreground = ${colors.foreground}
+label-maxlen = 50
+
+[module/cpu]
+type = internal/cpu
+interval = 2
+format-prefix = " CPU "
+format-prefix-foreground = ${colors.foreground-alt}
+label = %percentage:2%%
+label-foreground = ${colors.foreground}
+
+[module/memory]
+type = internal/memory
+interval = 2
+format-prefix = " MEM "
+format-prefix-foreground = ${colors.foreground-alt}
+label = %percentage_used%%
+label-foreground = ${colors.foreground}
+
+[module/network]
+type = internal/network
+interface = wlp2s0
+interval = 3
+format-connected = <label-connected>
+format-connected-foreground = ${colors.foreground}
+label-connected = %ifname% %local_ip%
+format-disconnected = <label-disconnected>
+format-disconnected-foreground = ${colors.disabled}
+label-disconnected = disconnected
+
+[module/pulseaudio]
+type = internal/pulseaudio
+format-volume-prefix = " VOL "
+format-volume-prefix-foreground = ${colors.foreground-alt}
+format-volume = <label-volume>
+label-volume = %percentage%%
+label-volume-foreground = ${colors.foreground}
+label-muted = muted
+label-muted-foreground = ${colors.disabled}
+
+[module/battery]
+type = internal/battery
+battery = BAT0
+adapter = AC0
+full-at = 99
+time-format = %H:%M
+
+format-charging-prefix = " CHR "
+format-charging-prefix-foreground = ${colors.foreground-alt}
+format-charging = <label-charging>
+label-charging = %percentage%%
+label-charging-foreground = ${colors.success}
+
+format-discharging-prefix = " BAT "
+format-discharging-prefix-foreground = ${colors.foreground-alt}
+format-discharging = <label-discharging>
+label-discharging = %percentage%%
+label-discharging-foreground = ${colors.foreground}
+
+format-full-prefix = " BAT "
+format-full-prefix-foreground = ${colors.foreground-alt}
+format-full = <label-full>
+label-full = full
+label-full-foreground = ${colors.success}
+
+[module/date]
+type = internal/date
+interval = 1
+date = %Y-%m-%d
+date-alt = %a %d %b
+time = %H:%M:%S
+time-alt = %H:%M
+label = %date%  %time%
+label-foreground = ${colors.foreground}
