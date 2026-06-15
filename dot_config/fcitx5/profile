@@ -4,10 +4,7 @@ DefaultIM=Pinyin
 
 [Groups/0/Items/0]
 Name=Pinyin
-Layout=us
+Layout=
 
 [GroupOrder/0]
 0=Chinese
-
-[Groups/0/DefaultIM]
-0=Pinyin
