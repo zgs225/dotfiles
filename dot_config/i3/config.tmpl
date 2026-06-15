@@ -111,6 +111,6 @@ bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'Exit i3?' -b 'Yes' 'i3-msg e
 
 # Autostart
 exec_always --no-startup-id feh --randomize --bg-fill ~/.local/share/wallpapers/
-exec_always --no-startup-id picom --config ~/.config/picom/picom.conf
+exec --no-startup-id picom --config ~/.config/picom/picom.conf
 exec_always --no-startup-id ~/.config/polybar/launch.sh
-exec_always --no-startup-id dunst
+exec --no-startup-id dunst
