@@ -9,7 +9,7 @@ alignment = left
 show_age_threshold = 60
 word_wrap = yes
 ignore_newline = no
-geometry = "300x5-20+20"
+geometry = 300x5-20+20
 transparency = 0
 idle_threshold = 120
 monitor = 0
@@ -27,19 +27,19 @@ dmenu = rofi -dmenu -p dunst
 icon_position = left
 max_icon_size = 32
 frame_width = 2
-frame_color = "{{ .colors.lavender }}"
+frame_color = {{ .colors.lavender }}
 
 [urgency_low]
-background = "{{ .colors.base }}"
-foreground = "{{ .colors.text }}"
+background = {{ .colors.base }}
+foreground = {{ .colors.text }}
 timeout = 5
 
 [urgency_normal]
-background = "{{ .colors.surface0 }}"
-foreground = "{{ .colors.text }}"
+background = {{ .colors.surface0 }}
+foreground = {{ .colors.text }}
 timeout = 5
 
 [urgency_critical]
-background = "{{ .colors.red }}"
-foreground = "{{ .colors.base }}"
+background = {{ .colors.red }}
+foreground = {{ .colors.base }}
 timeout = 0
