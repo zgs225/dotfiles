@@ -1,0 +1,102 @@
+configuration {
+    modi: "drun,window,run";
+    show-icons: true;
+    icon-theme: "Papirus";
+    drun-display-format: "{name}";
+    font: "Noto Sans CJK SC 12";
+    matching: "normal";
+    sort: true;
+    terminal: "wezterm";
+    sidebar-mode: false;
+}
+
+* {
+    bg-col: {{ .colors.base }};
+    bg-col-light: {{ .colors.surface0 }};
+    border-col: {{ .colors.lavender }};
+    selected-col: {{ .colors.surface0 }};
+    blue: {{ .colors.blue }};
+    fg-col: {{ .colors.text }};
+    fg-col2: {{ .colors.subtext0 }};
+    grey: {{ .colors.overlay0 }};
+    red: {{ .colors.red }};
+    urgent: {{ .colors.red }};
+
+    background-color: @bg-col;
+    text-color: @fg-col;
+    border: 2px;
+    border-radius: 4;
+    border-color: @border-col;
+    padding: 4px;
+}
+
+#window {
+    background-color: @bg-col;
+    border: 2px;
+    border-color: @border-col;
+    border-radius: 8;
+    width: 480px;
+}
+
+#mainbox {
+    border: 0;
+    padding: 4;
+    children: [inputbar, listview];
+}
+
+#inputbar {
+    border: 0;
+    padding: 4;
+    children: [prompt, entry];
+}
+
+#prompt {
+    text-color: @blue;
+    padding: 4;
+}
+
+#entry {
+    padding: 4;
+}
+
+#listview {
+    border: 0;
+    columns: 1;
+    lines: 8;
+    cycle: true;
+    dynamic: true;
+    scrollbar: false;
+}
+
+#element {
+    padding: 4;
+    border-radius: 4;
+}
+
+#element normal {
+    background-color: @bg-col;
+    text-color: @fg-col;
+}
+
+#element selected {
+    background-color: @selected-col;
+    text-color: @fg-col;
+}
+
+#element alternate {
+    background-color: @bg-col;
+    text-color: @fg-col;
+}
+
+#element urgent {
+    background-color: @urgent;
+    text-color: @bg-col;
+}
+
+#scrollbar {
+    width: 4px;
+    border: 0;
+    handle-color: @grey;
+    handle-width: 4px;
+    padding: 0;
+}
