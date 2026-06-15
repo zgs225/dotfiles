@@ -101,8 +101,8 @@ bindsym $mod+Shift+q kill
 bindsym $mod+Ctrl+l exec ~/.local/share/bin/lock.sh
 
 # Screenshots
-bindsym Print exec "mkdir -p ~/Pictures/screenshots && maim ~/Pictures/screenshots/$(date +%Y%m%d-%H%M%S).png"
-bindsym Shift+Print exec "mkdir -p ~/Pictures/screenshots && maim -s ~/Pictures/screenshots/$(date +%Y%m%d-%H%M%S).png"
+bindsym Print exec --no-startup-id ~/.local/share/bin/screenshot.sh full
+bindsym Shift+Print exec --no-startup-id ~/.local/share/bin/screenshot.sh select
 
 # i3 control
 bindsym $mod+Shift+c reload
