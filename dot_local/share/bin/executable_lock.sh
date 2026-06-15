@@ -1,15 +1,25 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
+for cmd in i3lock maim magick; do
+    if ! command -v "$cmd" > /dev/null 2>&1; then
+        echo "Error: $cmd is required but not installed" >&2
+        exit 1
+    fi
+done
+
 # i3lock wrapper — Catppuccin Mocha
 # Takes a screenshot, blurs it, and uses it as lock background
 
-tmpbg="/tmp/i3lock-$(date +%s).png"
+tmpbg=$(mktemp /tmp/i3lock-XXXXXX.png)
+trap 'rm -f "$tmpbg"' EXIT
 
 # Take screenshot
 maim "$tmpbg"
 
 # Blur screenshot
-convert "$tmpbg" -blur 0x8 "$tmpbg"
+magick convert "$tmpbg" -blur 0x8 "$tmpbg"
 
 # Lock with Catppuccin Mocha colors
 i3lock \
@@ -41,6 +51,3 @@ i3lock \
     --date-size=18 \
     --time-str="%H:%M" \
     --date-str="%Y-%m-%d"
-
-# Clean up
-rm "$tmpbg"
