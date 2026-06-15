@@ -21,19 +21,6 @@ client.urgent             {{ .colors.red }}      {{ .colors.red }}      {{ .colo
 client.placeholder        {{ .colors.surface0 }} {{ .colors.base }}    {{ .colors.text }}    {{ .colors.overlay0 }} {{ .colors.surface0 }}
 client.background         {{ .colors.base }}
 
-# i3bar colors (fallback — polybar replaces this)
-bar {
-    colors {
-        background {{ .colors.base }}
-        statusline {{ .colors.text }}
-        separator  {{ .colors.overlay0 }}
-        focused_workspace  {{ .colors.lavender }} {{ .colors.lavender }} {{ .colors.base }}
-        active_workspace   {{ .colors.surface1 }} {{ .colors.surface1 }} {{ .colors.text }}
-        inactive_workspace {{ .colors.surface0 }} {{ .colors.surface0 }} {{ .colors.text }}
-        urgent_workspace   {{ .colors.red }}      {{ .colors.red }}      {{ .colors.base }}
-    }
-}
-
 # Focus follows mouse, but mouse click doesn't change focus
 focus_follows_mouse yes
 focus_on_window_activation smart
