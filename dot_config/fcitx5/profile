@@ -1,0 +1,13 @@
+[Groups/0]
+Name=Chinese
+DefaultIM=Pinyin
+
+[Groups/0/Items/0]
+Name=Pinyin
+Layout=us
+
+[GroupOrder/0]
+0=Chinese
+
+[Groups/0/DefaultIM]
+0=Pinyin
