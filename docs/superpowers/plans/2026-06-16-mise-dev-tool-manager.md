@@ -38,23 +38,26 @@ Each per-tool TOML contains a single `[tools]` block with one entry. This matche
 ## Task 1: Create the mise config directory scaffolding
 
 **Files:**
-- Create: `dot_config/mise/conf.d/` (directory only; real content added in Task 2)
+- Create: `dot_config/mise/conf.d/.gitkeep` (placeholder so git tracks the empty directory; matches the existing repo convention used in `dot_local/share/wallpapers/.gitkeep`. The file will be removed in Task 2 once real content is added.)
 
-- [ ] **Step 1: Create the mise config directories**
+- [ ] **Step 1: Create the mise config directories and placeholder**
 
 Run:
 ```bash
 mkdir -p dot_config/mise/conf.d
+touch dot_config/mise/conf.d/.gitkeep
 ```
 
-Expected: no output. Verify with `ls -la dot_config/mise/` — should show `conf.d/` directory exists.
+Expected: no output. Verify with `ls -la dot_config/mise/` — should show `conf.d/` directory exists. Verify with `ls -la dot_config/mise/conf.d/` — should show `.gitkeep` file.
 
 - [ ] **Step 2: Commit the directory scaffolding**
 
 ```bash
-git add dot_config/mise/conf.d
+git add dot_config/mise/conf.d/.gitkeep
 git commit -m "chore(mise): create config directory scaffolding"
 ```
+
+Note: we use `.gitkeep` (the existing repo convention) rather than `.keep` so the placeholder is consistent with the rest of the dotfiles.
 
 ---
 
