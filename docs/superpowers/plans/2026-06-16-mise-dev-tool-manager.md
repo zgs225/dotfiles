@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add `mise` as the dev tool version manager to the chezmoi dotfiles, installing python 3.13, node 22, rust (latest), golang (latest), lua 5.1, and luarocks, with shell integration via the existing `dot_zsh/configs/` auto-load mechanism.
+**Goal:** Add `mise` as the dev tool version manager to the chezmoi dotfiles, installing python 3.13, node 22, rust (latest), golang (latest), and lua 5.1, with shell integration via the existing `dot_zsh/configs/` auto-load mechanism. LuaRocks is auto-bundled by the vfox-lua plugin alongside lua 5.1, not installed as a separate mise tool.
 
 **Architecture:** Static TOML config files under `dot_config/mise/` (one base + one per tool) symlinked by chezmoi. A single new zsh config file (`97-mise.zsh`) sources `mise activate zsh`, auto-loaded by the existing zshrc loop. The legacy `. "$HOME/.cargo/env"` source in `dot_zshenv` is removed since mise now owns the rust shims.
 
@@ -26,8 +26,7 @@ Final tool installation and shell verification happen on the target device (docu
 | `dot_config/mise/conf.d/node.toml` | new | `node = "22"` |
 | `dot_config/mise/conf.d/rust.toml` | new | `rust = "latest"` |
 | `dot_config/mise/conf.d/go.toml` | new | `go = "latest"` |
-| `dot_config/mise/conf.d/lua.toml` | new | `lua = "5.1"` |
-| `dot_config/mise/conf.d/luarocks.toml` | new | `luarocks = "latest"` |
+| `dot_config/mise/conf.d/lua.toml` | new | `lua = "5.1"` (vfox-lua plugin auto-bundles LuaRocks) |
 | `dot_zsh/configs/97-mise.zsh` | new | `eval "$(mise activate zsh)"` hook |
 | `dot_zshenv` | modify | Remove trailing `. "$HOME/.cargo/env"` line |
 
@@ -70,7 +69,6 @@ Note: we use `.gitkeep` (the existing repo convention) rather than `.keep` so th
 - Create: `dot_config/mise/conf.d/rust.toml`
 - Create: `dot_config/mise/conf.d/go.toml`
 - Create: `dot_config/mise/conf.d/lua.toml`
-- Create: `dot_config/mise/conf.d/luarocks.toml`
 
 - [ ] **Step 1: Write the base config file**
 
@@ -128,16 +126,7 @@ Create `dot_config/mise/conf.d/lua.toml` with:
 lua = "5.1"
 ```
 
-- [ ] **Step 7: Write the luarocks tool config**
-
-Create `dot_config/mise/conf.d/luarocks.toml` with:
-
-```toml
-[tools]
-luarocks = "latest"
-```
-
-- [ ] **Step 8: Verify all config files are present**
+- [ ] **Step 7: Verify all config files are present**
 
 Run:
 ```bash
@@ -149,24 +138,14 @@ Expected output (filename order may vary):
 dot_config/mise/config.toml
 dot_config/mise/conf.d/go.toml
 dot_config/mise/conf.d/lua.toml
-dot_config/mise/conf.d/luarocks.toml
 dot_config/mise/conf.d/node.toml
 dot_config/mise/conf.d/python.toml
 dot_config/mise/conf.d/rust.toml
 ```
 
-- [ ] **Step 9: Validate the TOML files parse correctly**
+- [ ] **Step 8: Validate the TOML files parse correctly**
 
-Run from the repo root (or copy the files to `~/.config/mise/` first — see Step 10 for the proper test path):
-
-```bash
-for f in dot_config/mise/config.toml dot_config/mise/conf.d/*.toml; do
-  echo "==> $f"
-  mise config ls --no-header 2>/dev/null | head -1
-done
-```
-
-Simpler validation: use python to parse each file:
+Use python to parse each file:
 ```bash
 python3 -c "
 import tomllib, glob, sys
@@ -185,7 +164,7 @@ sys.exit(0 if ok else 1)
 
 Expected: every file prints `OK ...` and exit code is 0.
 
-- [ ] **Step 10: Apply the config with chezmoi (dry-run first)**
+- [ ] **Step 9: Apply the config with chezmoi (dry-run first)**
 
 The target device will run `chezmoi apply` to install the files. From the control machine, validate that the source tree is well-formed:
 
@@ -195,7 +174,7 @@ chezmoi apply --source . --dry-run 2>&1 | head -30
 
 Expected: a diff showing the files that *would* be created at `~/.config/mise/config.toml` and `~/.config/mise/conf.d/*.toml`. No errors.
 
-- [ ] **Step 11: (Optional) Apply locally to test the deployment**
+- [ ] **Step 10: (Optional) Apply locally to test the deployment**
 
 If you have a non-production `~/.config/mise/` (e.g. this is your primary machine but you don't mind the test files appearing), run:
 
@@ -205,11 +184,11 @@ chezmoi apply --source . --destination "$HOME"
 
 This is purely a smoke test of the deployment mechanism. The actual `mise install` and runtime use happens on the target device.
 
-- [ ] **Step 12: Commit the new config files**
+- [ ] **Step 11: Commit the new config files**
 
 ```bash
 git add dot_config/mise/config.toml dot_config/mise/conf.d/
-git commit -m "feat(mise): add python, node, rust, go, lua, luarocks config"
+git commit -m "feat(mise): add python, node, rust, go, lua config"
 ```
 
 ---
@@ -220,9 +199,9 @@ git commit -m "feat(mise): add python, node, rust, go, lua, luarocks config"
 
 > **Note:** This task replaces what would have been "run `mise install`" on the target device. From the control machine (which does not have mise installed), we can only do static checks on the TOML config. The actual `mise install` + shell integration verification happens on the target device after the dotfiles are deployed there.
 
-- [ ] **Step 1: Confirm all seven TOML files exist and parse**
+- [ ] **Step 1: Confirm all five per-tool TOML files plus the base config exist and parse**
 
-Run the python-based TOML validator from Task 2, Step 9 — it should already have been run. Re-run for a final check:
+Run the python-based TOML validator from Task 2, Step 8 — it should already have been run. Re-run for a final check:
 
 ```bash
 python3 -c "
@@ -240,18 +219,19 @@ sys.exit(0 if ok else 1)
 "
 ```
 
-Expected: all seven files print `OK`. Exit code 0.
+Expected: all five per-tool files plus the base `config.toml` print `OK`. Exit code 0.
 
 - [ ] **Step 2: Confirm every tool listed in the spec has a config file**
 
 ```bash
-for tool in python node rust go lua luarocks; do
+for tool in python node rust go lua; do
   if [ -f "dot_config/mise/conf.d/${tool}.toml" ]; then
     echo "OK  ${tool}.toml"
   else
     echo "MISSING  ${tool}.toml"
   fi
 done
+[ ! -f dot_config/mise/conf.d/luarocks.toml ] && echo "OK: luarocks.toml absent (luarocks bundled by vfox-lua)" || echo "FAIL: luarocks.toml should be absent"
 ```
 
 Expected: every line starts with `OK`.
@@ -259,7 +239,7 @@ Expected: every line starts with `OK`.
 - [ ] **Step 3: Confirm version specs match the spec**
 
 ```bash
-for tool in python node rust go lua luarocks; do
+for tool in python node rust go lua; do
   printf '%-10s ' "$tool:"
   grep -E "^\s*${tool}\s*=" "dot_config/mise/conf.d/${tool}.toml"
 done
@@ -272,7 +252,6 @@ node:      node = "22"
 rust:      rust = "latest"
 go:        go = "latest"
 lua:       lua = "5.1"
-luarocks:  luarocks = "latest"
 ```
 
 (No commit in this task — no files changed.)
@@ -289,7 +268,7 @@ luarocks:  luarocks = "latest"
 Create `dot_zsh/configs/97-mise.zsh` with:
 
 ```zsh
-# mise: dev tool version manager (rust, go, node, python, lua, luarocks)
+# mise: dev tool version manager (rust, go, node, python, lua; luarocks bundled)
 if command -v mise &>/dev/null; then
   eval "$(mise activate zsh)"
 fi
@@ -394,9 +373,9 @@ After `chezmoi apply` on the target device and opening a fresh interactive zsh s
 
 1. `command -v mise && mise --version` — mise itself on PATH
 2. `mise install` — install all configured tools (first run only; takes several minutes)
-3. `mise ls` — all six tools listed with their resolved versions
-4. `for tool in python node cargo rustc go lua luarocks; do command -v "$tool"; done` — every tool resolves to a path containing `mise/shims`
-5. `python --version; node --version; rustc --version; go version; lua -v; luarocks --version` — each tool reports the correct version
+3. `mise ls` — all five configured tools listed with their resolved versions
+4. `for tool in python node cargo rustc go lua; do command -v "$tool"; done` — every tool resolves to a path containing `mise/shims`
+5. `python --version; node --version; rustc --version; go version; lua -v; luarocks --version` — each tool reports the correct version (note: `luarocks` works because the vfox-lua plugin auto-installs it alongside lua 5.1)
 6. `zsh -c 'echo $PATH' | tr ':' '\n' | grep -q mise && echo "FAIL" || echo "OK: mise absent from non-interactive PATH"` — confirms mise is interactive-only
 7. `grep -q 'cargo/env' ~/.zshenv && echo "FAIL" || echo "OK"` — confirms cargo/env line was removed
 8. `cargo --version && rustc --version` — confirms rust works without the rustup shim

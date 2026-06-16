@@ -5,7 +5,7 @@
 
 ## Overview
 
-Adopt [mise](https://mise.jdx.dev/) (formerly rtx) as the dev tool version manager for the dotfiles, replacing the ad-hoc tool installs. Mise manages python, node, rust, golang, lua, and luarocks via a chezmoi-managed config so tool versions stay in sync across machines.
+Adopt [mise](https://mise.jdx.dev/) (formerly rtx) as the dev tool version manager for the dotfiles, replacing the ad-hoc tool installs. Mise manages python, node, rust, golang, and lua via a chezmoi-managed config so tool versions stay in sync across machines. LuaRocks is installed as a side effect of the lua 5.1 install (vfox-lua plugin auto-bundles it).
 
 ## Context
 
@@ -36,8 +36,7 @@ Adopt [mise](https://mise.jdx.dev/) (formerly rtx) as the dev tool version manag
 | node    | `22`                 | Pinned minor — current Node.js LTS                 |
 | rust    | `latest`             | Always track stable (rust release cadence is fast) |
 | golang  | `latest`             | Always track stable (go release cadence is fast)   |
-| lua     | `5.1`                | Neovim 0.10 lua/luarocks ecosystem                  |
-| luarocks| `latest`             | Tracks lua 5.1 (matched automatically by mise)     |
+| lua     | `5.1`                | Neovim 0.10 lua ecosystem; vfox-lua plugin auto-bundles LuaRocks for Lua 5.x |
 
 ## File Structure
 
@@ -50,8 +49,7 @@ dot_config/
         ├── node.toml            # node = "22"
         ├── rust.toml            # rust = "latest"
         ├── go.toml              # go = "latest"
-        ├── lua.toml             # lua = "5.1"
-        └── luarocks.toml        # luarocks = "latest"
+        └── lua.toml             # lua = "5.1" (vfox-lua plugin auto-bundles LuaRocks)
 
 dot_zsh/
 └── configs/
@@ -86,7 +84,7 @@ This makes adding/removing/re-pinning a single tool a one-file change.
 ### 3. `dot_zsh/configs/97-mise.zsh`
 
 ```zsh
-# mise: dev tool version manager (rust, go, node, python, lua, luarocks)
+# mise: dev tool version manager (rust, go, node, python, lua; luarocks bundled)
 if command -v mise &>/dev/null; then
   eval "$(mise activate zsh)"
 fi
@@ -115,14 +113,14 @@ Remove the final line `. "$HOME/.cargo/env"`. The rest of the file (PATH-warn-on
 Manual checks after `chezmoi apply` and a fresh interactive shell:
 
 1. `mise --version` — mise itself on PATH
-2. `mise ls` — all six tools listed with their resolved versions
-3. `which python node cargo rustc go lua luarocks` — each resolves to a mise shim
+2. `mise ls` — all five configured tools listed with their resolved versions
+3. `which python node cargo rustc go lua` — each resolves to a mise shim
 4. `python --version` → `Python 3.13.x`
 5. `node --version` → `v22.x.x`
 6. `rustc --version` → `rustc 1.xx.x (...)`
 7. `go version` → `go1.xx.x`
 8. `lua -v` → `Lua 5.1.x`
-9. `luarocks --version` → installed and reports a version
+9. `luarocks --version` → reports a version (LuaRocks is auto-installed by the vfox-lua plugin alongside lua 5.1, not via a separate mise tool entry)
 10. `echo $PATH | tr ':' '\n' | grep mise` — mise shims dir present in interactive shell PATH
 11. `zsh -c 'echo $PATH'` (non-interactive) — mise shims dir **absent** (mise activate only runs interactively, which is correct — scripts should use system or explicit tools)
 12. `grep -q 'cargo/env' ~/.zshenv && echo FAIL || echo OK` — cargo/env line is gone
