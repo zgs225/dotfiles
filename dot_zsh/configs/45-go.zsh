@@ -6,7 +6,7 @@ for DIR in $GO_DIRS[@]; do
   fi
 done
 
-export PATH="$PATH:$(go env GOPATH)/bin"
+command -v go &>/dev/null && export PATH="$PATH:$(go env GOPATH)/bin"
 
 # Go Version Manager
 # https://github.com/moovweb/gvm
