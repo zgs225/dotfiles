@@ -1,10 +1,22 @@
 [Groups/0]
-Name=Chinese
-DefaultIM=Pinyin
+# Group Name
+Name=默认
+# Layout
+Default Layout=cn
+# Default Input Method
+DefaultIM=pinyin
 
 [Groups/0/Items/0]
-Name=Pinyin
+# Name
+Name=keyboard-cn
+# Layout
 Layout=
 
-[GroupOrder/0]
-0=Chinese
+[Groups/0/Items/1]
+# Name
+Name=pinyin
+# Layout
+Layout=
+
+[GroupOrder]
+0=默认
