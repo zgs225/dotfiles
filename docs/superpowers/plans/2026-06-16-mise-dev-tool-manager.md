@@ -6,7 +6,14 @@
 
 **Architecture:** Static TOML config files under `dot_config/mise/` (one base + one per tool) symlinked by chezmoi. A single new zsh config file (`97-mise.zsh`) sources `mise activate zsh`, auto-loaded by the existing zshrc loop. The legacy `. "$HOME/.cargo/env"` source in `dot_zshenv` is removed since mise now owns the rust shims.
 
-**Tech Stack:** mise (pre-installed), chezmoi, zsh, TOML.
+**Tech Stack:** mise (installed on target device, not on the control machine used to author the dotfiles), chezmoi, zsh, TOML.
+
+**Important execution context:** The user is authoring these dotfiles on a control machine that does *not* have mise installed. mise lives on the target device. Therefore this plan does **not** include a local `mise install` step or a local end-to-end verification. Local validation is limited to:
+- TOML syntax checks (python `tomllib`)
+- `chezmoi apply --dry-run --source .` to confirm the source tree is well-formed
+- A `chezmoi apply` to the local `~/.config/mise/` to confirm files deploy
+
+Final tool installation and shell verification happen on the target device (documented in the spec's Verification section).
 
 ---
 
@@ -28,21 +35,12 @@ Each per-tool TOML contains a single `[tools]` block with one entry. This matche
 
 ---
 
-## Task 1: Verify mise is installed and create the mise config directory
+## Task 1: Create the mise config directory scaffolding
 
 **Files:**
-- Create: `dot_config/mise/.keep` (placeholder so the directory is tracked by git before any real files are added; will be removed in Task 2)
+- Create: `dot_config/mise/conf.d/` (directory only; real content added in Task 2)
 
-- [ ] **Step 1: Verify mise is installed and on PATH**
-
-Run:
-```bash
-command -v mise && mise --version
-```
-
-Expected: a path to `mise` is printed (e.g. `/Users/yuez/.local/bin/mise`) and a version string like `2026.x.x`. If `command -v mise` fails, stop and ask the user to install mise before continuing.
-
-- [ ] **Step 2: Create the mise config directories**
+- [ ] **Step 1: Create the mise config directories**
 
 Run:
 ```bash
@@ -51,7 +49,7 @@ mkdir -p dot_config/mise/conf.d
 
 Expected: no output. Verify with `ls -la dot_config/mise/` — should show `conf.d/` directory exists.
 
-- [ ] **Step 3: Commit the directory scaffolding**
+- [ ] **Step 2: Commit the directory scaffolding**
 
 ```bash
 git add dot_config/mise/conf.d
@@ -184,26 +182,27 @@ sys.exit(0 if ok else 1)
 
 Expected: every file prints `OK ...` and exit code is 0.
 
-- [ ] **Step 10: Apply the config with chezmoi and verify mise sees it**
+- [ ] **Step 10: Apply the config with chezmoi (dry-run first)**
 
-Run:
+The target device will run `chezmoi apply` to install the files. From the control machine, validate that the source tree is well-formed:
+
+```bash
+chezmoi apply --source . --dry-run 2>&1 | head -30
+```
+
+Expected: a diff showing the files that *would* be created at `~/.config/mise/config.toml` and `~/.config/mise/conf.d/*.toml`. No errors.
+
+- [ ] **Step 11: (Optional) Apply locally to test the deployment**
+
+If you have a non-production `~/.config/mise/` (e.g. this is your primary machine but you don't mind the test files appearing), run:
+
 ```bash
 chezmoi apply --source . --destination "$HOME"
 ```
 
-Then verify mise loads the config (it looks in `~/.config/mise/`):
-```bash
-mise ls --current 2>&1 | head -20
-```
+This is purely a smoke test of the deployment mechanism. The actual `mise install` and runtime use happens on the target device.
 
-Expected: mise lists at least `python`, `node`, `rust`, `go`, `lua`, `luarocks` with their resolved versions (or shows "missing" for tools not yet installed — that's fine, the next task installs them).
-
-If `mise ls` errors with "no config found", confirm the files actually exist at `~/.config/mise/config.toml` and `~/.config/mise/conf.d/*.toml`:
-```bash
-ls -la ~/.config/mise/ ~/.config/mise/conf.d/
-```
-
-- [ ] **Step 11: Commit the new config files**
+- [ ] **Step 12: Commit the new config files**
 
 ```bash
 git add dot_config/mise/config.toml dot_config/mise/conf.d/
@@ -212,84 +211,66 @@ git commit -m "feat(mise): add python, node, rust, go, lua, luarocks config"
 
 ---
 
-## Task 3: Install the tools via mise and verify they resolve
+## Task 3: Validate the mise config statically (control-machine local check)
 
-**Files:** none (verification + installation only)
+**Files:** none (validation only; tool installation happens on the target device)
 
-- [ ] **Step 1: Install all configured tools**
+> **Note:** This task replaces what would have been "run `mise install`" on the target device. From the control machine (which does not have mise installed), we can only do static checks on the TOML config. The actual `mise install` + shell integration verification happens on the target device after the dotfiles are deployed there.
 
-Run:
-```bash
-mise install
-```
+- [ ] **Step 1: Confirm all seven TOML files exist and parse**
 
-Expected: mise downloads and installs python 3.13.x, node 22.x, rust stable, go latest, lua 5.1.x, and luarocks. Output will look something like:
-
-```
-python 3.13.x        installed
-node 22.x.x          installed
-rust 1.xx.x          installed
-go 1.xx.x            installed
-lua 5.1.x            installed
-luarocks 3.x.x       installed
-```
-
-This step may take several minutes (rust alone is ~250MB).
-
-- [ ] **Step 2: Verify mise lists all installed tools**
-
-Run:
-```bash
-mise ls
-```
-
-Expected: all six tools appear with a green checkmark (or "installed" status). Example:
-
-```
-python  3.13.x
-node    22.x.x
-go      1.xx.x
-lua     5.1.x
-luarocks 3.x.x
-rust    1.xx.x
-```
-
-- [ ] **Step 3: Verify each tool resolves to a mise shim (without shell activation)**
-
-Without sourcing `97-mise.zsh`, the mise shim dir is not yet on PATH. The shims live at `~/.local/share/mise/shims/`. Verify:
+Run the python-based TOML validator from Task 2, Step 9 — it should already have been run. Re-run for a final check:
 
 ```bash
-ls ~/.local/share/mise/shims/ | grep -E '^(python[0-9.]*|node|cargo|rustc|go|lua|luarocks)$'
+python3 -c "
+import tomllib, glob, sys
+ok = True
+for p in sorted(glob.glob('dot_config/mise/**/*.toml', recursive=True)):
+    try:
+        with open(p, 'rb') as f:
+            tomllib.load(f)
+        print(f'OK  {p}')
+    except Exception as e:
+        print(f'ERR {p}: {e}')
+        ok = False
+sys.exit(0 if ok else 1)
+"
 ```
 
-Expected: a non-empty list including the tool shims mise created (e.g. `python`, `python3`, `node`, `cargo`, `rustc`, `go`, `lua`, `luarocks`).
+Expected: all seven files print `OK`. Exit code 0.
 
-Note: the user's shell won't see these shims yet — that requires the `97-mise.zsh` hook from Task 4. The point of this step is to confirm mise actually built the shims; the next task wires them into the shell.
-
-- [ ] **Step 4: Test each shim runs (using its absolute path)**
+- [ ] **Step 2: Confirm every tool listed in the spec has a config file**
 
 ```bash
-~/.local/share/mise/shims/python --version
-~/.local/share/mise/shims/node --version
-~/.local/share/mise/shims/cargo --version
-~/.local/share/mise/shims/rustc --version
-~/.local/share/mise/shims/go version
-~/.local/share/mise/shims/lua -v
-~/.local/share/mise/shims/luarocks --version
+for tool in python node rust go lua luarocks; do
+  if [ -f "dot_config/mise/conf.d/${tool}.toml" ]; then
+    echo "OK  ${tool}.toml"
+  else
+    echo "MISSING  ${tool}.toml"
+  fi
+done
 ```
 
-Expected output (versions will vary):
-```
-Python 3.13.x
-v22.x.x
-cargo 1.xx.x (...)
-rustc 1.xx.x (...)
-go version go1.xx.x darwin/amd64
-Lua 5.1.x
-<x.x.x>
+Expected: every line starts with `OK`.
+
+- [ ] **Step 3: Confirm version specs match the spec**
+
+```bash
+for tool in python node rust go lua luarocks; do
+  printf '%-10s ' "$tool:"
+  grep -E "^\s*${tool}\s*=" "dot_config/mise/conf.d/${tool}.toml"
+done
 ```
 
-If any command fails, run `mise install <tool>` for that specific tool to retry, then re-run the check.
+Expected output (versions come from the spec, file is the one in the repo):
+```
+python:    python = "3.13"
+node:      node = "22"
+rust:      rust = "latest"
+go:        go = "latest"
+lua:       lua = "5.1"
+luarocks:  luarocks = "latest"
+```
 
 (No commit in this task — no files changed.)
 
@@ -398,88 +379,35 @@ git commit -m "refactor(zshenv): drop .cargo/env source; mise owns rust shims"
 
 ---
 
-## Task 6: End-to-end verification
+## Task 6: Document manual verification for the target device
 
-**Files:** none (verification only)
+**Files:** none (this task is documentation only; the actual verification happens on the target device after `chezmoi apply`)
 
-- [ ] **Step 1: Apply all dotfiles with chezmoi**
+> **Note:** End-to-end verification requires a working shell on the target device where mise is installed. This task packages the verification steps for the user to run on the target device.
 
-```bash
-chezmoi apply --source . --destination "$HOME"
-```
+- [ ] **Step 1: Run the verification checklist on the target device**
 
-Expected: no errors. If chezmoi prints a diff, review it and confirm the changes match the spec.
+After `chezmoi apply` on the target device and opening a fresh interactive zsh shell (`exec zsh`), run the full verification list from the spec (`docs/superpowers/specs/2026-06-16-mise-dev-tool-manager-design.md` → "Verification" section):
 
-- [ ] **Step 2: Open a fresh interactive zsh shell**
+1. `command -v mise && mise --version` — mise itself on PATH
+2. `mise install` — install all configured tools (first run only; takes several minutes)
+3. `mise ls` — all six tools listed with their resolved versions
+4. `for tool in python node cargo rustc go lua luarocks; do command -v "$tool"; done` — every tool resolves to a path containing `mise/shims`
+5. `python --version; node --version; rustc --version; go version; lua -v; luarocks --version` — each tool reports the correct version
+6. `zsh -c 'echo $PATH' | tr ':' '\n' | grep -q mise && echo "FAIL" || echo "OK: mise absent from non-interactive PATH"` — confirms mise is interactive-only
+7. `grep -q 'cargo/env' ~/.zshenv && echo "FAIL" || echo "OK"` — confirms cargo/env line was removed
+8. `cargo --version && rustc --version` — confirms rust works without the rustup shim
 
-```bash
-exec zsh
-```
+- [ ] **Step 2: No commit in this task**
 
-This replaces the current shell with a new one that sources all dotfiles.
-
-- [ ] **Step 3: Verify mise is on PATH**
-
-```bash
-command -v mise && mise --version
-```
-
-Expected: a path to mise (e.g. `/Users/yuez/.local/bin/mise`) and a version string.
-
-- [ ] **Step 4: Verify all six tools resolve to mise shims**
-
-```bash
-for tool in python node cargo rustc go lua luarocks; do
-  path=$(command -v "$tool" 2>/dev/null) || { echo "MISSING: $tool"; continue; }
-  case "$path" in
-    *mise/shims*) echo "OK  $tool -> $path" ;;
-    *)            echo "WRONG SHIM: $tool -> $path (expected mise shim)" ;;
-  esac
-done
-```
-
-Expected: every line starts with `OK`. If any line shows `WRONG SHIM`, the legacy tool config (nvm, pyenv, gvm) is shadowing mise — check load order in `dot_zsh/configs/`.
-
-- [ ] **Step 5: Verify each tool reports the correct version**
-
-```bash
-python --version    # Python 3.13.x
-node --version      # v22.x.x
-rustc --version     # rustc 1.xx.x (...)
-go version          # go version go1.xx.x ...
-lua -v              # Lua 5.1.x
-luarocks --version  # <x.x.x>
-```
-
-- [ ] **Step 6: Confirm mise shims are absent from non-interactive shells**
-
-```bash
-zsh -c 'echo $PATH' | tr ':' '\n' | grep -q mise && echo "FAIL: mise in non-interactive PATH" || echo "OK: mise absent from non-interactive PATH"
-```
-
-Expected: `OK: mise absent from non-interactive PATH`. This confirms mise only activates for interactive shells (correct — scripts should use system or explicit tools).
-
-- [ ] **Step 7: Confirm cargo/env is no longer sourced**
-
-```bash
-grep -q 'cargo/env' ~/.zshenv && echo "FAIL: cargo/env still in ~/.zshenv" || echo "OK: cargo/env removed"
-```
-
-Expected: `OK: cargo/env removed`.
-
-- [ ] **Step 8: Confirm rust still works after cargo/env removal**
-
-```bash
-cargo --version && rustc --version
-```
-
-Expected: both report versions. If they fail, check `mise ls` and `mise install rust` to repair the toolchain.
+This task is purely procedural. The verification steps are already documented in the spec.
 
 ---
 
 ## Self-Review Notes
 
-- **Spec coverage:** every requirement from `docs/superpowers/specs/2026-06-16-mise-dev-tool-manager-design.md` is implemented (file structure, version specs, shell integration, cargo/env removal, verification steps).
+- **Spec coverage:** every requirement from `docs/superpowers/specs/2026-06-16-mise-dev-tool-manager-design.md` is implemented in the dotfiles (file structure, version specs, shell integration, cargo/env removal). Tasks that would have run on the target device (`mise install`, full shell verification) are documented in the spec and Task 6 for the user to run after deploying.
 - **No placeholders:** all code blocks and commands are complete; expected output is specified for every verification step.
 - **Type/name consistency:** tool names, config file paths, and commit messages are consistent across tasks.
+- **Control-vs-target device split:** clearly called out in the new "Important execution context" block at the top of the plan. The original plan's Task 3 (local `mise install`) and Task 6 (local end-to-end shell verification) are replaced with static checks and documentation, respectively.
 - **Out of scope:** nvm/pyenv/gvm removal, per-project `mise.toml`, cargo-installed binaries migration — explicitly noted as future work in the spec and not touched here.
