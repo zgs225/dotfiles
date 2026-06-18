@@ -1,5 +1,6 @@
 {
   "$schema": "https://opencode.ai/tui.json",
+  "theme": "tokyonight",
   "keybinds": {
     "leader": "ctrl+g",
     "messages_first": "home",
