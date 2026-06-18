@@ -1,0 +1,19 @@
+README*.md
+LICENSE
+CODE_OF_CONDUCT.md
+.gitignore
+.git/
+.worktrees/
+.opencode/
+.DS_Store
+*.swp
+docs/
+cursor/
+scripts/
+dot_zshrc.local
+dot_config/opencode/opencode.json
+
+{{ if not (and .isLinux .useI3) }}
+.zprofile
+.xinitrc
+{{ end }}
