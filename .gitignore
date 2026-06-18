@@ -4,5 +4,4 @@ settings.local.json
 .worktrees/
 # API keys and local configs (managed by chezmoi age)
 dot_zshrc.local
-dot_config/opencode/opencode.json
 .DS_Store
