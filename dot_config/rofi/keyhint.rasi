@@ -1,0 +1,42 @@
+@import "~/.config/rofi/config.rasi"
+
+configuration {
+    show-icons: false;
+    disable-history: true;
+    hide-scrollbar: true;
+    sidebar-mode: false;
+}
+
+#window {
+    width: 800px;
+    y-offset: 20%;
+}
+
+#mainbox {
+    children: [inputbar, listview];
+}
+
+#inputbar {
+    children: [prompt, entry];
+}
+
+#prompt {
+    text-color: @blue;
+    padding: 6px;
+}
+
+#entry {
+    padding: 6px;
+}
+
+#listview {
+    columns: 1;
+    lines: 18;
+    fixed-height: 0;
+    spacing: 2px;
+    scrollbar: false;
+}
+
+#element {
+    padding: 3px 6px;
+}
