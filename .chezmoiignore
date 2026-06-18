@@ -7,6 +7,7 @@ CODE_OF_CONDUCT.md
 .opencode/
 .DS_Store
 *.swp
+AGENTS.md
 docs/
 cursor/
 scripts/
