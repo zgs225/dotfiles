@@ -92,3 +92,13 @@ map("t", "<C-h>", function() terminal_navigate("h") end, { desc = "terminal swit
 map("t", "<C-l>", function() terminal_navigate("l") end, { desc = "terminal switch window right" })
 map("t", "<C-j>", function() terminal_navigate("j") end, { desc = "terminal switch window down" })
 map("t", "<C-k>", function() terminal_navigate("k") end, { desc = "terminal switch window up" })
+
+-- Disable tab buffer switching in terminal buffers
+vim.api.nvim_create_autocmd("TermOpen", {
+  group = term_nav_group,
+  callback = function(args)
+    local opts = { buffer = args.buf, silent = true }
+    vim.keymap.set("n", "<Tab>", "<Nop>", opts)
+    vim.keymap.set("n", "<S-Tab>", "<Nop>", opts)
+  end,
+})
