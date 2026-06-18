@@ -1,15 +1,7 @@
-!bin
-vim/bundle/
-config/coc/mru
-config/coc/extensions/node_modules
-config/coc/extensions/coc-java-data
-config/coc/list-commands-history.json
-config/coc/memos.json
-config/coc/memos.json
-config/coc/commands
+.vim/bundle/
 yarn.lock
-ssh/conf.d/unicom-ppc.sshconfig
-ssh/conf.d/unicom.sshconfig
-zshrc.local
 settings.local.json
 .worktrees/
+# API keys and local configs (managed by chezmoi age)
+dot_zshrc.local
+dot_config/opencode/opencode.json

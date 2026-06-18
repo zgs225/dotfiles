@@ -1,0 +1,107 @@
+# i3 config — Catppuccin Mocha
+# Managed by chezmoi
+
+set $mod Mod1
+set $term wezterm
+
+# Font for window titles
+font pango:Noto Sans CJK SC 10
+
+# Gap size (standard i3 — no gaps, only window border)
+default_border pixel 2
+default_floating_border pixel 2
+hide_edge_borders smart
+
+# Colors (Catppuccin Mocha)
+#                          border   bg       text     indicator  child_border
+client.focused            {{ .colors.lavender }} {{ .colors.lavender }} {{ .colors.base }}    {{ .colors.mauve }}    {{ .colors.lavender }}
+client.focused_inactive   {{ .colors.surface0 }} {{ .colors.surface0 }} {{ .colors.text }}    {{ .colors.overlay0 }} {{ .colors.surface0 }}
+client.unfocused          {{ .colors.surface0 }} {{ .colors.base }}    {{ .colors.text }}    {{ .colors.overlay0 }} {{ .colors.surface0 }}
+client.urgent             {{ .colors.red }}      {{ .colors.red }}      {{ .colors.base }}    {{ .colors.red }}      {{ .colors.red }}
+client.placeholder        {{ .colors.surface0 }} {{ .colors.base }}    {{ .colors.text }}    {{ .colors.overlay0 }} {{ .colors.surface0 }}
+client.background         {{ .colors.base }}
+
+# Focus follows mouse, but mouse click doesn't change focus
+focus_follows_mouse yes
+focus_on_window_activation smart
+
+# Floating modifier
+floating_modifier $mod
+
+# Workspace key bindings
+bindsym $mod+1 workspace number 1
+bindsym $mod+2 workspace number 2
+bindsym $mod+3 workspace number 3
+bindsym $mod+4 workspace number 4
+bindsym $mod+5 workspace number 5
+bindsym $mod+6 workspace number 6
+bindsym $mod+7 workspace number 7
+bindsym $mod+8 workspace number 8
+bindsym $mod+9 workspace number 9
+bindsym $mod+0 workspace number 10
+
+bindsym $mod+Shift+1 move container to workspace number 1
+bindsym $mod+Shift+2 move container to workspace number 2
+bindsym $mod+Shift+3 move container to workspace number 3
+bindsym $mod+Shift+4 move container to workspace number 4
+bindsym $mod+Shift+5 move container to workspace number 5
+bindsym $mod+Shift+6 move container to workspace number 6
+bindsym $mod+Shift+7 move container to workspace number 7
+bindsym $mod+Shift+8 move container to workspace number 8
+bindsym $mod+Shift+9 move container to workspace number 9
+bindsym $mod+Shift+0 move container to workspace number 10
+
+# Layout
+bindsym $mod+Shift+Space floating toggle
+bindsym $mod+f fullscreen toggle
+
+# Split orientation
+bindsym $mod+h split h
+bindsym $mod+v split v
+
+# Focus movement
+bindsym $mod+j focus left
+bindsym $mod+k focus down
+bindsym $mod+l focus up
+bindsym $mod+semicolon focus right
+
+# Move windows
+bindsym $mod+Shift+j move left
+bindsym $mod+Shift+k move down
+bindsym $mod+Shift+l move up
+bindsym $mod+Shift+semicolon move right
+
+# Resize mode
+bindsym $mod+r mode "resize"
+mode "resize" {
+    bindsym j resize shrink width 10 px or 10 ppt
+    bindsym k resize grow height 10 px or 10 ppt
+    bindsym l resize shrink height 10 px or 10 ppt
+    bindsym semicolon resize grow width 10 px or 10 ppt
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+# Applications
+bindsym $mod+Return exec $term
+bindsym $mod+d exec "rofi -show drun"
+bindsym $mod+Tab exec "rofi -show window"
+bindsym $mod+Shift+q kill
+bindsym $mod+Ctrl+l exec ~/.local/share/bin/lock.sh
+
+# Screenshots
+bindsym Print exec --no-startup-id ~/.local/share/bin/screenshot.sh full
+bindsym Shift+Print exec --no-startup-id ~/.local/share/bin/screenshot.sh select
+
+# i3 control
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+r restart
+bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'Exit i3?' -b 'Yes' 'i3-msg exit'"
+
+# Autostart
+exec_always --no-startup-id feh --randomize --bg-fill ~/.local/share/wallpapers/
+exec --no-startup-id picom --config ~/.config/picom/picom.conf
+exec_always --no-startup-id ~/.config/polybar/launch.sh
+exec --no-startup-id dunst
+exec --no-startup-id fcitx5 -d
+exec --no-startup-id sunshine
