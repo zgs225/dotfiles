@@ -1,0 +1,18 @@
+#!/bin/sh
+
+lock=" Lock"
+logout=" Logout"
+suspend=" Suspend"
+reboot=" Reboot"
+shutdown=" Shutdown"
+
+chosen=$(printf "%s\n%s\n%s\n%s\n%s\n" "$lock" "$logout" "$suspend" "$reboot" "$shutdown" \
+    | rofi -dmenu -i -p "Power" -theme ~/.config/rofi/powermenu.rasi -no-custom)
+
+case "$chosen" in
+    "$lock")    i3lock ;;
+    "$logout")  i3-msg exit ;;
+    "$suspend") systemctl suspend ;;
+    "$reboot")  systemctl reboot ;;
+    "$shutdown") systemctl poweroff ;;
+esac
