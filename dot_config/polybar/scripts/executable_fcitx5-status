@@ -1,2 +1,6 @@
 #!/bin/sh
-fcitx5-remote -n 2>/dev/null || echo "EN"
+im=$(fcitx5-remote -n 2>/dev/null)
+case "$im" in
+    keyboard-cn|pinyin) echo "" ;;
+    *)                  echo "" ;;
+esac
