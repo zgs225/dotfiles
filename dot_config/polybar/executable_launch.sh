@@ -20,6 +20,8 @@ module-margin-right = 1
 font-0 = "Symbols Nerd Font:size=24;1"
 font-1 = "JetBrainsMono Nerd Font:size=20;2"
 font-2 = "Noto Sans CJK SC:size=20;2"
+
+[module/tray]
 tray-maxsize = 32
 tray-padding = 4
 EOF
@@ -35,6 +37,8 @@ module-margin-right = 1
 font-0 = "Symbols Nerd Font:size=18;1"
 font-1 = "JetBrainsMono Nerd Font:size=15;2"
 font-2 = "Noto Sans CJK SC:size=15;2"
+
+[module/tray]
 tray-maxsize = 24
 tray-padding = 3
 EOF
@@ -50,6 +54,8 @@ module-margin-right = 1
 font-0 = "Symbols Nerd Font:size=12;1"
 font-1 = "JetBrainsMono Nerd Font:size=10;2"
 font-2 = "Noto Sans CJK SC:size=10;2"
+
+[module/tray]
 tray-maxsize = 16
 tray-padding = 2
 EOF
@@ -57,7 +63,7 @@ EOF
 esac
 
 # Terminate already running bar instances
-killall -q polybar
+polybar-msg cmd quit 2>/dev/null || killall -q polybar
 
 # Wait until the processes have been shut down
 timeout=10
