@@ -34,8 +34,8 @@ border-color = ${colors.background}
 padding-left = 2
 padding-right = 2
 
-module-margin-left = 3
-module-margin-right = 3
+module-margin-left = 1
+module-margin-right = 1
 
 font-0 = "Symbols Nerd Font:size=12;1"
 font-1 = "JetBrainsMono Nerd Font:size=10;2"
@@ -43,7 +43,7 @@ font-2 = "Noto Sans CJK SC:size=10;2"
 
 modules-left = i3
 modules-center = xwindow
-modules-right = cpu memory filesystem network pulseaudio date powermenu
+modules-right = cpu memory filesystem network pulseaudio date fcitx5 powermenu
 
 tray-position = left
 tray-padding = 2
@@ -103,7 +103,7 @@ label-foreground = ${colors.foreground}
 type = internal/memory
 interval = 2
 format = <label>
-format-prefix = "󰔨 "
+format-prefix = "󰘚 "
 format-prefix-foreground = ${colors.overlay1}
 label = %percentage_used%%
 label-foreground = ${colors.foreground}
@@ -113,12 +113,12 @@ type = internal/fs
 mount-0 = /
 interval = 30
 format-mounted = <label-mounted>
-format-mounted-prefix = "󰝫 "
+format-mounted-prefix = " "
 format-mounted-prefix-foreground = ${colors.overlay1}
 label-mounted = %percentage_used%%
 label-mounted-foreground = ${colors.foreground}
 format-unmounted = <label-unmounted>
-label-unmounted = 󰝫
+label-unmounted = 
 label-unmounted-foreground = ${colors.disabled}
 
 [module/network]
@@ -164,6 +164,14 @@ format = <label>
 format-prefix = " "
 format-prefix-foreground = ${colors.overlay1}
 label = %date% %time%
+label-foreground = ${colors.foreground}
+
+[module/fcitx5]
+type = custom/script
+exec = ~/.config/polybar/scripts/fcitx5-status
+interval = 1
+format = <label>
+label = %output%
 label-foreground = ${colors.foreground}
 
 [module/powermenu]
