@@ -34,7 +34,7 @@ border-color = ${colors.background}
 
 modules-left = i3
 modules-center = xwindow
-modules-right = cpu memory filesystem network pulseaudio date fcitx5 powermenu tray
+modules-right = cpu memory filesystem network pulseaudio date powermenu tray
 
 enable-ipc = true
 
@@ -166,14 +166,6 @@ click-left = #date.toggle
 format-prefix = " "
 format-prefix-foreground = ${colors.overlay1}
 label = %date% %time%
-label-foreground = ${colors.foreground}
-
-[module/fcitx5]
-type = custom/script
-exec = ~/.config/polybar/scripts/fcitx5-status
-interval = 1
-format = <label>
-label = %output%
 label-foreground = ${colors.foreground}
 
 [module/powermenu]
