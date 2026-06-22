@@ -4,6 +4,7 @@ if ! command -v polybar > /dev/null; then
     exit 0
 fi
 
+~/.bin/set-dpi.sh
 DPI_MODE=$(~/.bin/dpi-mode 2>/dev/null || echo normal)
 DPI_INI=/tmp/polybar-dpi.ini
 
