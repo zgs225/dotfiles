@@ -34,7 +34,7 @@ configuration {
 window {
     background-color: @background;
     border:           0;
-    padding:          30;
+    padding:          @rofi-pad-30;
 }
 
 mainbox {
@@ -46,17 +46,17 @@ listview {
     lines:        10;
     columns:      1;
     fixed-height: 0;
-    border:       8px 0px 0px;
+    border:       @rofi-pad-8 0px 0px;
     border-color: @separatorcolor;
-    spacing:      8px;
+    spacing:      @rofi-pad-8;
     scrollbar:    false;
-    padding:      2px 0px 0px;
+    padding:      @rofi-bdr 0px 0px;
 }
 
 message {
-    border:       2px 0px 0px;
+    border:       @rofi-bdr 0px 0px;
     border-color: @separatorcolor;
-    padding:      1px;
+    padding:      @rofi-pad-1;
 }
 
 textbox {
@@ -65,7 +65,7 @@ textbox {
 
 element {
     border:  0;
-    padding: 1px;
+    padding: @rofi-pad-1;
 }
 
 element-text {
@@ -119,15 +119,15 @@ element.alternate.active {
 }
 
 scrollbar {
-    width:        4px;
+    width:        @rofi-pad-4;
     border:       0;
     handle-color: @normal-foreground;
-    handle-width: 8px;
+    handle-width: @rofi-pad-8;
     padding:      0;
 }
 
 mode-switcher {
-    border:       2px 0px 0px;
+    border:       @rofi-bdr 0px 0px;
     border-color: @separatorcolor;
 }
 
@@ -144,7 +144,7 @@ button.selected {
 inputbar {
     spacing:    0;
     text-color: @normal-foreground;
-    padding:    1px;
+    padding:    @rofi-pad-1;
 }
 
 case-indicator {

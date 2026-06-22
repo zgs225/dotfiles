@@ -3,12 +3,13 @@ configuration {
     show-icons: true;
     icon-theme: "Papirus";
     drun-display-format: "{name}";
-    font: "Noto Sans CJK SC 12";
     matching: "normal";
     sort: true;
     terminal: "wezterm";
     sidebar-mode: false;
 }
+
+@import "/tmp/rofi-dpi.rasi"
 
 * {
     bg-col: {{ .colors.base }};
@@ -24,39 +25,39 @@ configuration {
 
     background-color: @bg-col;
     text-color: @fg-col;
-    border: 2px;
-    border-radius: 4;
+    border: @rofi-bdr;
+    border-radius: @rofi-bdr-radius4;
     border-color: @border-col;
-    padding: 4px;
+    padding: @rofi-pad-4;
 }
 
 #window {
     background-color: @bg-col;
-    border: 2px;
+    border: @rofi-bdr;
     border-color: @border-col;
-    border-radius: 8;
-    width: 480px;
+    border-radius: @rofi-bdr-radius8;
+    width: @rofi-win-width;
 }
 
 #mainbox {
     border: 0;
-    padding: 4;
+    padding: @rofi-pad-4;
     children: [inputbar, listview];
 }
 
 #inputbar {
     border: 0;
-    padding: 4;
+    padding: @rofi-pad-4;
     children: [prompt, entry];
 }
 
 #prompt {
     text-color: @blue;
-    padding: 4;
+    padding: @rofi-pad-4;
 }
 
 #entry {
-    padding: 4;
+    padding: @rofi-pad-4;
 }
 
 #listview {
@@ -69,8 +70,8 @@ configuration {
 }
 
 #element {
-    padding: 4;
-    border-radius: 4;
+    padding: @rofi-pad-4;
+    border-radius: @rofi-bdr-radius4;
 }
 
 #element normal {
@@ -94,9 +95,9 @@ configuration {
 }
 
 #scrollbar {
-    width: 4px;
+    width: @rofi-pad-4;
     border: 0;
     handle-color: @grey;
-    handle-width: 4px;
+    handle-width: @rofi-pad-4;
     padding: 0;
 }
