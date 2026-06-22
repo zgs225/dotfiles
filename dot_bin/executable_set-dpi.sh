@@ -42,6 +42,9 @@ configuration {
     rofi-bdr-radius8: ${BDR_R8};
     rofi-win-sm: ${WIN_SM};
     rofi-win-width: ${WIN_W};
+    rofi-prompt-bdr: 0 0 ${BDR} 0;
+    rofi-lv-padding: ${PAD8} 0 0;
+    rofi-el-padding: ${PAD6} ${PAD8};
     rofi-font-size: ${FONT};
 }
 EOF
