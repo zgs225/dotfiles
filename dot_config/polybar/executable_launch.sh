@@ -4,6 +4,45 @@ if ! command -v polybar > /dev/null; then
     exit 0
 fi
 
+DPI_MODE=$(~/.bin/dpi-mode 2>/dev/null || echo normal)
+DPI_INI=/tmp/polybar-dpi.ini
+
+case "$DPI_MODE" in
+    retina)
+        cat > "$DPI_INI" <<EOF
+[bar/main]
+height = 60
+padding-left = 4
+padding-right = 4
+module-margin-left = 2
+module-margin-right = 2
+font-0 = "Symbols Nerd Font:size=24;1"
+font-1 = "JetBrainsMono Nerd Font:size=20;2"
+font-2 = "Noto Sans CJK SC:size=20;2"
+tray-maxsize = 32
+tray-padding = 4
+EOF
+        ;;
+    hidpi)
+        cat > "$DPI_INI" <<EOF
+[bar/main]
+height = 45
+padding-left = 3
+padding-right = 3
+module-margin-left = 1
+module-margin-right = 1
+font-0 = "Symbols Nerd Font:size=18;1"
+font-1 = "JetBrainsMono Nerd Font:size=15;2"
+font-2 = "Noto Sans CJK SC:size=15;2"
+tray-maxsize = 24
+tray-padding = 3
+EOF
+        ;;
+    *)
+        rm -f "$DPI_INI"
+        ;;
+esac
+
 # Terminate already running bar instances
 killall -q polybar
 
