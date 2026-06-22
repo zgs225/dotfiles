@@ -62,22 +62,32 @@ label-mode = %mode%
 label-mode-padding = 2
 label-mode-background = ${colors.alert}
 label-mode-foreground = ${colors.background}
-label-focused = %index%
+label-focused = %icon%
 label-focused-background = ${colors.primary}
 label-focused-foreground = ${colors.background}
 label-focused-padding = 2
-label-unfocused = %index%
+label-unfocused = %icon%
 label-unfocused-padding = 2
-label-unfocused-foreground = ${colors.foreground-alt}
-label-visible = %index%
-label-visible-background = ${colors.background-alt}
+label-unfocused-foreground = ${colors.disabled}
+label-visible = %icon%
+label-visible-background = ${colors.surface0}
 label-visible-padding = 2
-label-urgent = %index%
+label-urgent = %icon%
 label-urgent-background = ${colors.alert}
 label-urgent-padding = 2
 
+ws-icon-0 = 1;
+ws-icon-1 = 2;
+ws-icon-2 = 3;
+ws-icon-3 = 4;
+ws-icon-4 = 5;
+ws-icon-default = 
+
 [module/xwindow]
 type = internal/xwindow
+format = <label>
+format-prefix = " "
+format-prefix-foreground = ${colors.overlay1}
 label = %title:0:50:...%
 label-foreground = ${colors.foreground}
 label-maxlen = 50
@@ -85,74 +95,81 @@ label-maxlen = 50
 [module/cpu]
 type = internal/cpu
 interval = 2
-format-prefix = " CPU "
-format-prefix-foreground = ${colors.foreground-alt}
-label = %percentage:2%%
+format = <label>
+format-prefix = " "
+format-prefix-foreground = ${colors.overlay1}
+label = %percentage:2%% %{F${colors.surface1}}│%{F-}
 label-foreground = ${colors.foreground}
 
 [module/memory]
 type = internal/memory
 interval = 2
-format-prefix = " MEM "
-format-prefix-foreground = ${colors.foreground-alt}
-label = %percentage_used%%
+format = <label>
+format-prefix = "󰍛 "
+format-prefix-foreground = ${colors.overlay1}
+label = %percentage_used%% %{F${colors.surface1}}│%{F-}
 label-foreground = ${colors.foreground}
+
+[module/filesystem]
+type = internal/fs
+mount-0 = /
+interval = 30
+format-mounted = <label-mounted>
+format-mounted-prefix = "󰨊 "
+format-mounted-prefix-foreground = ${colors.overlay1}
+label-mounted = %percentage_used%% %{F${colors.surface1}}│%{F-}
+label-mounted-foreground = ${colors.foreground}
+format-unmounted = <label-unmounted>
+label-unmounted = 󰨊 %{F${colors.surface1}}│%{F-}
+label-unmounted-foreground = ${colors.disabled}
 
 [module/network]
 type = internal/network
-; Change interface to match your system (ip link show)
 interface = wlp2s0
 interval = 3
-format-connected = <label-connected>
+format-connected = <ramp-signal> <label-connected>
 format-connected-foreground = ${colors.foreground}
-label-connected = %ifname% %local_ip%
+ramp-signal-0 = 󰤯
+ramp-signal-1 = 󰤞
+ramp-signal-2 = 󰤢
+ramp-signal-3 = 󰤥
+ramp-signal-4 = 󰤨
+ramp-signal-foreground = ${colors.overlay1}
+label-connected = %local_ip% %{F${colors.surface1}}│%{F-}
 format-disconnected = <label-disconnected>
 format-disconnected-foreground = ${colors.disabled}
-label-disconnected = disconnected
+label-disconnected = 󰤯 disconnected %{F${colors.surface1}}│%{F-}
 
 [module/pulseaudio]
 type = internal/pulseaudio
-format-volume-prefix = " VOL "
-format-volume-prefix-foreground = ${colors.foreground-alt}
-format-volume = <label-volume>
-label-volume = %percentage%%
+format-volume = <ramp-volume> <label-volume>
+ramp-volume-0 = 
+ramp-volume-1 = 󰕿
+ramp-volume-2 = 󰖀
+ramp-volume-3 = 󰕾
+ramp-volume-foreground = ${colors.overlay1}
+label-volume = %percentage%% %{F${colors.surface1}}│%{F-}
 label-volume-foreground = ${colors.foreground}
-label-muted = muted
+format-muted = <label-muted>
+label-muted =  muted %{F${colors.surface1}}│%{F-}
 label-muted-foreground = ${colors.disabled}
-
-[module/battery]
-type = internal/battery
-; Change battery/adapter to match your system (ls /sys/class/power_supply/)
-battery = BAT0
-adapter = AC0
-full-at = 99
-time-format = %H:%M
-
-format-charging-prefix = " CHR "
-format-charging-prefix-foreground = ${colors.foreground-alt}
-format-charging = <label-charging>
-label-charging = %percentage%%
-label-charging-foreground = ${colors.success}
-
-format-discharging-prefix = " BAT "
-format-discharging-prefix-foreground = ${colors.foreground-alt}
-format-discharging = <label-discharging>
-label-discharging = %percentage%%
-label-discharging-foreground = ${colors.foreground}
-
-format-full-prefix = " BAT "
-format-full-prefix-foreground = ${colors.foreground-alt}
-format-full = <label-full>
-label-full = full
-label-full-foreground = ${colors.success}
+click-right = pactl set-sink-mute @DEFAULT_SINK@ toggle
 
 [module/date]
 type = internal/date
-click-left = date.toggle
 interval = 1
 date = %Y-%m-%d
 date-alt = %a %d %b
 time = %H:%M:%S
 time-alt = %H:%M
-label = %date%  %time%
+format = <label>
+format-prefix = " "
+format-prefix-foreground = ${colors.overlay1}
+label = %date% %time%
 label-foreground = ${colors.foreground}
+
+[module/powermenu]
+type = custom/text
+content = 
+content-foreground = ${colors.alert}
+click-left = ~/.config/i3/scripts/powermenu
