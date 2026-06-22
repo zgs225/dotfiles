@@ -39,7 +39,19 @@ tray-padding = 3
 EOF
         ;;
     *)
-        rm -f "$DPI_INI"
+        cat > "$DPI_INI" <<EOF
+[bar/main]
+height = 30
+padding-left = 2
+padding-right = 2
+module-margin-left = 1
+module-margin-right = 1
+font-0 = "Symbols Nerd Font:size=12;1"
+font-1 = "JetBrainsMono Nerd Font:size=10;2"
+font-2 = "Noto Sans CJK SC:size=10;2"
+tray-maxsize = 16
+tray-padding = 2
+EOF
         ;;
 esac
 
