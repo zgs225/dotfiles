@@ -1,0 +1,65 @@
+@import "~/.config/rofi/config.rasi"
+
+configuration {
+    show-icons:      false;
+    disable-history: true;
+    hide-scrollbar:  true;
+    sidebar-mode:    false;
+}
+
+window {
+    width:            160px;
+    padding:          20px;
+    border:           2px;
+    border-color:     @border-col;
+    border-radius:    8;
+    background-color: @bg-col;
+}
+
+mainbox {
+    border:  0;
+    padding: 0;
+}
+
+inputbar {
+    children: [ prompt ];
+    padding:  0;
+}
+
+prompt {
+    padding:     8px;
+    text-color:  @blue;
+    border:      0 0 2px 0;
+    border-color: @border-col;
+}
+
+listview {
+    lines:        5;
+    columns:      1;
+    fixed-height: 0;
+    border:       0;
+    spacing:      4px;
+    scrollbar:    false;
+    padding:      8px 0px 0px;
+}
+
+element {
+    border:  0;
+    padding: 6px 8px;
+    border-radius: 4;
+}
+
+element normal {
+    background-color: @bg-col;
+    text-color:       @fg-col;
+}
+
+element selected {
+    background-color: @selected-col;
+    text-color:       @fg-col;
+}
+
+element urgent {
+    background-color: @urgent;
+    text-color:       @bg-col;
+}
