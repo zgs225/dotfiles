@@ -13,6 +13,8 @@ disabled = {{ .colors.overlay0 }}
 [settings]
 screenchange-reload = true
 
+include-file = /tmp/polybar-dpi.ini
+
 [bar/main]
 monitor = ${env:MONITOR:}
 width = 100%
@@ -30,14 +32,14 @@ line-color = ${colors.primary}
 border-size = 0
 border-color = ${colors.background}
 
-include-file = /tmp/polybar-dpi.ini
-
 modules-left = i3
 modules-center = xwindow
-modules-right = cpu memory filesystem network pulseaudio date fcitx5 powermenu
+modules-right = cpu memory filesystem network pulseaudio date fcitx5 powermenu tray
 
-tray-position = right
-tray-background = ${colors.background}
+enable-ipc = true
+
+scroll-up = #i3.prev
+scroll-down = #i3.next
 
 cursor-click = pointer
 cursor-scroll = ns-resize
@@ -47,6 +49,8 @@ type = internal/i3
 format = <label-state> <label-mode>
 index-sort = true
 strip-wsnumbers = true
+pin-workspaces = true
+enable-scroll = false
 label-mode = %mode%
 label-mode-padding = 2
 label-mode-background = ${colors.alert}
@@ -72,6 +76,10 @@ ws-icon-3 = 4;
 ws-icon-4 = 5;
 ws-icon-default = 
 
+label-separator = " "
+label-separator-padding = 1
+label-separator-foreground = ${colors.disabled}
+
 [module/xwindow]
 type = internal/xwindow
 format = <label>
@@ -87,6 +95,7 @@ format-prefix = " "
 format-prefix-foreground = ${colors.overlay1}
 label = %percentage:2%%
 label-foreground = ${colors.foreground}
+warn-percentage = 80
 
 [module/memory]
 type = internal/memory
@@ -96,6 +105,7 @@ format-prefix = "󰘚 "
 format-prefix-foreground = ${colors.overlay1}
 label = %percentage_used%%
 label-foreground = ${colors.foreground}
+warn-percentage = 80
 
 [module/filesystem]
 type = internal/fs
@@ -109,10 +119,12 @@ label-mounted-foreground = ${colors.foreground}
 format-unmounted = <label-unmounted>
 label-unmounted = 
 label-unmounted-foreground = ${colors.disabled}
+warn-percentage = 80
+click-left = thunar
 
 [module/network]
 type = internal/network
-interface = wlp2s0
+interface-type = wireless
 interval = 3
 format-connected = <ramp-signal> <label-connected>
 format-connected-foreground = ${colors.foreground}
@@ -150,6 +162,7 @@ date-alt = %a %d %b
 time = %H:%M:%S
 time-alt = %H:%M
 format = <label>
+click-left = #date.toggle
 format-prefix = " "
 format-prefix-foreground = ${colors.overlay1}
 label = %date% %time%
@@ -168,3 +181,7 @@ type = custom/text
 content = 
 content-foreground = ${colors.overlay1}
 click-left = ~/.config/i3/scripts/powermenu
+
+[module/tray]
+type = internal/tray
+format-background = ${colors.background}
