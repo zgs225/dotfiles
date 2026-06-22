@@ -29,7 +29,7 @@ inputbar {
 prompt {
     padding:      @rofi-pad-8;
     text-color:  @blue;
-    border:       0 0 @rofi-bdr 0;
+    border:       @rofi-prompt-bdr;
     border-color: @border-col;
 }
 
@@ -40,12 +40,12 @@ listview {
     border:       0;
     spacing:      @rofi-pad-4;
     scrollbar:    false;
-    padding:      @rofi-pad-8 0px 0px;
+    padding:      @rofi-lv-padding;
 }
 
 element {
     border:        0;
-    padding:       @rofi-pad-6 @rofi-pad-8;
+    padding:       @rofi-el-padding;
     border-radius: @rofi-bdr-radius4;
 }
 
