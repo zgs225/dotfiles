@@ -41,8 +41,8 @@ font-0 = "Symbols Nerd Font:size=12;1"
 font-1 = "JetBrainsMono Nerd Font:size=10;2"
 font-2 = "Noto Sans CJK SC:size=10;2"
 
-modules-left = i3 xwindow
-modules-center =
+modules-left = i3
+modules-center = xwindow
 modules-right = cpu memory filesystem network pulseaudio date powermenu
 
 tray-position = right
@@ -86,11 +86,9 @@ ws-icon-default = 
 [module/xwindow]
 type = internal/xwindow
 format = <label>
-format-prefix = " "
-format-prefix-foreground = ${colors.overlay1}
-label = %title:0:50:...%
+label = %title:0:60:...%
 label-foreground = ${colors.foreground}
-label-maxlen = 50
+label-maxlen = 60
 
 [module/cpu]
 type = internal/cpu
@@ -98,7 +96,7 @@ interval = 2
 format = <label>
 format-prefix = " "
 format-prefix-foreground = ${colors.overlay1}
-label = %percentage:2%% %{F${colors.surface1}}│%{F-}
+label = %percentage:2%%  
 label-foreground = ${colors.foreground}
 
 [module/memory]
@@ -107,7 +105,7 @@ interval = 2
 format = <label>
 format-prefix = "󰍛 "
 format-prefix-foreground = ${colors.overlay1}
-label = %percentage_used%% %{F${colors.surface1}}│%{F-}
+label = %percentage_used%%  
 label-foreground = ${colors.foreground}
 
 [module/filesystem]
@@ -115,12 +113,12 @@ type = internal/fs
 mount-0 = /
 interval = 30
 format-mounted = <label-mounted>
-format-mounted-prefix = "󰨊 "
+format-mounted-prefix = "󰝫 "
 format-mounted-prefix-foreground = ${colors.overlay1}
-label-mounted = %percentage_used%% %{F${colors.surface1}}│%{F-}
+label-mounted = %percentage_used%%  
 label-mounted-foreground = ${colors.foreground}
 format-unmounted = <label-unmounted>
-label-unmounted = 󰨊 %{F${colors.surface1}}│%{F-}
+label-unmounted = 󰝫  
 label-unmounted-foreground = ${colors.disabled}
 
 [module/network]
@@ -135,10 +133,10 @@ ramp-signal-2 = 󰤢
 ramp-signal-3 = 󰤥
 ramp-signal-4 = 󰤨
 ramp-signal-foreground = ${colors.overlay1}
-label-connected = %local_ip% %{F${colors.surface1}}│%{F-}
+label-connected = %local_ip%  
 format-disconnected = <label-disconnected>
 format-disconnected-foreground = ${colors.disabled}
-label-disconnected = 󰤯 disconnected %{F${colors.surface1}}│%{F-}
+label-disconnected = 󰤯 disconnected  
 
 [module/pulseaudio]
 type = internal/pulseaudio
@@ -148,10 +146,10 @@ ramp-volume-1 = 󰕿
 ramp-volume-2 = 󰖀
 ramp-volume-3 = 󰕾
 ramp-volume-foreground = ${colors.overlay1}
-label-volume = %percentage%% %{F${colors.surface1}}│%{F-}
+label-volume = %percentage%%  
 label-volume-foreground = ${colors.foreground}
 format-muted = <label-muted>
-label-muted =  muted %{F${colors.surface1}}│%{F-}
+label-muted =  muted  
 label-muted-foreground = ${colors.disabled}
 click-right = pactl set-sink-mute @DEFAULT_SINK@ toggle
 
@@ -165,11 +163,11 @@ time-alt = %H:%M
 format = <label>
 format-prefix = " "
 format-prefix-foreground = ${colors.overlay1}
-label = %date% %time%
+label = %date% %time%  
 label-foreground = ${colors.foreground}
 
 [module/powermenu]
 type = custom/text
 content = 
-content-foreground = ${colors.alert}
+content-foreground = ${colors.overlay1}
 click-left = ~/.config/i3/scripts/powermenu
