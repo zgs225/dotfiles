@@ -14,8 +14,8 @@ case "$DPI_MODE" in
 height = 60
 padding-left = 4
 padding-right = 4
-module-margin-left = 2
-module-margin-right = 2
+module-margin-left = 1
+module-margin-right = 1
 font-0 = "Symbols Nerd Font:size=24;1"
 font-1 = "JetBrainsMono Nerd Font:size=20;2"
 font-2 = "Noto Sans CJK SC:size=20;2"
