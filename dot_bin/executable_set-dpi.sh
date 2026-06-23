@@ -16,13 +16,16 @@ xrdb -merge <<< "Xft.dpi: $DPI"
 
 if [ "$DPI" -ge 192 ]; then
     PAD1=2; BDR=4; PAD4=8; PAD6=12; PAD8=16; PAD20=40; PAD30=60
-    BDR_R4=8; BDR_R8=16; WIN_SM=320; WIN_W=960; FONT=24
+    BDR_R4=8; BDR_R8=16; BDR_RL=12; WIN_SM=320; WIN_MD=480; WIN_W=960
+    EL_SP=8; FONT=24
 elif [ "$DPI" -ge 144 ]; then
     PAD1=2; BDR=3; PAD4=6; PAD6=9; PAD8=12; PAD20=30; PAD30=45
-    BDR_R4=6; BDR_R8=12; WIN_SM=240; WIN_W=720; FONT=18
+    BDR_R4=6; BDR_R8=12; BDR_RL=9; WIN_SM=240; WIN_MD=360; WIN_W=720
+    EL_SP=6; FONT=18
 else
     PAD1=1; BDR=2; PAD4=4; PAD6=6; PAD8=8; PAD20=20; PAD30=30
-    BDR_R4=4; BDR_R8=8; WIN_SM=160; WIN_W=480; FONT=12
+    BDR_R4=4; BDR_R8=8; BDR_RL=6; WIN_SM=160; WIN_MD=240; WIN_W=480
+    EL_SP=4; FONT=12
 fi
 
 cat > /tmp/rofi-dpi.rasi <<EOF
@@ -40,11 +43,11 @@ configuration {
     rofi-pad-30: ${PAD30};
     rofi-bdr-radius4: ${BDR_R4};
     rofi-bdr-radius8: ${BDR_R8};
+    rofi-bdr-radius-lg: ${BDR_RL};
     rofi-win-sm: ${WIN_SM};
+    rofi-win-md: ${WIN_MD};
     rofi-win-width: ${WIN_W};
-    rofi-prompt-bdr: 0 0 ${BDR} 0;
-    rofi-lv-padding: ${PAD8} 0 0;
-    rofi-el-padding: ${PAD6} ${PAD8};
+    rofi-el-spacing: ${EL_SP};
     rofi-font-size: ${FONT};
 }
 EOF
