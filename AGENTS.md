@@ -13,6 +13,7 @@ chezmoi-based dotfiles repo. Do not edit `~/.` files directly — use chezmoi.
 - `.tmpl` extension → Go template; variables come from `.chezmoi.yaml.tmpl` data block.
 - `run_before_*`, `run_after_*`, `run_once_after_*`, `run_onchange_after_*` are chezmoi lifecycle scripts — not standalone.
 - Apply: `chezmoi init --source ~/dotfiles --apply` or `chezmoi update`
+- **Never run `chezmoi apply`.** The working directory is NOT the chezmoi source path. Editing source files in this repo is correct; applying them to `$HOME` is done separately by the user.
 - Encryption: age via chezmoi. Key: `~/.config/chezmoi/key.txt`. Receiver in `.chezmoi.yaml.tmpl`.
 
 ## OS targeting
