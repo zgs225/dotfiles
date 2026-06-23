@@ -63,16 +63,20 @@ EOF
 esac
 
 # Terminate already running bar instances
-polybar-msg cmd quit 2>/dev/null || killall -q polybar
+polybar-msg cmd quit 2>/dev/null
+sleep 0.5
+killall -q polybar 2>/dev/null
 
 # Wait until the processes have been shut down
 timeout=10
 elapsed=0
-while pgrep -u $UID -x polybar >/dev/null; do
+while pgrep -u $UID -x polybar >/dev/null 2>&1; do
     if [ "$elapsed" -ge "$timeout" ]; then
+        killall -q -9 polybar 2>/dev/null
+        sleep 0.5
         break
     fi
-    sleep 1
+    sleep 0.5
     elapsed=$((elapsed + 1))
 done
 
