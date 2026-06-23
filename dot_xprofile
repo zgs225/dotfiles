@@ -1,3 +1,9 @@
+command -v xrandr >/dev/null 2>&1 && {
+    xrandr --newmode "3840x2160_60.00"  712.75  3840 4152 4576 5312  2160 2163 2168 2237 -hsync +vsync 2>/dev/null
+    xrandr --addmode Virtual-1 3840x2160_60.00 2>/dev/null
+    xrandr --output Virtual-1 --mode 3840x2160_60.00
+}
+
 export GTK_IM_MODULE=fcitx
 export QT_IM_MODULE=fcitx
 export XMODIFIERS=@im=fcitx
