@@ -1,0 +1,55 @@
+* {
+    font-family: "Noto Sans CJK SC", sans-serif;
+    font-size: 13px;
+    min-height: 0;
+    border: none;
+    border-radius: 0;
+}
+
+window#waybar {
+    background-color: {{ .colors.base }};
+    color: {{ .colors.text }};
+}
+
+#workspaces button {
+    color: {{ .colors.overlay0 }};
+    padding: 0 6px;
+    background-color: transparent;
+}
+
+#workspaces button.active {
+    color: {{ .colors.lavender }};
+    background-color: {{ .colors.surface0 }};
+}
+
+#workspaces button:hover {
+    background-color: {{ .colors.surface1 }};
+    color: {{ .colors.text }};
+}
+
+#clock {
+    color: {{ .colors.text }};
+    padding: 0 12px;
+}
+
+#network {
+    color: {{ .colors.teal }};
+    padding: 0 8px;
+}
+
+#battery {
+    color: {{ .colors.green }};
+    padding: 0 8px;
+}
+
+#battery.warning {
+    color: {{ .colors.peach }};
+}
+
+#battery.critical {
+    color: {{ .colors.red }};
+}
+
+#tray {
+    padding: 0 4px;
+}
