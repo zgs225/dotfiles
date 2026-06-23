@@ -45,7 +45,7 @@ listview {
 }
 
 element {
-    padding: @rofi-pad-8 @rofi-pad-20;
+    padding: @rofi-el-padding-pm;
     border: 0;
     border-radius: @rofi-bdr-radius-lg;
     background-color: @bg-col-card;
