@@ -1,11 +1,24 @@
-Config {
-    width: Relative(0.35),
-    max_entries: 10,
-    position: Top,
+Config(
+    x: Fraction(0.5),
+    y: Absolute(4),
+    width: Fraction(0.35),
+    height: Absolute(1),
     hide_icons: false,
+    ignore_exclusive_zones: false,
+    layer: Overlay,
     hide_plugin_info: true,
     close_on_click: true,
+    show_results_immediately: false,
+    max_entries: Some(10),
     plugins: [
-        "libanyrun_applications.so",
+        "libapplications.so",
     ],
-}
+    keybinds: [
+        Keybind(key: "Return", action: Select),
+        Keybind(key: "Up", action: Up),
+        Keybind(key: "Down", action: Down),
+        Keybind(key: "ISO_Left_Tab", action: Up, shift: true),
+        Keybind(key: "Tab", action: Down),
+        Keybind(key: "Escape", action: Close),
+    ],
+)
