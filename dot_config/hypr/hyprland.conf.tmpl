@@ -15,6 +15,7 @@ exec-once = mako
 exec-once = fcitx5 -d
 exec-once = sunshine
 exec-once = nm-applet
+exec-once = bash -c "sleep 2 && hyprctl dispatch exec '[workspace 1 silent] wezterm'"
 
 # ── Environment ────────────────────────────────
 env = GTK_IM_MODULE,fcitx
@@ -137,3 +138,6 @@ bind = $mainMod SHIFT, E, exec, wlogout
 
 # Reload Hyprland config
 bind = $mainMod SHIFT, C, exec, hyprctl reload
+
+# ── Workspace Names ─────────────────────────────
+workspace = 1, name: 
