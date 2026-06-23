@@ -51,6 +51,8 @@ configuration {
     rofi-inputbar-margin: ${MARGIN};
     rofi-msg-margin: ${MARGIN};
     rofi-lv-padding: ${PAD4} 0 0 0;
+    rofi-el-padding-pm: ${PAD8} ${PAD20};
+    rofi-el-padding-kh: ${PAD6} ${PAD8};
     rofi-font-size: ${FONT};
 }
 EOF
