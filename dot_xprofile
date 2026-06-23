@@ -1,5 +1,5 @@
 command -v xrandr >/dev/null 2>&1 && {
-    xrandr --output Virtual-1 --mode 1920x1080
+    xrandr --output Virtual-1 --mode 3840x2160
 }
 
 export GTK_IM_MODULE=fcitx
