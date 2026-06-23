@@ -32,6 +32,10 @@ general {
     layout = dwindle
 }
 
+dwindle {
+    preserve_split = true
+}
+
 decoration {
     rounding = 0
     blur {
@@ -78,8 +82,8 @@ bind = $mainMod SHIFT, Space, togglefloating,
 bind = $mainMod, F, fullscreen, 0
 
 # Split orientation
-bind = $mainMod, minus, togglesplit,
-bind = $mainMod SHIFT, backslash, swapwindow,
+bind = $mainMod, minus, layoutmsg, togglesplit
+bind = $mainMod SHIFT, backslash, layoutmsg, swapsplit
 
 # Focus movement (vim-style)
 bind = $mainMod, H, movefocus, l
