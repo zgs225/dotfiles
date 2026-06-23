@@ -1,0 +1,42 @@
+* {
+    all: unset;
+    font-family: "Noto Sans CJK SC", sans-serif;
+    font-size: 14px;
+}
+
+#window {
+    background-color: transparent;
+}
+
+#main {
+    background-color: {{ .colors.base }};
+    border: 2px solid {{ .colors.lavender }};
+    border-radius: 4px;
+    padding: 8px;
+}
+
+#input {
+    margin: 0;
+    padding: 4px 8px;
+    background-color: {{ .colors.surface0 }};
+    color: {{ .colors.text }};
+    border: none;
+}
+
+#input placeholder {
+    color: {{ .colors.overlay0 }};
+}
+
+#entry {
+    padding: 4px 8px;
+    color: {{ .colors.text }};
+}
+
+#entry:selected {
+    background-color: {{ .colors.surface0 }};
+    color: {{ .colors.lavender }};
+}
+
+#plugin {
+    margin: 0;
+}
