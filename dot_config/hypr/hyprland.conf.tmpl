@@ -9,6 +9,10 @@ $term = wezterm
 monitor=,preferred,auto,1.5
 
 # ── Autostart ──────────────────────────────────
+exec-once = dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+exec-once = systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+exec-once = systemctl --user start xdg-desktop-portal-hyprland
+exec-once = bash -c "sleep 1 && /usr/lib/xdg-desktop-portal &"
 exec-once = hyprpaper
 exec-once = waybar
 exec-once = mako
