@@ -1,7 +1,3 @@
-command -v xrandr >/dev/null 2>&1 && {
-    xrandr --output Virtual-1 --mode 3840x2160
-}
-
 export GTK_IM_MODULE=fcitx
 export QT_IM_MODULE=fcitx
 export XMODIFIERS=@im=fcitx
