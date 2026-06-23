@@ -26,7 +26,7 @@ message {
     border: 0;
     border-radius: @rofi-bdr-radius-lg;
     padding: @rofi-pad-8;
-    margin: 0 0 @rofi-pad-6 0;
+    margin: @rofi-msg-margin;
 }
 
 textbox {
@@ -38,7 +38,7 @@ inputbar {
     border: 0;
     border-radius: @rofi-bdr-radius-lg;
     padding: @rofi-pad-8;
-    margin: 0 0 @rofi-pad-6 0;
+    margin: @rofi-inputbar-margin;
     children: [prompt, textbox-prompt-colon, entry];
     spacing: @rofi-pad-4;
 }
