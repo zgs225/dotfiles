@@ -1,29 +1,5 @@
 @import "~/.config/rofi/config.rasi"
 
-* {
-    background:                 @bg-col;
-    foreground:                 @fg-col;
-    separatorcolor:             @border-col;
-    normal-background:          @bg-col;
-    normal-foreground:          @fg-col;
-    urgent-background:          @urgent;
-    urgent-foreground:          @bg-col;
-    active-background:          @bg-col-light;
-    active-foreground:          @fg-col;
-    selected-normal-background: @selected-col;
-    selected-normal-foreground: @fg-col;
-    selected-urgent-background: @urgent;
-    selected-urgent-foreground: @bg-col;
-    selected-active-background: @selected-col;
-    selected-active-foreground: @fg-col;
-    alternate-normal-background:   @bg-col;
-    alternate-normal-foreground:   @fg-col;
-    alternate-urgent-background:   @urgent;
-    alternate-urgent-foreground:   @bg-col;
-    alternate-active-background:   @bg-col-light;
-    alternate-active-foreground:   @fg-col;
-}
-
 configuration {
     show-icons:      false;
     disable-history: true;
@@ -32,143 +8,82 @@ configuration {
 }
 
 window {
-    background-color: @background;
-    border:           0;
-    padding:          @rofi-pad-30;
+    width: @rofi-win-width;
+    padding: @rofi-pad-8;
+    border: 0;
+    border-radius: @rofi-bdr-radius8;
+    background-color: @bg-col;
 }
 
 mainbox {
-    border:  0;
+    border: 0;
     padding: 0;
-}
-
-listview {
-    lines:        10;
-    columns:      1;
-    fixed-height: 0;
-    border:       @rofi-pad-8 0px 0px;
-    border-color: @separatorcolor;
-    spacing:      @rofi-pad-8;
-    scrollbar:    false;
-    padding:      @rofi-bdr 0px 0px;
+    children: [message, inputbar, listview];
 }
 
 message {
-    border:       @rofi-bdr 0px 0px;
-    border-color: @separatorcolor;
-    padding:      @rofi-pad-1;
+    background-color: @bg-col-light;
+    border: 0;
+    border-radius: @rofi-bdr-radius-lg;
+    padding: @rofi-pad-8;
+    margin: 0 0 @rofi-pad-6 0;
 }
 
 textbox {
-    text-color: @foreground;
-}
-
-element {
-    border:  0;
-    padding: @rofi-pad-1;
-}
-
-element-text {
-    background-color: inherit;
-    text-color:       inherit;
-}
-
-element.normal.normal {
-    background-color: @normal-background;
-    text-color:       @normal-foreground;
-}
-
-element.normal.urgent {
-    background-color: @urgent-background;
-    text-color:       @urgent-foreground;
-}
-
-element.normal.active {
-    background-color: @active-background;
-    text-color:       @active-foreground;
-}
-
-element.selected.normal {
-    background-color: @selected-normal-background;
-    text-color:       @selected-normal-foreground;
-}
-
-element.selected.urgent {
-    background-color: @selected-urgent-background;
-    text-color:       @selected-urgent-foreground;
-}
-
-element.selected.active {
-    background-color: @selected-active-background;
-    text-color:       @selected-active-foreground;
-}
-
-element.alternate.normal {
-    background-color: @alternate-normal-background;
-    text-color:       @alternate-normal-foreground;
-}
-
-element.alternate.urgent {
-    background-color: @alternate-urgent-background;
-    text-color:       @alternate-urgent-foreground;
-}
-
-element.alternate.active {
-    background-color: @alternate-active-background;
-    text-color:       @alternate-active-foreground;
-}
-
-scrollbar {
-    width:        @rofi-pad-4;
-    border:       0;
-    handle-color: @normal-foreground;
-    handle-width: @rofi-pad-8;
-    padding:      0;
-}
-
-mode-switcher {
-    border:       @rofi-bdr 0px 0px;
-    border-color: @separatorcolor;
-}
-
-button {
-    spacing:    0;
-    text-color: @normal-foreground;
-}
-
-button.selected {
-    background-color: @selected-normal-background;
-    text-color:       @selected-normal-foreground;
+    text-color: @fg-col2;
 }
 
 inputbar {
-    spacing:    0;
-    text-color: @normal-foreground;
-    padding:    @rofi-pad-1;
-}
-
-case-indicator {
-    spacing:    0;
-    text-color: @normal-foreground;
-}
-
-entry {
-    spacing:    0;
-    text-color: @normal-foreground;
+    background-color: @bg-col-light;
+    border: 0;
+    border-radius: @rofi-bdr-radius-lg;
+    padding: @rofi-pad-8;
+    margin: 0 0 @rofi-pad-6 0;
+    children: [prompt, textbox-prompt-colon, entry];
+    spacing: @rofi-pad-4;
 }
 
 prompt {
-    spacing:    0;
-    text-color: @normal-foreground;
+    padding: 0;
+    text-color: @accent-col;
 }
 
-inputbar {
-    children: [ prompt, textbox-prompt-colon, entry, case-indicator ];
+entry {
+    padding: 0;
+    placeholder: "Filter...";
+    placeholder-color: @fg-col2;
 }
 
-textbox-prompt-colon {
-    expand:     false;
-    str:        ":";
-    margin:     0px 0.3em 0em 0em;
-    text-color: @normal-foreground;
+listview {
+    lines: 12;
+    columns: 1;
+    fixed-height: 0;
+    border: 0;
+    spacing: @rofi-el-spacing;
+    scrollbar: false;
+    padding: 0;
+}
+
+element {
+    padding: @rofi-pad-6 @rofi-pad-8;
+    border: 0;
+    border-radius: @rofi-bdr-radius-lg;
+    background-color: @bg-col-card;
+    text-color: @fg-col;
+    cursor: pointer;
+}
+
+element selected {
+    background-color: @selected-col;
+    text-color: @fg-col;
+}
+
+element urgent {
+    background-color: @bg-col-card;
+    text-color: @red;
+}
+
+element selected.urgent {
+    background-color: @selected-col;
+    text-color: @red;
 }
