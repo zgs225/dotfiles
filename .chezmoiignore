@@ -15,4 +15,5 @@ dot_zshrc.local
 
 {{ if not .isLinux }}
 .zprofile
+dot_config/hypr/
 {{ end }}
