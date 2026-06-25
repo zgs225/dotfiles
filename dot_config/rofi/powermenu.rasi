@@ -1,0 +1,69 @@
+@import "~/.config/rofi/config.rasi"
+
+configuration {
+    show-icons:      false;
+    disable-history: true;
+    hide-scrollbar:  true;
+    sidebar-mode:    false;
+}
+
+window {
+    width: @rofi-win-md;
+    padding: @rofi-pad-8;
+    border: 0;
+    border-radius: @rofi-bdr-radius8;
+    background-color: @bg-col;
+}
+
+mainbox {
+    border: 0;
+    padding: 0;
+}
+
+inputbar {
+    background-color: @bg-col-light;
+    border: 0;
+    border-radius: @rofi-bdr-radius-lg;
+    padding: @rofi-pad-8;
+    margin: @rofi-inputbar-margin;
+    children: [prompt];
+}
+
+prompt {
+    padding: 0;
+    text-color: @accent-col;
+}
+
+listview {
+    lines: 5;
+    columns: 1;
+    fixed-height: 0;
+    border: 0;
+    spacing: @rofi-el-spacing;
+    scrollbar: false;
+    padding: 0;
+}
+
+element {
+    padding: @rofi-el-padding-pm;
+    border: 0;
+    border-radius: @rofi-bdr-radius-lg;
+    background-color: @bg-col-card;
+    text-color: @fg-col;
+    cursor: pointer;
+}
+
+element selected {
+    background-color: @selected-col;
+    text-color: @fg-col;
+}
+
+element urgent {
+    background-color: @bg-col-card;
+    text-color: @red;
+}
+
+element selected.urgent {
+    background-color: @selected-col;
+    text-color: @red;
+}

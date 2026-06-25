@@ -1,0 +1,181 @@
+configuration {
+    modi: "drun,window,run";
+    show-icons: true;
+    icon-theme: "Papirus";
+    drun-display-format: "{name}";
+    matching: "normal";
+    sort: true;
+    terminal: "wezterm";
+    sidebar-mode: false;
+}
+
+@import "/tmp/rofi-dpi.rasi"
+
+* {
+    bg-col: {{ .colors.base }};
+    bg-col-light: {{ .colors.surface0 }};
+    bg-col-card: {{ .colors.surface0 }};
+    border-col: {{ .colors.lavender }};
+    selected-col: {{ .colors.surface1 }};
+    blue: {{ .colors.blue }};
+    fg-col: {{ .colors.text }};
+    fg-col2: {{ .colors.subtext0 }};
+    grey: {{ .colors.overlay0 }};
+    red: {{ .colors.red }};
+    urgent: {{ .colors.red }};
+    green: {{ .colors.green }};
+    accent-col: {{ .colors.blue }};
+
+    background-color: @bg-col;
+    text-color: @fg-col;
+    border: 0;
+    border-radius: @rofi-bdr-radius4;
+    border-color: @border-col;
+    padding: 0;
+    spacing: 0;
+}
+
+#window {
+    background-color: @bg-col;
+    border: 0;
+    border-radius: @rofi-bdr-radius8;
+    width: @rofi-win-width;
+    padding: @rofi-pad-8;
+}
+
+#mainbox {
+    border: 0;
+    padding: 0;
+    children: [inputbar, listview];
+}
+
+#inputbar {
+    background-color: @bg-col-light;
+    border: 0;
+    border-radius: @rofi-bdr-radius-lg;
+    padding: @rofi-pad-8;
+    margin: @rofi-inputbar-margin;
+    children: [prompt, entry];
+    spacing: @rofi-pad-4;
+}
+
+#prompt {
+    text-color: @accent-col;
+    padding: 0;
+}
+
+#entry {
+    padding: 0;
+    placeholder: "Search...";
+    placeholder-color: @fg-col2;
+}
+
+#listview {
+    border: 0;
+    columns: 1;
+    lines: 8;
+    cycle: true;
+    dynamic: true;
+    scrollbar: false;
+    spacing: @rofi-el-spacing;
+    padding: @rofi-lv-padding;
+}
+
+#element {
+    padding: @rofi-pad-8;
+    border-radius: @rofi-bdr-radius-lg;
+    border: 0;
+    spacing: @rofi-pad-8;
+    cursor: pointer;
+}
+
+#element normal {
+    background-color: transparent;
+    text-color: @fg-col;
+}
+
+#element selected {
+    background-color: @selected-col;
+    text-color: @fg-col;
+}
+
+#element alternate {
+    background-color: transparent;
+    text-color: @fg-col;
+}
+
+#element normal.urgent {
+    background-color: transparent;
+    text-color: @red;
+}
+
+#element selected.urgent {
+    background-color: @selected-col;
+    text-color: @red;
+}
+
+#element normal.active {
+    background-color: transparent;
+    text-color: @fg-col;
+}
+
+#element selected.active {
+    background-color: @selected-col;
+    text-color: @fg-col;
+}
+
+#element-icon {
+    size: 1.2em;
+    vertical-align: 0.5;
+}
+
+#element-text {
+    vertical-align: 0.5;
+}
+
+#message {
+    border: 0;
+    padding: @rofi-pad-8;
+    margin: @rofi-inputbar-margin;
+    border-radius: @rofi-bdr-radius-lg;
+    background-color: @bg-col-light;
+}
+
+#textbox {
+    text-color: @fg-col;
+    padding: 0;
+}
+
+#error-message {
+    text-color: @red;
+    padding: @rofi-pad-8;
+}
+
+#scrollbar {
+    width: @rofi-pad-4;
+    border: 0;
+    handle-color: @grey;
+    handle-width: @rofi-pad-4;
+    padding: 0;
+}
+
+#mode-switcher {
+    border: 0;
+}
+
+#button {
+    padding: @rofi-pad-4;
+    border-radius: @rofi-bdr-radius4;
+}
+
+#button selected {
+    background-color: @selected-col;
+    text-color: @fg-col;
+}
+
+#textbox-prompt-colon {
+    expand: false;
+    str: ":";
+    margin: 0px 0.3em 0em 0em;
+    text-color: @accent-col;
+}
