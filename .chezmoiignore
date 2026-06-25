@@ -13,7 +13,7 @@ cursor/
 scripts/
 dot_zshrc.local
 
-{{ if not .isLinux }}
+{{ if not (and .isLinux .useI3) }}
 .zprofile
-dot_config/hypr/
+.xinitrc
 {{ end }}

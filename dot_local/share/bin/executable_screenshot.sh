@@ -9,10 +9,10 @@ timestamp=$(date +%Y%m%d-%H%M%S)
 
 case "${1:-full}" in
     select)
-        grim -g "$(slurp)" "$dir/$timestamp.png"
+        maim -s "$dir/$timestamp.png"
         ;;
     full)
-        grim "$dir/$timestamp.png"
+        maim "$dir/$timestamp.png"
         ;;
     *)
         echo "Usage: screenshot.sh [full|select]" >&2

@@ -1,0 +1,179 @@
+[colors]
+background = {{ .colors.base }}
+background-alt = {{ .colors.surface0 }}
+foreground = {{ .colors.text }}
+foreground-alt = {{ .colors.subtext0 }}
+primary = {{ .colors.lavender }}
+secondary = {{ .colors.mauve }}
+alert = {{ .colors.red }}
+warning = {{ .colors.yellow }}
+success = {{ .colors.green }}
+disabled = {{ .colors.overlay0 }}
+
+[settings]
+screenchange-reload = true
+
+include-file = /tmp/polybar-dpi.ini
+
+[bar/main]
+monitor = ${env:MONITOR:}
+width = 100%
+offset-x = 0
+offset-y = 0
+radius = 0
+fixed-center = true
+
+background = ${colors.background}
+foreground = ${colors.foreground}
+
+line-size = 2
+line-color = ${colors.primary}
+
+border-size = 0
+border-color = ${colors.background}
+
+modules-left = i3
+modules-center = xwindow
+modules-right = tray cpu memory filesystem pulseaudio date powermenu
+
+enable-ipc = true
+
+scroll-up = #i3.prev
+scroll-down = #i3.next
+
+cursor-click = pointer
+cursor-scroll = ns-resize
+
+[module/i3]
+type = internal/i3
+format = <label-state> <label-mode>
+index-sort = true
+strip-wsnumbers = true
+pin-workspaces = true
+enable-scroll = false
+label-mode = %mode%
+label-mode-padding = 2
+label-mode-background = ${colors.alert}
+label-mode-foreground = ${colors.background}
+label-focused = %icon%
+label-focused-background = ${colors.primary}
+label-focused-foreground = ${colors.background}
+label-focused-padding = 2
+label-unfocused = %icon%
+label-unfocused-padding = 2
+label-unfocused-foreground = ${colors.disabled}
+label-visible = %icon%
+label-visible-background = ${colors.surface0}
+label-visible-padding = 2
+label-urgent = %icon%
+label-urgent-background = ${colors.alert}
+label-urgent-padding = 2
+
+ws-icon-0 = 1;
+ws-icon-1 = 2;
+ws-icon-2 = 3;
+ws-icon-3 = 4;
+ws-icon-4 = 5;
+ws-icon-default = 
+
+label-separator = " "
+label-separator-padding = 1
+label-separator-foreground = ${colors.disabled}
+
+[module/xwindow]
+type = internal/xwindow
+format = <label>
+label = %title:0:60:...%
+label-foreground = ${colors.foreground}
+label-maxlen = 60
+
+[module/cpu]
+type = internal/cpu
+interval = 2
+format = <label>
+format-prefix = " "
+format-prefix-foreground = ${colors.overlay1}
+label = %percentage:2%%
+label-foreground = ${colors.foreground}
+warn-percentage = 80
+
+[module/memory]
+type = internal/memory
+interval = 2
+format = <label>
+format-prefix = "󰘚 "
+format-prefix-foreground = ${colors.overlay1}
+label = %percentage_used%%
+label-foreground = ${colors.foreground}
+warn-percentage = 80
+
+[module/filesystem]
+type = internal/fs
+mount-0 = /
+interval = 30
+format-mounted = <label-mounted>
+format-mounted-prefix = " "
+format-mounted-prefix-foreground = ${colors.overlay1}
+label-mounted = %percentage_used%%
+label-mounted-foreground = ${colors.foreground}
+format-unmounted = <label-unmounted>
+label-unmounted = 
+label-unmounted-foreground = ${colors.disabled}
+warn-percentage = 80
+click-left = thunar
+
+[module/network]
+type = internal/network
+interface-type = wireless
+interval = 3
+format-connected = <ramp-signal> <label-connected>
+format-connected-foreground = ${colors.foreground}
+ramp-signal-0 = 󰤯
+ramp-signal-1 = 󰤞
+ramp-signal-2 = 󰤢
+ramp-signal-3 = 󰤥
+ramp-signal-4 = 󰤨
+ramp-signal-foreground = ${colors.overlay1}
+label-connected = %local_ip%
+format-disconnected = <label-disconnected>
+format-disconnected-foreground = ${colors.disabled}
+label-disconnected = 󰤯 disconnected
+
+[module/pulseaudio]
+type = internal/pulseaudio
+format-volume = <ramp-volume> <label-volume>
+ramp-volume-0 = 
+ramp-volume-1 = 󰕿
+ramp-volume-2 = 󰖀
+ramp-volume-3 = 󰕾
+ramp-volume-foreground = ${colors.overlay1}
+label-volume = %percentage%%
+label-volume-foreground = ${colors.foreground}
+format-muted = <label-muted>
+label-muted =  muted
+label-muted-foreground = ${colors.disabled}
+click-right = pactl set-sink-mute @DEFAULT_SINK@ toggle
+
+[module/date]
+type = internal/date
+interval = 1
+date = %Y-%m-%d
+date-alt = %a %d %b
+time = %H:%M:%S
+time-alt = %H:%M
+format = <label>
+click-left = #date.toggle
+format-prefix = " "
+format-prefix-foreground = ${colors.overlay1}
+label = %date% %time%
+label-foreground = ${colors.foreground}
+
+[module/powermenu]
+type = custom/text
+content = 
+content-foreground = ${colors.overlay1}
+click-left = ~/.config/i3/scripts/powermenu
+
+[module/tray]
+type = internal/tray
+format-background = ${colors.background}

@@ -1,5 +1,5 @@
-{{ if .isLinux }}
-if [ -z "$WAYLAND_DISPLAY" ] && [ "$XDG_VTNR" -eq 1 ]; then
-    exec start-hyprland
+{{ if and .isLinux .useI3 }}
+if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" -eq 1 ]; then
+    exec startx
 fi
 {{ end }}
