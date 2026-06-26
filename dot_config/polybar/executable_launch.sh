@@ -4,8 +4,14 @@ if ! command -v polybar > /dev/null; then
     exit 0
 fi
 
-~/.bin/set-dpi.sh
-DPI_MODE=$(~/.bin/dpi-mode 2>/dev/null || echo normal)
+DPI=$(xrdb -query | awk '/Xft.dpi/ {print $2}')
+if [ -n "$DPI" ] && [ "$DPI" -ge 192 ] 2>/dev/null; then
+    DPI_MODE=retina
+elif [ -n "$DPI" ] && [ "$DPI" -ge 144 ] 2>/dev/null; then
+    DPI_MODE=hidpi
+else
+    DPI_MODE=normal
+fi
 DPI_INI=/tmp/polybar-dpi.ini
 
 case "$DPI_MODE" in
