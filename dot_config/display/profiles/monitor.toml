@@ -1,0 +1,8 @@
+default = true
+
+[output]
+name = "Virtual-1"
+mode = "3840x2160"
+
+[dpi]
+value = 192
