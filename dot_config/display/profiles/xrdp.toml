@@ -1,0 +1,8 @@
+default = false
+
+[output]
+name = "Virtual-1"
+mode = "current"
+
+[dpi]
+tiers = true
