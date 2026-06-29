@@ -1,3 +1,4 @@
+export PATH="$HOME/.local/share/mise/shims:$PATH"
 command -v displayctl >/dev/null 2>&1 && displayctl apply auto
 
 exec i3

@@ -128,8 +128,8 @@ bindsym $mod+Shift+e exec --no-startup-id ~/.config/i3/scripts/powermenu
 # Autostart
 exec_always --no-startup-id feh --randomize --bg-fill ~/.local/share/wallpapers/
 # exec --no-startup-id sh -c '[ -n "$XRDP_SESSION" ] || exec picom --config ~/.config/picom/picom.conf'
-exec_always --no-startup-id displayctl apply auto
-exec --no-startup-id displayctl daemon
+exec_always --no-startup-id env PATH=$HOME/.local/share/mise/shims:$PATH displayctl apply auto
+exec --no-startup-id env PATH=$HOME/.local/share/mise/shims:$PATH displayctl daemon
 exec --no-startup-id ~/.config/polybar/launch.sh
 exec --no-startup-id dunst
 exec --no-startup-id fcitx5 -d
