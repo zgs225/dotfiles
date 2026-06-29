@@ -1,0 +1,4 @@
+#!/bin/sh
+LOGDIR="$HOME/.local/state/displayctl"
+mkdir -p "$LOGDIR"
+echo "$(date '+%Y-%m-%d %H:%M:%S') output=$DISPLAYCTL_OUTPUT mode=$DISPLAYCTL_MODE dpi=$DISPLAYCTL_DPI" >> "$LOGDIR/switch.log"
