@@ -11,7 +11,7 @@ data:
   isMacOS: {{ eq .chezmoi.os "darwin" }}
   isLinux: {{ eq .chezmoi.os "linux" }}
   isWindows: {{ eq .chezmoi.os "windows" }}
-  isVM: {{ lookPath "systemd-detect-virt" | ne "" | and (output "systemd-detect-virt" | trim | ne "none") }}
+  isVM: {{ and (lookPath "systemd-detect-virt") (output "sh" "-c" "systemd-detect-virt 2>/dev/null || echo none" | trim | ne "none") }}
   useI3: {{ lookPath "i3" | ne "" }}
 
   colors:
