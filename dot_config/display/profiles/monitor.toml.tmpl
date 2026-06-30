@@ -1,8 +1,19 @@
+{{ if .isVM }}
 default = true
 
 [output]
 name = "Virtual-1"
-mode = "3840x2160"
+mode = "current"
 
 [dpi]
-value = 192
+tiers = true
+{{ else }}
+default = true
+
+[output]
+name = "Virtual-1"
+mode = "auto"
+
+[dpi]
+tiers = true
+{{ end }}
