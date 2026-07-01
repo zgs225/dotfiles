@@ -12,6 +12,7 @@ docs/
 cursor/
 scripts/
 dot_zshrc.local
+dot_netrc
 
 {{ if not (and .isLinux .useI3) }}
 .zprofile
