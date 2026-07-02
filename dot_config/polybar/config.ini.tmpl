@@ -177,7 +177,7 @@ click-left = ~/.config/i3/scripts/powermenu
 [module/battery]
 type = internal/battery
 battery = BAT0
-adapter = AC
+adapter = AC0
 full-at = 98
 poll-interval = 5
 low-at = 15
@@ -187,10 +187,9 @@ label-charging = %percentage%%
 label-charging-foreground = ${colors.foreground}
 animation-charging-0 = 󰁺
 animation-charging-1 = 󰁻
-animation-charging-2 = 󰁼
-animation-charging-3 = 󰁽
-animation-charging-4 = 󰁾
-animation-charging-5 = 󰁿
+animation-charging-2 = 󰁽
+animation-charging-3 = 󰁿
+animation-charging-4 = 󰁹
 animation-charging-framerate = 750
 animation-charging-foreground = ${colors.green}
 
@@ -199,15 +198,12 @@ label-discharging = %percentage%%
 label-discharging-foreground = ${colors.foreground}
 ramp-capacity-0 = 󰁺
 ramp-capacity-1 = 󰁻
-ramp-capacity-2 = 󰁼
-ramp-capacity-3 = 󰁽
-ramp-capacity-4 = 󰁾
-ramp-capacity-5 = 󰁿
+ramp-capacity-2 = 󰁽
+ramp-capacity-3 = 󰁿
+ramp-capacity-4 = 󰁹
 ramp-capacity-foreground = ${colors.overlay1}
 
-format-full = 󰂎 <label-full>
-label-full = full
-label-full-foreground = ${colors.green}
+format-full = 󰁹
 
 format-low = <animation-low> <label-low>
 label-low = %percentage%%
