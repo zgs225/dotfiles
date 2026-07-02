@@ -1,4 +1,4 @@
-lock_text=""
+lock_text="已锁定"
 lock_timeout=0
 
 i3lock_args="
@@ -8,11 +8,11 @@ i3lock_args="
 --time-size=72
 --time-font=Noto Sans CJK SC
 --time-str=%H:%M
---date-str=
---verif-text=
---wrong-text=
---noinput-text=
---lock-text=
+--date-str=%Y年%m月%d日 %A
+--verif-text=验证中
+--wrong-text=密码错误
+--noinput-text=无输入
+--lock-text=已锁定
 --inside-color=00000000
 --ring-color={{ .colors.text | trimPrefix "#" }}44
 --line-color=00000000
