@@ -129,8 +129,8 @@ bindsym $mod+Shift+r restart
 bindsym $mod+Shift+e exec --no-startup-id ~/.config/i3/scripts/powermenu
 
 # Autostart
-exec_always --no-startup-id betterlockscreen -u ~/.local/share/wallpapers/ --fx blur --blur 0.3
-exec_always --no-startup-id betterlockscreen -w blur
+exec --no-startup-id betterlockscreen -u ~/.local/share/wallpapers/ --fx blur --blur 0.3
+exec --no-startup-id betterlockscreen -w blur
 exec_always --no-startup-id ~/.config/i3/scripts/natural-scroll
 {{- if and .useI3 (not .isVM) }}
 exec --no-startup-id picom --config ~/.config/picom/picom.conf
