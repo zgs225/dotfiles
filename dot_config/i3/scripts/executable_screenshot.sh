@@ -25,3 +25,8 @@ esac
 
 cp "$tmp" "$dir/$timestamp.png"
 xclip -selection clipboard -t image/png < "$tmp"
+notify-send -u low \
+    -i "$dir/$timestamp.png" \
+    "Screenshot saved" \
+    "$dir/$timestamp.png (copied to clipboard)" \
+    || true
