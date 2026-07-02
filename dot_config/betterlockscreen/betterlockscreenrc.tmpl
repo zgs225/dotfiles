@@ -1,28 +1,35 @@
-lock_text="已锁定"
-lock_timeout=0
+# Managed by chezmoi — betterlockscreen v4 theme for Catppuccin Mocha
 
-i3lock_args="
---clock
---time-align=1
---time-color={{ .colors.text | trimPrefix "#" }}
---time-size=72
---time-font=Noto Sans CJK SC
---time-str=%H:%M
---date-str=%Y年%m月%d日 %A
---verif-text=验证中
---wrong-text=密码错误
---noinput-text=无输入
---lock-text=已锁定
---inside-color=00000000
---ring-color={{ .colors.text | trimPrefix "#" }}44
---line-color=00000000
---keyhl-color={{ .colors.text | trimPrefix "#" }}
---bshl-color={{ .colors.red | trimPrefix "#" }}
---separator-color=00000000
---insidever-color=00000000
---ringver-color={{ .colors.text | trimPrefix "#" }}44
---insidewrong-color=00000000
---ringwrong-color={{ .colors.red | trimPrefix "#" }}
---radius=80
---ring-width=4
-"
+# 透传给 i3lock 的额外参数（默认已包含 -n）
+lockargs+=(--date-str="%Y年%m月%d日 %A")
+lockargs+=(--radius=80 --ring-width=4 --time-size=72)
+
+# 中文文案（变量名无下划线）
+locktext="已锁定"
+veriftext="验证中"
+wrongtext="密码错误"
+
+# 字体
+font="Noto Sans CJK SC"
+
+# 时间（用 time_format，不是 time-str）
+timecolor={{ .colors.text | trimPrefix "#" }}ff
+time_format="%H:%M"
+
+# 颜色（8 位 hex: RRGGBBAA）
+ringcolor={{ .colors.text | trimPrefix "#" }}44
+insidecolor=00000000
+separatorcolor=00000000
+ringvercolor={{ .colors.text | trimPrefix "#" }}44
+insidevercolor=00000000
+ringwrongcolor={{ .colors.red | trimPrefix "#" }}ff
+insidewrongcolor=00000000
+
+keyhlcolor={{ .colors.text | trimPrefix "#" }}ff
+bshlcolor={{ .colors.red | trimPrefix "#" }}ff
+greetercolor={{ .colors.text | trimPrefix "#" }}ff
+layoutcolor={{ .colors.text | trimPrefix "#" }}ff
+verifcolor={{ .colors.text | trimPrefix "#" }}ff
+wrongcolor={{ .colors.red | trimPrefix "#" }}ff
+modifcolor={{ .colors.red | trimPrefix "#" }}ff
+bgcolor=000000ff
