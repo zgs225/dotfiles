@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+xinput list --name-only | while read -r device; do
+    if xinput list-props "$device" 2>/dev/null | grep -q "libinput Natural Scrolling Enabled"; then
+        xinput set-prop "$device" "libinput Natural Scrolling Enabled" 1
+    fi
+done

@@ -127,6 +127,7 @@ bindsym $mod+Shift+e exec --no-startup-id ~/.config/i3/scripts/powermenu
 
 # Autostart
 exec_always --no-startup-id feh --randomize --bg-fill ~/.local/share/wallpapers/
+exec_always --no-startup-id ~/.config/i3/scripts/natural-scroll
 {{- if and .useI3 (not .isVM) }}
 exec --no-startup-id picom --config ~/.config/picom/picom.conf
 {{- end }}
