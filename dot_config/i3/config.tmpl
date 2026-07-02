@@ -70,35 +70,38 @@ bindsym $mod+Shift+\ split v
 bindsym $mod+Ctrl+space layout toggle split
 
 # Focus movement
-bindsym $mod+h focus left
-bindsym $mod+j focus down
-bindsym $mod+k focus up
-bindsym $mod+l focus right
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+# Lock screen
+bindsym $mod+l exec --no-startup-id ~/.config/i3/scripts/lock.sh
 
 # Focus parent/child
 bindsym $mod+Ctrl+h focus parent
 bindsym $mod+Ctrl+l focus child
 
 # Move windows
-bindsym $mod+Shift+h move left
-bindsym $mod+Shift+j move down
-bindsym $mod+Shift+k move up
-bindsym $mod+Shift+l move right
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
 
 # Resize mode
 bindsym $mod+r mode "resize"
 mode "resize" {
     # Move
-    bindsym h move left 10 px
-    bindsym j move down 10 px
-    bindsym k move up 10 px
-    bindsym l move right 10 px
+    bindsym Left move left 10 px
+    bindsym Down move down 10 px
+    bindsym Up move up 10 px
+    bindsym Right move right 10 px
 
     # Resize
-    bindsym Shift+h resize shrink width 10 px or 10 ppt
-    bindsym Shift+j resize grow height 10 px or 10 ppt
-    bindsym Shift+k resize shrink height 10 px or 10 ppt
-    bindsym Shift+l resize grow width 10 px or 10 ppt
+    bindsym Shift+Left resize shrink width 10 px or 10 ppt
+    bindsym Shift+Down resize grow height 10 px or 10 ppt
+    bindsym Shift+Up resize shrink height 10 px or 10 ppt
+    bindsym Shift+Right resize grow width 10 px or 10 ppt
 
     bindsym Return mode "default"
     bindsym Escape mode "default"
@@ -110,8 +113,8 @@ bindsym $mod+d exec "rofi -show drun"
 bindsym $mod+Tab exec "rofi -show window"
 bindsym $mod+q kill
 # Screenshots
-bindsym $mod+Shift+3 exec --no-startup-id ~/.local/share/bin/screenshot.sh full
-bindsym $mod+Shift+4 exec --no-startup-id ~/.local/share/bin/screenshot.sh select
+bindsym $mod+Shift+3 exec --no-startup-id ~/.config/i3/scripts/screenshot.sh full
+bindsym $mod+Shift+4 exec --no-startup-id ~/.config/i3/scripts/screenshot.sh select
 
 # Keybinding helper
 bindsym F1 exec --no-startup-id ~/.config/i3/scripts/keyhint
@@ -126,7 +129,8 @@ bindsym $mod+Shift+r restart
 bindsym $mod+Shift+e exec --no-startup-id ~/.config/i3/scripts/powermenu
 
 # Autostart
-exec_always --no-startup-id feh --randomize --bg-fill ~/.local/share/wallpapers/
+exec_always --no-startup-id betterlockscreen -u ~/.local/share/wallpapers/ --fx blur --blur 0.3
+exec_always --no-startup-id betterlockscreen -w blur
 exec_always --no-startup-id ~/.config/i3/scripts/natural-scroll
 {{- if and .useI3 (not .isVM) }}
 exec --no-startup-id picom --config ~/.config/picom/picom.conf

@@ -15,7 +15,7 @@ chosen=$(printf "%s\n%s\n%s\n%s\n%s\n" "$lock" "$logout" "$suspend" "$reboot" "$
     | rofi -dmenu -i -p "Power" -theme ~/.config/rofi/powermenu.rasi -no-custom)
 
 case "$chosen" in
-    "$lock")    i3lock ;;
+    "$lock")    ~/.config/i3/scripts/lock.sh ;;
     "$logout")  i3-msg exit ;;
     "$suspend") systemctl suspend ;;
     "$reboot")

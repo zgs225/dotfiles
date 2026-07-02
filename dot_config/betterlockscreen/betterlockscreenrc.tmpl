@@ -1,0 +1,28 @@
+lock_text=""
+lock_timeout=0
+
+i3lock_args="
+--clock
+--time-align=1
+--time-color={{ .colors.text | trimPrefix "#" }}
+--time-size=72
+--time-font=Noto Sans CJK SC
+--time-str=%H:%M
+--date-str=
+--verif-text=
+--wrong-text=
+--noinput-text=
+--lock-text=
+--inside-color=00000000
+--ring-color={{ .colors.text | trimPrefix "#" }}44
+--line-color=00000000
+--keyhl-color={{ .colors.text | trimPrefix "#" }}
+--bshl-color={{ .colors.red | trimPrefix "#" }}
+--separator-color=00000000
+--insidever-color=00000000
+--ringver-color={{ .colors.text | trimPrefix "#" }}44
+--insidewrong-color=00000000
+--ringwrong-color={{ .colors.red | trimPrefix "#" }}
+--radius=80
+--ring-width=4
+"
