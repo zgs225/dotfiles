@@ -10,23 +10,38 @@ timestamp=$(date +%Y%m%d-%H%M%S)
 tmp=$(mktemp -t screenshot.XXXXXX.png)
 trap 'rm -f "$tmp"' EXIT
 
-case "${1:-full}" in
-    select)
-        maim -s "$tmp"
-        ;;
-    full)
-        maim "$tmp"
+mode="${1:-full}"
+case "$mode" in
+    select|full|ocr)
+        case "$mode" in
+            select) maim -s "$tmp" ;;
+            full)   maim    "$tmp" ;;
+            ocr)    maim -s "$tmp" ;;
+        esac
         ;;
     *)
-        echo "Usage: screenshot.sh [full|select]" >&2
+        echo "Usage: screenshot.sh [full|select|ocr]" >&2
         exit 1
         ;;
 esac
 
 cp "$tmp" "$dir/$timestamp.png"
 xclip -selection clipboard -t image/png < "$tmp"
-notify-send -u low \
-    -i "$dir/$timestamp.png" \
-    "Screenshot saved" \
-    "$dir/$timestamp.png (copied to clipboard)" \
-    || true
+
+if [[ "$mode" == "ocr" ]]; then
+    text="$(tesseract "$tmp" stdout -l chi_sim+eng 2>/dev/null || true)"
+    printf '%s' "$text" | xclip -selection clipboard -t text/plain
+    snippet="${text:0:200}"
+    [[ -z "$snippet" ]] && snippet="(no text recognized)"
+    notify-send -u low -t 5000 \
+        -i "$dir/$timestamp.png" \
+        "OCR text copied to clipboard" \
+        "$snippet" \
+        || true
+else
+    notify-send -u low \
+        -i "$dir/$timestamp.png" \
+        "Screenshot saved" \
+        "$dir/$timestamp.png (copied to clipboard)" \
+        || true
+fi
