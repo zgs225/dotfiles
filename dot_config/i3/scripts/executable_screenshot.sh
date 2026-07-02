@@ -29,7 +29,12 @@ cp "$tmp" "$dir/$timestamp.png"
 xclip -selection clipboard -t image/png < "$tmp"
 
 if [[ "$mode" == "ocr" ]]; then
-    text="$(tesseract "$tmp" stdout -l chi_sim+eng 2>/dev/null || true)"
+    pre="$(mktemp -t screenshot.pre.XXXXXX.png)"
+    trap 'rm -f "$tmp" "$pre"' EXIT
+
+    magick "$tmp" -colorspace Gray -resize 200% "$pre" || pre="$tmp"
+
+    text="$(tesseract "$pre" stdout -l chi_sim+eng --psm 6 --oem 1 2>/dev/null || true)"
     printf '%s' "$text" | xclip -selection clipboard -t text/plain
     snippet="${text:0:200}"
     [[ -z "$snippet" ]] && snippet="(no text recognized)"
