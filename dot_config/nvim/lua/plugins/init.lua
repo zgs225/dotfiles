@@ -24,10 +24,21 @@ return {
 
   {
     "williamboman/mason.nvim",
-    version = "1.11.0",
     cmd = { "Mason", "MasonInstall", "MasonInstallAll", "MasonUpdate" },
     opts = function()
       return require "configs.mason"
+    end,
+  },
+
+  {
+    "williamboman/mason-lspconfig.nvim",
+    dependencies = {
+      "williamboman/mason.nvim",
+      "neovim/nvim-lspconfig",
+    },
+    event = "User FilePost",
+    opts = function()
+      return require "configs.mason-lspconfig"
     end,
   },
 }
