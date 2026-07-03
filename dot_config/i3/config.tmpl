@@ -56,12 +56,10 @@ bindsym $mod+Shift+bracketleft workspace prev
 bindsym $mod+Shift+bracketright workspace next
 
 # Layout
-bindsym $mod+Shift+Space floating toggle
-bindsym $mod+f fullscreen toggle
+bindsym $mod+Shift+space floating toggle
+bindsym $mod+Shift+f fullscreen toggle
 
 # Split orientation
-bindsym $mod+- split h
-bindsym $mod+\ split v
 bindsym $mod+Ctrl+space layout toggle split
 
 # Focus movement
@@ -112,6 +110,9 @@ bindsym $mod+Shift+3 exec --no-startup-id ~/.config/i3/scripts/screenshot.sh ful
 bindsym $mod+Shift+4 exec --no-startup-id ~/.config/i3/scripts/screenshot.sh select
 # OCR — select area → copy recognized text
 bindsym $mod+Shift+2 exec --no-startup-id ~/.config/i3/scripts/screenshot.sh ocr
+
+bindsym $mod+w exec --no-startup-id sh -c "sleep 0.07 && xdotool key --clearmodifiers ctrl+w"
+bindsym $mod+t exec --no-startup-id sh -c "sleep 0.07 && xdotool key --clearmodifiers ctrl+t"
 
 # Keybinding helper
 bindsym F1 exec --no-startup-id ~/.config/i3/scripts/keyhint
