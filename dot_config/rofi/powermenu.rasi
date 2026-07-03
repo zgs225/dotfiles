@@ -9,9 +9,9 @@ configuration {
 
 window {
     width: @rofi-win-md;
-    padding: @rofi-pad-8;
-    border: 0;
-    border-radius: @rofi-bdr-radius8;
+    padding: @rofi-pad-16;
+    border: 1px solid {{ .colors.surface2 }};
+    border-radius: @rofi-bdr-radius-lg;
     background-color: @bg-col;
 }
 
@@ -23,15 +23,17 @@ mainbox {
 inputbar {
     background-color: @bg-col-light;
     border: 0;
-    border-radius: @rofi-bdr-radius-lg;
-    padding: @rofi-pad-8;
-    margin: @rofi-inputbar-margin;
+    border-bottom: 2px solid {{ .colors.blue }};
+    border-radius: @rofi-bdr-radius8 @rofi-bdr-radius8 0 0;
+    padding: @rofi-pad-12;
+    margin: 0 0 @rofi-inputbar-margin 0;
     children: [prompt];
 }
 
 prompt {
     padding: 0;
     text-color: @accent-col;
+    font-weight: bold;
 }
 
 listview {
@@ -46,24 +48,38 @@ listview {
 
 element {
     padding: @rofi-el-padding-pm;
-    border: 0;
-    border-radius: @rofi-bdr-radius-lg;
+    border: 1px solid {{ .colors.surface2 }};
+    border-radius: @rofi-bdr-radius8;
     background-color: @bg-col-card;
     text-color: @fg-col;
     cursor: pointer;
 }
 
-element selected {
-    background-color: @selected-col;
+element normal {
+    background-color: @bg-col-card;
     text-color: @fg-col;
+    border-color: {{ .colors.surface2 }};
+}
+
+element normal.active {
+    background-color: rgba(255,255,255,0.05);
+    border-color: {{ .colors.overlay0 }};
+}
+
+element selected {
+    background-color: {{ .colors.surface1 }};
+    text-color: @fg-col;
+    border-color: {{ .colors.blue }};
 }
 
 element urgent {
     background-color: @bg-col-card;
     text-color: @red;
+    border-color: {{ .colors.red }};
 }
 
 element selected.urgent {
-    background-color: @selected-col;
+    background-color: {{ .colors.surface1 }};
     text-color: @red;
+    border-color: @red;
 }
