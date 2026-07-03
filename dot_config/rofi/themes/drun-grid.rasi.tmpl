@@ -16,6 +16,18 @@
     accent-col-2:  {{ .colors.blue }};
     red:           {{ .colors.red }};
 
+    /* Glassmorphism — translucent variants (alpha hardcoded; mirror Catppuccin Mocha) */
+    glass-bg:           rgba( 30,  30,  46, 0.80 );
+    glass-inputbar:     rgba( 49,  50,  68, 0.60 );
+    glass-card:         rgba( 49,  50,  68, 0.45 );
+    glass-card-hover:   rgba( 69,  71,  90, 0.55 );
+    glass-card-active:  rgba( 69,  71,  90, 0.65 );
+    glass-selected:     rgba(203, 166, 247, 0.75 );
+    glass-selected-2:   rgba(137, 180, 250, 0.70 );
+    glass-border:       rgba( 69,  71,  90, 0.25 );
+    glass-accent:       rgba(203, 166, 247, 0.50 );
+    glass-urgent:       rgba(243, 139, 168, 0.70 );
+
     font:               "sans-serif 12";
     background-color:   transparent;
     text-color:         @fg-col;
@@ -35,9 +47,9 @@ window {
     padding:         @rofi-pad-16;
 
     border:          1px;
-    border-color:    @bg-col-card;
+    border-color:    @glass-border;
     border-radius:   @rofi-bdr-radius-lg;
-    background-color: @bg-col;
+    background-color: @glass-bg;
 }
 
 mainbox {
@@ -46,11 +58,11 @@ mainbox {
 }
 
 inputbar {
-    background-color: @bg-col-light;
+    background-color: @glass-inputbar;
 
     border:          0;
     border-bottom:   2px;
-    border-color:    @accent-col;
+    border-color:    @glass-accent;
     border-radius:   8px 8px 0 0;
 
     padding:  @rofi-pad-12;
@@ -90,40 +102,40 @@ element {
     spacing:        @rofi-pad-8;
     orientation:    vertical;
     border-radius:  @rofi-bdr-radius8;
-    background-color: @bg-col-light;
+    background-color: @glass-card;
     cursor:         pointer;
 }
 
 element normal {
-    background-color: @bg-col-light;
+    background-color: @glass-card;
     text-color:       @fg-col;
     border:           1px;
     border-color:     transparent;
 }
 
 element normal.active {
-    background-color: @bg-col-card;
+    background-color: @glass-card-hover;
     border-color:     @fg-col3;
 }
 
 element selected {
-    background-color: @accent-col;
+    background-color: @glass-selected;
     text-color:       @bg-col;
 }
 
 element selected active {
-    background-color: @accent-col-2;
+    background-color: @glass-selected-2;
     text-color:       @bg-col;
 }
 
 element urgent {
-    background-color: @bg-col-light;
+    background-color: @glass-card;
     text-color:       @red;
     border-color:     @red;
 }
 
 element selected urgent {
-    background-color: @red;
+    background-color: @glass-urgent;
     text-color:       @bg-col;
 }
 
