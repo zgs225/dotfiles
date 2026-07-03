@@ -12,24 +12,25 @@ configuration {
 @import "/tmp/rofi-dpi.rasi"
 
 * {
-    bg-col: {{ .colors.base }};
+    bg-col: {{ .colors.crust }};
     bg-col-light: {{ .colors.surface0 }};
-    bg-col-card: {{ .colors.surface0 }};
-    border-col: {{ .colors.lavender }};
+    bg-col-card: {{ .colors.base }};
+    border-col: {{ .colors.blue }};
     selected-col: {{ .colors.surface1 }};
-    blue: {{ .colors.blue }};
     fg-col: {{ .colors.text }};
     fg-col2: {{ .colors.subtext0 }};
+    fg-col3: {{ .colors.overlay0 }};
     grey: {{ .colors.overlay0 }};
     red: {{ .colors.red }};
     urgent: {{ .colors.red }};
     green: {{ .colors.green }};
     accent-col: {{ .colors.blue }};
+    yellow: {{ .colors.yellow }};
 
     background-color: @bg-col;
     text-color: @fg-col;
     border: 0;
-    border-radius: @rofi-bdr-radius4;
+    border-radius: @rofi-bdr-radius8;
     border-color: @border-col;
     padding: 0;
     spacing: 0;
@@ -37,10 +38,10 @@ configuration {
 
 #window {
     background-color: @bg-col;
-    border: 0;
-    border-radius: @rofi-bdr-radius8;
-    width: @rofi-win-width;
-    padding: @rofi-pad-8;
+    border: 1px solid {{ .colors.surface2 }};
+    border-radius: @rofi-bdr-radius-lg;
+    width: @rofi-window-width;
+    padding: @rofi-pad-12;
 }
 
 #mainbox {
@@ -52,22 +53,25 @@ configuration {
 #inputbar {
     background-color: @bg-col-light;
     border: 0;
-    border-radius: @rofi-bdr-radius-lg;
-    padding: @rofi-pad-8;
-    margin: @rofi-inputbar-margin;
+    border-bottom: 2px solid {{ .colors.blue }};
+    border-radius: @rofi-bdr-radius8 @rofi-bdr-radius8 0 0;
+    padding: @rofi-pad-12;
+    margin: 0 0 @rofi-inputbar-margin 0;
     children: [prompt, entry];
-    spacing: @rofi-pad-4;
+    spacing: @rofi-pad-8;
 }
 
 #prompt {
     text-color: @accent-col;
     padding: 0;
+    font-weight: bold;
 }
 
 #entry {
     padding: 0;
     placeholder: "Search...";
-    placeholder-color: @fg-col2;
+    placeholder-color: @fg-col3;
+    text-color: @fg-col;
 }
 
 #listview {
@@ -82,8 +86,8 @@ configuration {
 }
 
 #element {
-    padding: @rofi-pad-8;
-    border-radius: @rofi-bdr-radius-lg;
+    padding: @rofi-pad-8 @rofi-pad-12;
+    border-radius: @rofi-bdr-radius8;
     border: 0;
     spacing: @rofi-pad-8;
     cursor: pointer;
@@ -94,7 +98,29 @@ configuration {
     text-color: @fg-col;
 }
 
+#element normal.urgent {
+    background-color: transparent;
+    text-color: @red;
+}
+
+#element normal.active {
+    background-color: rgba(255,255,255,0.05);
+    text-color: @fg-col;
+}
+
 #element selected {
+    background-color: @selected-col;
+    text-color: @fg-col;
+    border: 1px solid {{ .colors.blue }};
+}
+
+#element selected.urgent {
+    background-color: @selected-col;
+    border-color: @red;
+    text-color: @red;
+}
+
+#element selected.active {
     background-color: @selected-col;
     text-color: @fg-col;
 }
@@ -104,45 +130,27 @@ configuration {
     text-color: @fg-col;
 }
 
-#element normal.urgent {
-    background-color: transparent;
-    text-color: @red;
-}
-
-#element selected.urgent {
-    background-color: @selected-col;
-    text-color: @red;
-}
-
-#element normal.active {
-    background-color: transparent;
-    text-color: @fg-col;
-}
-
-#element selected.active {
-    background-color: @selected-col;
-    text-color: @fg-col;
-}
-
 #element-icon {
-    size: 1.2em;
+    size: @rofi-icon-size;
     vertical-align: 0.5;
+    padding: 0 @rofi-pad-4 0 0;
 }
 
 #element-text {
     vertical-align: 0.5;
+    highlight: false;
 }
 
 #message {
     border: 0;
     padding: @rofi-pad-8;
-    margin: @rofi-inputbar-margin;
-    border-radius: @rofi-bdr-radius-lg;
+    margin: @rofi-msg-margin 0 0 0;
+    border-radius: @rofi-bdr-radius8;
     background-color: @bg-col-light;
 }
 
 #textbox {
-    text-color: @fg-col;
+    text-color: @fg-col2;
     padding: 0;
 }
 
@@ -161,21 +169,28 @@ configuration {
 
 #mode-switcher {
     border: 0;
+    background-color: @bg-col-light;
+    border-radius: @rofi-bdr-radius8;
+    padding: @rofi-pad-4;
 }
 
 #button {
-    padding: @rofi-pad-4;
+    background-color: transparent;
+    text-color: @fg-col2;
+    padding: @rofi-pad-4 @rofi-pad-8;
     border-radius: @rofi-bdr-radius4;
+    border: 0;
 }
 
 #button selected {
     background-color: @selected-col;
-    text-color: @fg-col;
+    text-color: @accent-col;
+    border: 1px solid {{ .colors.blue }};
 }
 
 #textbox-prompt-colon {
     expand: false;
-    str: ":";
-    margin: 0px 0.3em 0em 0em;
+    str: "";
+    margin: 0;
     text-color: @accent-col;
 }
