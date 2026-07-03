@@ -3,6 +3,18 @@ dofile(vim.g.base46_cache .. "mason")
 return {
   PATH = "skip",
 
+  ensure_installed = {
+    "stylua",
+    "goimports",
+    "gofumpt",
+    "golines",
+    "prettier",
+    "isort",
+    "black",
+    "shfmt",
+    "buf",
+  },
+
   ui = {
     icons = {
       package_pending = " ",
