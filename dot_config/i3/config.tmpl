@@ -63,13 +63,13 @@ bindsym $mod+Shift+f fullscreen toggle
 bindsym $mod+Ctrl+space layout toggle split
 
 # Focus movement
-bindsym $mod+Left focus left
-bindsym $mod+Down focus down
-bindsym $mod+Up focus up
-bindsym $mod+Right focus right
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
 
 # Lock screen
-bindsym $mod+l exec --no-startup-id ~/.config/i3/scripts/lock.sh
+bindsym $mod+Shift+l exec --no-startup-id ~/.config/i3/scripts/lock.sh
 
 # Focus parent/child
 bindsym $mod+Ctrl+h focus parent
@@ -85,16 +85,16 @@ bindsym $mod+Shift+Right move right
 bindsym $mod+r mode "resize"
 mode "resize" {
     # Move
-    bindsym Left move left 10 px
-    bindsym Down move down 10 px
-    bindsym Up move up 10 px
-    bindsym Right move right 10 px
+    bindsym h move left 10 px
+    bindsym j move down 10 px
+    bindsym k move up 10 px
+    bindsym l move right 10 px
 
     # Resize
-    bindsym Shift+Left resize shrink width 10 px or 10 ppt
-    bindsym Shift+Down resize grow height 10 px or 10 ppt
-    bindsym Shift+Up resize shrink height 10 px or 10 ppt
-    bindsym Shift+Right resize grow width 10 px or 10 ppt
+    bindsym Shift+h resize shrink width 10 px or 10 ppt
+    bindsym Shift+j resize grow height 10 px or 10 ppt
+    bindsym Shift+k resize shrink height 10 px or 10 ppt
+    bindsym Shift+l resize grow width 10 px or 10 ppt
 
     bindsym Return mode "default"
     bindsym Escape mode "default"
