@@ -1,0 +1,260 @@
+;; ============================================ DPI VARIABLES ============================================
+;; Set by launch script via `eww update` before bar window opens
+
+(defvar bar_height 38)
+(defvar icon_size 14)
+(defvar font_size 12)
+(defvar dot_size 6)
+(defvar pill_w 20)
+(defvar pill_h 14)
+(defvar cell_pad 28)
+
+;; ============================================ STATE VARIABLES ============================================
+
+(defvar workspaces "")
+(defvar popup_open "none")
+
+(defvar time "00:00")
+(defvar date "Mon 01/01")
+(defvar calendar_weekday "Monday")
+(defvar calendar_monthday "1")
+(defvar calendar_month 1)
+(defvar calendar_year 2026)
+
+(defvar notifications "")
+(defvar notif_count 0)
+(defvar dnd false)
+
+(defvar volume 100)
+(defvar muted false)
+(defvar brightness 100)
+
+(defvar wifi_icon "󰤭")
+(defvar wifi_name "Disconnected")
+(defvar wifi_on 0)
+(defvar wired 0)
+(defvar wifi_networks "")
+
+(defvar bt_on 0)
+
+(defvar battery_percent 100)
+(defvar battery_charging false)
+(defvar battery_icon "󰁹")
+
+;; ============================================ DATA POLLING (defpoll) ============================================
+
+(defpoll workspaces :interval "500ms"
+  "~/.config/eww/scripts/workspaces.sh")
+
+(defpoll time :interval "1s"
+  "date +'%H:%M'")
+
+(defpoll date :interval "30s"
+  "date +'%a %m/%d'")
+
+(defpoll calendar_weekday :interval "30s"
+  "date +'%A'")
+
+(defpoll calendar_monthday :interval "30s"
+  "date +'%-d'")
+
+(defpoll calendar_month :interval "30s"
+  "date +'%-m'")
+
+(defpoll calendar_year :interval "30s"
+  "date +'%Y'")
+
+(defpoll notif_vars :interval "2s"
+  "~/.config/eww/scripts/notifications.sh")
+
+(defpoll dnd :interval "5s"
+  "dunstctl is-paused 2>/dev/null && echo true || echo false")
+
+(defpoll volume :interval "1s"
+  "pamixer --get-volume 2>/dev/null || echo 100")
+
+(defpoll muted :interval "1s"
+  "pamixer --get-mute 2>/dev/null || echo false")
+
+(defpoll brightness :interval "1s"
+  "brightnessctl info 2>/dev/null | grep -oP '(\\d+)%' | head -1 | tr -d '%' || echo 100")
+
+(defpoll network_status :interval "5s"
+  "~/.config/eww/scripts/network.sh")
+
+(defpoll battery_status :interval "5s"
+  "~/.config/eww/scripts/battery.sh")
+
+;; ============================================ BAR WINDOW ============================================
+
+(defwindow bar
+  :stacking "overlay"
+  :class "eww-bar"
+  :exclusive true
+  :geometry (geometry
+    :width "100%"
+    :height "${bar_height}px"
+    :anchor "top left")
+
+  (box :class "bar-inner" :spacing 0
+
+    ;; ── Left: Tray, Power, Workspaces ──
+    (box :class "bar-group bar-start" :halign "start" :spacing 8
+      (systray :icon-size "${icon_size}" :spacing 4)
+      (button :class "module-btn"
+        :onclick "~/.config/eww/scripts/open-popup.sh power-menu"
+        (label :text "󰌆" :class "module-icon"))
+      (box :class "workspaces-container" :spacing 6
+        (literal :content "${workspaces}")))
+
+    ;; ── Spacer ──
+    (box :class "bar-spacer" :hexpand true)
+
+    ;; ── Right: Network, CC, Battery ──
+    (box :class "bar-group" :halign "end" :spacing 8
+      (button :class "module-btn"
+        :onclick "~/.config/eww/scripts/open-popup.sh network-popup"
+        (overlay
+          (label :text "${wifi_icon}" :class "module-icon")
+          (label :text "" :class "net-dot net-dot-${wired > 0 ? 'eth' : (wifi_on > 0 ? 'on' : 'off')}")))
+      (button :class "module-btn"
+        :onclick "~/.config/eww/scripts/open-popup.sh control-center"
+        (label :text "󰒥" :class "module-icon"))
+      (button :class "module-btn battery-btn"
+        :tooltip "${battery_percent}%"
+        (label :text "${battery_icon}" :class "module-icon bat-${battery_charging ? 'charging' : (battery_percent < 15 ? 'low' : 'normal')}")))
+
+    ;; ── Group spacer ──
+    (box :width 16)
+
+    ;; ── Time/Date ──
+    (button :class "module-btn time-btn"
+      :onclick "~/.config/eww/scripts/open-popup.sh calendar-popup"
+      (box :orientation "v" :spacing 0
+        (label :text "${time}" :class "time-main")
+        (label :text "${date}" :class "time-sub")))
+
+    ;; ── Group spacer ──
+    (box :width 16)
+
+    ;; ── Notifications Bell ──
+    (button :class "module-btn notif-btn"
+      :onclick "~/.config/eww/scripts/open-popup.sh notification-popup"
+      :onrightclick "dunstctl set-paused toggle"
+      (overlay
+        (label :text "${dnd ? '󰂠' : '󰂞'}"
+          :class "notif-bell notif-bell-${dnd ? 'dnd' : (notif_count > 0 ? 'unread' : 'none')}")
+        (label :text "${notif_count}"
+          :class "notif-badge"
+          :visible "${notif_count > 0 && !dnd}")))))
+
+;; ============================================ CALENDAR POPUP ============================================
+
+(defwindow calendar-popup
+  :stacking "overlay"
+  :geometry (geometry :width "340px" :height "320px" :anchor "top right")
+  :style "calendar-popup { --cell-pad: ${cell_pad}px; }"
+  (box :class "popup revealer" :orientation "v" :spacing 8
+    (box :orientation "v" :spacing 2 :class "calendar-hero"
+      (label :text "${calendar_weekday}" :class "calendar-weekday")
+      (label :text "${calendar_monthday}" :class "calendar-date"))
+    (calendar
+      :day "${calendar_monthday}"
+      :month "${calendar_month}"
+      :year "${calendar_year}"
+      :show-heading true
+      :show-day-names true)))
+
+;; ============================================ NOTIFICATION POPUP ============================================
+
+(defwindow notification-popup
+  :stacking "overlay"
+  :geometry (geometry :width "380px" :height "420px" :anchor "top right")
+  (box :class "popup revealer" :orientation "v"
+    (box :class "notif-header"
+      (label :text "Notifications" :class "popup-title")
+      (button :class "notif-clear-all"
+        :onclick "~/.config/eww/scripts/clear-notifs.sh"
+        (label :text "󰆔")))
+    (box :orientation "v" :class "notif-scroll"
+      (literal :content "${notifications}"))))
+
+;; ============================================ NETWORK POPUP ============================================
+
+(defwindow network-popup
+  :stacking "overlay"
+  :geometry (geometry :width "300px" :height "240px" :anchor "top right")
+  (box :class "popup revealer" :orientation "v" :spacing 8
+    (label :text "Network" :class "popup-title")
+    (box :class "current-connection" :spacing 8
+      (label :text "${wifi_icon}" :class "module-icon")
+      (box :orientation "v"
+        (label :text "${wifi_name}" :class "conn-name")
+        (label :text "${wired > 0 ? 'Ethernet' : (wifi_on > 0 ? 'Connected' : 'Disconnected')}" :class "conn-status")))
+    (box :class "separator-line")
+    (box :orientation "v" :class "wifi-list" :spacing 4
+      (literal :content "${wifi_networks}"))
+    (box :class "separator-line")
+    (button :class "popup-footer-btn"
+      :onclick "nm-connection-editor &"
+      (label :text "󰇘  Manage"))))
+
+;; ============================================ CONTROL CENTER ============================================
+
+(defwindow control-center
+  :stacking "overlay"
+  :geometry (geometry :width "360px" :height "280px" :anchor "top right")
+  (box :class "popup revealer" :orientation "v" :spacing 12
+    (box :spacing 8
+      (button :class "toggle-tile ${wifi_on > 0 ? 'on' : 'off'}"
+        :onclick "~/.config/eww/scripts/toggle-wifi.sh"
+        :onrightclick "nm-connection-editor &"
+        (box :orientation "v" :spacing 4
+          (label :text "󰤉" :class "tile-icon")
+          (label :text "WiFi" :class "tile-label")
+          (label :text "${wifi_on > 0 ? wifi_name : 'Off'}" :class "tile-status")))
+      (button :class "toggle-tile ${bt_on > 0 ? 'on' : 'off'}"
+        :onclick "~/.config/eww/scripts/toggle-bt.sh"
+        :onrightclick "blueman-manager &"
+        (box :orientation "v" :spacing 4
+          (label :text "󰂯" :class "tile-icon")
+          (label :text "Bluetooth" :class "tile-label")
+          (label :text "${bt_on > 0 ? 'On' : 'Off'}" :class "tile-status"))))
+    (box :class "slider-row" :spacing 8
+      (button :class "slider-icon-btn" :onclick "pamixer -t"
+        (label :text "${muted ? '󰝟' : (volume >= 66 ? '󰕾' : (volume >= 33 ? '󰖀' : '󰕿'))}" :class "module-icon"))
+      (scale :min 0 :max 100 :value "${volume}"
+        :onchange "pamixer --set-volume {}")
+      (label :text "${volume}%" :class "slider-value"))
+    (box :class "slider-row" :spacing 8
+      (label :text "󰖨" :class "module-icon slider-icon")
+      (scale :min 0 :max 100 :value "${brightness}"
+        :onchange "brightnessctl set {}%")
+      (label :text "${brightness}%" :class "slider-value"))))
+
+;; ============================================ POWER MENU ============================================
+
+(defwindow power-menu
+  :stacking "overlay"
+  :geometry (geometry :width "420px" :height "120px" :anchor "center")
+  (box :class "popup revealer power-menu" :spacing 32 :halign "center"
+    (button :class "power-item"
+      :onclick "~/.config/eww/scripts/power.sh lock && eww close power-menu && eww update popup_open='none'"
+      (box :orientation "v" :spacing 4
+        (label :text "󰒜" :class "power-icon")
+        (label :text "Lock" :class "power-label")))
+    (button :class "power-item"
+      :onclick "~/.config/eww/scripts/power.sh logout"
+      (box :orientation "v" :spacing 4
+        (label :text "󰐾" :class "power-icon")
+        (label :text "Logout" :class "power-label")))
+    (button :class "power-item"
+      :onclick "~/.config/eww/scripts/power.sh suspend && eww close power-menu && eww update popup_open='none'"
+      (box :orientation "v" :spacing 4
+        (label :text "󰤄" :class "power-icon")
+        (label :text "Suspend" :class "power-label")))
+    (button :class "power-item"
+      :onclick "~/.config/eww/scripts/power.sh poweroff && eww close power-menu && eww update popup_open='none'"
+      (box :orientation "v" :spacing 4
+        (label :text "󰐥" :class "power-icon")
+        (label :text "Power Off" :class "power-label")))))
