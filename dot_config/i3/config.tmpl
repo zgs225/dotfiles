@@ -121,6 +121,15 @@ bindsym F1 exec --no-startup-id ~/.config/i3/scripts/keyhint
 bindsym $mod+Shift+minus move scratchpad
 bindsym $mod+minus scratchpad show
 
+# Dropdown scratchpad
+for_window [class="dropdown-.*"] \
+    floating enable, \
+    resize set 70 ppt 70 ppt, \
+    move position center, \
+    move scratchpad
+
+bindsym $mod+backslash [class="dropdown-.*"] scratchpad show
+
 # i3 control
 bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
@@ -140,4 +149,5 @@ exec --no-startup-id dunst
 exec --no-startup-id fcitx5 -d
 exec --no-startup-id sunshine
 exec --no-startup-id nm-applet
+exec --no-startup-id wezterm start --class dropdown-btop btop
 exec --no-startup-id libinput-gestures-setup start
