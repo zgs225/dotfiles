@@ -1,0 +1,128 @@
+@import "colors.scss";
+
+* { all: unset; font-family: "JetBrainsMono Nerd Font", "Symbols Nerd Font", "Noto Sans CJK SC"; }
+
+/* ===== BAR ===== */
+.bar-inner {
+  background: rgba($crust, 0.85);
+  padding: 0 16px;
+  height: ${bar_height}px;
+}
+.bar-spacer { min-width: 0px; }
+.bar-start { margin-right: auto; }
+
+/* ===== MODULE BUTTONS ===== */
+.module-btn {
+  color: $subtext0;
+  font-size: calc(${icon_size}px * 1);
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 100ms ease;
+}
+.module-btn:hover { background: $surface0; color: $text; }
+.module-btn:active { transform: scale(0.95); }
+.module-icon { font-family: "Symbols Nerd Font"; }
+
+/* ===== NETWORK STATUS DOT ===== */
+.net-dot { min-width: 4px; min-height: 4px; border-radius: 50%; margin: 2px 0 0 4px; }
+.net-dot-on  { background: $green; }
+.net-dot-eth { background: $sapphire; }
+.net-dot-off { background: $overlay0; }
+
+/* ===== WORKSPACES ===== */
+.workspaces-container box {
+  width: ${dot_size}px; height: ${dot_size}px;
+  border-radius: 50%; margin: 0 2px;
+  transition: all 150ms ease;
+}
+.workspaces-container box.idle     { background: $surface0; }
+.workspaces-container box.occupied { background: $surface2; }
+.workspaces-container box.focused  { background: $lavender; width: ${pill_w}px; height: ${pill_h}px; border-radius: 4px; }
+.workspaces-container box.urgent   { background: $red;      width: ${pill_w}px; height: ${pill_h}px; border-radius: 4px; animation: urgent-pulse 1s ease infinite alternate; }
+@keyframes urgent-pulse { from { opacity: 1; } to { opacity: 0.4; } }
+
+/* ===== TIME ===== */
+.time-main { color: $text; font-size: calc(${font_size}px * 1); font-weight: bold; }
+.time-sub  { color: $subtext0; font-size: calc(${font_size}px * 0.8); }
+
+/* ===== NOTIFICATION BELL ===== */
+.notif-bell-none   { color: $subtext0; }
+.notif-bell-unread { color: $mauve; }
+.notif-bell-dnd    { color: $peach; }
+.notif-badge { color: $base; background: $red; font-size: calc(${font_size}px * 0.6); border-radius: 50%; min-width: 14px; min-height: 14px; padding: 1px 3px; margin: -6px 0 0 -6px; }
+
+/* ===== BATTERY ===== */
+.bat-charging { color: $green; box-shadow: 0 0 4px rgba($green, 0.4); border-radius: 4px; }
+.bat-normal   { color: $subtext0; }
+.bat-low      { color: $red; }
+
+/* ===== POPUP BASE ===== */
+.popup { background: rgba($base, 0.92); border-radius: 12px; border: 1px solid $surface1; padding: 12px; margin: 4px 8px 0 0; }
+.popup-title    { color: $text; font-size: 14px; padding: 0 0 8px 0; }
+.separator-line  { background: $surface1; min-height: 1px; margin: 8px 0; }
+.popup-footer-btn { color: $subtext0; padding: 6px 0; transition: all 100ms; }
+.popup-footer-btn:hover { color: $text; }
+
+/* Revealer popup animation */
+.revealer { animation: popup-in 200ms ease; }
+@keyframes popup-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ===== CALENDAR ===== */
+.calendar-hero { padding: 4px 0 8px 0; }
+.calendar-weekday { color: $text; font-size: 18px; }
+.calendar-date    { color: $lavender; font-size: 26px; font-weight: bold; }
+calendar:selected { background: $lavender; color: $base; border-radius: 4px; }
+calendar.header   { color: $subtext0; font-size: 11px; }
+calendar.button   { color: $subtext1; }
+calendar.button:hover { background: $surface0; border-radius: 4px; }
+
+/* ===== NOTIFICATIONS ===== */
+.notif-header { padding: 0 0 8px 0; }
+.notif-clear-all { color: $subtext0; font-size: 14px; padding: 0 4px; }
+.notif-clear-all:hover { color: $red; }
+.notif-scroll { min-height: 350px; }
+.notif-list { padding: 4px 0; }
+.notif-item { padding: 8px 4px; border-left: 3px solid transparent; transition: all 100ms; }
+.notif-item:hover { background: $surface0; }
+.notif-item.unread { border-left-color: $mauve; }
+.notif-group-label { color: $mauve; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; padding: 12px 4px 4px 4px; margin-top: 4px; }
+.notif-app   { color: $overlay1; font-size: 10px; margin-right: 4px; }
+.notif-title { color: $text; font-size: 12px; }
+.notif-body  { color: $subtext0; font-size: 11px; margin-top: 2px; }
+.notif-time  { color: $overlay0; font-size: 10px; margin-top: 4px; }
+.notif-empty { color: $subtext0; font-size: 13px; padding: 32px 0; text-align: center; }
+
+/* ===== NETWORK ===== */
+.current-connection { padding: 8px; background: $surface0; border-radius: 8px; }
+.conn-name   { color: $text; font-size: 13px; }
+.conn-status { color: $subtext0; font-size: 11px; }
+.wifi-network { padding: 6px 8px; border-radius: 6px; transition: all 100ms; }
+.wifi-network:hover { background: $surface0; }
+.wifi-network-ssid     { color: $text; font-size: 12px; }
+.wifi-network-security { color: $overlay0; font-size: 10px; }
+
+/* ===== CONTROL CENTER ===== */
+.toggle-tile { background: $surface0; border-radius: 8px; padding: 12px 16px; min-width: 150px; transition: all 100ms; }
+.toggle-tile:hover  { background: $surface1; }
+.toggle-tile.on     { border-left: 3px solid $green; }
+.toggle-tile.off    { border-left: 3px solid transparent; }
+.tile-icon   { font-size: 18px; color: $text; }
+.toggle-tile.off .tile-icon, .toggle-tile.off .tile-label  { color: $subtext0; }
+.toggle-tile.off .tile-status { color: $overlay0; }
+.tile-label  { color: $text; font-size: 12px; }
+.tile-status { color: $subtext0; font-size: 10px; }
+.slider-row      { padding: 4px 0; }
+.slider-icon      { color: $subtext0; font-size: 16px; }
+.slider-icon-btn  { color: $subtext0; font-size: 16px; }
+.slider-icon-btn:hover { color: $text; }
+.slider-value { color: $subtext0; font-size: 12px; min-width: 36px; text-align: right; }
+scale trough          { background: $surface1; border-radius: 4px; min-height: 4px; }
+scale trough highlight { background: $lavender; border-radius: 4px; }
+scale slider           { background: $text; min-width: 12px; min-height: 12px; border-radius: 50%; }
+
+/* ===== POWER MENU ===== */
+.power-item { padding: 12px 16px; border-radius: 8px; transition: all 100ms; }
+.power-item:hover  { background: $surface0; }
+.power-item:active { transform: scale(0.95); }
+.power-icon  { font-size: 26px; color: $text; font-family: "Symbols Nerd Font"; }
+.power-label { color: $subtext0; font-size: 11px; margin-top: 2px; }
