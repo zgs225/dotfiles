@@ -1,0 +1,110 @@
+@import "~/.config/rofi/config.rasi"
+
+configuration {
+    show-icons:      true;
+    disable-history: true;
+    hide-scrollbar:  true;
+    sidebar-mode:    false;
+}
+
+window {
+    width:           @rofi-win-md;
+    padding:         @rofi-pad-16;
+    border:          1px;
+    border-color:    @glass-border;
+    border-radius:   @rofi-bdr-radius-lg;
+    background-color: @glass-bg;
+}
+
+mainbox {
+    border: 0;
+    padding: 0;
+    children: [inputbar, listview];
+    spacing: @rofi-pad-8;
+}
+
+inputbar {
+    background-color: @glass-inputbar;
+    border:          0;
+    border-bottom:   2px;
+    border-color:    @glass-accent;
+    border-radius:   8px 8px 0 0;
+    padding:         @rofi-pad-12;
+    spacing:         @rofi-pad-8;
+    children: [prompt, entry];
+}
+
+prompt {
+    padding:     0;
+    text-color:  @accent-col;
+    font-weight: bold;
+}
+
+entry {
+    placeholder:        "Search clipboard...";
+    placeholder-color:  @fg-col3;
+    text-color:         @fg-col;
+}
+
+listview {
+    lines:        10;
+    columns:      1;
+    fixed-height: 0;
+    border:       0;
+    spacing:      @rofi-el-spacing;
+    scrollbar:    false;
+    padding:      0;
+}
+
+element {
+    padding:        @rofi-el-padding-pm;
+    spacing:        @rofi-pad-8;
+    orientation:    horizontal;
+    border-radius:  @rofi-bdr-radius8;
+    background-color: @glass-card;
+    text-color:     @fg-col;
+    cursor:         pointer;
+}
+
+element normal {
+    background-color: @glass-card;
+    text-color:       @fg-col;
+    border:           1px;
+    border-color:     transparent;
+}
+
+element normal.active {
+    background-color: @glass-card-hover;
+    border-color:     @fg-col3;
+}
+
+element selected {
+    background-color: @glass-selected;
+    text-color:       @bg-col;
+}
+
+element selected active {
+    background-color: @glass-selected-2;
+    text-color:       @bg-col;
+}
+
+element urgent {
+    background-color: @glass-card;
+    text-color:       @red;
+    border-color:     @red;
+}
+
+element selected urgent {
+    background-color: @glass-urgent;
+    text-color:       @bg-col;
+}
+
+element-icon {
+    size:             1.5em;
+    vertical-align:   0.5;
+}
+
+element-text {
+    text-color:       inherit;
+    vertical-align:   0.5;
+}
