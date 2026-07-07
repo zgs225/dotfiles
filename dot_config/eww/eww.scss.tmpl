@@ -140,20 +140,20 @@
 @keyframes popup-in { from { opacity: 0; margin-top: -4px; } to { opacity: 1; margin-top: 0; } }
 
 .popup-header { padding: 0 0 18px 0; }
-.popup-title { color: $text; font-size: {{ mulf $eww.fontSize 0.90 | int }}px; font-weight: bold; }
+.popup-title { color: $text; font-size: {{ mulf $eww.popupFontSize 0.90 | int }}px; font-weight: bold; }
 .section-label {
-  color: $subtext0; font-size: {{ mulf $eww.fontSize 0.66 | int }}px; font-weight: bold;
+  color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.66 | int }}px; font-weight: bold;
   letter-spacing: 0.4px; padding: 14px 2px 8px 2px;
 }
 .separator-line { background-color: rgba($text, 0.08); min-height: 1px; margin: 14px 0; }
 
 .back-btn { padding: 4px 8px 4px 0; }
-.back-icon { color: $subtext0; font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.iconSize 0.88 | int }}px; }
+.back-icon { color: $subtext0; font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.88 | int }}px; }
 .back-btn:hover .back-icon { color: $text; }
 
 .header-icon-btn { padding: 4px 8px; border-radius: 10px; transition: all 120ms; }
 .header-icon-btn:hover { background-color: rgba($surface1, 0.50); }
-.header-icon { color: $subtext0; font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.iconSize 0.78 | int }}px; }
+.header-icon { color: $subtext0; font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.78 | int }}px; }
 
 /* Toggle switch */
 .header-switch { padding: 0; }
@@ -184,24 +184,24 @@
 .mini-switch.on .mini-knob { margin-left: 16px; background-color: white; }
 
 /* ============================================================ PROFILE CARD ============================================================ */
-.profile-header { padding: 0 0 20px 0; }
+.profile-header { padding: 0 0 14px 0; }
 .profile-avatar {
-  min-width: {{ mulf $eww.fontSize 3.0 | int }}px; min-height: {{ mulf $eww.fontSize 3.0 | int }}px;
+  min-width: {{ mulf $eww.popupFontSize 3.0 | int }}px; min-height: {{ mulf $eww.popupFontSize 3.0 | int }}px;
   border-radius: 999px;
   background-color: rgba($blue, 0.20);
   border: 1px solid rgba($text, 0.10);
 }
-.profile-avatar-icon { color: $blue; font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.iconSize 1.20 | int }}px; }
-.profile-host { color: $text; font-size: {{ mulf $eww.fontSize 0.92 | int }}px; font-weight: bold; }
-.profile-uptime { color: $subtext0; font-size: {{ mulf $eww.fontSize 0.68 | int }}px; }
+.profile-avatar-icon { color: $blue; font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 1.20 | int }}px; }
+.profile-host { color: $text; font-size: {{ mulf $eww.popupFontSize 0.92 | int }}px; font-weight: bold; }
+.profile-uptime { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.68 | int }}px; }
 
-.metric-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.iconSize 0.86 | int }}px; }
+.metric-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.86 | int }}px; }
 .icon-cpu  { color: $blue; }
 .icon-mem  { color: $mauve; }
 .icon-disk { color: $sapphire; }
 .icon-temp { color: $peach; }
-.metric-name { color: $subtext1; font-size: {{ mulf $eww.fontSize 0.74 | int }}px; }
-.metric-val  { color: $subtext0; font-size: {{ mulf $eww.fontSize 0.66 | int }}px; }
+.metric-name { color: $subtext1; font-size: {{ mulf $eww.popupFontSize 0.74 | int }}px; }
+.metric-val  { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.66 | int }}px; }
 
 .metric-bar trough {
   background-color: rgba($surface0, 0.64); border-radius: 999px;
@@ -214,36 +214,36 @@
 .metric-bar.disk trough highlight { background-color: $sapphire; }
 .metric-bar.temp trough highlight { background-color: $peach; }
 
-.action-row { padding: 12px 10px; border-radius: 13px; transition: all 120ms; }
+.action-row { padding: 9px 10px; border-radius: 13px; transition: all 120ms; }
 .action-row:hover { background-color: rgba($surface1, 0.40); }
-.action-icon  { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.iconSize 0.82 | int }}px; color: $subtext0; }
-.action-label { color: $subtext1; font-size: {{ mulf $eww.fontSize 0.76 | int }}px; }
+.action-icon  { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.82 | int }}px; color: $subtext0; }
+.action-label { color: $subtext1; font-size: {{ mulf $eww.popupFontSize 0.76 | int }}px; }
 .action-row.danger .action-icon, .action-row.danger .action-label { color: $red; }
 .action-row.danger:hover { background-color: rgba($red, 0.14); }
 
 /* ============================================================ NETWORK POPUP ============================================================ */
 .list-row { padding: 12px 10px; border-radius: 13px; transition: all 120ms; }
 .list-row:hover { background-color: rgba($surface1, 0.40); }
-.row-label   { color: $subtext1; font-size: {{ mulf $eww.fontSize 0.76 | int }}px; }
-.row-icon    { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.iconSize 0.76 | int }}px; color: $subtext0; }
-.row-chevron { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.iconSize 0.70 | int }}px; color: $overlay0; }
+.row-label   { color: $subtext1; font-size: {{ mulf $eww.popupFontSize 0.76 | int }}px; }
+.row-icon    { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.76 | int }}px; color: $subtext0; }
+.row-chevron { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.70 | int }}px; color: $overlay0; }
 
 .wifi-network { padding: 12px 10px; border-radius: 13px; transition: all 120ms; }
 .wifi-network:hover, .wifi-network.connected { background-color: rgba($surface1, 0.36); }
 .wifi-dot { min-width: 8px; min-height: 8px; border-radius: 999px; background-color: transparent; }
 .wifi-dot-on { background-color: $blue; }
-.wifi-ssid   { color: $text; font-size: {{ mulf $eww.fontSize 0.76 | int }}px; }
-.wifi-lock   { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.iconSize 0.62 | int }}px; color: $overlay0; }
-.wifi-signal { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.iconSize 0.70 | int }}px; color: $subtext0; }
+.wifi-ssid   { color: $text; font-size: {{ mulf $eww.popupFontSize 0.76 | int }}px; }
+.wifi-lock   { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.62 | int }}px; color: $overlay0; }
+.wifi-signal { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.70 | int }}px; color: $subtext0; }
 .wifi-network.connected .wifi-signal { color: $blue; }
-.wifi-off-hint { color: $overlay0; font-size: {{ mulf $eww.fontSize 0.72 | int }}px; padding: 8px; }
+.wifi-off-hint { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; padding: 8px; }
 
 .vpn-row { padding: 12px 10px; border-radius: 13px; transition: all 120ms; }
 .vpn-row:hover { background-color: rgba($surface1, 0.40); }
-.vpn-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.iconSize 0.76 | int }}px; color: $subtext0; }
+.vpn-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.76 | int }}px; color: $subtext0; }
 .vpn-icon.on { color: $blue; }
-.vpn-name { color: $subtext1; font-size: {{ mulf $eww.fontSize 0.76 | int }}px; }
-.vpn-empty { color: $overlay0; font-size: {{ mulf $eww.fontSize 0.72 | int }}px; padding: 8px; }
+.vpn-name { color: $subtext1; font-size: {{ mulf $eww.popupFontSize 0.76 | int }}px; }
+.vpn-empty { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; padding: 8px; }
 
 /* ============================================================ CONTROL CENTER ============================================================ */
 .tile-grid { padding: 0 0 6px 0; }
@@ -253,18 +253,18 @@
   padding: 15px; transition: all 120ms;
 }
 .cc-tile:hover { background-color: rgba($surface1, 0.48); }
-.cc-tile-icon  { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.iconSize 0.96 | int }}px; color: $subtext0; }
-.cc-tile-title { color: $subtext1; font-size: {{ mulf $eww.fontSize 0.74 | int }}px; font-weight: bold; }
-.cc-tile-sub   { color: $overlay0; font-size: {{ mulf $eww.fontSize 0.62 | int }}px; }
+.cc-tile-icon  { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.96 | int }}px; color: $subtext0; }
+.cc-tile-title { color: $subtext1; font-size: {{ mulf $eww.popupFontSize 0.74 | int }}px; font-weight: bold; }
+.cc-tile-sub   { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.62 | int }}px; }
 .cc-tile.on { background-color: $blue; }
 .cc-tile.on .cc-tile-icon, .cc-tile.on .cc-tile-title { color: white; }
 .cc-tile.on .cc-tile-sub { color: rgba(255,255,255,0.75); }
 
 .cc-slider-row { padding: 16px 2px 6px 2px; }
-.cc-slider-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.iconSize 0.86 | int }}px; color: $subtext0; }
+.cc-slider-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.86 | int }}px; color: $subtext0; }
 .cc-slider-iconbtn:hover .cc-slider-icon { color: $text; }
-.cc-slider-label { color: $subtext1; font-size: {{ mulf $eww.fontSize 0.72 | int }}px; }
-.cc-slider-val   { color: $subtext0; font-size: {{ mulf $eww.fontSize 0.66 | int }}px; }
+.cc-slider-label { color: $subtext1; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; }
+.cc-slider-val   { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.66 | int }}px; }
 .cc-scale trough {
   background-color: rgba($surface0, 0.62); border-radius: 999px; min-height: 7px;
 }
@@ -281,16 +281,16 @@
   padding: 14px; margin: 16px 0 4px 0;
 }
 .media-art {
-  min-width: {{ mulf $eww.fontSize 3.0 | int }}px; min-height: {{ mulf $eww.fontSize 3.0 | int }}px; border-radius: 11px;
+  min-width: {{ mulf $eww.popupFontSize 3.0 | int }}px; min-height: {{ mulf $eww.popupFontSize 3.0 | int }}px; border-radius: 11px;
   background-color: rgba($mauve, 0.22);
 }
-.media-art-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.iconSize 1.04 | int }}px; color: $mauve; }
-.media-title  { color: $text; font-size: {{ mulf $eww.fontSize 0.72 | int }}px; font-weight: bold; }
-.media-artist { color: $subtext0; font-size: {{ mulf $eww.fontSize 0.62 | int }}px; }
+.media-art-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 1.04 | int }}px; color: $mauve; }
+.media-title  { color: $text; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; font-weight: bold; }
+.media-artist { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.62 | int }}px; }
 .media-btn { padding: 6px; border-radius: 999px; transition: all 120ms; }
 .media-btn:hover { background-color: rgba($surface1, 0.52); }
-.media-btn-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.iconSize 0.82 | int }}px; color: $subtext1; }
-.media-btn.play .media-btn-icon { color: $text; font-size: {{ mulf $eww.iconSize 1.00 | int }}px; }
+.media-btn-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.82 | int }}px; color: $subtext1; }
+.media-btn.play .media-btn-icon { color: $text; font-size: {{ mulf $eww.popupIconSize 1.00 | int }}px; }
 
 .cc-quick { padding: 12px 0 0 0; }
 .quick-btn {
@@ -299,22 +299,22 @@
   padding: 14px 6px; transition: all 120ms;
 }
 .quick-btn:hover { background-color: rgba($surface1, 0.48); }
-.quick-icon  { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.iconSize 0.94 | int }}px; color: $subtext0; }
-.quick-label { color: $subtext0; font-size: {{ mulf $eww.fontSize 0.62 | int }}px; }
+.quick-icon  { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.94 | int }}px; color: $subtext0; }
+.quick-label { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.62 | int }}px; }
 
 /* ============================================================ CALENDAR ============================================================ */
 .cal {
   background-color: transparent;
   color: $subtext1;
   padding: 4px;
-  font-size: {{ mulf $eww.fontSize 0.76 | int }}px;
+  font-size: {{ mulf $eww.popupFontSize 0.76 | int }}px;
 }
 calendar { background-color: transparent; color: $subtext1; }
 calendar:selected {
   background-color: $blue; color: white;
   border-radius: 999px;
 }
-calendar.header { color: $text; font-weight: bold; font-size: {{ mulf $eww.fontSize 0.84 | int }}px; }
+calendar.header { color: $text; font-weight: bold; font-size: {{ mulf $eww.popupFontSize 0.84 | int }}px; }
 calendar.button { color: $subtext0; padding: 4px; }
 calendar.button:hover { color: $text; }
 calendar:indeterminate { color: $overlay0; }
@@ -322,19 +322,19 @@ calendar.highlight { color: $blue; font-weight: bold; }
 
 .cal-extra { padding: 4px 0 0 0; }
 .cal-col { }
-.cal-col-right { min-width: {{ mulf $eww.fontSize 7.8 | int }}px; }
-.cal-col-title { color: $subtext0; font-size: {{ mulf $eww.fontSize 0.62 | int }}px; font-weight: bold; letter-spacing: 0.4px; }
+.cal-col-right { min-width: {{ mulf $eww.popupFontSize 7.8 | int }}px; }
+.cal-col-title { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.62 | int }}px; font-weight: bold; letter-spacing: 0.4px; }
 
 .event-dot { min-width: 8px; min-height: 8px; border-radius: 999px; margin-top: 5px; }
 .event-dot-blue  { background-color: $blue; }
 .event-dot-mauve { background-color: $mauve; }
 .event-dot-green { background-color: $green; }
 .event-dot-peach { background-color: $peach; }
-.event-title { color: $text; font-size: {{ mulf $eww.fontSize 0.72 | int }}px; }
-.event-time  { color: $subtext0; font-size: {{ mulf $eww.fontSize 0.62 | int }}px; }
-.events-empty { color: $overlay0; font-size: {{ mulf $eww.fontSize 0.66 | int }}px; }
+.event-title { color: $text; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; }
+.event-time  { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.62 | int }}px; }
+.events-empty { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.66 | int }}px; }
 .cal-viewall { padding: 2px 0; }
-.cal-viewall-label { color: $blue; font-size: {{ mulf $eww.fontSize 0.66 | int }}px; }
+.cal-viewall-label { color: $blue; font-size: {{ mulf $eww.popupFontSize 0.66 | int }}px; }
 .cal-viewall:hover .cal-viewall-label { color: $sapphire; }
 
 .weather-box, .countdown-box {
@@ -342,12 +342,12 @@ calendar.highlight { color: $blue; font-weight: bold; }
   border-radius: 14px;
   padding: 12px;
 }
-.weather-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.iconSize 1.16 | int }}px; color: $subtext0; }
-.weather-temp { color: $text; font-size: {{ mulf $eww.fontSize 1.10 | int }}px; font-weight: bold; }
-.weather-desc { color: $subtext0; font-size: {{ mulf $eww.fontSize 0.66 | int }}px; }
-.weather-lohi { color: $subtext0; font-size: {{ mulf $eww.fontSize 0.66 | int }}px; }
-.countdown-label { color: $text; font-size: {{ mulf $eww.fontSize 0.78 | int }}px; font-weight: bold; }
-.countdown-sub   { color: $subtext0; font-size: {{ mulf $eww.fontSize 0.66 | int }}px; }
+.weather-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 1.16 | int }}px; color: $subtext0; }
+.weather-temp { color: $text; font-size: {{ mulf $eww.popupFontSize 1.10 | int }}px; font-weight: bold; }
+.weather-desc { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.66 | int }}px; }
+.weather-lohi { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.66 | int }}px; }
+.countdown-label { color: $text; font-size: {{ mulf $eww.popupFontSize 0.78 | int }}px; font-weight: bold; }
+.countdown-sub   { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.66 | int }}px; }
 
 /* ============================================================ NOTIFICATIONS ============================================================ */
 .notif-scroll-wrap { min-height: 300px; }
@@ -360,10 +360,10 @@ calendar.highlight { color: $blue; font-weight: bold; }
 }
 .notif-item:hover { background-color: rgba($surface1, 0.44); }
 .notif-appicon {
-  min-width: {{ mulf $eww.fontSize 2.28 | int }}px; min-height: {{ mulf $eww.fontSize 2.28 | int }}px; border-radius: 10px;
+  min-width: {{ mulf $eww.popupFontSize 2.28 | int }}px; min-height: {{ mulf $eww.popupFontSize 2.28 | int }}px; border-radius: 10px;
   background-color: rgba($surface0, 0.52);
 }
-.notif-appicon label { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.iconSize 0.82 | int }}px; color: $subtext1; }
+.notif-appicon label { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.82 | int }}px; color: $subtext1; }
 .icon-slack    { background-color: rgba($mauve, 0.2); }
 .icon-slack label { color: $mauve; }
 .icon-telegram { background-color: rgba($sapphire, 0.2); }
@@ -374,13 +374,13 @@ calendar.highlight { color: $blue; font-weight: bold; }
 .icon-discord label { color: $blue; }
 .icon-spotify  { background-color: rgba($green, 0.2); }
 .icon-spotify label { color: $green; }
-.notif-title { color: $text; font-size: {{ mulf $eww.fontSize 0.72 | int }}px; font-weight: bold; }
-.notif-time  { color: $overlay0; font-size: {{ mulf $eww.fontSize 0.60 | int }}px; }
-.notif-body  { color: $subtext0; font-size: {{ mulf $eww.fontSize 0.66 | int }}px; }
-.notif-empty { color: $overlay0; font-size: {{ mulf $eww.fontSize 0.78 | int }}px; padding: 60px 0; }
+.notif-title { color: $text; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; font-weight: bold; }
+.notif-time  { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.60 | int }}px; }
+.notif-body  { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.66 | int }}px; }
+.notif-empty { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.78 | int }}px; padding: 60px 0; }
 
 .notif-clear-all {
-  color: $subtext1; font-size: {{ mulf $eww.fontSize 0.72 | int }}px;
+  color: $subtext1; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px;
   padding: 12px; margin: 12px 0 0 0;
   border-radius: 13px; background-color: rgba($surface0, 0.42);
   transition: all 120ms;
