@@ -31,52 +31,26 @@
   padding: 0 9px;
 }
 
-/* Pill container groups */
-.pill {
-  background-color: transparent;
-  border: 1px solid transparent;
-  box-shadow: none;
-  border-radius: 17px;
-  min-height: {{ $eww.pillH }}px;
-  padding: 2px 6px;
-}
-.pill-launcher, .pill-btn {
-  min-width: {{ $eww.cellPad }}px;
-  min-height: {{ $eww.cellPad }}px;
-  padding: 0;
-  border-radius: 11px;
-  background-color: transparent;
-  border-color: transparent;
-  box-shadow: none;
-}
-.pill-launcher:hover, .pill-btn:hover { background-color: rgba($surface1, 0.30); }
-.pill-ws, .pill-tray, .pill-battery, .pill-time {
-  background-color: transparent;
-  border-color: transparent;
-  box-shadow: none;
-}
-.pill-ws { padding: 1px 7px; }
-.pill-tray { padding: 1px 7px; }
-.pill-battery { padding: 0 7px; }
-.pill-time { padding: 0 7px; }
-
 /* Module buttons */
 .module-btn {
   color: $subtext0;
-  padding: 0;
+  padding: 0 6px;
   min-width: {{ $eww.cellPad }}px;
   min-height: {{ $eww.cellPad }}px;
   border-radius: 12px;
   transition: all 120ms ease;
 }
-.module-btn:hover { color: $text; }
+.module-btn:hover { color: $text; background-color: rgba($surface1, 0.30); }
 .module-icon { font-family: "Symbols Nerd Font"; font-size: {{ $eww.iconSize }}px; }
 .app-grid { color: $text; }
-.pill-launcher .module-btn:hover { color: $blue; }
+.app-grid:hover { color: $blue; }
+
+/* System tray */
+.bar-tray { padding: 1px 5px; }
 
 /* Workspaces */
 .workspaces-container {
-  padding: 0;
+  padding: 1px 3px;
   min-height: {{ $eww.pillH }}px;
 }
 .ws-list {
