@@ -8,9 +8,9 @@
 {{-   if $out }}{{ $dpi = atoi $out }}{{ end -}}
 {{- end -}}
 {{- if ge $dpi 192 -}}
-{"barHeight":78,"barTop":0,"edgeGap":34,"popupGap":14,"iconSize":27,"fontSize":22,"dotSize":10,"pillW":38,"pillH":24,"cellPad":38,"profileW":460,"profileH":640,"networkW":480,"networkH":620,"controlW":560,"controlH":700,"calendarW":580,"calendarH":560,"notificationW":540,"notificationH":520}
+{"barHeight":78,"barTop":0,"edgeGap":34,"popupGap":14,"iconSize":27,"fontSize":22,"popupIconSize":31,"popupFontSize":26,"dotSize":10,"pillW":38,"pillH":24,"cellPad":38,"profileW":460,"profileH":640,"networkW":480,"networkH":620,"controlW":560,"controlH":700,"calendarW":580,"calendarH":560,"notificationW":540,"notificationH":520}
 {{- else if ge $dpi 144 -}}
-{"barHeight":54,"barTop":0,"edgeGap":20,"popupGap":10,"iconSize":21,"fontSize":17,"dotSize":8,"pillW":30,"pillH":20,"cellPad":32,"profileW":360,"profileH":510,"networkW":390,"networkH":510,"controlW":430,"controlH":580,"calendarW":460,"calendarH":450,"notificationW":430,"notificationH":410}
+{"barHeight":54,"barTop":0,"edgeGap":20,"popupGap":10,"iconSize":21,"fontSize":17,"popupIconSize":24,"popupFontSize":20,"dotSize":8,"pillW":30,"pillH":20,"cellPad":32,"profileW":360,"profileH":510,"networkW":390,"networkH":510,"controlW":430,"controlH":580,"calendarW":460,"calendarH":450,"notificationW":430,"notificationH":410}
 {{- else -}}
-{"barHeight":38,"barTop":0,"edgeGap":12,"popupGap":8,"iconSize":15,"fontSize":13,"dotSize":5,"pillW":20,"pillH":13,"cellPad":24,"profileW":280,"profileH":410,"networkW":300,"networkH":400,"controlW":340,"controlH":460,"calendarW":360,"calendarH":360,"notificationW":340,"notificationH":340}
+{"barHeight":38,"barTop":0,"edgeGap":12,"popupGap":8,"iconSize":15,"fontSize":13,"popupIconSize":17,"popupFontSize":15,"dotSize":5,"pillW":20,"pillH":13,"cellPad":24,"profileW":280,"profileH":410,"networkW":300,"networkH":400,"controlW":340,"controlH":460,"calendarW":360,"calendarH":360,"notificationW":340,"notificationH":340}
 {{- end -}}
