@@ -104,6 +104,7 @@ mode "resize" {
 bindsym $mod+Return exec $term
 bindsym $mod+d exec "rofi -show drun"
 bindsym $mod+Tab exec "rofi -show window"
+bindsym $mod+Shift+v exec "rofi -modi 'clipboard:greenclip print' -show clipboard -run-command '{cmd}'"
 bindsym $mod+q kill
 # Screenshots
 bindsym $mod+Shift+3 exec --no-startup-id ~/.config/i3/scripts/screenshot.sh full
@@ -143,6 +144,7 @@ exec_always --no-startup-id env PATH=$HOME/.local/share/mise/shims:$PATH display
 exec --no-startup-id env PATH=$HOME/.local/share/mise/shims:$PATH displayctl daemon
 exec --no-startup-id ~/.config/eww/scripts/launch.sh
 exec --no-startup-id dunst
+exec --no-startup-id greenclip daemon
 exec --no-startup-id fcitx5 -d
 exec --no-startup-id sunshine
 exec --no-startup-id nm-applet
