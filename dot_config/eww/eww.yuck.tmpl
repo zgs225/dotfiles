@@ -87,7 +87,7 @@
   (centerbox :class "bar-inner" :orientation "h" :valign "fill" :vexpand true
 
     ;; ── Left: app grid + workspaces ──
-    (box :class "bar-group" :halign "start" :valign "center" :spacing 10
+    (box :class "bar-group" :halign "start" :valign "center" :spacing 6
       (box :class "pill pill-launcher" :valign "center"
         (button :class "module-btn app-grid"
           :onclick "~/.config/eww/scripts/open-popup.sh profile-card"
@@ -102,7 +102,7 @@
     (box)
 
     ;; ── Right: tray | wifi | battery | cc | time | bell ──
-    (box :class "bar-group" :halign "end" :valign "center" :spacing 8
+    (box :class "bar-group" :halign "end" :valign "center" :spacing 6
 
       (box :class "pill pill-tray" :valign "center"
         (systray :icon-size {{ $eww.iconSize }} :spacing 6))
