@@ -24,7 +24,10 @@
 /* ============================================================ BAR ============================================================ */
 .eww-bar { background-color: transparent; }
 .bar-inner {
-  @include glass-shell(0.72, 0.18);
+  background-color: rgba($base, 0.72);
+  border: none;
+  border-bottom: 1px solid rgba($text, 0.16);
+  box-shadow: 0 5px 10px -4px rgba($crust, 0.45);
   border-radius: 0;
   margin: 0;
   min-height: {{ $eww.barHeight }}px;
