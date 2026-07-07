@@ -16,7 +16,7 @@ chezmoi-based dotfiles repo. Do not edit `~/.` files directly — use chezmoi.
 
 ## OS targeting
 
-- Linux + i3 only: `dot_config/i3/`, `dot_config/polybar/`, `dot_config/picom/`, `dot_config/rofi/`, `dot_config/dunst/`, `dot_xinitrc`, `dot_xprofile` — guarded in `.chezmoiignore`
+- Linux + i3 only: `dot_config/i3/`, `dot_config/eww/`, `dot_config/picom/`, `dot_config/rofi/`, `dot_config/dunst/`, `dot_xinitrc`, `dot_xprofile` — guarded in `.chezmoiignore`
 - macOS: `dot_zsh/configs/40-homebrew.zsh`
 - Per-machine overrides: `~/.config/chezmoi/chezmoi.yaml`, `~/.zsh/configs/` (numbered .zsh files), `~/.gitconfig.local`, `~/.aliases.local`
 
