@@ -87,65 +87,57 @@
   (centerbox :class "bar-inner" :orientation "h" :valign "fill" :vexpand true
 
     ;; ── Left: app grid + workspaces ──
-    (box :class "bar-group" :halign "start" :valign "center" :spacing 6
-      (box :class "pill pill-launcher" :valign "center"
-        (button :class "module-btn app-grid"
-          :onclick "~/.config/eww/scripts/open-popup.sh profile-card"
-          (label :text "󰀻" :class "module-icon")))
-      (box :class "pill pill-ws" :valign "center"
-        (eventbox :class "workspaces-container"
-          :valign "center"
-          :onscroll "if [ {} = up ]; then i3-msg workspace prev; else i3-msg workspace next; fi"
-          (literal :content "${workspaces}"))))
+    (box :class "bar-group" :halign "start" :valign "center" :space-evenly false :spacing 6
+      (button :class "module-btn app-grid" :valign "center"
+        :onclick "~/.config/eww/scripts/open-popup.sh profile-card"
+        (label :text "󰀻" :class "module-icon"))
+      (eventbox :class "workspaces-container"
+        :valign "center"
+        :onscroll "if [ {} = up ]; then i3-msg workspace prev; else i3-msg workspace next; fi"
+        (literal :content "${workspaces}")))
 
     ;; ── Center: empty ──
     (box)
 
     ;; ── Right: tray | wifi | battery | cc | time | bell ──
-    (box :class "bar-group" :halign "end" :valign "center" :spacing 6
+    (box :class "bar-group" :halign "end" :valign "center" :space-evenly false :spacing 6
 
-      (box :class "pill pill-tray" :valign "center"
-        (systray :icon-size {{ $eww.iconSize }} :spacing 6))
+      (systray :class "bar-tray" :icon-size {{ $eww.iconSize }} :spacing 6 :valign "center")
 
-      (box :class "pill pill-btn" :valign "center"
-        (button :class "module-btn net-btn"
-          :onclick "~/.config/eww/scripts/open-popup.sh network-popup"
-          (label :text "${wired > 0 ? '󰈀' : (wifi_on > 0 ? '󰤨' : '󰤭')}" :class "module-icon")))
+      (button :class "module-btn net-btn" :valign "center"
+        :onclick "~/.config/eww/scripts/open-popup.sh network-popup"
+        (label :text "${wired > 0 ? '󰈀' : (wifi_on > 0 ? '󰤨' : '󰤭')}" :class "module-icon"))
 
-      (box :class "pill pill-battery" :valign "center"
-        (button :class "module-btn battery-btn"
-          :onclick "~/.config/eww/scripts/open-popup.sh profile-card"
-          (box :orientation "h" :spacing 6 :valign "center" :space-evenly false
-            (label :text "${battery_icon}"
-              :class "module-icon bat-${battery_charging ? 'charging' : (battery_percent < 15 ? 'low' : 'normal')}")
-            (label :text "${battery_percent}%" :class "battery-pct"))))
+      (button :class "module-btn battery-btn" :valign "center"
+        :onclick "~/.config/eww/scripts/open-popup.sh profile-card"
+        (box :orientation "h" :spacing 6 :valign "center" :space-evenly false
+          (label :text "${battery_icon}"
+            :class "module-icon bat-${battery_charging ? 'charging' : (battery_percent < 15 ? 'low' : 'normal')}")
+          (label :text "${battery_percent}%" :class "battery-pct")))
 
-      (box :class "pill pill-btn" :valign "center"
-        (button :class "module-btn"
-          :onclick "~/.config/eww/scripts/open-popup.sh control-center"
-          (label :text "󰘵" :class "module-icon")))
+      (button :class "module-btn" :valign "center"
+        :onclick "~/.config/eww/scripts/open-popup.sh control-center"
+        (label :text "󰘵" :class "module-icon"))
 
-      (box :class "pill pill-time" :valign "center"
-        (button :class "module-btn time-btn"
-          :onclick "~/.config/eww/scripts/open-popup.sh calendar-popup"
-          (box :orientation "h" :spacing 10 :valign "center" :space-evenly false
-            (box :orientation "v" :spacing 0 :valign "center"
-              (label :text "${clock_dow}" :class "time-dow" :xalign 0)
-              (label :text "${clock_md}" :class "time-md" :xalign 0))
-            (label :text "${clock_time}" :class "time-main"))))
+      (button :class "module-btn time-btn" :valign "center"
+        :onclick "~/.config/eww/scripts/open-popup.sh calendar-popup"
+        (box :orientation "h" :spacing 10 :valign "center" :space-evenly false
+          (box :orientation "v" :spacing 0 :valign "center"
+            (label :text "${clock_dow}" :class "time-dow" :xalign 0)
+            (label :text "${clock_md}" :class "time-md" :xalign 0))
+          (label :text "${clock_time}" :class "time-main")))
 
-      (box :class "pill pill-btn" :valign "center"
-        (button :class "module-btn notif-btn"
-          :onclick "~/.config/eww/scripts/open-popup.sh notification-popup"
-          :onrightclick "~/.config/eww/scripts/toggle-dnd.sh"
-          (box :class "notif-icon-wrap" :halign "center" :valign "center"
-            (overlay
-              (label :text "${dnd ? '󰂛' : '󰂚'}"
-                :class "notif-bell notif-bell-${dnd ? 'dnd' : (notif_count > 0 ? 'unread' : 'none')}")
-              (box
-                :class "notif-badge"
-                :halign "end" :valign "start"
-                :visible "${notif_count > 0 && !dnd}"))))))))
+      (button :class "module-btn notif-btn" :valign "center"
+        :onclick "~/.config/eww/scripts/open-popup.sh notification-popup"
+        :onrightclick "~/.config/eww/scripts/toggle-dnd.sh"
+        (box :class "notif-icon-wrap" :halign "center" :valign "center"
+          (overlay
+            (label :text "${dnd ? '󰂛' : '󰂚'}"
+              :class "notif-bell notif-bell-${dnd ? 'dnd' : (notif_count > 0 ? 'unread' : 'none')}")
+            (box
+              :class "notif-badge"
+              :halign "end" :valign "start"
+              :visible "${notif_count > 0 && !dnd}")))))))
 
 ;; Transparent click-catcher opened behind popups. It lets any empty desktop area
 ;; close the active component without adding another visible layer.
