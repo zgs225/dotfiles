@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-# clear-notifs.sh — clear notification log
-echo "[]" > /tmp/eww_notifications.json
+# Clear dunst notification history.
+dunstctl history-clear 2>/dev/null

@@ -5,7 +5,6 @@ chezmoi-based dotfiles repo. Do not edit `~/.` files directly — use chezmoi.
 ## Rules
 
 - **Never modify OS-level configuration.** Do not edit files under `/etc/`, `/usr/`, `/boot/`, systemd units, polkit rules, or any other system-wide config. This repo only manages user-level dotfiles.
-- **Never edit deployed files directly.** Always edit the source files in this repo (`dot_*`, `.tmpl`, etc.) and apply via chezmoi. For example, do not edit `~/.zshrc` or `~/.config/nvim/init.lua` directly; edit `dot_zshrc` or `dot_config/nvim/init.lua` here instead.
 
 ## Chezmoi conventions
 
@@ -13,7 +12,6 @@ chezmoi-based dotfiles repo. Do not edit `~/.` files directly — use chezmoi.
 - `.tmpl` extension → Go template; variables come from `.chezmoi.yaml.tmpl` data block.
 - `run_before_*`, `run_after_*`, `run_once_after_*`, `run_onchange_after_*` are chezmoi lifecycle scripts — not standalone.
 - Apply: `chezmoi init --source ~/dotfiles --apply` or `chezmoi update`
-- **Never run `chezmoi apply`.** The working directory is NOT the chezmoi source path. Editing source files in this repo is correct; applying them to `$HOME` is done separately by the user.
 - Encryption: age via chezmoi. Key: `~/.config/chezmoi/key.txt`. Receiver in `.chezmoi.yaml.tmpl`.
 
 ## OS targeting
