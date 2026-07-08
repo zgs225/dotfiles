@@ -142,7 +142,7 @@ exec --no-startup-id picom --config ~/.config/picom/picom.conf
 {{- end }}
 exec_always --no-startup-id env PATH=$HOME/.local/share/mise/shims:$PATH displayctl apply auto
 exec --no-startup-id env PATH=$HOME/.local/share/mise/shims:$PATH displayctl daemon
-exec --no-startup-id ~/.config/eww/scripts/launch.sh
+exec_always --no-startup-id ~/.config/eww/scripts/launch.sh
 exec --no-startup-id dunst
 exec --no-startup-id greenclip daemon
 exec --no-startup-id fcitx5 -d
