@@ -245,6 +245,14 @@
 .vpn-name { color: $subtext1; font-size: {{ mulf $eww.popupFontSize 0.76 | int }}px; }
 .vpn-empty { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; padding: 8px; }
 
+.wired-row { padding: 12px 10px; border-radius: 13px; transition: all 120ms; }
+.wired-row:hover { background-color: rgba($surface1, 0.40); }
+.wired-active { background-color: rgba($surface1, 0.20); }
+.wired-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.76 | int }}px; color: $green; }
+.wired-name { color: $text; font-size: {{ mulf $eww.popupFontSize 0.76 | int }}px; }
+.wired-device { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.62 | int }}px; }
+.wired-empty { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; padding: 8px; }
+
 /* ============================================================ CONTROL CENTER ============================================================ */
 .tile-grid { padding: 0 0 6px 0; }
 .cc-tile {

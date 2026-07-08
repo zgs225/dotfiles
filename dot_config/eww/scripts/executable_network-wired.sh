@@ -1,2 +1,4 @@
 #!/usr/bin/env bash
-nmcli -t -f TYPE,STATE c show --active 2>/dev/null | grep -q "^802-3-ethernet" && echo 1 || echo 0
+_selfdir="$(dirname "$0")"
+source "${_selfdir}/network-common.sh"
+real_wired_conns | head -1 | cut -d: -f1 | grep -q . && echo 1 || echo 0

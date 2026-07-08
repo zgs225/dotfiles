@@ -1,5 +1,5 @@
 [tools]
 go = "latest"
-
-"ubi:hairyhenderson/gomplate" = "latest"
-"ubi:air-verse/air" = "latest"
+"staticcheck" = "2026.1"
+"gomplate" = "latest"
+"air" = "latest"

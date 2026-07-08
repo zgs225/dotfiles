@@ -38,11 +38,12 @@
   "brightnessctl info 2>/dev/null | grep -oP '(\\d+)%' | head -1 | tr -d '%' || echo 0")
 
 ;; ── Network ──
-(defpoll wifi_on   :interval "5s" :initial "0" "~/.config/eww/scripts/network-wifi-on.sh")
+(defpoll wifi_on   :interval "2s" :initial "0" "~/.config/eww/scripts/network-wifi-on.sh")
 (defpoll wired     :interval "5s" :initial "0" "~/.config/eww/scripts/network-wired.sh")
-(defpoll wifi_name :interval "5s" :initial "Disconnected" "~/.config/eww/scripts/network-wifi-name.sh")
-(defpoll wifi_networks :interval "5s" :initial "(box)" "~/.config/eww/scripts/network-wifi-networks.sh")
+(defpoll wifi_name :interval "2s" :initial "Disconnected" "~/.config/eww/scripts/network-wifi-name.sh")
+(deflisten wifi_networks :initial "(box)" "~/.config/eww/scripts/network-monitor.sh")
 (defpoll vpn_list  :interval "6s" :initial "(box)" "~/.config/eww/scripts/network-vpn.sh")
+(defpoll wired_detail :interval "5s" :initial "(box)" "~/.config/eww/scripts/network-wired-detail.sh")
 
 ;; ── Radios ──
 (defpoll airplane_on :interval "5s" :initial "0" "~/.config/eww/scripts/airplane-on.sh")
@@ -246,6 +247,11 @@
       (box :orientation "h" :valign "center" :space-evenly false
         (label :text "Other Networks" :class "row-label" :xalign 0 :hexpand true)
         (label :text "󰅂" :class "row-chevron")))
+
+    (box :class "separator-line")
+
+    (label :text "Wired" :class "section-label" :xalign 0)
+    (literal :content "${wired_detail}")
 
     (box :class "separator-line")
 
