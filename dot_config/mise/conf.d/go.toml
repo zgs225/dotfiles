@@ -1,3 +1,5 @@
 [tools]
 go = "latest"
+
 "ubi:hairyhenderson/gomplate" = "latest"
+"ubi:air-verse/air" = "latest"

@@ -13,6 +13,7 @@ cursor/
 scripts/
 dot_zshrc.local
 dot_netrc
+skills-lock.json
 
 {{ if not (and .isLinux .useI3) }}
 .zprofile
