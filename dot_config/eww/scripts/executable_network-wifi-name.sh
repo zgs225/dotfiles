@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
-ssid=$(nmcli -t -f NAME c show --active 2>/dev/null | grep -v '^lo$' | head -1)
+_selfdir="$(dirname "$0")"
+source "${_selfdir}/network-common.sh"
+ssid=$(real_wifi_conns | head -1 | cut -d: -f1)
 echo "${ssid:-Disconnected}"
