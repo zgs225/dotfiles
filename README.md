@@ -75,28 +75,32 @@ zsh Configurations
 Zsh configs are loaded in numeric order from `~/.zsh/configs/`:
 
 ```
-00-xdg.zsh           # XDG base directories
+00-xdg.zsh            # XDG base directories
 05-options.zsh        # Shell options
 10-color.zsh          # Color settings
-15-completion.zsh     # Completion engine
+15-path.zsh           # PATH configuration (base)
 20-history.zsh        # History settings
-25-keybindings.zsh    # Key bindings
 30-fzf.zsh            # FZF integration
 35-antigen.zsh        # Antigen plugin manager
+36-keybindings.zsh    # Key bindings
 40-homebrew.zsh       # Homebrew (macOS only)
+42-mise.zsh           # mise dev tool manager
 45-go.zsh             # Go environment
 50-nvm.zsh            # Node version manager
 55-rbenv.zsh          # Ruby version manager
 60-pyenv.zsh          # Python version manager
 65-java.zsh           # Java environment
 70-uv.zsh             # UV Python toolchain
+73-lmstudio.zsh       # LM Studio CLI
 75-editor.zsh         # Editor defaults
 80-yarn.zsh           # Yarn global path
 85-bat.zsh            # Bat/cat aliases
 90-p10k.zsh           # Powerlevel10k theme
-94-path.zsh           # PATH configuration
+92-deno.zsh           # Deno environment
+93-opencode.zsh       # OpenCode CLI
 95-windsurf.zsh       # Windsurf editor
-99-completion.zsh     # Custom completions
+99-completion.zsh     # Custom / tool completions
+99-path-cleanup.zsh   # Finalize PATH
 ```
 
 Add your own numbered files for custom configs. Higher numbers load last,
