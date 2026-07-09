@@ -11,11 +11,28 @@ AGENTS.md
 docs/
 cursor/
 scripts/
-dot_zshrc.local
-dot_netrc
 skills-lock.json
 
+{{ if not .isLinux }}
+# Linux / X11-only configs
+.config/fcitx5/**
+.config/gtk-3.0/**
+.config/gtk-4.0/**
+.config/libinput-gestures.conf
+.config/sunshine/**
+{{ end }}
+
 {{ if not (and .isLinux .useI3) }}
-.zprofile
+# i3 window manager stack
+.config/dunst/**
+.config/eww/**
+.config/i3/**
+.config/picom/**
+.config/rofi/**
+.config/greenclip.toml
+.config/betterlockscreen/**
+.config/display/**
 .xinitrc
+.xprofile
+.zprofile
 {{ end }}
