@@ -7,6 +7,10 @@
 
 (defvar popup_open "none")
 (defvar bt_on 0)
+(defvar osd_icon "󰕿")
+(defvar osd_label "Volume")
+(defvar osd_value "0")
+(defvar osd_color "blue")
 
 ;; ============================================ DATA POLLING (defpoll) ============================================
 
@@ -420,3 +424,19 @@
     (button :class "notif-clear-all" :halign "fill"
       :onclick "~/.config/eww/scripts/clear-notifs.sh"
       (label :text "Clear All"))))
+
+;; ============================================ OSD ============================================
+
+(defwindow osd
+  :stacking "overlay"
+  :windowtype "dialog"
+  :focusable false
+  :wm-ignore true
+  :class "eww-osd"
+  :geometry (geometry :width "{{ $eww.osdW }}px" :height "{{ $eww.osdH }}px" :anchor "center")
+  (box :class "popup osd" :orientation "v" :space-evenly false :spacing 14 :valign "center" :halign "center"
+    (label :text "${osd_icon}" :class "osd-icon osd-icon-${osd_color}")
+    (label :text "${osd_label}" :class "osd-title")
+    (box :class "osd-row" :orientation "h" :spacing 12 :halign "center" :valign "center"
+      (label :text "${osd_value}%" :class "osd-percent")
+      (scale :class "osd-scale" :value "${osd_value}" :min 0 :max 100 :active false))))

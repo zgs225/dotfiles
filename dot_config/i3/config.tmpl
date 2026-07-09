@@ -150,3 +150,11 @@ exec --no-startup-id sunshine
 exec --no-startup-id nm-applet
 exec --no-startup-id wezterm start --class dropdown-btop btop
 exec --no-startup-id libinput-gestures-setup start
+
+# Media keys — OSD
+bindsym XF86AudioRaiseVolume exec --no-startup-id ~/.config/eww/scripts/osd.sh volume-up
+bindsym XF86AudioLowerVolume exec --no-startup-id ~/.config/eww/scripts/osd.sh volume-down
+bindsym XF86AudioMute        exec --no-startup-id ~/.config/eww/scripts/osd.sh volume-mute
+bindsym XF86AudioMicMute     exec --no-startup-id ~/.config/eww/scripts/osd.sh mic-mute
+bindsym XF86MonBrightnessUp   exec --no-startup-id ~/.config/eww/scripts/osd.sh brightness-up
+bindsym XF86MonBrightnessDown exec --no-startup-id ~/.config/eww/scripts/osd.sh brightness-down
