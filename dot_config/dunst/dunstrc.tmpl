@@ -1,7 +1,6 @@
 [global]
 font = Noto Sans CJK SC 10
 markup = yes
-plain_text = no
 format = "<b>%s</b>\n%b"
 sort = yes
 indicate_hidden = yes
@@ -9,8 +8,6 @@ alignment = left
 show_age_threshold = 60
 word_wrap = yes
 ignore_newline = no
-geometry = 300x5-20+20
-transparency = 0
 idle_threshold = 120
 monitor = 0
 follow = mouse
@@ -19,27 +16,41 @@ history_length = 20
 show_indicators = no
 line_height = 0
 separator_height = 2
-padding = 8
-horizontal_padding = 8
+padding = 10
+horizontal_padding = 12
 separator_color = frame
 browser = firefox
 dmenu = rofi -dmenu -p dunst
 icon_position = left
 max_icon_size = 32
-frame_width = 2
-frame_color = {{ .colors.lavender }}
+icon_corner_radius = 8
+icon_corners = all
+frame_width = 1
+frame_color = "{{ .colors.text }}2E"
+width = 300
+height = (0, 300)
+origin = top-right
+offset = (20, 20)
+notification_limit = 5
+corner_radius = 16
+corners = all
+gap_size = 8
+transparency = 0
 
 [urgency_low]
-background = {{ .colors.base }}
-foreground = {{ .colors.text }}
+background = "{{ .colors.base }}66"
+foreground = "{{ .colors.text }}"
+frame_color = "{{ .colors.text }}2E"
 timeout = 5
 
 [urgency_normal]
-background = {{ .colors.surface0 }}
-foreground = {{ .colors.text }}
+background = "{{ .colors.base }}A8"
+foreground = "{{ .colors.text }}"
+frame_color = "{{ .colors.text }}2E"
 timeout = 5
 
 [urgency_critical]
-background = {{ .colors.red }}
-foreground = {{ .colors.base }}
+background = "{{ .colors.red }}D9"
+foreground = "{{ .colors.base }}"
+frame_color = "{{ .colors.red }}"
 timeout = 0
