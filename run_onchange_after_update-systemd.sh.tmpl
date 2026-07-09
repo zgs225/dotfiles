@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+{{ if and .isLinux .useI3 -}}
+systemctl --user daemon-reload
+systemctl --user enable --now update-check.timer
+{{ end -}}

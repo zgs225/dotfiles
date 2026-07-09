@@ -1,0 +1,11 @@
+[Unit]
+Description=Check for pacman and AUR updates
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.config/eww/scripts/check-updates.sh
+TimeoutStartSec=180
+StandardOutput=journal
+StandardError=journal

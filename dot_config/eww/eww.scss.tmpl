@@ -443,3 +443,101 @@ calendar.highlight { color: $blue; font-weight: bold; }
   margin: 0; padding: 0;
   border: none; box-shadow: none;
 }
+
+/* ============================================================ UPDATE INDICATOR ============================================================ */
+
+.update-icon-wrap {
+  min-width: {{ $eww.iconSize }}px;
+  min-height: {{ $eww.iconSize }}px;
+}
+.update-icon { color: $subtext0; }
+.update-btn.has-updates .update-icon { color: $text; }
+.update-badge {
+  background-color: $red;
+  border-radius: 999px;
+  min-width: 8px;
+  min-height: 8px;
+  margin: 0 -1px 0 0;
+  border: 2px solid $base;
+}
+
+.updates-popup { }
+.update-count-badge {
+  background-color: $red;
+  border-radius: 999px;
+  min-width: 22px;
+  padding: 3px 7px;
+}
+.update-count-text {
+  color: white;
+  font-size: {{ mulf $eww.popupFontSize 0.62 | int }}px;
+  font-weight: bold;
+}
+.update-last-check {
+  color: $subtext0;
+  font-size: {{ mulf $eww.popupFontSize 0.62 | int }}px;
+  padding: 0 0 12px 0;
+}
+.update-body { padding: 10px 0; }
+.update-groups {
+  min-width: {{ mulf $eww.updateW 0.35 | int }}px;
+}
+.update-group-row {
+  padding: 10px 12px;
+  border-radius: 12px;
+  transition: all 120ms;
+}
+.update-group-row:hover, .update-group-row.active {
+  background-color: rgba($surface1, 0.40);
+}
+.update-group-name {
+  color: $subtext1;
+  font-size: {{ mulf $eww.popupFontSize 0.76 | int }}px;
+}
+.update-group-count {
+  color: $subtext0;
+  font-size: {{ mulf $eww.popupFontSize 0.68 | int }}px;
+  background-color: rgba($surface0, 0.60);
+  border-radius: 999px;
+  min-width: 22px;
+  padding: 2px 6px;
+}
+.update-list-panel {
+  @include glass-cell(0.24);
+  border-radius: 14px;
+  padding: 10px;
+}
+.update-list { padding: 2px; }
+.update-list-item {
+  padding: 7px 8px;
+  border-radius: 10px;
+  transition: all 120ms;
+}
+.update-list-item:hover { background-color: rgba($surface1, 0.36); }
+.update-pkg-name {
+  color: $text;
+  font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px;
+}
+.update-pkg-version {
+  color: $subtext0;
+  font-size: {{ mulf $eww.popupFontSize 0.62 | int }}px;
+}
+.update-empty-text {
+  color: $overlay0;
+  font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px;
+  padding: 40px 0;
+}
+.update-actions { padding: 14px 0 0 0; }
+.update-action-btn {
+  @include glass-cell(0.32);
+  border-radius: 12px;
+  padding: 10px;
+  transition: all 120ms;
+}
+.update-action-btn:hover { background-color: rgba($surface1, 0.48); }
+.update-action-btn label {
+  color: $subtext1;
+  font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px;
+}
+.update-action-btn.disabled { opacity: 0.4; }
+
