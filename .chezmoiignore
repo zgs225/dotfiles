@@ -32,6 +32,8 @@ skills-lock.json
 .config/greenclip.toml
 .config/betterlockscreen/**
 .config/display/**
+.config/systemd/user/screenshot-cleanup.service
+.config/systemd/user/screenshot-cleanup.timer
 .xinitrc
 .xprofile
 .zprofile
