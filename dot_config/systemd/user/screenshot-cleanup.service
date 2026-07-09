@@ -4,5 +4,6 @@ Description=Clean up screenshots older than 7 days
 [Service]
 Type=oneshot
 ExecStart=/bin/sh -c 'find "${SCREENSHOT_DIR:-$HOME/Pictures/screenshots}" -type f -mtime +7 -delete'
+ExecStartPost=-/usr/bin/notify-send "截图清理" "已删除 7 天前的截图"
 StandardOutput=journal
 StandardError=journal
