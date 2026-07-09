@@ -11,6 +11,7 @@
 (defvar osd_label "Volume")
 (defvar osd_value "0")
 (defvar osd_color "blue")
+(defvar updates_active_group "official")
 
 ;; ============================================ DATA POLLING (defpoll) ============================================
 
@@ -77,6 +78,14 @@
   :initial `{"label":"Weekend","sub":"--"}`
   "~/.config/eww/scripts/countdown.sh")
 
+;; ── Updates ──
+(defpoll updates :interval "30s"
+  :initial `{"last_check":"Never","total":0,"official_count":0,"aur_count":0,"official":[],"aur":[],"error":null}`
+  "~/.config/eww/scripts/update-status.sh")
+(defpoll update_list :interval "2s"
+  :initial "(box)"
+  "~/.config/eww/scripts/update-list-yuck.sh")
+
 ;; ============================================ BAR WINDOW ============================================
 
 (defwindow bar
@@ -120,6 +129,16 @@
           (label :text "${battery_icon}"
             :class "module-icon bat-${battery_charging ? 'charging' : (battery_percent < 15 ? 'low' : 'normal')}")
           (label :text "${battery_percent}%" :class "battery-pct")))
+
+      (button :class "module-btn update-btn ${updates.total > 0 ? 'has-updates' : ''}" :valign "center"
+        :onclick "~/.config/eww/scripts/open-popup.sh updates-popup"
+        (box :class "update-icon-wrap" :halign "center" :valign "center"
+          (overlay
+            (label :text "󰚰" :class "module-icon update-icon")
+            (box
+              :class "update-badge"
+              :halign "end" :valign "start"
+              :visible "${updates.total > 0}"))))
 
       (button :class "module-btn" :valign "center"
         :onclick "~/.config/eww/scripts/open-popup.sh control-center"
@@ -440,3 +459,45 @@
     (box :class "osd-row" :orientation "h" :spacing 12 :halign "center" :valign "center"
       (label :text "${osd_value}%" :class "osd-percent")
       (scale :class "osd-scale" :value "${osd_value}" :min 0 :max 100 :active false))))
+
+;; ============================================ UPDATES POPUP ============================================
+
+(defwindow updates-popup
+  :stacking "overlay"
+  :windowtype "dialog"
+  :focusable false
+  :geometry (geometry :width "{{ $eww.updateW }}px" :height "{{ $eww.updateH }}px" :x "{{ $eww.edgeGap }}px" :y "{{ add $eww.barHeight $eww.popupGap }}px" :anchor "top right")
+  (box :class "popup revealer updates-popup" :orientation "v" :spacing 0 :space-evenly false
+    (box :class "popup-header" :orientation "h" :spacing 10 :valign "center" :space-evenly false
+      (button :class "back-btn" :onclick "~/.config/eww/scripts/open-popup.sh updates-popup"
+        (label :text "󰁍" :class "back-icon"))
+      (label :text "Software Updates" :class "popup-title" :hexpand true :xalign 0)
+      (box :class "update-count-badge" :halign "end" :valign "center"
+        (label :text "${updates.total}" :class "update-count-text")))
+
+    (label :text "Last checked: ${updates.last_check}" :class "update-last-check" :xalign 0)
+
+    (box :class "update-body" :orientation "h" :spacing 10 :vexpand true
+      (box :class "update-groups" :orientation "v" :spacing 4 :hexpand false
+        (eventbox :class "update-group-row ${updates_active_group == 'official' ? 'active' : ''}"
+            :onhover "eww update updates_active_group='official'"
+          (box :orientation "h" :spacing 8 :valign "center" :space-evenly false
+            (label :text "Official" :class "update-group-name" :hexpand true :xalign 0)
+            (label :text "${updates.official_count}" :class "update-group-count")))
+        (eventbox :class "update-group-row ${updates_active_group == 'aur' ? 'active' : ''}"
+            :onhover "eww update updates_active_group='aur'"
+          (box :orientation "h" :spacing 8 :valign "center" :space-evenly false
+            (label :text "AUR" :class "update-group-name" :hexpand true :xalign 0)
+            (label :text "${updates.aur_count}" :class "update-group-count"))))
+
+      (box :class "update-list-panel" :orientation "v" :hexpand true
+        (literal :content "${update_list}")))
+
+    (box :class "update-actions" :orientation "h" :spacing 10
+      (button :class "update-action-btn" :hexpand true :onclick "~/.config/eww/scripts/update-trigger.sh"
+        (label :text "检查更新"))
+      (button :class "update-action-btn ${updates.total == 0 ? 'disabled' : ''}" :hexpand true
+        :onclick "~/.config/eww/scripts/update-apply.sh"
+        :visible "${updates.total > 0}"
+        (label :text "打开更新终端")))))
+
