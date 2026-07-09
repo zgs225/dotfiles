@@ -5,6 +5,13 @@
 set -euo pipefail
 
 TIMER_PID_FILE="/tmp/eww-osd-timer.pid"
+OSD_OPEN_FLAG="/tmp/eww-osd-open.flag"
+
+# Defensive reset: if eww was restarted, the window may be gone while the flag
+# remains; clear it so the next keypress reopens the OSD cleanly.
+if ! eww list-windows 2>/dev/null | grep -q '^osd$'; then
+    rm -f "$OSD_OPEN_FLAG"
+fi
 
 reset_timer() {
     if [ -f "$TIMER_PID_FILE" ]; then
@@ -17,7 +24,7 @@ reset_timer() {
     (
         sleep 2
         eww close osd 2>/dev/null || true
-        rm -f "$TIMER_PID_FILE"
+        rm -f "$OSD_OPEN_FLAG" "$TIMER_PID_FILE"
     ) &
     echo $! > "$TIMER_PID_FILE"
 }
@@ -25,7 +32,10 @@ reset_timer() {
 show_osd() {
     local icon="$1" label="$2" value="$3" color="$4"
     eww update osd_icon="$icon" osd_label="$label" osd_value="$value" osd_color="$color" 2>/dev/null || true
-    eww open osd 2>/dev/null || true
+    if [ ! -f "$OSD_OPEN_FLAG" ]; then
+        eww open osd 2>/dev/null || true
+        touch "$OSD_OPEN_FLAG"
+    fi
     reset_timer
 }
 
