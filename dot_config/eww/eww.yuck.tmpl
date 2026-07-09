@@ -38,11 +38,12 @@
   "brightnessctl info 2>/dev/null | grep -oP '(\\d+)%' | head -1 | tr -d '%' || echo 0")
 
 ;; ── Network ──
+(defpoll network_status :interval "2s"
+  :initial `{"type":"none","name":"Disconnected","icon":"󰤭"}`
+  "~/.config/eww/scripts/network-status.sh")
 (defpoll wifi_on   :interval "2s" :initial "0" "~/.config/eww/scripts/network-wifi-on.sh")
-(defpoll wired     :interval "5s" :initial "0" "~/.config/eww/scripts/network-wired.sh")
 (defpoll wifi_name :interval "2s" :initial "Disconnected" "~/.config/eww/scripts/network-wifi-name.sh")
-(deflisten wifi_networks :initial "(box)" "~/.config/eww/scripts/network-monitor.sh")
-(defpoll vpn_list  :interval "6s" :initial "(box)" "~/.config/eww/scripts/network-vpn.sh")
+(defpoll wifi_networks :interval "2s" :initial "(box)" "~/.config/eww/scripts/network-wifi-networks.sh")
 (defpoll wired_detail :interval "5s" :initial "(box)" "~/.config/eww/scripts/network-wired-detail.sh")
 
 ;; ── Radios ──
@@ -107,7 +108,7 @@
 
       (button :class "module-btn net-btn" :valign "center"
         :onclick "~/.config/eww/scripts/open-popup.sh network-popup"
-        (label :text "${wired > 0 ? '󰈀' : (wifi_on > 0 ? '󰤨' : '󰤭')}" :class "module-icon"))
+        (label :text "${network_status.icon}" :class "module-icon"))
 
       (button :class "module-btn battery-btn" :valign "center"
         :onclick "~/.config/eww/scripts/open-popup.sh profile-card"
@@ -252,11 +253,6 @@
 
     (label :text "Wired" :class "section-label" :xalign 0)
     (literal :content "${wired_detail}")
-
-    (box :class "separator-line")
-
-    (label :text "VPN" :class "section-label" :xalign 0)
-    (literal :content "${vpn_list}")
 
     (box :class "separator-line")
 
