@@ -1,0 +1,8 @@
+[Unit]
+Description=Clean up screenshots older than 7 days
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'find "${SCREENSHOT_DIR:-$HOME/Pictures/screenshots}" -type f -mtime +7 -delete'
+StandardOutput=journal
+StandardError=journal

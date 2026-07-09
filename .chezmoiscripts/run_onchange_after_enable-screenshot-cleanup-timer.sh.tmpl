@@ -1,0 +1,10 @@
+{{ if and .isLinux .useI3 -}}
+#!/bin/sh
+# screenshot-cleanup.service hash: {{ include "dot_config/systemd/user/screenshot-cleanup.service" | sha256sum }}
+# screenshot-cleanup.timer hash: {{ include "dot_config/systemd/user/screenshot-cleanup.timer" | sha256sum }}
+
+set -e
+
+systemctl --user daemon-reload
+systemctl --user enable --now screenshot-cleanup.timer
+{{ end -}}
