@@ -29,7 +29,7 @@ return {
       {
         "<leader>ao",
         function()
-          return require("opencode").operator("@this ") .. "_"
+          return require("opencode").operator "@this " .. "_"
         end,
         mode = { "n", "x" },
         desc = "Add range to opencode",
@@ -38,7 +38,7 @@ return {
       {
         "<leader>aoo",
         function()
-          return require("opencode").operator("@this ") .. "_"
+          return require("opencode").operator "@this " .. "_"
         end,
         desc = "Add line to opencode",
         expr = true,
@@ -52,13 +52,13 @@ return {
       local function opencode_window_opts()
         return {
           split = "right",
-          width = math.floor(vim.o.columns * 0.45),
+          width = math.floor(vim.o.columns * 0.5),
         }
       end
 
       vim.api.nvim_create_autocmd("TermOpen", {
         callback = function(args)
-          if not vim.api.nvim_buf_get_name(args.buf):match("opencode") then
+          if not vim.api.nvim_buf_get_name(args.buf):match "opencode" then
             return
           end
           opencode_buf = args.buf
@@ -72,19 +72,19 @@ return {
 
           local opts = { buffer = buf }
           vim.keymap.set("n", "<C-u>", function()
-            require("opencode").command("session.half.page.up")
+            require("opencode").command "session.half.page.up"
           end, vim.tbl_extend("force", opts, { desc = "Scroll up half page" }))
           vim.keymap.set("n", "<C-d>", function()
-            require("opencode").command("session.half.page.down")
+            require("opencode").command "session.half.page.down"
           end, vim.tbl_extend("force", opts, { desc = "Scroll down half page" }))
           vim.keymap.set("n", "gg", function()
-            require("opencode").command("session.first")
+            require("opencode").command "session.first"
           end, vim.tbl_extend("force", opts, { desc = "Go to first message" }))
           vim.keymap.set("n", "G", function()
-            require("opencode").command("session.last")
+            require("opencode").command "session.last"
           end, vim.tbl_extend("force", opts, { desc = "Go to last message" }))
           vim.keymap.set("n", "<Esc>", function()
-            require("opencode").command("session.interrupt")
+            require("opencode").command "session.interrupt"
           end, vim.tbl_extend("force", opts, { desc = "Interrupt current session (esc)" }))
 
           vim.api.nvim_create_autocmd("TermClose", {
@@ -92,7 +92,7 @@ return {
             once = true,
             callback = function()
               if pid then
-                if vim.fn.has("unix") == 1 then
+                if vim.fn.has "unix" == 1 then
                   os.execute("kill -TERM -" .. pid .. " 2>/dev/null")
                 else
                   pcall(vim.uv.kill, pid, "SIGTERM")
@@ -117,7 +117,7 @@ return {
             local wins = vim.fn.win_findbuf(buf)
             if #wins > 0 then
               vim.api.nvim_set_current_win(wins[1])
-              vim.cmd("startinsert")
+              vim.cmd "startinsert"
             end
           end)
         end,
@@ -134,7 +134,7 @@ return {
                 end
               else
                 vim.api.nvim_open_win(opencode_buf, true, opencode_window_opts())
-                vim.cmd("startinsert")
+                vim.cmd "startinsert"
               end
             else
               local buf = vim.api.nvim_create_buf(false, false)
@@ -150,8 +150,8 @@ return {
           if #vim.api.nvim_list_wins() == 1 then
             local winid = vim.api.nvim_get_current_win()
             local bufnr = vim.api.nvim_win_get_buf(winid)
-            if vim.api.nvim_buf_get_name(bufnr):match("opencode") then
-              vim.cmd("qa")
+            if vim.api.nvim_buf_get_name(bufnr):match "opencode" then
+              vim.cmd "qa"
             end
           end
         end,
