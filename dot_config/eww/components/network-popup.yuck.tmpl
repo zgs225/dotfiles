@@ -1,11 +1,11 @@
 {{- $eww := includeTemplate "eww-sizes" . | fromJson -}}
 ;; ============================================ NETWORK POPUP ============================================
 
-(defwindow network-popup
+(defwindow network-popup [pos_x pos_y]
   :stacking "overlay"
   :windowtype "dialog"
   :focusable false
-  :geometry (geometry :width "{{ $eww.networkW }}px" :height "{{ $eww.networkH }}px" :x "{{ $eww.edgeGap }}px" :y "{{ add $eww.barHeight $eww.popupGap }}px" :anchor "top right")
+  :geometry (geometry :width "{{ $eww.networkW }}px" :height "{{ $eww.networkH }}px" :x { pos_x } :y { pos_y } :anchor "top left")
   (box :class "popup revealer network-popup" :orientation "v" :spacing 0 :space-evenly false
     (box :class "popup-header" :orientation "h" :spacing 10 :valign "center" :space-evenly false
       (button :class "back-btn" :onclick "~/.config/eww/scripts/open-popup.sh network-popup"

@@ -1,11 +1,11 @@
 {{- $eww := includeTemplate "eww-sizes" . | fromJson -}}
 ;; ============================================ CALENDAR POPUP ============================================
 
-(defwindow calendar-popup
+(defwindow calendar-popup [pos_x pos_y]
   :stacking "overlay"
   :windowtype "dialog"
   :focusable false
-  :geometry (geometry :width "{{ $eww.calendarW }}px" :height "{{ $eww.calendarH }}px" :x "{{ $eww.edgeGap }}px" :y "{{ add $eww.barHeight $eww.popupGap }}px" :anchor "top right")
+  :geometry (geometry :width "{{ $eww.calendarW }}px" :height "{{ $eww.calendarH }}px" :x { pos_x } :y { pos_y } :anchor "top left")
   (box :class "popup revealer calendar-popup" :orientation "v" :spacing 0 :space-evenly false
     (calendar :class "cal"
       :day "${calendar_monthday}"
