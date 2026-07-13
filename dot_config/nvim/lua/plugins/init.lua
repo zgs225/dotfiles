@@ -41,4 +41,9 @@ return {
       return require "configs.mason-lspconfig"
     end,
   },
+
+  {
+    "elkowar/yuck.vim",
+    ft = "yuck",
+  },
 }
