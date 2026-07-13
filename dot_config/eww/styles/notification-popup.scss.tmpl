@@ -1,0 +1,39 @@
+{{- $eww := includeTemplate "eww-sizes" . | fromJson -}}
+
+/* ============================================================ NOTIFICATIONS ============================================================ */
+.notif-scroll-wrap { min-height: 300px; }
+.notif-scroll { padding: 2px; }
+.notif-item {
+  @include glass-cell(0.24);
+  padding: 12px 10px;
+  border-radius: 13px;
+  transition: all 120ms;
+}
+.notif-item:hover { background-color: rgba($surface1, 0.44); }
+.notif-appicon {
+  min-width: {{ mulf $eww.popupFontSize 2.28 | int }}px; min-height: {{ mulf $eww.popupFontSize 2.28 | int }}px; border-radius: 10px;
+  background-color: rgba($surface0, 0.52);
+}
+.notif-appicon label { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.82 | int }}px; color: $subtext1; }
+.icon-slack    { background-color: rgba($mauve, 0.2); }
+.icon-slack label { color: $mauve; }
+.icon-telegram { background-color: rgba($sapphire, 0.2); }
+.icon-telegram label { color: $sapphire; }
+.icon-github   { background-color: rgba($surface2, 0.6); }
+.icon-github label { color: $text; }
+.icon-discord  { background-color: rgba($blue, 0.2); }
+.icon-discord label { color: $blue; }
+.icon-spotify  { background-color: rgba($green, 0.2); }
+.icon-spotify label { color: $green; }
+.notif-title { color: $text; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; font-weight: bold; }
+.notif-time  { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.60 | int }}px; }
+.notif-body  { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.66 | int }}px; }
+.notif-empty { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.78 | int }}px; padding: 60px 0; }
+
+.notif-clear-all {
+  color: $subtext1; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px;
+  padding: 12px; margin: 12px 0 0 0;
+  border-radius: 13px; background-color: rgba($surface0, 0.42);
+  transition: all 120ms;
+}
+.notif-clear-all:hover { background-color: rgba($surface1, 0.52); color: $text; }

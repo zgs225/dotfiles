@@ -1,0 +1,48 @@
+{{- $eww := includeTemplate "eww-sizes" . | fromJson -}}
+
+/* ============================================================ CALENDAR ============================================================ */
+.cal {
+  background-color: transparent;
+  color: $subtext1;
+  padding: 4px;
+  font-size: {{ mulf $eww.popupFontSize 0.76 | int }}px;
+}
+calendar { background-color: transparent; color: $subtext1; }
+calendar:selected {
+  background-color: $blue; color: white;
+  border-radius: 999px;
+}
+calendar.header { color: $text; font-weight: bold; font-size: {{ mulf $eww.popupFontSize 0.84 | int }}px; }
+calendar.button { color: $subtext0; padding: 4px; }
+calendar.button:hover { color: $text; }
+calendar:indeterminate { color: $overlay0; }
+calendar.highlight { color: $blue; font-weight: bold; }
+
+.cal-extra { padding: 4px 0 0 0; }
+.cal-col { }
+.cal-col-right { min-width: {{ mulf $eww.popupFontSize 7.8 | int }}px; }
+.cal-col-title { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.62 | int }}px; font-weight: bold; letter-spacing: 0.4px; }
+
+.event-dot { min-width: 8px; min-height: 8px; border-radius: 999px; margin-top: 5px; }
+.event-dot-blue  { background-color: $blue; }
+.event-dot-mauve { background-color: $mauve; }
+.event-dot-green { background-color: $green; }
+.event-dot-peach { background-color: $peach; }
+.event-title { color: $text; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; }
+.event-time  { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.62 | int }}px; }
+.events-empty { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.66 | int }}px; }
+.cal-viewall { padding: 2px 0; }
+.cal-viewall-label { color: $blue; font-size: {{ mulf $eww.popupFontSize 0.66 | int }}px; }
+.cal-viewall:hover .cal-viewall-label { color: $sapphire; }
+
+.weather-box, .countdown-box {
+  @include glass-cell(0.28);
+  border-radius: 14px;
+  padding: 12px;
+}
+.weather-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 1.16 | int }}px; color: $subtext0; }
+.weather-temp { color: $text; font-size: {{ mulf $eww.popupFontSize 1.10 | int }}px; font-weight: bold; }
+.weather-desc { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.66 | int }}px; }
+.weather-lohi { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.66 | int }}px; }
+.countdown-label { color: $text; font-size: {{ mulf $eww.popupFontSize 0.78 | int }}px; font-weight: bold; }
+.countdown-sub   { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.66 | int }}px; }

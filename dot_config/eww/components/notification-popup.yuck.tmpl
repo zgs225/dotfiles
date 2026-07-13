@@ -1,0 +1,25 @@
+{{- $eww := includeTemplate "eww-sizes" . | fromJson -}}
+;; ============================================ NOTIFICATION POPUP ============================================
+
+(defwindow notification-popup
+  :stacking "overlay"
+  :windowtype "dialog"
+  :focusable false
+  :geometry (geometry :width "{{ $eww.notificationW }}px" :height "{{ $eww.notificationH }}px" :x "{{ $eww.edgeGap }}px" :y "{{ add $eww.barHeight $eww.popupGap }}px" :anchor "top right")
+  (box :class "popup revealer notification-popup" :orientation "v" :spacing 0 :space-evenly false
+    (box :class "popup-header" :orientation "h" :spacing 10 :valign "center" :space-evenly false
+      (button :class "back-btn" :onclick "~/.config/eww/scripts/open-popup.sh notification-popup"
+        (label :text "󰁍" :class "back-icon"))
+      (label :text "Notifications" :class "popup-title" :hexpand true :xalign 0)
+      (button :class "header-icon-btn" :onclick "~/.config/eww/scripts/clear-notifs.sh"
+        (label :text "󰆴" :class "header-icon"))
+      (button :class "header-icon-btn" :onrightclick "~/.config/eww/scripts/toggle-dnd.sh"
+        :onclick "~/.config/eww/scripts/toggle-dnd.sh"
+        (label :text "${dnd ? '󰂛' : '󰒓'}" :class "header-icon")))
+
+    (scroll :vscroll true :hscroll false :vexpand true :class "notif-scroll-wrap"
+      (literal :content "${notifications}"))
+
+    (button :class "notif-clear-all" :halign "fill"
+      :onclick "~/.config/eww/scripts/clear-notifs.sh"
+      (label :text "Clear All"))))

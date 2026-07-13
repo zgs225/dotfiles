@@ -1,0 +1,11 @@
+/* Invisible popup dismiss layer */
+.eww-popup-scrim,
+.popup-scrim-hitbox,
+.popup-scrim-fill {
+  background-color: transparent;
+}
+.popup-scrim-hitbox,
+.popup-scrim-fill {
+  min-width: 10000px;
+  min-height: 10000px;
+}

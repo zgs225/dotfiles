@@ -1,0 +1,40 @@
+{{- $eww := includeTemplate "eww-sizes" . | fromJson -}}
+;; ============================================ CALENDAR POPUP ============================================
+
+(defwindow calendar-popup
+  :stacking "overlay"
+  :windowtype "dialog"
+  :focusable false
+  :geometry (geometry :width "{{ $eww.calendarW }}px" :height "{{ $eww.calendarH }}px" :x "{{ $eww.edgeGap }}px" :y "{{ add $eww.barHeight $eww.popupGap }}px" :anchor "top right")
+  (box :class "popup revealer calendar-popup" :orientation "v" :spacing 0 :space-evenly false
+    (calendar :class "cal"
+      :day "${calendar_monthday}"
+      :month "${calendar_month}"
+      :year "${calendar_year}"
+      :show-heading true
+      :show-day-names true
+      :show-details false)
+
+    (box :class "separator-line")
+
+    (box :orientation "h" :spacing 14 :class "cal-extra" :space-evenly false
+      ;; Events column
+      (box :orientation "v" :spacing 10 :hexpand true :class "cal-col" :space-evenly false :valign "start"
+        (label :text "Events" :class "cal-col-title" :xalign 0)
+        (literal :content "${events}")
+        (button :class "cal-viewall" :onclick "gsimplecal & disown 2>/dev/null || true"
+          (label :text "View All →" :class "cal-viewall-label" :xalign 0)))
+      ;; Weather + Countdown column
+      (box :orientation "v" :spacing 12 :class "cal-col cal-col-right" :space-evenly false :valign "start"
+        (box :orientation "v" :spacing 3 :class "weather-box"
+          (label :text "Weather" :class "cal-col-title" :xalign 0)
+          (box :orientation "h" :spacing 8 :valign "center" :space-evenly false
+            (label :text "󰖐" :class "weather-icon")
+            (box :orientation "v" :spacing 0
+              (label :text "${weather.temp}" :class "weather-temp" :xalign 0)
+              (label :text "${weather.desc}" :class "weather-desc" :xalign 0)))
+          (label :text "${weather.lohi}" :class "weather-lohi" :xalign 0))
+        (box :orientation "v" :spacing 3 :class "countdown-box"
+          (label :text "Countdown" :class "cal-col-title" :xalign 0)
+          (label :text "${countdown.label}" :class "countdown-label" :xalign 0)
+          (label :text "${countdown.sub}" :class "countdown-sub" :xalign 0))))))
