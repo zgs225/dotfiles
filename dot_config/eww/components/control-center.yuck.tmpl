@@ -1,0 +1,94 @@
+{{- $eww := includeTemplate "eww-sizes" . | fromJson -}}
+;; ============================================ CONTROL CENTER ============================================
+
+(defwindow control-center
+  :stacking "overlay"
+  :windowtype "dialog"
+  :focusable false
+  :geometry (geometry :width "{{ $eww.controlW }}px" :height "{{ $eww.controlH }}px" :x "{{ $eww.edgeGap }}px" :y "{{ add $eww.barHeight $eww.popupGap }}px" :anchor "top right")
+  (box :class "popup revealer control-center" :orientation "v" :spacing 0 :space-evenly false
+    (box :class "popup-header" :orientation "h" :spacing 10 :valign "center" :space-evenly false
+      (button :class "back-btn" :onclick "~/.config/eww/scripts/open-popup.sh control-center"
+        (label :text "󰁍" :class "back-icon"))
+      (label :text "Control Center" :class "popup-title" :hexpand true :xalign 0))
+
+    ;; 2x2 toggle tiles
+    (box :orientation "v" :spacing 10 :class "tile-grid"
+      (box :orientation "h" :spacing 10
+        (button :class "cc-tile ${wifi_on > 0 ? 'on' : ''}" :hexpand true
+          :onclick "~/.config/eww/scripts/toggle-wifi.sh"
+          :onrightclick "nm-connection-editor &"
+          (box :orientation "h" :spacing 10 :valign "center" :space-evenly false
+            (label :text "󰤨" :class "cc-tile-icon")
+            (box :orientation "v" :spacing 0 :hexpand true
+              (label :text "Wi-Fi" :class "cc-tile-title" :xalign 0)
+              (label :text "${wifi_on > 0 ? (wifi_name == 'Disconnected' ? 'On' : wifi_name) : 'Off'}" :class "cc-tile-sub" :xalign 0 :limit-width 12))))
+        (button :class "cc-tile ${bt_on > 0 ? 'on' : ''}" :hexpand true
+          :onclick "~/.config/eww/scripts/toggle-bt.sh"
+          :onrightclick "blueman-manager &"
+          (box :orientation "h" :spacing 10 :valign "center" :space-evenly false
+            (label :text "󰂯" :class "cc-tile-icon")
+            (box :orientation "v" :spacing 0 :hexpand true
+              (label :text "Bluetooth" :class "cc-tile-title" :xalign 0)
+              (label :text "${bt_on > 0 ? 'On' : 'Off'}" :class "cc-tile-sub" :xalign 0)))))
+      (box :orientation "h" :spacing 10
+        (button :class "cc-tile ${airplane_on > 0 ? 'on' : ''}" :hexpand true
+          :onclick "~/.config/eww/scripts/toggle-airplane.sh"
+          (box :orientation "h" :spacing 10 :valign "center" :space-evenly false
+            (label :text "󰀝" :class "cc-tile-icon")
+            (box :orientation "v" :spacing 0 :hexpand true
+              (label :text "Airplane Mode" :class "cc-tile-title" :xalign 0 :limit-width 12)
+              (label :text "${airplane_on > 0 ? 'On' : 'Off'}" :class "cc-tile-sub" :xalign 0))))
+        (button :class "cc-tile ${dnd ? 'on' : ''}" :hexpand true
+          :onclick "~/.config/eww/scripts/toggle-dnd.sh"
+          (box :orientation "h" :spacing 10 :valign "center" :space-evenly false
+            (label :text "󰂛" :class "cc-tile-icon")
+            (box :orientation "v" :spacing 0 :hexpand true
+              (label :text "Do Not Disturb" :class "cc-tile-title" :xalign 0 :limit-width 13)
+              (label :text "${dnd ? 'On' : 'Off'}" :class "cc-tile-sub" :xalign 0))))))
+
+    ;; Sliders
+    (box :class "cc-slider-row" :orientation "h" :spacing 12 :valign "center" :space-evenly false
+      (label :text "󰃠" :class "cc-slider-icon")
+      (box :orientation "v" :spacing 3 :hexpand true
+        (box :orientation "h"
+          (label :text "Brightness" :class "cc-slider-label" :xalign 0 :hexpand true)
+          (label :text "${brightness}%" :class "cc-slider-val" :xalign 1))
+        (scale :class "cc-scale" :value "${brightness}" :min 0 :max 100
+          :onchange "brightnessctl set {}% >/dev/null")))
+    (box :class "cc-slider-row" :orientation "h" :spacing 12 :valign "center" :space-evenly false
+      (button :class "cc-slider-iconbtn" :onclick "pamixer -t"
+        (label :text "${muted ? '󰝟' : (volume >= 66 ? '󰕾' : (volume >= 33 ? '󰖀' : '󰕿'))}" :class "cc-slider-icon"))
+      (box :orientation "v" :spacing 3 :hexpand true
+        (box :orientation "h"
+          (label :text "Volume" :class "cc-slider-label" :xalign 0 :hexpand true)
+          (label :text "${volume}%" :class "cc-slider-val" :xalign 1))
+        (scale :class "cc-scale" :value "${volume}" :min 0 :max 100
+          :onchange "pamixer --set-volume {}")))
+
+    ;; Media card
+    (box :class "media-card" :orientation "h" :spacing 12 :valign "center" :space-evenly false
+      (box :class "media-art" :valign "center" :halign "center"
+        (label :text "󰝚" :class "media-art-icon"))
+      (box :orientation "v" :spacing 2 :hexpand true :valign "center"
+        (label :text "${media.title}" :class "media-title" :xalign 0 :limit-width 18)
+        (label :text "${media.artist}" :class "media-artist" :xalign 0 :limit-width 20))
+      (box :class "media-controls" :orientation "h" :spacing 6 :valign "center"
+        (button :class "media-btn" :onclick "~/.config/eww/scripts/media-ctl.sh previous"
+          (label :text "󰒮" :class "media-btn-icon"))
+        (button :class "media-btn play" :onclick "~/.config/eww/scripts/media-ctl.sh play-pause"
+          (label :text "${media.status == 'Playing' ? '󰏤' : '󰐊'}" :class "media-btn-icon"))
+        (button :class "media-btn" :onclick "~/.config/eww/scripts/media-ctl.sh next"
+          (label :text "󰒭" :class "media-btn-icon"))))
+
+    ;; Quick actions
+    (box :class "cc-quick" :orientation "h" :spacing 10
+      (button :class "quick-btn" :hexpand true :onclick "~/.config/eww/scripts/cc-action.sh night-light"
+        (box :orientation "v" :spacing 4 :valign "center" :halign "center"
+          (label :text "󰔎" :class "quick-icon") (label :text "Night Light" :class "quick-label")))
+      (button :class "quick-btn" :hexpand true :onclick "~/.config/eww/scripts/cc-action.sh screenshot"
+        (box :orientation "v" :spacing 4 :valign "center" :halign "center"
+          (label :text "󰹑" :class "quick-icon") (label :text "Screenshot" :class "quick-label")))
+      (button :class "quick-btn" :hexpand true :onclick "~/.config/eww/scripts/cc-action.sh performance"
+        (box :orientation "v" :spacing 4 :valign "center" :halign "center"
+          (label :text "󰓅" :class "quick-icon") (label :text "Performance" :class "quick-label"))))))

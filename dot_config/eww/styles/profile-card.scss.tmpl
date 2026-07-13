@@ -1,0 +1,39 @@
+{{- $eww := includeTemplate "eww-sizes" . | fromJson -}}
+
+/* ============================================================ PROFILE CARD ============================================================ */
+.profile-header { padding: 0 0 14px 0; }
+.profile-avatar {
+  min-width: {{ mulf $eww.popupFontSize 3.0 | int }}px; min-height: {{ mulf $eww.popupFontSize 3.0 | int }}px;
+  border-radius: 999px;
+  background-color: rgba($blue, 0.20);
+  border: 1px solid rgba($text, 0.10);
+}
+.profile-avatar-icon { color: $blue; font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 1.20 | int }}px; }
+.profile-host { color: $text; font-size: {{ mulf $eww.popupFontSize 0.92 | int }}px; font-weight: bold; }
+.profile-uptime { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.68 | int }}px; }
+
+.metric-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.86 | int }}px; }
+.icon-cpu  { color: $blue; }
+.icon-mem  { color: $mauve; }
+.icon-disk { color: $sapphire; }
+.icon-temp { color: $peach; }
+.metric-name { color: $subtext1; font-size: {{ mulf $eww.popupFontSize 0.74 | int }}px; }
+.metric-val  { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.66 | int }}px; }
+
+.metric-bar trough {
+  background-color: rgba($surface0, 0.64); border-radius: 999px;
+  min-height: 6px; margin: 0;
+}
+.metric-bar trough highlight { border-radius: 999px; }
+.metric-bar slider { background-color: transparent; min-width: 0; min-height: 0; margin: 0; padding: 0; border: none; box-shadow: none; }
+.metric-bar.cpu  trough highlight { background-color: $blue; }
+.metric-bar.mem  trough highlight { background-color: $mauve; }
+.metric-bar.disk trough highlight { background-color: $sapphire; }
+.metric-bar.temp trough highlight { background-color: $peach; }
+
+.action-row { padding: 9px 10px; border-radius: 13px; transition: all 120ms; }
+.action-row:hover { background-color: rgba($surface1, 0.40); }
+.action-icon  { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.82 | int }}px; color: $subtext0; }
+.action-label { color: $subtext1; font-size: {{ mulf $eww.popupFontSize 0.76 | int }}px; }
+.action-row.danger .action-icon, .action-row.danger .action-label { color: $red; }
+.action-row.danger:hover { background-color: rgba($red, 0.14); }

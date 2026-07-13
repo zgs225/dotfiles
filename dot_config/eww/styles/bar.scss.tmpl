@@ -1,0 +1,97 @@
+{{- $eww := includeTemplate "eww-sizes" . | fromJson -}}
+
+/* ============================================================ BAR ============================================================ */
+.eww-bar { background-color: transparent; }
+.bar-inner {
+  background-color: rgba($base, 0.72);
+  border: none;
+  border-bottom: 1px solid rgba($text, 0.16);
+  box-shadow: 0 5px 10px -4px rgba($crust, 0.45);
+  border-radius: 0;
+  margin: 0;
+  min-height: {{ $eww.barHeight }}px;
+  padding: 0 9px;
+}
+
+/* Module buttons */
+.module-btn {
+  color: $subtext0;
+  padding: 0 6px;
+  min-width: {{ $eww.cellPad }}px;
+  min-height: {{ $eww.cellPad }}px;
+  border-radius: 12px;
+  transition: all 120ms ease;
+}
+.module-btn:hover { color: $text; background-color: rgba($surface1, 0.30); }
+.module-icon { font-family: "Symbols Nerd Font"; font-size: {{ $eww.iconSize }}px; }
+.app-grid { color: $text; }
+.app-grid:hover { color: $blue; }
+
+/* System tray */
+.bar-tray { padding: 1px 5px; }
+
+/* Workspaces */
+.workspaces-container {
+  padding: 1px 3px;
+  min-height: {{ $eww.pillH }}px;
+}
+.ws-list {
+  min-height: {{ $eww.dotSize }}px;
+}
+.ws-dot {
+  margin: {{ div (sub $eww.pillH $eww.dotSize) 2 }}px 4px 0 4px;
+  min-width: {{ $eww.dotSize }}px;
+  min-height: {{ $eww.dotSize }}px;
+}
+.ws-dot-inner {
+  min-width: {{ $eww.dotSize }}px;
+  min-height: {{ $eww.dotSize }}px;
+  padding: 0;
+  margin: 0;
+  border-radius: 999px;
+  transition: all 180ms ease;
+}
+.ws-dot-inner.idle,
+.ws-dot-inner.occupied,
+.ws-dot-inner.urgent {
+  min-width: {{ $eww.dotSize }}px;
+  min-height: {{ $eww.dotSize }}px;
+  border-radius: 999px;
+}
+.ws-dot-inner.idle     { background-color: $surface2; }
+.ws-dot-inner.occupied { background-color: $overlay1; }
+.ws-dot-inner.focused  { background-color: $blue; min-width: {{ $eww.dotSize }}px; min-height: {{ $eww.dotSize }}px; border-radius: 999px; }
+.ws-dot-inner.urgent   { background-color: $red; animation: urgent-pulse 1s ease infinite alternate; }
+@keyframes urgent-pulse { from { opacity: 1; } to { opacity: 0.4; } }
+
+/* Battery */
+.battery-pct { color: $text; font-size: {{ mulf $eww.fontSize 0.84 | int }}px; }
+.bat-charging { color: $green; }
+.bat-normal   { color: $subtext0; }
+.bat-low      { color: $red; }
+
+/* Time */
+.time-dow  { color: $subtext0; font-size: {{ mulf $eww.fontSize 0.62 | int }}px; }
+.time-md   { color: $subtext0; font-size: {{ mulf $eww.fontSize 0.62 | int }}px; }
+.time-main { color: $text; font-weight: bold; font-size: {{ mulf $eww.fontSize 1.08 | int }}px; }
+
+/* Notification bell */
+.notif-icon-wrap {
+  min-width: {{ $eww.iconSize }}px;
+  min-height: {{ $eww.iconSize }}px;
+}
+.notif-bell {
+  font-family: "Symbols Nerd Font";
+  font-size: {{ $eww.iconSize }}px;
+}
+.notif-bell-none   { color: $subtext0; }
+.notif-bell-unread { color: $text; }
+.notif-bell-dnd    { color: $peach; }
+.notif-badge {
+  background-color: $red;
+  border-radius: 999px;
+  min-width: 8px;
+  min-height: 8px;
+  margin: 0 -1px 0 0;
+  border: 2px solid $base;
+}

@@ -1,0 +1,16 @@
+;; Transparent click-catcher opened behind popups. It lets any empty desktop area
+;; close the active component without adding another visible layer.
+(defwindow popup-scrim
+  :stacking "overlay"
+  :windowtype "dialog"
+  :class "eww-popup-scrim"
+  :focusable false
+  :geometry (geometry
+    :width "100%"
+    :height "100%"
+    :anchor "top left")
+  (button :class "popup-scrim-hitbox"
+    :halign "fill"
+    :valign "fill"
+    :onclick "~/.config/eww/scripts/open-popup.sh close"
+    (box :class "popup-scrim-fill" :hexpand true :vexpand true)))

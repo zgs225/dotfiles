@@ -1,0 +1,26 @@
+{{- $eww := includeTemplate "eww-sizes" . | fromJson -}}
+
+/* ============================================================ NETWORK POPUP ============================================================ */
+.list-row { padding: 12px 10px; border-radius: 13px; transition: all 120ms; }
+.list-row:hover { background-color: rgba($surface1, 0.40); }
+.row-label   { color: $subtext1; font-size: {{ mulf $eww.popupFontSize 0.76 | int }}px; }
+.row-icon    { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.76 | int }}px; color: $subtext0; }
+.row-chevron { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.70 | int }}px; color: $overlay0; }
+
+.wifi-network { padding: 12px 10px; border-radius: 13px; transition: all 120ms; }
+.wifi-network:hover, .wifi-network.connected { background-color: rgba($surface1, 0.36); }
+.wifi-dot { min-width: 8px; min-height: 8px; border-radius: 999px; background-color: transparent; }
+.wifi-dot-on { background-color: $blue; }
+.wifi-ssid   { color: $text; font-size: {{ mulf $eww.popupFontSize 0.76 | int }}px; }
+.wifi-lock   { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.62 | int }}px; color: $overlay0; }
+.wifi-signal { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.70 | int }}px; color: $subtext0; }
+.wifi-network.connected .wifi-signal { color: $blue; }
+.wifi-off-hint { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; padding: 8px; }
+
+.wired-row { padding: 12px 10px; border-radius: 13px; transition: all 120ms; }
+.wired-row:hover { background-color: rgba($surface1, 0.40); }
+.wired-active { background-color: rgba($surface1, 0.20); }
+.wired-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.76 | int }}px; color: $green; }
+.wired-name { color: $text; font-size: {{ mulf $eww.popupFontSize 0.76 | int }}px; }
+.wired-device { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.62 | int }}px; }
+.wired-empty { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; padding: 8px; }
