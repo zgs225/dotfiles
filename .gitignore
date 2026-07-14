@@ -5,3 +5,4 @@ settings.local.json
 # API keys and local configs (managed by chezmoi age)
 dot_zshrc.local
 .DS_Store
+.superpowers/
