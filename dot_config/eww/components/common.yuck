@@ -6,7 +6,7 @@
 (defvar osd_label "Volume")
 (defvar osd_value "0")
 (defvar osd_color "blue")
-(defvar updates_active_group "official")
+(defvar updates_filter "all")
 
 ;; ============================================ DATA POLLING (defpoll) ============================================
 
