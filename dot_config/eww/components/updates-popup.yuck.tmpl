@@ -33,8 +33,9 @@
         (literal :content "${update_list}")))
 
     (box :class "update-actions" :orientation "h" :spacing 10
-      (button :class "update-action-btn" :hexpand true :onclick "~/.config/eww/scripts/update-trigger.sh"
-        (label :text "检查更新"))
+      (button :class "update-action-btn ${updates_checking == 'true' ? 'disabled' : ''}" :hexpand true
+        :onclick "${updates_checking == 'true' ? 'true' : '~/.config/eww/scripts/update-trigger.sh'}"
+        (label :text "${updates_checking == 'true' ? '检查中…' : '检查更新'}"))
       (button :class "update-action-btn ${updates.total == 0 ? 'disabled' : ''}" :hexpand true
         :onclick "~/.config/eww/scripts/update-apply.sh"
         :visible "${updates.total > 0}"
