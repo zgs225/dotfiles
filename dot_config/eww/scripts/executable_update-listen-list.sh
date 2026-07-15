@@ -5,16 +5,27 @@ REFRESH_FLAG="$CACHE_DIR/update-list-refresh.flag"
 
 esc() { sed -e 's/\\/\\\\/g' -e 's/"/\\"/g'; }
 
-render() {
-    local group
-    group=$(eww get updates_active_group 2>/dev/null || echo "official")
+source_icon() {
+    case "$1" in
+        official) printf '%s' "" ;;
+        aur)      printf '%s' "" ;;
+    esac
+}
 
-    if [ ! -f "$CACHE_FILE" ]; then
-        echo "(box :class \"update-empty\" :orientation \"v\" (label :class \"update-empty-text\" :xalign 0.5 :text \"No data\"))"
-        return
-    fi
+source_class() {
+    case "$1" in
+        official|aur) printf '%s' "$1" ;;
+        *)          printf 'unknown' ;;
+    esac
+}
 
-    local items=""
+render_group() {
+    local source="$1"
+    local icon
+    icon=$(source_icon "$source")
+    local css_class
+    css_class=$(source_class "$source")
+
     while IFS= read -r pkg; do
         [ -z "$pkg" ] && continue
         local name old new e_name e_old e_new
@@ -25,9 +36,32 @@ render() {
         e_old=$(printf '%s' "$old" | esc)
         e_new=$(printf '%s' "$new" | esc)
         items="${items}(box :class \"update-list-item\" :orientation \"h\" :space-evenly false :spacing 8"
+        items="${items}(label :class \"update-source-badge ${css_class}\" :text \"${icon}\")"
         items="${items}(label :class \"update-pkg-name\" :hexpand true :xalign 0 :text \"${e_name}\")"
         items="${items}(label :class \"update-pkg-version\" :xalign 1 :text \"${e_old} → ${e_new}\"))"
-    done < <(jq -c --arg g "$group" '.[$g][]' "$CACHE_FILE" 2>/dev/null)
+    done < <(jq -c --arg g "$source" '.[$g][]' "$CACHE_FILE" 2>/dev/null)
+}
+
+render() {
+    local filter
+    filter=$(eww get updates_filter 2>/dev/null || echo "all")
+    case "$filter" in
+        all|official|aur) : ;;
+        *) filter="all" ;;
+    esac
+
+    if [ ! -f "$CACHE_FILE" ]; then
+        echo "(box :class \"update-empty\" :orientation \"v\" (label :class \"update-empty-text\" :xalign 0.5 :text \"No data\"))"
+        return
+    fi
+
+    local items=""
+    if [ "$filter" = "all" ]; then
+        render_group "official"
+        render_group "aur"
+    else
+        render_group "$filter"
+    fi
 
     if [ -z "$items" ]; then
         items="(label :class \"update-empty-text\" :xalign 0.5 :text \"No updates in this group\")"

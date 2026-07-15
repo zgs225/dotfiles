@@ -5,7 +5,12 @@
   :stacking "overlay"
   :windowtype "dialog"
   :focusable false
-  :geometry (geometry :width "{{ $eww.updateW }}px" :height "{{ $eww.updateH }}px" :x { pos_x } :y { pos_y } :anchor "top left")
+  :geometry (geometry
+    :width "{{ $eww.updateW }}px"
+    :height "{{ $eww.updateH }}px"
+    :x { pos_x }
+    :y { pos_y }
+    :anchor "top left")
   (box :class "popup revealer updates-popup" :orientation "v" :spacing 0 :space-evenly false
     (box :class "popup-header" :orientation "h" :spacing 10 :valign "center" :space-evenly false
       (button :class "back-btn" :onclick "~/.config/eww/scripts/open-popup.sh updates-popup"
@@ -16,27 +21,25 @@
 
     (label :text "Last checked: ${updates.last_check}" :class "update-last-check" :xalign 0)
 
-    (box :class "update-body" :orientation "h" :spacing 10 :vexpand true
-      (box :class "update-groups" :orientation "v" :spacing 4 :hexpand false
-        (eventbox :class "update-group-row ${updates_active_group == 'official' ? 'active' : ''}"
-            :onhover "eww update updates_active_group='official'; touch ~/.cache/eww/update-list-refresh.flag"
-          (box :orientation "h" :spacing 8 :valign "center" :space-evenly false
-            (label :text "Official" :class "update-group-name" :hexpand true :xalign 0)
-            (label :text "${updates.official_count}" :class "update-group-count")))
-        (eventbox :class "update-group-row ${updates_active_group == 'aur' ? 'active' : ''}"
-            :onhover "eww update updates_active_group='aur'; touch ~/.cache/eww/update-list-refresh.flag"
-          (box :orientation "h" :spacing 8 :valign "center" :space-evenly false
-            (label :text "AUR" :class "update-group-name" :hexpand true :xalign 0)
-            (label :text "${updates.aur_count}" :class "update-group-count"))))
+    (box :class "update-filter-row" :orientation "h" :spacing 8 :hexpand true :space-evenly true :valign "center"
+      (button :class "update-chip ${updates_filter == 'all' ? 'active' : ''}"
+          :onclick "eww update updates_filter='all'; touch ~/.cache/eww/update-list-refresh.flag"
+        (label :text "全部"))
+      (button :class "update-chip ${updates_filter == 'official' ? 'active' : ''}"
+          :onclick "eww update updates_filter='official'; touch ~/.cache/eww/update-list-refresh.flag"
+        (label :text "官方"))
+      (button :class "update-chip ${updates_filter == 'aur' ? 'active' : ''}"
+          :onclick "eww update updates_filter='aur'; touch ~/.cache/eww/update-list-refresh.flag"
+        (label :text "AUR")))
 
-      (box :class "update-list-panel" :orientation "v" :hexpand true
-        (literal :content "${update_list}")))
+    (box :class "update-list-panel" :orientation "v" :hexpand true :vexpand true
+      (literal :content "${update_list}"))
 
-    (box :class "update-actions" :orientation "h" :spacing 10
+    (box :class "update-actions" :orientation "v" :spacing 10
       (button :class "update-action-btn ${updates_checking == 'true' ? 'disabled' : ''}" :hexpand true
         :onclick "${updates_checking == 'true' ? 'true' : '~/.config/eww/scripts/update-trigger.sh'}"
         (label :text "${updates_checking == 'true' ? '检查中…' : '检查更新'}"))
       (button :class "update-action-btn ${updates.total == 0 ? 'disabled' : ''}" :hexpand true
         :onclick "~/.config/eww/scripts/update-apply.sh"
         :visible "${updates.total > 0}"
-        (label :text "打开更新终端")))))
+        (label :text "更新全部")))))
