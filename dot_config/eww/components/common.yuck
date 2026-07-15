@@ -74,12 +74,12 @@
   "~/.config/eww/scripts/countdown.sh")
 
 ;; ── Updates ──
-(defpoll updates_checking :interval "500ms"
+(deflisten updates_checking
   :initial "false"
-  "~/.config/eww/scripts/update-checking-state.sh")
-(defpoll updates :interval "10s"
+  "~/.config/eww/scripts/update-listen-checking.sh")
+(deflisten updates
   :initial `{"last_check":"Never","total":0,"official_count":0,"aur_count":0,"official":[],"aur":[],"error":null}`
-  "~/.config/eww/scripts/update-status.sh")
-(defpoll update_list :interval "2s"
+  "~/.config/eww/scripts/update-listen-updates.sh")
+(deflisten update_list
   :initial "(box)"
-  "~/.config/eww/scripts/update-list-yuck.sh")
+  "~/.config/eww/scripts/update-listen-list.sh")

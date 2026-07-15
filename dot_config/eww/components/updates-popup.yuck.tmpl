@@ -19,12 +19,12 @@
     (box :class "update-body" :orientation "h" :spacing 10 :vexpand true
       (box :class "update-groups" :orientation "v" :spacing 4 :hexpand false
         (eventbox :class "update-group-row ${updates_active_group == 'official' ? 'active' : ''}"
-            :onhover "eww update updates_active_group='official'"
+            :onhover "eww update updates_active_group='official'; touch ~/.cache/eww/update-list-refresh.flag"
           (box :orientation "h" :spacing 8 :valign "center" :space-evenly false
             (label :text "Official" :class "update-group-name" :hexpand true :xalign 0)
             (label :text "${updates.official_count}" :class "update-group-count")))
         (eventbox :class "update-group-row ${updates_active_group == 'aur' ? 'active' : ''}"
-            :onhover "eww update updates_active_group='aur'"
+            :onhover "eww update updates_active_group='aur'; touch ~/.cache/eww/update-list-refresh.flag"
           (box :orientation "h" :spacing 8 :valign "center" :space-evenly false
             (label :text "AUR" :class "update-group-name" :hexpand true :xalign 0)
             (label :text "${updates.aur_count}" :class "update-group-count"))))
