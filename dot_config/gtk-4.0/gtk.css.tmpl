@@ -1,0 +1,88 @@
+/* GTK4 glassmorphism — matches eww popup style
+ * Managed by chezmoi; colors come from .chezmoi.yaml.tmpl data block.
+ */
+
+@define-color base {{ .colors.base }};
+@define-color mantle {{ .colors.mantle }};
+@define-color crust {{ .colors.crust }};
+@define-color surface0 {{ .colors.surface0 }};
+@define-color surface1 {{ .colors.surface1 }};
+@define-color surface2 {{ .colors.surface2 }};
+@define-color text {{ .colors.text }};
+@define-color subtext1 {{ .colors.subtext1 }};
+@define-color subtext0 {{ .colors.subtext0 }};
+@define-color overlay0 {{ .colors.overlay0 }};
+@define-color overlay1 {{ .colors.overlay1 }};
+@define-color lavender {{ .colors.lavender }};
+@define-color blue {{ .colors.blue }};
+
+/* ── Popovers (primary menu surface in GTK4) ── */
+popover {
+  background-color: alpha(@base, 0.75);
+  border: 1px solid alpha(@text, 0.18);
+  border-radius: 16px;
+  padding: 10px;
+  color: @text;
+}
+
+popover modelbutton,
+popover .menuitem {
+  color: @subtext1;
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+
+popover modelbutton:hover,
+popover modelbutton:selected,
+popover .menuitem:hover,
+popover .menuitem:selected {
+  color: @text;
+  background-color: alpha(@surface1, 0.40);
+}
+
+popover separator {
+  background-color: alpha(@text, 0.08);
+  min-height: 1px;
+  margin: 8px 4px;
+}
+
+/* ── Traditional menubar / menu widgets ── */
+menubar {
+  background-color: alpha(@base, 0.75);
+  color: @text;
+}
+
+menu {
+  background-color: alpha(@base, 0.75);
+  border: 1px solid alpha(@text, 0.18);
+  border-radius: 16px;
+  padding: 10px;
+  color: @text;
+}
+
+menuitem {
+  color: @subtext1;
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+
+menuitem:hover,
+menuitem:selected {
+  color: @text;
+  background-color: alpha(@surface1, 0.40);
+}
+
+menu separator {
+  background-color: alpha(@text, 0.08);
+  min-height: 1px;
+  margin: 8px 4px;
+}
+
+/* ── Tooltips ── */
+tooltip {
+  background-color: alpha(@base, 0.92);
+  border: 1px solid alpha(@text, 0.15);
+  border-radius: 10px;
+  padding: 6px 10px;
+  color: @text;
+}
