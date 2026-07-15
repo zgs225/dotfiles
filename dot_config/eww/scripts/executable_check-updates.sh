@@ -3,7 +3,11 @@ set -uo pipefail
 
 CACHE_DIR="$HOME/.cache/eww"
 CACHE_FILE="$CACHE_DIR/updates.json"
+CHECKING_FILE="$CACHE_DIR/updates.checking"
 mkdir -p "$CACHE_DIR"
+
+touch "$CHECKING_FILE"
+trap 'rm -f "$CHECKING_FILE"' EXIT
 
 now=$(date +'%Y-%m-%d %H:%M')
 
