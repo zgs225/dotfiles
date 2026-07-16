@@ -7,3 +7,7 @@ export GLFW_IM_MODULE=fcitx
 # Kvantum Qt theme
 export QT_STYLE_OVERRIDE=kvantum
 export KVANTUM_THEME=catppuccin-glass
+
+# Electron / Chromium — use Ozone GTK backend and match system GTK theme
+export ELECTRON_OZONE_PLATFORM_HINT=auto
+export GTK_THEME=Catppuccin-Mocha-Standard-Lavender-Dark
