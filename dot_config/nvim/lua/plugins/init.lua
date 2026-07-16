@@ -8,6 +8,16 @@ return {
   },
 
   {
+    "akinsho/toggleterm.nvim",
+    version = "*",
+    keys = { "<c-\\>" },
+    cmd = { "ToggleTerm", "TermSelect", "TermNew", "TermExec" },
+    config = function()
+      require("toggleterm").setup(require "configs.toggleterm")
+    end,
+  },
+
+  {
     "tpope/vim-surround",
     event = "User FilePost",
   },
