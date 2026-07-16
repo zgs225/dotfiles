@@ -8,6 +8,11 @@ set -e
 DEST_DIR="${HOME}/.config/Kvantum/catppuccin-glass"
 DEST="${DEST_DIR}/catppuccin-glass.svg"
 
+if [ -f "$DEST" ]; then
+    echo "Kvantum base SVG already exists at $DEST"
+    exit 0
+fi
+
 for src in \
     "/usr/share/Kvantum/KvDark/KvDark.svg" \
     "/usr/share/Kvantum/KvGnome/KvGnome.svg"; do
