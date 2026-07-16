@@ -8,7 +8,15 @@ map("n", "<leader>q", ":q<CR>", { desc = "General quit current buffer" })
 map("n", "<leader>w", ":w<CR>", { desc = "General save current buffer" })
 map("n", "<C-p>", ":Telescope find_files<CR>", { desc = "Find files" })
 
-map("n", "<leader>fT", "<cmd>Telescope terms<CR>", { desc = "Pick Terminal" })
+map("n", "<leader>h", function()
+  require("toggleterm").toggle(vim.v.count1, nil, nil, "horizontal")
+end, { desc = "Toggle horizontal terminal" })
+
+map("n", "<leader>v", function()
+  require("toggleterm").toggle(vim.v.count1, nil, nil, "vertical")
+end, { desc = "Toggle vertical terminal" })
+
+map("n", "<leader>fT", "<cmd>TermSelect<CR>", { desc = "Select Terminal" })
 
 map("n", "<leader>ft", function()
   local pickers = require "telescope.pickers"
@@ -72,7 +80,7 @@ local function terminal_navigate(dir)
   local was_term_mode = (vim.api.nvim_get_mode().mode == "t")
   if was_term_mode then
     restore_on_enter[bufnr] = true
-    vim.cmd("stopinsert")
+    vim.cmd "stopinsert"
   end
   vim.cmd("wincmd " .. dir)
 end
@@ -83,15 +91,25 @@ vim.api.nvim_create_autocmd("BufEnter", {
     local bufnr = vim.api.nvim_get_current_buf()
     if restore_on_enter[bufnr] then
       restore_on_enter[bufnr] = nil
-      vim.schedule(function() vim.cmd("startinsert") end)
+      vim.schedule(function()
+        vim.cmd "startinsert"
+      end)
     end
   end,
 })
 
-map("t", "<C-h>", function() terminal_navigate("h") end, { desc = "terminal switch window left" })
-map("t", "<C-l>", function() terminal_navigate("l") end, { desc = "terminal switch window right" })
-map("t", "<C-j>", function() terminal_navigate("j") end, { desc = "terminal switch window down" })
-map("t", "<C-k>", function() terminal_navigate("k") end, { desc = "terminal switch window up" })
+map("t", "<C-h>", function()
+  terminal_navigate "h"
+end, { desc = "terminal switch window left" })
+map("t", "<C-l>", function()
+  terminal_navigate "l"
+end, { desc = "terminal switch window right" })
+map("t", "<C-j>", function()
+  terminal_navigate "j"
+end, { desc = "terminal switch window down" })
+map("t", "<C-k>", function()
+  terminal_navigate "k"
+end, { desc = "terminal switch window up" })
 
 -- Disable tab buffer switching in terminal buffers
 vim.api.nvim_create_autocmd("TermOpen", {
