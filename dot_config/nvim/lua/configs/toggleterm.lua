@@ -8,6 +8,7 @@ return {
   end,
   open_mapping = "<c-\\>",
   insert_mappings = true,
+  terminal_mappings = true,
   start_in_insert = true,
   persist_size = true,
   persist_mode = true,
