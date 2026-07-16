@@ -11,9 +11,9 @@ window {
     width: @rofi-window-width;
     padding: @rofi-pad-12;
     border: 1px;
-    border-color: @bg-col-card;
+    border-color: @glass-border;
     border-radius: @rofi-bdr-radius-lg;
-    background-color: @bg-col;
+    background-color: @glass-bg;
 }
 
 mainbox {
@@ -23,10 +23,10 @@ mainbox {
 }
 
 message {
-    background-color: @bg-col-light;
+    background-color: @glass-inputbar;
     border: 0;
     border-left: 3px;
-    border-color: @accent-col-2;
+    border-color: @glass-accent;
     border-radius: @rofi-bdr-radius8;
     padding: @rofi-pad-8;
     margin: 0 0 6px 0;
@@ -37,10 +37,10 @@ textbox {
 }
 
 inputbar {
-    background-color: @bg-col-light;
+    background-color: @glass-inputbar;
     border: 0;
     border-bottom: 2px;
-    border-color: @accent-col-2;
+    border-color: @glass-accent;
     border-radius: 8px 8px 0 0;
     padding: @rofi-pad-12;
     margin: 0 0 8px 0;
@@ -74,38 +74,37 @@ listview {
 element {
     padding: @rofi-el-padding-kh;
     border: 1px;
-    border-color: @bg-col-card;
+    border-color: transparent;
     border-radius: @rofi-bdr-radius8;
-    background-color: @bg-col-card;
+    background-color: @glass-card;
     text-color: @fg-col;
     cursor: pointer;
 }
 
 element normal {
-    background-color: @bg-col-card;
+    background-color: @glass-card;
     text-color: @fg-col;
-    border-color: @bg-col-card;
+    border-color: transparent;
 }
 
 element normal.active {
-    background-color: rgba(255,255,255,0.05);
+    background-color: @glass-card-hover;
     border-color: @fg-col3;
 }
 
 element selected {
-    background-color: @bg-col-light;
-    text-color: @fg-col;
-    border-color: @accent-col-2;
+    background-color: @glass-selected;
+    text-color: @bg-col;
+    border-color: @glass-accent;
 }
 
 element urgent {
-    background-color: @bg-col-card;
+    background-color: @glass-card;
     text-color: @red;
     border-color: @red;
 }
 
 element selected.urgent {
-    background-color: @bg-col-light;
-    text-color: @red;
-    border-color: @red;
+    background-color: @glass-urgent;
+    text-color: @bg-col;
 }
