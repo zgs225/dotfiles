@@ -5,6 +5,30 @@
   font-family: "JetBrainsMono Nerd Font", "Symbols Nerd Font", "Noto Sans CJK SC";
 }
 
+/* Reset GTK global styles so eww's own SCSS takes precedence.
+ * The broad rules in ~/.config/gtk-3.0/gtk.css (button/window/entry/treeview)
+ * have higher specificity than * { all: unset; }, so they leak into eww.
+ */
+button {
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+}
+
+entry,
+treeview,
+.view {
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+}
+
+window.eww-bar,
+window.eww-osd {
+  background-color: transparent;
+  border-radius: 0;
+}
+
 @import "styles/base.scss";
 
 @import "styles/bar.scss";
