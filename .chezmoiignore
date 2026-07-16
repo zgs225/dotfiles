@@ -14,6 +14,16 @@ scripts/
 skills-lock.json
 
 {{ if not .isLinux }}
+.chezmoiscripts/linux/**
+{{ end }}
+{{ if not .isMacOS }}
+.chezmoiscripts/darwin/**
+{{ end }}
+{{ if not .isWindows }}
+.chezmoiscripts/windows/**
+{{ end }}
+
+{{ if not .isLinux }}
 # Linux / X11-only configs
 .config/fcitx5/**
 .config/gtk-3.0/**
