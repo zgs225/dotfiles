@@ -1,7 +1,6 @@
 ;; ============================================ STATE VARIABLES ============================================
 
 (defvar popup_open "none")
-(defvar bt_on 0)
 (defvar osd_icon "󰕿")
 (defvar osd_label "Volume")
 (defvar osd_value "0")
@@ -48,6 +47,7 @@
 
 ;; ── Radios ──
 (defpoll airplane_on :interval "5s" :initial "0" "~/.config/eww/scripts/airplane-on.sh")
+(defpoll bt_on :interval "2s" :initial "0" "~/.config/eww/scripts/bt-on.sh")
 
 ;; ── Battery ──
 (defpoll battery_percent  :interval "5s" :initial "100"  "~/.config/eww/scripts/battery-percent.sh")
