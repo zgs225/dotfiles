@@ -1,6 +1,9 @@
+{{- $eww := includeTemplate "eww-sizes" . | fromJson -}}
 ;; Transparent click-catcher opened behind popups. It lets any empty desktop area
 ;; close the active component without adding another visible layer.
-(defwindow popup-scrim
+;; Starts below the bar so bar buttons stay clickable while a popup is open —
+;; otherwise the scrim stacks above the dock and eats the toggle clicks.
+(defwindow popup-scrim [scrim_y]
   :stacking "overlay"
   :windowtype "dialog"
   :class "eww-popup-scrim"
@@ -8,6 +11,7 @@
   :geometry (geometry
     :width "100%"
     :height "100%"
+    :y { scrim_y }
     :anchor "top left")
   (button :class "popup-scrim-hitbox"
     :halign "fill"

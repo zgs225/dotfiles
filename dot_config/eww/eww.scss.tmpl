@@ -1,3 +1,8 @@
+/* HARD RULE: every SCSS file under eww/ must stay pure ASCII. grass keeps
+ * loud comments and, when the compiled output contains any non-ASCII byte,
+ * prepends "@charset UTF-8" which GTK3's parser rejects as "unknown @ rule"
+ * -> the ENTIRE stylesheet is dropped and eww renders with zero styling.
+ * (Icons belong in .yuck widgets, never in SCSS content/comments.) */
 @import "styles/colors.scss";
 
 * {
