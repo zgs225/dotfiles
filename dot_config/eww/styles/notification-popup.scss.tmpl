@@ -11,10 +11,10 @@
 }
 .notif-item:hover { background-color: rgba($surface1, 0.44); }
 .notif-appicon {
-  min-width: {{ mulf $eww.popupFontSize 2.28 | int }}px; min-height: {{ mulf $eww.popupFontSize 2.28 | int }}px; border-radius: 10px;
+  min-width: {{ mulf $eww.popupFontSize 2.5 | int }}px; min-height: {{ mulf $eww.popupFontSize 2.5 | int }}px; border-radius: 10px;
   background-color: rgba($surface0, 0.52);
 }
-.notif-appicon label { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.82 | int }}px; color: $subtext1; }
+.notif-appicon label { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.92 | int }}px; color: $subtext1; }
 .icon-slack    { background-color: rgba($mauve, 0.2); }
 .icon-slack label { color: $mauve; }
 .icon-telegram { background-color: rgba($sapphire, 0.2); }
@@ -25,13 +25,13 @@
 .icon-discord label { color: $blue; }
 .icon-spotify  { background-color: rgba($green, 0.2); }
 .icon-spotify label { color: $green; }
-.notif-title { color: $text; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; font-weight: bold; }
-.notif-time  { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.60 | int }}px; }
-.notif-body  { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.66 | int }}px; }
-.notif-empty { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.78 | int }}px; padding: 60px 0; }
+.notif-title { color: $text; font-size: {{ mulf $eww.popupFontSize 0.82 | int }}px; font-weight: bold; }
+.notif-time  { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.70 | int }}px; }
+.notif-body  { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.76 | int }}px; }
+.notif-empty { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.88 | int }}px; padding: 60px 0; }
 
 .notif-clear-all {
-  color: $subtext1; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px;
+  color: $subtext1; font-size: {{ mulf $eww.popupFontSize 0.82 | int }}px;
   padding: 12px; margin: 12px 0 0 0;
   border-radius: 13px; background-color: rgba($surface0, 0.42);
   transition: all 120ms;
