@@ -38,6 +38,7 @@ skills-lock.json
 .config/dunst/**
 .config/eww/**
 .config/i3/**
+.config/keyd/**
 .config/picom/**
 .config/rofi/**
 .config/greenclip.toml
