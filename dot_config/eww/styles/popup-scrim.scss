@@ -1,11 +1,12 @@
-/* Invisible popup dismiss layer */
+/* Invisible popup dismiss layer. The window is explicitly sized to the area
+   below the bar in popup-scrim.yuck, so no oversized min-size is needed.
+   A multi-screen-sized ARGB window forces picom to re-composite the whole
+   stack on every open/close (visible as a desktop stutter).
+   NOTE: keep every eww SCSS file pure ASCII (no CJK, no em-dashes). grass
+   preserves loud comments and prepends "@charset UTF-8" when the output
+   contains non-ASCII, which GTK3 rejects, killing ALL eww styles. */
 .eww-popup-scrim,
 .popup-scrim-hitbox,
 .popup-scrim-fill {
   background-color: transparent;
-}
-.popup-scrim-hitbox,
-.popup-scrim-fill {
-  min-width: 10000px;
-  min-height: 10000px;
 }

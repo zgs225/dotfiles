@@ -10,7 +10,36 @@
 {{- $timeMainW := mul $timeCharW 5 }}
 {{- $timeComponentWidth := add (add (add $timeColW $timeMainW) 10) 12 }}
 NEW="$1"
-CURRENT=$(eww get popup_open 2>/dev/null || echo "none")
+
+# eww runs button :onclick commands with a 200ms timeout and SIGKILLs whatever
+# is still running (crates/eww/src/widgets/mod.rs). This script makes several
+# eww/xdotool IPC round-trips and cannot reliably finish in 200ms on a loaded
+# system — getting killed mid-run is what left popup_open and the real windows
+# out of sync (popups stuck open/closed, dead clicks). Detach immediately so
+# eww never kills us, then do the real work serialized behind a lock.
+if [ -z "$EWW_POPUP_DETACHED" ]; then
+    EWW_POPUP_DETACHED=1 setsid nohup "$0" "$@" >/dev/null 2>&1 &
+    exit 0
+fi
+
+exec 9>/tmp/eww-popup.lock
+# Bounded wait: if something ever poisons the lock, drop this invocation
+# rather than freezing every future click.
+flock -w 10 9 || exit 0
+
+# Child processes MUST NOT inherit fd 9 (9>&-): an inherited reference keeps
+# the flock held even after this script dies, and eww CLI clients can hang
+# waiting on an overloaded daemon — that combination deadlocks every future
+# invocation. timeout(1) caps every IPC call so a hung daemon can at worst
+# cost one invocation.
+ewwc() { timeout 8 eww "$@" 9>&- 2>/dev/null; }
+xdc()  { timeout 5 xdotool "$@" 9>&- 2>/dev/null; }
+dbg()  { [ -n "$EWW_POPUP_DEBUG" ] && echo "$(date +%H:%M:%S.%N) $$ NEW=$NEW $*" >> /tmp/popup-debug.log; return 0; }
+
+POPUPS="profile-card network-popup control-center calendar-popup notification-popup updates-popup"
+
+CURRENT=$(ewwc get popup_open || echo "none")
+dbg "acquired CURRENT=$CURRENT"
 
 BAR_HEIGHT={{ $eww.barHeight }}
 POPUP_GAP={{ $eww.popupGap }}
@@ -23,6 +52,17 @@ has_compositor() {
   # (e.g. in a VM to avoid flicker/CPU cost), skip the ARGB scrim so it does
   # not render as an opaque black fullscreen window.
   pgrep -x picom >/dev/null 2>&1
+}
+
+# The scrim must start below the ACTUAL bottom of the bar window. The baked
+# barHeight can drift from the real window height (GTK grows the window when
+# content exceeds :geometry), so measure the live window and fall back to the
+# baked value.
+compute_scrim_y() {
+  local bar_win h
+  bar_win=$(xdc search --name '^Eww - bar$' 2>/dev/null | head -1)
+  h=$(xdc getwindowgeometry "$bar_win" 2>/dev/null | awk -F'[x ]' '/Geometry/ {print $NF}')
+  if [ -n "$h" ]; then echo "$h"; else echo "{{ $eww.barHeight }}"; fi
 }
 
 # Compute the absolute left edge of a popup below the clicked component.
@@ -56,8 +96,8 @@ get_popup_pos_args() {
   local popup="$2"
   local mouse_x screen_w x y
 
-  mouse_x=$(xdotool getmouselocation --shell 2>/dev/null | awk -F= '/^X=/ {print $2}')
-  screen_w=$(xdotool getdisplaygeometry --shell 2>/dev/null | awk -F= '/^WIDTH=/ {print $2}')
+  mouse_x=$(xdc getmouselocation --shell 2>/dev/null | awk -F= '/^X=/ {print $2}')
+  screen_w=$(xdc getdisplaygeometry --shell 2>/dev/null | awk -F= '/^WIDTH=/ {print $2}')
   [ -z "$mouse_x" ] || [ -z "$screen_w" ] && return
 
   case "$popup" in
@@ -96,22 +136,87 @@ get_popup_pos_args() {
   esac
 }
 
-if [ "$NEW" = "close" ]; then
-    [ "$CURRENT" != "none" ] && eww close "$CURRENT" 2>/dev/null
-    eww close popup-scrim 2>/dev/null
-    eww update popup_open="none"
-elif [ "$CURRENT" = "$NEW" ]; then
-    eww close "$NEW"
-    eww close popup-scrim 2>/dev/null
-    eww update popup_open="none"
-else
-    [ "$CURRENT" != "none" ] && eww close "$CURRENT" 2>/dev/null
-    eww close popup-scrim 2>/dev/null
-    if has_compositor; then
-        eww open popup-scrim 2>/dev/null
+scrim_is_open() {
+  ewwc active-windows | grep -q '^popup-scrim:'
+}
+
+# eww applies window ops asynchronously on its GTK main thread: `eww open`
+# returning does NOT mean the window exists yet. Deciding on stale state lets
+# a close land before a queued open (orphaned window with popup_open=none).
+# Every op therefore waits until the result is observable before returning.
+wait_state() { # $1 window name, $2 present|absent
+  local w="$1" want="$2" i
+  for i in $(seq 1 15); do
+    if [ "$want" = present ]; then
+      ewwc active-windows | grep -q "^${w}:" && return 0
+    else
+      ewwc active-windows | grep -q "^${w}:" || return 0
     fi
+    sleep 0.1
+  done
+  return 1
+}
+
+open_sync() { # $1 window, rest: extra args for eww open
+  local w="$1"; shift
+  ewwc open "$w" "$@"
+  wait_state "$w" present
+}
+
+close_sync() {
+  ewwc close "$1"
+  wait_state "$1" absent
+}
+
+open_scrim() {
+  has_compositor || return 0
+  # Reuse an already-open scrim: close+reopen leaves a gap with no
+  # click-catcher, and clicks landing in that gap are silently lost.
+  scrim_is_open && return 0
+  open_sync popup-scrim --arg scrim_y="$(compute_scrim_y)px"
+}
+
+close_scrim() {
+  scrim_is_open || return 0
+  close_sync popup-scrim
+}
+
+if [ "$NEW" = "close" ]; then
+    dbg "branch close"
+    [ "$CURRENT" != "none" ] && close_sync "$CURRENT"
+    close_scrim
+elif [ "$CURRENT" = "$NEW" ]; then
+    dbg "branch toggle-close"
+    close_sync "$NEW"
+    close_scrim
+else
+    dbg "branch open NEW=$NEW (close $CURRENT)"
+    [ "$CURRENT" != "none" ] && close_sync "$CURRENT"
+    open_scrim
     pos_args=()
     get_popup_pos_args pos_args "$NEW"
-    eww open "$NEW" "${pos_args[@]}"
-    eww update popup_open="$NEW"
+    open_sync "$NEW" "${pos_args[@]}"
 fi
+dbg "after branch: $(ewwc active-windows | tr '\n' ' ')"
+
+# Reconcile: popup_open must always mirror reality. Whatever raced or failed
+# above, the variable ends up naming the popup that is actually open (or none),
+# and the scrim follows the presence of any popup.
+ACTIVE=$(ewwc active-windows)
+FINAL="none"
+for p in $POPUPS; do
+    if echo "$ACTIVE" | grep -q "^${p}:"; then
+        if [ "$FINAL" = "none" ]; then
+            FINAL="$p"
+        else
+            close_sync "$p"
+        fi
+    fi
+done
+if [ "$FINAL" = "none" ]; then
+    close_scrim
+else
+    open_scrim
+fi
+ewwc update popup_open="$FINAL"
+dbg "done FINAL=$FINAL ACTIVE=[$ACTIVE]"
