@@ -23,7 +23,7 @@ chain() {
     esac
     [ "$mode" = find ] && hotkey="Alt+Return"
     setsid -f bash -c \
-        'while pgrep -x rofi >/dev/null 2>&1; do sleep 0.05; done; exec env LAUNCHER_Q="$1" rofi -show "$2" -modi "$2:$3 --mode-$2" -theme "$4" -filter "$5" ${6:+-kb-custom-1 "$6"}' \
+        'while pgrep -x rofi >/dev/null 2>&1; do sleep 0.05; done; exec env LAUNCHER_Q="$1" rofi -show "$2" -modi "$2:$3 --mode-$2" -theme "$4" -filter "$5" -kb-cancel "Escape,Alt+space" ${6:+-kb-custom-1 "$6"}' \
         _ "$q" "$mode" "$SELF" "$THEME" "$filter" "$hotkey" >/dev/null 2>&1
 }
 
@@ -277,7 +277,12 @@ for b in json.load(sys.stdin):
 
 case "${1:-}" in
     "")
-        exec rofi -show launcher -modi "launcher:$SELF --mode-main" -theme "$THEME"
+        if pgrep -f 'rofi -show (launcher|find|buku|calc) -modi' >/dev/null 2>&1; then
+            pkill -f 'rofi -show (launcher|find|buku|calc) -modi'
+            exit 0
+        fi
+        exec rofi -show launcher -modi "launcher:$SELF --mode-main" -theme "$THEME" \
+            -kb-cancel "Escape,Alt+space"
         ;;
     --mode-main) shift; mode_main "$@" ;;
     --mode-find) shift; mode_find "$@" ;;
