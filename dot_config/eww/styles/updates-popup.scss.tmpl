@@ -23,17 +23,17 @@
 .update-count-badge {
   background-color: $red;
   border-radius: 999px;
-  min-width: 22px;
-  padding: 3px 7px;
+  min-width: 26px;
+  padding: 3px 8px;
 }
 .update-count-text {
   color: white;
-  font-size: {{ mulf $eww.popupFontSize 0.62 | int }}px;
+  font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px;
   font-weight: bold;
 }
 .update-last-check {
   color: $subtext0;
-  font-size: {{ mulf $eww.popupFontSize 0.62 | int }}px;
+  font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px;
   padding: 0 0 8px 0;
 }
 
@@ -54,7 +54,7 @@
 }
 .update-chip label {
   color: $subtext1;
-  font-size: {{ mulf $eww.popupFontSize 0.70 | int }}px;
+  font-size: {{ mulf $eww.popupFontSize 0.80 | int }}px;
 }
 .update-chip.active label {
   color: $text;
@@ -75,22 +75,22 @@
 .update-list-item:hover { background-color: rgba($surface1, 0.36); }
 .update-source-badge {
   font-family: "Symbols Nerd Font";
-  font-size: {{ mulf $eww.popupFontSize 0.68 | int }}px;
-  min-width: 20px;
+  font-size: {{ mulf $eww.popupFontSize 0.78 | int }}px;
+  min-width: 24px;
 }
 .update-source-badge.official { color: $blue; }
 .update-source-badge.aur { color: $mauve; }
 .update-pkg-name {
   color: $text;
-  font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px;
+  font-size: {{ mulf $eww.popupFontSize 0.82 | int }}px;
 }
 .update-pkg-version {
   color: $subtext0;
-  font-size: {{ mulf $eww.popupFontSize 0.62 | int }}px;
+  font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px;
 }
 .update-empty-text {
   color: $overlay0;
-  font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px;
+  font-size: {{ mulf $eww.popupFontSize 0.82 | int }}px;
   padding: 30px 0;
 }
 .update-actions { padding: 10px 0 0 0; }
@@ -103,6 +103,6 @@
 .update-action-btn:hover { background-color: rgba($surface1, 0.48); }
 .update-action-btn label {
   color: $subtext1;
-  font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px;
+  font-size: {{ mulf $eww.popupFontSize 0.82 | int }}px;
 }
 .update-action-btn.disabled { opacity: 0.4; }

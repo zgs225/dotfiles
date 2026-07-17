@@ -2,8 +2,8 @@
 # Popup state manager — ensures only one popup open at a time
 # Usage: open-popup.sh <popup-name>
 {{- $eww := includeTemplate "eww-sizes" . | fromJson }}
-{{- $dowMdFontSize := mulf $eww.fontSize 0.62 | int }}
-{{- $timeFontSize := mulf $eww.fontSize 1.08 | int }}
+{{- $dowMdFontSize := mulf $eww.fontSize 0.74 | int }}
+{{- $timeFontSize := mulf $eww.fontSize 1.14 | int }}
 {{- $dowMdCharW := mulf $dowMdFontSize 0.6 | int }}
 {{- $timeCharW := mulf $timeFontSize 0.6 | int }}
 {{- $timeColW := mul $dowMdCharW 6 }}
