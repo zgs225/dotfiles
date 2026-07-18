@@ -27,9 +27,14 @@ calendar {
 calendar.day-number { padding: 4px 0; }
 calendar:selected {
   background-color: $blue; color: white;
-  border-radius: 999px;
-  padding: 0 0 8px 0;
+  padding: 0 0 8px 0;              /* must equal day-number padding top+bottom */
   background-clip: content-box;
+  /* GTK shrinks border radii by the padding when clipping to the content
+   * box, so a plain 999px radius ends up asymmetric (top rounder than
+   * bottom) and the pill looks squashed. Pre-compensate: top corners get
+   * R = line-height/2, bottom corners R+8; after the 8px shrink all four
+   * corners land back on R and the shape is a true stadium again. */
+  border-radius: {{ $calPillR }}px / {{ $calPillR }}px {{ $calPillR }}px {{ $calPillRb }}px {{ $calPillRb }}px;
 }
 calendar.header { color: $text; font-weight: bold; font-size: {{ mulf $eww.popupFontSize 0.94 | int }}px; }
 calendar.button { color: $subtext0; padding: 4px; }
