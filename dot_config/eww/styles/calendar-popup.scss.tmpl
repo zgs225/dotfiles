@@ -1,16 +1,35 @@
 {{- $eww := includeTemplate "eww-sizes" . | fromJson -}}
+{{- $calFs := mulf $eww.popupFontSize 0.86 | int -}}
+{{- $calLineH := mulf $calFs 1.45 | int -}}
+{{- $calPillR := div $calLineH 2 -}}
+{{- $calPillRb := add $calPillR 8 -}}
 
 /* ============================================================ CALENDAR ============================================================ */
 .cal {
   background-color: transparent;
   color: $subtext1;
-  padding: 4px;
+  margin: 4px;
   font-size: {{ mulf $eww.popupFontSize 0.86 | int }}px;
 }
-calendar { background-color: transparent; color: $subtext1; }
+/* Use margin, NOT padding, on the calendar widget: GtkCalendar adds the
+ * element's CSS padding to EVERY day cell's height (via the "day-number"
+ * style-context class) while drawing the day number at the TOP of its cell
+ * and the :selected background over the WHOLE cell. Padding therefore makes
+ * each row taller than the text line and the selected number rides high in
+ * its pill. Margin keeps the same outer spacing without inflating cells. */
+calendar {
+  background-color: transparent; color: $subtext1;
+}
+/* Row breathing room: day-number padding inflates every cell (and thus the
+ * row pitch) without touching the outer spacing. The text still anchors to
+ * the cell top, so calendar:selected below clips its background back to the
+ * text line (padding-bottom + content-box) to keep the number centered. */
+calendar.day-number { padding: 4px 0; }
 calendar:selected {
   background-color: $blue; color: white;
   border-radius: 999px;
+  padding: 0 0 8px 0;
+  background-clip: content-box;
 }
 calendar.header { color: $text; font-weight: bold; font-size: {{ mulf $eww.popupFontSize 0.94 | int }}px; }
 calendar.button { color: $subtext0; padding: 4px; }
