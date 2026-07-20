@@ -1,25 +1,26 @@
-# i3 config — Catppuccin Mocha
+# i3 config — juansha liuli (Song liquid glass)
 # Managed by chezmoi
 
 set $mod Mod1
 set $term wezterm
 
 # Font for window titles
-font pango:Noto Sans CJK SC 10
+font pango:LXGW WenKai 10
 
-# Gap size (standard i3 — no gaps, only window border)
+# Gaps — inner 8 aligns with eww margin system (4/8/12/16/24)
+gaps inner 8
 default_border pixel 2
 default_floating_border pixel 2
 hide_edge_borders smart
 
-# Colors (Catppuccin Mocha)
+# Colors (Song: tianqing accent, ochre urgent — cinnabar reserved for ws seal)
 #                          border   bg       text     indicator  child_border
-client.focused            {{ .colors.lavender }} {{ .colors.lavender }} {{ .colors.base }}    {{ .colors.mauve }}    {{ .colors.lavender }}
-client.focused_inactive   {{ .colors.surface0 }} {{ .colors.surface0 }} {{ .colors.text }}    {{ .colors.overlay0 }} {{ .colors.surface0 }}
-client.unfocused          {{ .colors.surface0 }} {{ .colors.base }}    {{ .colors.text }}    {{ .colors.overlay0 }} {{ .colors.surface0 }}
-client.urgent             {{ .colors.red }}      {{ .colors.red }}      {{ .colors.base }}    {{ .colors.red }}      {{ .colors.red }}
-client.placeholder        {{ .colors.surface0 }} {{ .colors.base }}    {{ .colors.text }}    {{ .colors.overlay0 }} {{ .colors.surface0 }}
-client.background         {{ .colors.base }}
+client.focused            {{ .colors.accent }} {{ .colors.accent }} {{ .colors.bg_base }}    {{ .colors.accent }}    {{ .colors.accent }}
+client.focused_inactive   {{ .colors.ink }} {{ .colors.ink }} {{ .colors.fg_primary }}    {{ .colors.ink }} {{ .colors.ink }}
+client.unfocused          {{ .colors.ink }} {{ .colors.bg_base }}    {{ .colors.fg_secondary }}    {{ .colors.ink }} {{ .colors.ink }}
+client.urgent             {{ .colors.error }}      {{ .colors.error }}      {{ .colors.fg_primary }}    {{ .colors.error }}      {{ .colors.error }}
+client.placeholder        {{ .colors.ink }} {{ .colors.bg_base }}    {{ .colors.fg_primary }}    {{ .colors.ink }} {{ .colors.ink }}
+client.background         {{ .colors.bg_base }}
 
 # Focus follows mouse, but mouse click doesn't change focus
 focus_follows_mouse yes
