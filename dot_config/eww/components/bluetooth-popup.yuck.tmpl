@@ -22,9 +22,7 @@
 
     (box :class "list-row bt-discoverable-row ${bt_discoverable > 0 ? 'on' : ''}" :orientation "h" :spacing 12 :valign "center" :space-evenly false
       (label :text "${bt_discoverable > 0 ? '󰈈' : '󰈉'}" :class "row-icon")
-      (box :orientation "v" :spacing 0 :hexpand true
-        (label :text "Visible to devices" :class "row-label" :xalign 0)
-        (label :text "${bt_discoverable > 0 ? 'On' : 'Off'}" :class "bt-row-sub" :xalign 0))
+      (label :text "Visible to devices" :class "row-label" :xalign 0 :hexpand true)
       (button :class "header-switch" :onclick "~/.config/eww/scripts/toggle-bt-discoverable.sh"
         (box :class "switch ${bt_discoverable > 0 ? 'on' : ''}" :valign "center" (box :class "switch-knob"))))
 
