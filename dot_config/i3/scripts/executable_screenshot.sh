@@ -44,9 +44,16 @@ if [[ "$mode" == "ocr" ]]; then
         "$snippet" \
         || true
 else
-    notify-send -u low \
-        -i "$dir/$timestamp.png" \
-        "Screenshot saved" \
-        "$dir/$timestamp.png (copied to clipboard)" \
-        || true
+    thumb="/tmp/screenshot-thumb.png"
+    magick "$tmp" -resize 400x300 "$thumb" 2>/dev/null || cp "$tmp" "$thumb"
+
+    eww update screenshot_path="$dir/$timestamp.png" screenshot_thumb="$thumb"
+    eww open screenshot-popup
+
+    timer_pid_file="/tmp/eww-screenshot-timer.pid"
+    if [ -f "$timer_pid_file" ]; then
+        kill "$(cat "$timer_pid_file")" 2>/dev/null || true
+    fi
+    (sleep 6; eww close screenshot-popup 2>/dev/null || true; rm -f "$timer_pid_file") &
+    echo $! > "$timer_pid_file"
 fi
