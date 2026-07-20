@@ -1,0 +1,26 @@
+{{- $eww := includeTemplate "eww-sizes" . | fromJson -}}
+;; ============================================ SCREENSHOT POPUP ============================================
+
+(defwindow screenshot-popup
+  :stacking "overlay"
+  :windowtype "dialog"
+  :focusable false
+  :wm-ignore true
+  :class "eww-screenshot-popup"
+  :geometry (geometry :width "{{ $eww.screenshotPopupW }}px" :height "0px"
+             :x "-{{ $eww.edgeGap }}" :y "-{{ $eww.edgeGap }}" :anchor "bottom right")
+  (box :class "screenshot-card" :orientation "v" :spacing 0 :space-evenly false :valign "center" :halign "center"
+    (image :path "${screenshot_thumb}"
+           :class "screenshot-thumb"
+           :image-width {{ $eww.screenshotThumbW }}
+           :image-height {{ $eww.screenshotThumbH }})
+    (box :class "screenshot-actions" :orientation "h" :spacing 10 :halign "center" :valign "center"
+      (button :class "screenshot-btn screenshot-annotate"
+              :onclick "~/.config/eww/scripts/screenshot-action.sh annotate"
+        (label :text "Annotate" :class "screenshot-btn-label"))
+      (button :class "screenshot-btn screenshot-open"
+              :onclick "~/.config/eww/scripts/screenshot-action.sh open"
+        (label :text "Open" :class "screenshot-btn-label"))
+      (button :class "screenshot-btn screenshot-delete"
+              :onclick "~/.config/eww/scripts/screenshot-action.sh delete"
+        (label :text "Delete" :class "screenshot-btn-label")))))

@@ -11,14 +11,16 @@
 (defvar bt_pair_device "")
 (defvar bt_pair_type "")
 (defvar bt_pair_hint "")
+(defvar screenshot_path "")
+(defvar screenshot_thumb "")
 
 ;; ============================================ DATA POLLING (defpoll) ============================================
 
 (defpoll workspaces :interval "500ms" :initial "(box)"
   "~/.config/eww/scripts/workspaces.sh")
 
-;; ── Clock ── (LC_ALL=C forces English weekday/month to match the design)
-(defpoll clock_time :interval "10s" :initial "00:00" "date +'%H:%M'")
+;; ── Clock ── (shichen: traditional double-hour + civil time)
+(defpoll clock_time :interval "10s" :initial "--时 · --:--" "~/.config/eww/scripts/shichen.sh")
 (defpoll clock_dow  :interval "30s" :initial "---"   "LC_ALL=C date +'%a'")
 (defpoll clock_md   :interval "30s" :initial "---"   "LC_ALL=C date +'%b %d'")
 

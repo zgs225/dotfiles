@@ -1,0 +1,27 @@
+{{- $eww := includeTemplate "eww-sizes" . | fromJson -}}
+
+/* ============================================================ SCREENSHOT POPUP ============================================================ */
+.screenshot-card {
+  @include glass-shell(0.65, 0.35);
+  border-radius: $radius;
+  padding: 18px;
+}
+.screenshot-thumb {
+  border-radius: $radius-sm;
+  margin-bottom: 14px;
+}
+.screenshot-actions { padding-top: 2px; }
+.screenshot-btn { padding: 8px 22px; border-radius: $radius; transition: all 140ms; }
+.screenshot-btn-label { font-size: {{ mulf $eww.popupFontSize 0.88 | int }}px; font-weight: bold; }
+
+.screenshot-annotate { background-color: rgba($accent, 0.80); }
+.screenshot-annotate:hover { background-color: rgba($accent, 1.0); }
+.screenshot-annotate .screenshot-btn-label { color: $bg-base; }
+
+.screenshot-open { background-color: rgba($surface2, 0.50); }
+.screenshot-open:hover { background-color: rgba($surface2, 0.75); }
+.screenshot-open .screenshot-btn-label { color: $subtext0; }
+
+.screenshot-delete { background-color: rgba($error, 0.35); }
+.screenshot-delete:hover { background-color: rgba($error, 0.60); }
+.screenshot-delete .screenshot-btn-label { color: $fg-primary; }
