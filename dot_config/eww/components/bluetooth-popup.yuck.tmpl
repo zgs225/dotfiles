@@ -24,10 +24,4 @@
       (label :text "${bt_discoverable > 0 ? '󰈈' : '󰈉'}" :class "row-icon")
       (label :text "Visible to devices" :class "row-label" :xalign 0 :hexpand true)
       (button :class "header-switch" :onclick "~/.config/eww/scripts/toggle-bt-discoverable.sh"
-        (box :class "switch ${bt_discoverable > 0 ? 'on' : ''}" :valign "center" (box :class "switch-knob"))))
-
-    (button :class "list-row nav-row" :onclick "blueman-manager &"
-      (box :orientation "h" :spacing 12 :valign "center" :space-evenly false
-        (label :text "󰒓" :class "row-icon")
-        (label :text "Bluetooth Settings" :class "row-label" :xalign 0 :hexpand true)
-        (label :text "󰅂" :class "row-chevron")))))
+        (box :class "switch ${bt_discoverable > 0 ? 'on' : ''}" :valign "center" (box :class "switch-knob"))))))
