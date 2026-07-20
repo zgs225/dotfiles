@@ -46,16 +46,16 @@ while read -r _ mac name; do
     esac
 
     if [ "$connected" -eq 1 ]; then
-        status="Connected"; rowcls="bt-device connected"
+        rowcls="bt-device connected"
         primary_icon="󰂲"; primary_tip="Disconnect"; primary_act="disconnect"
     elif [ "$paired" -eq 1 ]; then
-        status="Paired"; rowcls="bt-device"
+        rowcls="bt-device"
         primary_icon="󰂱"; primary_tip="Connect"; primary_act="connect"
     elif [ "$trusted" -eq 1 ]; then
-        status="Reconnect"; rowcls="bt-device stale"
+        rowcls="bt-device stale"
         primary_icon="󰂱"; primary_tip="Connect"; primary_act="connect"
     else
-        status="Not paired"; rowcls="bt-device"
+        rowcls="bt-device"
         primary_icon="󰐕"; primary_tip="Pair"; primary_act="pair"
     fi
 
@@ -63,9 +63,7 @@ while read -r _ mac name; do
 
     row="(box :class \"${rowcls}\" :orientation \"h\" :spacing 10 :valign \"center\" :space-evenly false"
     row="${row}(label :class \"bt-dev-icon\" :text \"${dev_icon}\")"
-    row="${row}(box :orientation \"v\" :spacing 1 :hexpand true"
-    row="${row}(label :class \"bt-dev-name\" :xalign 0 :limit-width 16 :text \"${e_name}\")"
-    row="${row}(label :class \"bt-dev-status\" :xalign 0 :text \"${status}\"))"
+    row="${row}(label :class \"bt-dev-name\" :xalign 0 :limit-width 16 :hexpand true :text \"${e_name}\")"
     row="${row}(button :class \"bt-act\" :tooltip \"${primary_tip}\""
     row="${row} :onclick \"~/.config/eww/scripts/bt-action.sh ${primary_act} ${mac}\""
     row="${row}(label :class \"bt-act-icon\" :text \"${primary_icon}\"))"
@@ -82,11 +80,9 @@ done < <(bluetoothctl devices 2>/dev/null)
 
 rows=""
 if [ -n "$paired_rows" ]; then
-    rows="${rows}(label :class \"bt-group-label\" :xalign 0 :text \"My Devices\")"
     rows="${rows}${paired_rows}"
 fi
 if [ -n "$other_rows" ]; then
-    rows="${rows}(label :class \"bt-group-label\" :xalign 0 :text \"Available\")"
     rows="${rows}${other_rows}"
 fi
 

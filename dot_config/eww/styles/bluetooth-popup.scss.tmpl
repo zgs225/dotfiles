@@ -7,9 +7,6 @@
 .bt-dev-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.92 | int }}px; color: $subtext0; }
 .bt-device.connected .bt-dev-icon { color: $blue; }
 .bt-dev-name { color: $text; font-size: {{ mulf $eww.popupFontSize 0.86 | int }}px; }
-.bt-dev-status { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; }
-.bt-device.connected .bt-dev-status { color: $blue; }
-.bt-device.stale .bt-dev-status { color: $peach; }
 .bt-device.stale .bt-dev-icon { color: $peach; }
 
 .bt-act { padding: 6px; border-radius: 999px; transition: all 120ms; }
@@ -20,7 +17,6 @@
 
 .bt-hint { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.82 | int }}px; padding: 8px; }
 .bt-notice { color: $yellow; font-size: {{ mulf $eww.popupFontSize 0.78 | int }}px; padding: 6px 8px 0 8px; }
-.bt-group-label {
-  color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; font-weight: bold;
-  letter-spacing: 0.4px; padding: 12px 2px 4px 2px;
-}
+.bt-scroll-wrap { padding: 0; }
+.bt-row-sub { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; }
+.bt-discoverable-row.on .row-icon { color: $blue; }
