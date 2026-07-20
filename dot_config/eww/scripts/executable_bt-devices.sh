@@ -57,29 +57,40 @@ while read -r _ mac name; do
 
     if [ "$connected" -eq 1 ]; then
         rowcls="bt-device connected"
-        primary_icon="󰂲"; primary_tip="Disconnect"; primary_act="disconnect"
+        primary_tip="Disconnect"; primary_act="disconnect"
     elif [ "$paired" -eq 1 ]; then
         rowcls="bt-device"
-        primary_icon="󰂱"; primary_tip="Connect"; primary_act="connect"
+        primary_tip="Connect"; primary_act="connect"
     elif [ "$trusted" -eq 1 ]; then
         rowcls="bt-device stale"
-        primary_icon="󰂱"; primary_tip="Connect"; primary_act="connect"
+        primary_tip="Connect"; primary_act="connect"
     else
         rowcls="bt-device"
-        primary_icon="󰐕"; primary_tip="Pair"; primary_act="pair"
+        primary_tip="Pair"; primary_act="pair"
+    fi
+
+    battery_pct=""
+    show_battery=0
+    case "$icon_name" in
+        audio-*|input-*) show_battery=1 ;;
+    esac
+    if [ "$show_battery" -eq 1 ]; then
+        battery_pct=$(echo "$info" | grep -oP 'Battery Percentage:.*\(\K\d+' | head -1)
     fi
 
     e_name=$(esc "$name")
 
-    row="(box :class \"${rowcls}\" :orientation \"h\" :spacing 10 :valign \"center\" :space-evenly false"
+    row="(eventbox :class \"${rowcls}\" :cursor \"pointer\""
+    row="${row} :onclick \"~/.config/eww/scripts/bt-action.sh ${primary_act} ${mac}\""
+    row="${row}(box :orientation \"h\" :spacing 10 :valign \"center\" :space-evenly false"
     row="${row}(label :class \"bt-dev-icon\" :text \"${dev_icon}\")"
     row="${row}(label :class \"bt-dev-name\" :xalign 0 :limit-width 16 :hexpand true :text \"${e_name}\")"
-    row="${row}(button :class \"bt-act\" :tooltip \"${primary_tip}\""
-    row="${row} :onclick \"~/.config/eww/scripts/bt-action.sh ${primary_act} ${mac}\""
-    row="${row}(label :class \"bt-act-icon\" :text \"${primary_icon}\"))"
+    if [ -n "$battery_pct" ]; then
+        row="${row}(label :class \"bt-battery\" :text \"${battery_pct}%\")"
+    fi
     row="${row}(button :class \"bt-act bt-danger\" :tooltip \"Forget\""
     row="${row} :onclick \"~/.config/eww/scripts/bt-action.sh forget ${mac}\""
-    row="${row}(label :class \"bt-act-icon\" :text \"󰆴\")))"
+    row="${row}(label :class \"bt-act-icon\" :text \"󰆴\"))))"
 
     if [ "$connected" -eq 1 ] || [ "$paired" -eq 1 ] || [ "$trusted" -eq 1 ]; then
         paired_rows="${paired_rows}${row}"
