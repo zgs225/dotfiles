@@ -14,33 +14,47 @@ data:
   isVM: {{ and (lookPath "systemd-detect-virt") (output "sh" "-c" "systemd-detect-virt 2>/dev/null || true" | trim | ne "none") }}
   useI3: {{ lookPath "i3" | ne "" }}
 
+  # Song-dynasty minimalist palette ("juansha liuli") — semantic tokens
+  # Legacy Catppuccin key names are kept as aliases (re-mapped to Song values)
+  # so unconverted templates degrade gracefully. New templates must use the
+  # semantic keys below. Aliases will be removed in the final audit task.
   colors:
-    rosewater: "#f5e0dc"
-    flamingo:  "#f2cdcd"
-    pink:      "#f5c2e7"
-    mauve:     "#cba6f7"
-    red:       "#f38ba8"
-    maroon:    "#eba0ac"
-    peach:     "#fab387"
-    yellow:    "#f9e2af"
-    green:     "#a6e3a1"
-    teal:      "#94e2d5"
-    sky:       "#89dceb"
-    sapphire:  "#74c7ec"
-    blue:      "#89b4fa"
-    lavender:  "#b4befe"
-    text:      "#cdd6f4"
-    subtext1:  "#bac2de"
-    subtext0:  "#a6adc8"
-    overlay2:  "#9399b2"
-    overlay1:  "#7f849c"
-    overlay0:  "#6c7086"
-    surface2:  "#585b70"
-    surface1:  "#45475a"
-    surface0:  "#313244"
-    base:      "#1e1e2e"
-    mantle:    "#181825"
-    crust:     "#11111b"
+    bg_base:      "#1a1a1e"   # xuan (ink black) — window/panel base
+    bg_elevated:  "#21212a"   # dai — floating layer base
+    ink:          "#2e2e36"   # separators, secondary surfaces
+    fg_primary:   "#e8e6df"   # yuebai (moon white) — body text
+    fg_secondary: "#9a9a92"   # xieqing (crab-shell) — secondary text
+    accent:       "#9ec8c0"   # tianqing (Ru-ware) — accent, active state
+    seal:         "#c8452c"   # zhusha (cinnabar) — ONLY current workspace seal
+    warn:         "#d8a23c"   # tenghuang (gamboge) — warning
+    error:        "#a0522d"   # zheshi (ochre) — error/critical
+
+    rosewater: "#e8e6df"
+    flamingo:  "#d5d0c4"
+    pink:      "#c9b8b3"
+    mauve:     "#9ec8c0"
+    red:       "#a0522d"
+    maroon:    "#8a4526"
+    peach:     "#c98a4a"
+    yellow:    "#d8a23c"
+    green:     "#8a9a6b"
+    teal:      "#8ab8b0"
+    sky:       "#9ec8c0"
+    sapphire:  "#7fa8a0"
+    blue:      "#9ec8c0"
+    lavender:  "#9ec8c0"
+    text:      "#e8e6df"
+    subtext1:  "#cfccc2"
+    subtext0:  "#9a9a92"
+    overlay2:  "#9a9a92"
+    overlay1:  "#85857d"
+    overlay0:  "#6f6f68"
+    surface2:  "#464652"
+    surface1:  "#3a3a44"
+    surface0:  "#2e2e36"
+    base:      "#1a1a1e"
+    mantle:    "#21212a"
+    crust:     "#15151a"
 
   user:
     name: "yuez"

@@ -1,24 +1,23 @@
 {{- $eww := includeTemplate "eww-sizes" . | fromJson -}}
 
-@mixin glass-shell($alpha: 0.66, $border: 0.24) {
-  background-color: rgba($base, $alpha);
-  border: 1px solid rgba($text, $border);
+@mixin glass-shell($alpha: 0.65, $border: 0.35) {
+  background-color: rgba($bg-base, $alpha);
+  border: 1px solid rgba($accent, $border);
   box-shadow:
-    inset 0 1px 0 rgba($text, 0.20),
-    inset 0 -1px 0 rgba($crust, 0.18),
-    0 18px 54px rgba($crust, 0.28);
+    inset 0 1px 0 rgba($fg-primary, 0.08),
+    0 4px 12px rgba($crust, 0.35);
 }
 
 @mixin glass-cell($alpha: 0.30) {
-  background-color: rgba($surface0, $alpha);
-  border: 1px solid rgba($text, 0.12);
-  box-shadow: inset 0 1px 0 rgba($text, 0.10);
+  background-color: rgba($ink, $alpha);
+  border: 1px solid rgba($accent, 0.15);
+  box-shadow: inset 0 1px 0 rgba($fg-primary, 0.05);
 }
 
 /* ============================================================ POPUP BASE ============================================================ */
 .popup {
-  @include glass-shell(0.50, 0.18);
-  border-radius: 20px;
+  @include glass-shell(0.65, 0.35);
+  border-radius: $radius;
   padding: 22px;
   margin: 0;
 }
@@ -37,7 +36,7 @@
 .back-icon { color: $subtext0; font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 1.00 | int }}px; }
 .back-btn:hover .back-icon { color: $text; }
 
-.header-icon-btn { padding: 4px 8px; border-radius: 10px; transition: all 120ms; }
+.header-icon-btn { padding: 4px 8px; border-radius: $radius; transition: all 120ms; }
 .header-icon-btn:hover { background-color: rgba($surface1, 0.50); }
 .header-icon { color: $subtext0; font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.90 | int }}px; }
 
@@ -45,26 +44,26 @@
 .header-switch { padding: 0; }
 .switch {
   min-width: 50px; min-height: 28px;
-  border-radius: 999px; background-color: rgba($surface2, 0.65);
+  border-radius: $radius; background-color: rgba($surface2, 0.65);
   padding: 3px; transition: all 200ms ease;
 }
 .switch-knob {
   min-width: 22px; min-height: 22px;
-  border-radius: 999px; background-color: $text;
+  border-radius: $radius-sm; background-color: $fg-primary;
   transition: all 200ms ease;
 }
-.switch.on { background-color: $blue; }
+.switch.on { background-color: $accent; }
 .switch.on .switch-knob { margin-left: 22px; background-color: white; }
 
 .mini-switch {
   min-width: 42px; min-height: 24px;
-  border-radius: 999px; background-color: rgba($surface2, 0.65);
+  border-radius: $radius; background-color: rgba($surface2, 0.65);
   padding: 3px; transition: all 200ms ease;
 }
 .mini-knob {
   min-width: 18px; min-height: 18px;
-  border-radius: 999px; background-color: $text;
+  border-radius: $radius-sm; background-color: $fg-primary;
   transition: all 200ms ease;
 }
-.mini-switch.on { background-color: $blue; }
+.mini-switch.on { background-color: $accent; }
 .mini-switch.on .mini-knob { margin-left: 18px; background-color: white; }
