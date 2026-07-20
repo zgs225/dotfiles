@@ -6,6 +6,11 @@
 (defvar osd_value "0")
 (defvar osd_color "blue")
 (defvar updates_filter "all")
+(defvar bt_notice "")
+(defvar bt_pair_code "")
+(defvar bt_pair_device "")
+(defvar bt_pair_type "")
+(defvar bt_pair_hint "")
 
 ;; ============================================ DATA POLLING (defpoll) ============================================
 
@@ -48,6 +53,7 @@
 ;; ── Radios ──
 (defpoll airplane_on :interval "5s" :initial "0" "~/.config/eww/scripts/airplane-on.sh")
 (defpoll bt_on :interval "2s" :initial "0" "~/.config/eww/scripts/bt-on.sh")
+(defpoll bt_devices :interval "2s" :initial "(box)" "~/.config/eww/scripts/bt-devices.sh")
 
 ;; ── Battery ──
 (defpoll battery_percent  :interval "5s" :initial "100"  "~/.config/eww/scripts/battery-percent.sh")

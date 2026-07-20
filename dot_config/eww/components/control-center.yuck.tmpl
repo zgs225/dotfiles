@@ -23,14 +23,18 @@
             (box :orientation "v" :spacing 0 :hexpand true
               (label :text "Wi-Fi" :class "cc-tile-title" :xalign 0)
               (label :text "${wifi_on > 0 ? (wifi_name == 'Disconnected' ? 'On' : wifi_name) : 'Off'}" :class "cc-tile-sub" :xalign 0 :limit-width 12))))
-        (button :class "cc-tile ${bt_on > 0 ? 'on' : ''}" :hexpand true
-          :onclick "~/.config/eww/scripts/toggle-bt.sh"
-          :onrightclick "blueman-manager &"
-          (box :orientation "h" :spacing 10 :valign "center" :space-evenly false
-            (label :text "󰂯" :class "cc-tile-icon")
-            (box :orientation "v" :spacing 0 :hexpand true
-              (label :text "Bluetooth" :class "cc-tile-title" :xalign 0)
-              (label :text "${bt_on > 0 ? 'On' : 'Off'}" :class "cc-tile-sub" :xalign 0)))))
+        (box :class "cc-tile ${bt_on > 0 ? 'on' : ''}" :orientation "h" :spacing 4 :valign "center" :space-evenly false :hexpand true
+          (button :class "cc-tile-main" :hexpand true
+            :onclick "~/.config/eww/scripts/toggle-bt.sh"
+            :onrightclick "blueman-manager &"
+            (box :orientation "h" :spacing 10 :valign "center" :space-evenly false
+              (label :text "󰂯" :class "cc-tile-icon")
+              (box :orientation "v" :spacing 0
+                (label :text "Bluetooth" :class "cc-tile-title" :xalign 0)
+                (label :text "${bt_on > 0 ? 'On' : 'Off'}" :class "cc-tile-sub" :xalign 0))))
+          (button :class "cc-tile-arrow" :valign "center" :halign "end"
+            :onclick "~/.config/eww/scripts/open-popup.sh bluetooth-popup"
+            (label :text "󰅂" :class "cc-tile-arrow-icon"))))
       (box :orientation "h" :spacing 10
         (button :class "cc-tile ${airplane_on > 0 ? 'on' : ''}" :hexpand true
           :onclick "~/.config/eww/scripts/toggle-airplane.sh"
