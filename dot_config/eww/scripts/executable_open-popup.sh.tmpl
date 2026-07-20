@@ -36,7 +36,7 @@ ewwc() { timeout 8 eww "$@" 9>&- 2>/dev/null; }
 xdc()  { timeout 5 xdotool "$@" 9>&- 2>/dev/null; }
 dbg()  { [ -n "$EWW_POPUP_DEBUG" ] && echo "$(date +%H:%M:%S.%N) $$ NEW=$NEW $*" >> /tmp/popup-debug.log; return 0; }
 
-POPUPS="profile-card network-popup control-center calendar-popup notification-popup updates-popup"
+POPUPS="profile-card network-popup control-center bluetooth-popup calendar-popup notification-popup updates-popup"
 
 CURRENT=$(ewwc get popup_open || echo "none")
 dbg "acquired CURRENT=$CURRENT"
@@ -116,6 +116,12 @@ get_popup_pos_args() {
     control-center)
       local component_width=$((ICON_SIZE + 12))
       x=$(compute_popup_left "$mouse_x" "$component_width" "{{ $eww.controlW }}" "$screen_w")
+      y=$((BAR_HEIGHT + POPUP_GAP))
+      arr=(--arg pos_x="${x}px" --arg pos_y="${y}px")
+      ;;
+    bluetooth-popup)
+      local component_width=$((ICON_SIZE + 12))
+      x=$(compute_popup_left "$mouse_x" "$component_width" "{{ $eww.btW }}" "$screen_w")
       y=$((BAR_HEIGHT + POPUP_GAP))
       arr=(--arg pos_x="${x}px" --arg pos_y="${y}px")
       ;;
@@ -220,3 +226,12 @@ else
 fi
 ewwc update popup_open="$FINAL"
 dbg "done FINAL=$FINAL ACTIVE=[$ACTIVE]"
+
+# Bluetooth discovery follows the popup lifecycle: eww only polls variables
+# that an open window uses, so bt-devices.sh cannot reliably stop the scan
+# after the popup closes — do it here where every close path converges.
+if [ "$FINAL" = "bluetooth-popup" ]; then
+    ~/.config/eww/scripts/bt-scan.sh on
+else
+    ~/.config/eww/scripts/bt-scan.sh off
+fi

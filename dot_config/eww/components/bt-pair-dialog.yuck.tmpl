@@ -1,0 +1,22 @@
+{{- $eww := includeTemplate "eww-sizes" . | fromJson -}}
+;; ============================================ BT PAIR DIALOG ============================================
+
+(defwindow bt-pair-dialog
+  :stacking "overlay"
+  :windowtype "dialog"
+  :focusable false
+  :wm-ignore true
+  :class "eww-bt-pair"
+  :geometry (geometry :width "{{ mulf $eww.osdW 1.4 | int }}px" :height "0px" :anchor "center")
+  (box :class "bt-pair-card" :orientation "v" :spacing 0 :space-evenly false :valign "center" :halign "center"
+    (box :class "bt-pair-icon-wrap" :valign "center" :halign "center"
+      (label :text "󰂯" :class "bt-pair-icon"))
+    (label :text "${bt_pair_device}" :class "bt-pair-device")
+    (label :text "${bt_pair_code}" :class "bt-pair-code" :visible "${bt_pair_code != ''}")
+    (label :text "${bt_pair_hint}" :class "bt-pair-hint")
+    (box :class "bt-pair-actions" :orientation "h" :spacing 14 :halign "center" :valign "center"
+      :visible "${bt_pair_type == 'confirm'}"
+      (button :class "bt-pair-btn bt-pair-cancel" :onclick "~/.config/eww/scripts/bt-pair-respond.sh no"
+        (label :text "Cancel" :class "bt-pair-btn-label"))
+      (button :class "bt-pair-btn bt-pair-confirm" :onclick "~/.config/eww/scripts/bt-pair-respond.sh yes"
+        (label :text "Confirm" :class "bt-pair-btn-label")))))

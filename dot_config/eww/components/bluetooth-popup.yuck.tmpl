@@ -1,0 +1,27 @@
+{{- $eww := includeTemplate "eww-sizes" . | fromJson -}}
+;; ============================================ BLUETOOTH POPUP ============================================
+
+(defwindow bluetooth-popup [pos_x pos_y]
+  :stacking "overlay"
+  :windowtype "dialog"
+  :focusable false
+  :geometry (geometry :width "{{ $eww.btW }}px" :height "{{ $eww.btH }}px" :x { pos_x } :y { pos_y } :anchor "top left")
+  (box :class "popup revealer bluetooth-popup" :orientation "v" :spacing 0 :space-evenly false
+    (box :class "popup-header" :orientation "h" :spacing 10 :valign "center" :space-evenly false
+      (button :class "back-btn" :onclick "~/.config/eww/scripts/open-popup.sh control-center"
+        (label :text "󰁍" :class "back-icon"))
+      (label :text "Bluetooth" :class "popup-title" :hexpand true :xalign 0)
+      (button :class "header-switch" :onclick "~/.config/eww/scripts/toggle-bt.sh"
+        (box :class "switch ${bt_on > 0 ? 'on' : ''}" :valign "center" (box :class "switch-knob"))))
+
+    (label :text "Devices" :class "section-label" :xalign 0)
+    (literal :content "${bt_devices}")
+    (label :class "bt-notice" :xalign 0 :wrap true :visible "${bt_notice != ''}" :text "${bt_notice}")
+
+    (box :class "separator-line")
+
+    (button :class "list-row nav-row" :onclick "blueman-manager &"
+      (box :orientation "h" :spacing 12 :valign "center" :space-evenly false
+        (label :text "󰒓" :class "row-icon")
+        (label :text "Bluetooth Settings" :class "row-label" :xalign 0 :hexpand true)
+        (label :text "󰅂" :class "row-chevron")))))

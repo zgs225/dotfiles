@@ -6,3 +6,4 @@ settings.local.json
 dot_zshrc.local
 .DS_Store
 .superpowers/
+.opencode/
