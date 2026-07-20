@@ -1,28 +1,27 @@
 #!/usr/bin/env bash
-# Get audio sources (input devices) as JSON array
+# Input devices as a JSON array (monitors excluded). Friendly name = real
+# Description, except the generic on-board "Built-in Audio" -> localized label.
 
-get_friendly_name() {
-    local name="$1"
-    if [[ "$name" == *"bluez_input"* ]]; then
-        echo "蓝牙麦克风"
-    elif [[ "$name" == *"alsa_input"* ]]; then
-        echo "内置麦克风"
-    else
-        echo "$name"
-    fi
-}
+current=$(pactl get-default-source 2>/dev/null || echo "")
 
-current_source=$(pactl get-default-source 2>/dev/null || echo "")
-
-echo -n "["
-first=true
-while IFS=$'\t' read -r idx name rest; do
+json="[]"
+while IFS=$'\t' read -r name desc; do
     [ -z "$name" ] && continue
-    [[ "$name" == *".monitor" ]] && continue
-    friendly=$(get_friendly_name "$name")
-    is_active="false"
-    [ "$name" = "$current_source" ] && is_active="true"
-    if [ "$first" = true ]; then first=false; else echo -n ","; fi
-    echo -n "{\"name\":\"$name\",\"friendly\":\"$friendly\",\"active\":$is_active}"
-done < <(pactl list short sources 2>/dev/null)
-echo "]"
+    [[ "$name" == *.monitor ]] && continue
+    if [[ "$desc" == *"Built-in Audio"* ]]; then
+        friendly="内置麦克风"
+    elif [ -n "$desc" ]; then
+        friendly="$desc"
+    else
+        friendly="$name"
+    fi
+    active=false
+    [ "$name" = "$current" ] && active=true
+    json=$(printf '%s' "$json" | jq -c --arg n "$name" --arg f "$friendly" --argjson a "$active" \
+        '. + [{"name":$n,"friendly":$f,"active":$a}]')
+done < <(pactl list sources 2>/dev/null | awk '
+    /^[[:space:]]*Name:[[:space:]]*/        { sub(/^[[:space:]]*Name:[[:space:]]*/, ""); name=$0 }
+    /^[[:space:]]*Description:[[:space:]]*/ { sub(/^[[:space:]]*Description:[[:space:]]*/, ""); print name "\t" $0; name="" }
+')
+
+printf '%s' "$json"

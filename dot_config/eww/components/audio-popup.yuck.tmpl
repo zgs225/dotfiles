@@ -21,7 +21,7 @@
               :onclick "~/.config/eww/scripts/audio-switch.sh sink '${device.name}'"
               (box :orientation "h" :spacing 8 :valign "center" :space-evenly false
                 (label :text "${device.active ? '󰄬' : '󰄰'}" :class "audio-device-check")
-                (label :text "${device.friendly}" :class "audio-device-name" :xalign 0)))))
+                (label :text "${device.friendly}" :class "audio-device-name" :xalign 0 :limit-width 26)))))
         (label :text "输入设备" :class "audio-device-group-label" :xalign 0)
         (box :orientation "v" :spacing 4
           (for device in audio_sources
@@ -29,4 +29,4 @@
               :onclick "~/.config/eww/scripts/audio-switch.sh source '${device.name}'"
               (box :orientation "h" :spacing 8 :valign "center" :space-evenly false
                 (label :text "${device.active ? '󰄬' : '󰄰'}" :class "audio-device-check")
-                (label :text "${device.friendly}" :class "audio-device-name" :xalign 0)))))))))
+                (label :text "${device.friendly}" :class "audio-device-name" :xalign 0 :limit-width 26)))))))))
