@@ -40,6 +40,13 @@
   "pamixer --get-mute 2>/dev/null || echo false")
 (defpoll brightness :interval "2s" :initial "0"
   "brightnessctl info 2>/dev/null | grep -oP '(\\d+)%' | head -1 | tr -d '%' || echo 0")
+(defpoll audio_devices :interval "2s"
+  :initial `{"current_sink":"","current_sink_friendly":"","current_source":"","current_source_friendly":"","sinks":[],"sources":[]}`
+  "~/.config/eww/scripts/audio-devices.sh")
+(defpoll audio_sinks :interval "2s" :initial "[]"
+  "~/.config/eww/scripts/audio-sinks.sh")
+(defpoll audio_sources :interval "2s" :initial "[]"
+  "~/.config/eww/scripts/audio-sources.sh")
 
 ;; ── Network ──
 (defpoll network_status :interval "2s"
