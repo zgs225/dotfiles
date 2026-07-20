@@ -38,11 +38,21 @@ while read -r _ mac name; do
     icon_name=$(echo "$info" | awk -F': ' '/Icon: / {print $2; exit}')
 
     case "$icon_name" in
-        audio-headphones|audio-headset|audio-card) dev_icon="󰋋" ;;
-        input-keyboard) dev_icon="󰌌" ;;
-        input-mouse)    dev_icon="󰍽" ;;
-        phone|*phone*)  dev_icon="󰄜" ;;
-        *)              dev_icon="󰂯" ;;
+        audio-headphones)       dev_icon="󰋋" ;;
+        audio-headset)          dev_icon="󰋎" ;;
+        audio-card)             dev_icon="󰓃" ;;
+        audio-input-microphone) dev_icon="󰍬" ;;
+        input-keyboard)         dev_icon="󰌌" ;;
+        input-mouse)            dev_icon="󰍽" ;;
+        input-gaming)           dev_icon="󰊴" ;;
+        input-tablet)           dev_icon="󰓶" ;;
+        phone|modem)            dev_icon="󰄜" ;;
+        computer|display)       dev_icon="󰍹" ;;
+        camera-photo)           dev_icon="󰄀" ;;
+        camera-video)           dev_icon="󰕧" ;;
+        printer)                dev_icon="󰐪" ;;
+        scanner)                dev_icon="󰐫" ;;
+        *)                      dev_icon="󰂯" ;;
     esac
 
     if [ "$connected" -eq 1 ]; then
