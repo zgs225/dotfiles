@@ -34,6 +34,43 @@
   box-shadow: 0 1px 3px rgba($crust, 0.5);
 }
 
+.cc-audio-devices {
+  @include glass-cell(0.32);
+  border-radius: 15px;
+  margin: 10px 0 6px 0;
+}
+.audio-device-header {
+  padding: 14px;
+  transition: all 120ms;
+}
+.audio-device-header:hover { background-color: rgba($surface1, 0.48); }
+.audio-device-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.96 | int }}px; color: $subtext0; }
+.audio-device-title { color: $subtext1; font-size: {{ mulf $eww.popupFontSize 0.82 | int }}px; font-weight: bold; }
+.audio-device-sub { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; }
+.audio-device-arrow { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.88 | int }}px; color: $overlay0; }
+.audio-device-list {
+  padding: 8px 14px 14px 14px;
+}
+.audio-scroll-wrap { margin: 0; }
+.audio-device-group-label {
+  color: $overlay0;
+  font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px;
+  font-weight: bold;
+  padding: 8px 0 4px 0;
+}
+.audio-device-item {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background-color: rgba($surface0, 0.42);
+  transition: all 120ms;
+}
+.audio-device-item:hover { background-color: rgba($surface1, 0.52); }
+.audio-device-item.active { background-color: rgba($blue, 0.22); }
+.audio-device-check { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.88 | int }}px; color: $overlay0; }
+.audio-device-item.active .audio-device-check { color: $blue; }
+.audio-device-name { color: $subtext1; font-size: {{ mulf $eww.popupFontSize 0.78 | int }}px; }
+.audio-device-item.active .audio-device-name { color: $text; font-weight: bold; }
+
 .media-card {
   @include glass-cell(0.34);
   border-radius: 15px;
