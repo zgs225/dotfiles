@@ -22,7 +22,8 @@ else
     ~/.config/eww/scripts/bt-scan.sh off
 fi
 
-rows=""
+paired_rows=""
+other_rows=""
 while read -r _ mac name; do
     case "$mac" in *:*) ;; *) continue ;; esac
     # Skip unnamed devices — BlueZ substitutes the MAC as name, pure noise.
@@ -51,9 +52,6 @@ while read -r _ mac name; do
         status="Paired"; rowcls="bt-device"
         primary_icon="󰂱"; primary_tip="Connect"; primary_act="connect"
     elif [ "$trusted" -eq 1 ]; then
-        # Trusted flag survived a lost bond (keys cleared locally on
-        # disconnect, remote side usually still bonded). Try connect first —
-        # the remote often accepts and re-establishes the bond.
         status="Reconnect"; rowcls="bt-device stale"
         primary_icon="󰂱"; primary_tip="Connect"; primary_act="connect"
     else
@@ -63,18 +61,34 @@ while read -r _ mac name; do
 
     e_name=$(esc "$name")
 
-    rows="${rows}(box :class \"${rowcls}\" :orientation \"h\" :spacing 10 :valign \"center\" :space-evenly false"
-    rows="${rows}(label :class \"bt-dev-icon\" :text \"${dev_icon}\")"
-    rows="${rows}(box :orientation \"v\" :spacing 1 :hexpand true"
-    rows="${rows}(label :class \"bt-dev-name\" :xalign 0 :limit-width 16 :text \"${e_name}\")"
-    rows="${rows}(label :class \"bt-dev-status\" :xalign 0 :text \"${status}\"))"
-    rows="${rows}(button :class \"bt-act\" :tooltip \"${primary_tip}\""
-    rows="${rows} :onclick \"~/.config/eww/scripts/bt-action.sh ${primary_act} ${mac}\""
-    rows="${rows}(label :class \"bt-act-icon\" :text \"${primary_icon}\"))"
-    rows="${rows}(button :class \"bt-act bt-danger\" :tooltip \"Forget\""
-    rows="${rows} :onclick \"~/.config/eww/scripts/bt-action.sh forget ${mac}\""
-    rows="${rows}(label :class \"bt-act-icon\" :text \"󰆴\")))"
+    row="(box :class \"${rowcls}\" :orientation \"h\" :spacing 10 :valign \"center\" :space-evenly false"
+    row="${row}(label :class \"bt-dev-icon\" :text \"${dev_icon}\")"
+    row="${row}(box :orientation \"v\" :spacing 1 :hexpand true"
+    row="${row}(label :class \"bt-dev-name\" :xalign 0 :limit-width 16 :text \"${e_name}\")"
+    row="${row}(label :class \"bt-dev-status\" :xalign 0 :text \"${status}\"))"
+    row="${row}(button :class \"bt-act\" :tooltip \"${primary_tip}\""
+    row="${row} :onclick \"~/.config/eww/scripts/bt-action.sh ${primary_act} ${mac}\""
+    row="${row}(label :class \"bt-act-icon\" :text \"${primary_icon}\"))"
+    row="${row}(button :class \"bt-act bt-danger\" :tooltip \"Forget\""
+    row="${row} :onclick \"~/.config/eww/scripts/bt-action.sh forget ${mac}\""
+    row="${row}(label :class \"bt-act-icon\" :text \"󰆴\")))"
+
+    if [ "$connected" -eq 1 ] || [ "$paired" -eq 1 ] || [ "$trusted" -eq 1 ]; then
+        paired_rows="${paired_rows}${row}"
+    else
+        other_rows="${other_rows}${row}"
+    fi
 done < <(bluetoothctl devices 2>/dev/null)
+
+rows=""
+if [ -n "$paired_rows" ]; then
+    rows="${rows}(label :class \"bt-group-label\" :xalign 0 :text \"My Devices\")"
+    rows="${rows}${paired_rows}"
+fi
+if [ -n "$other_rows" ]; then
+    rows="${rows}(label :class \"bt-group-label\" :xalign 0 :text \"Available\")"
+    rows="${rows}${other_rows}"
+fi
 
 if [ -z "$rows" ]; then
     if bluetoothctl show 2>/dev/null | grep -q "Discovering: yes"; then
