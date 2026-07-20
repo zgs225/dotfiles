@@ -54,6 +54,7 @@
 (defpoll airplane_on :interval "5s" :initial "0" "~/.config/eww/scripts/airplane-on.sh")
 (defpoll bt_on :interval "2s" :initial "0" "~/.config/eww/scripts/bt-on.sh")
 (defpoll bt_devices :interval "2s" :initial "(box)" "~/.config/eww/scripts/bt-devices.sh")
+(defpoll bt_discoverable :interval "2s" :initial "0" "~/.config/eww/scripts/bt-discoverable-on.sh")
 
 ;; ── Battery ──
 (defpoll battery_percent  :interval "5s" :initial "100"  "~/.config/eww/scripts/battery-percent.sh")
