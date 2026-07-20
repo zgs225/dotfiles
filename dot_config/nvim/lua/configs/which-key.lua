@@ -6,7 +6,7 @@ wk.add {
   { "<leader>f", group = "+find", icon = { icon = "", color = "blue" } },
   { "<leader>g", group = "+git", icon = { icon = "", color = "orange" } },
   { "<leader>t", group = "+test", icon = { icon = "", color = "green" } },
-  { "<leader>a", group = "+AI", icon = { icon = "", color = "magenta" } },
+  { "<leader>a", group = "+opencode", icon = { icon = "", color = "magenta" } },
   { "<leader>c", group = "+code", icon = { icon = "", color = "cyan" } },
   { "<leader>w", group = "+workspace", icon = { icon = "", color = "white" } },
 
@@ -75,16 +75,11 @@ wk.add {
   { "<leader>ts", desc = "Toggle Summary", icon = { icon = "", color = "green" } },
 }
 
--- +AI children
+-- +opencode children
 wk.add {
   { "<leader>aa", desc = "Toggle", icon = { icon = "", color = "magenta" } },
-  { "<leader>as", desc = "Select Tool", icon = { icon = "", color = "magenta" } },
-  { "<leader>ao", desc = "OpenCode", icon = { icon = "", color = "magenta" } },
-  { "<leader>ak", desc = "Kimi Code", icon = { icon = "", color = "magenta" } },
-  { "<leader>at", desc = "Send This", icon = { icon = "", color = "magenta" } },
-  { "<leader>af", desc = "Send File", icon = { icon = "", color = "magenta" } },
-  { "<leader>ap", desc = "Select Prompt", icon = { icon = "", color = "magenta" } },
-  { "<leader>ad", desc = "Detach", icon = { icon = "", color = "magenta" } },
+  { "<leader>aA", desc = "Ask", icon = { icon = "", color = "magenta" } },
+  { "<leader>as", desc = "Select Server", icon = { icon = "", color = "magenta" } },
 }
 
 -- +code children
