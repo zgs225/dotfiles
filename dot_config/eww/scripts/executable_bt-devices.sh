@@ -70,13 +70,10 @@ while read -r _ mac name; do
     fi
 
     battery_pct=""
-    show_battery=0
     case "$icon_name" in
-        audio-*|input-*) show_battery=1 ;;
+        phone|modem|computer|display) ;;
+        *) battery_pct=$(echo "$info" | grep -oP 'Battery Percentage:.*\(\K\d+' | head -1) ;;
     esac
-    if [ "$show_battery" -eq 1 ]; then
-        battery_pct=$(echo "$info" | grep -oP 'Battery Percentage:.*\(\K\d+' | head -1)
-    fi
 
     e_name=$(esc "$name")
 
