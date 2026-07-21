@@ -1,88 +1,89 @@
-/* GTK4 glassmorphism — matches eww popup style
+/* GTK4 — juansha liuli (Song liquid glass), matches eww popup style
  * Managed by chezmoi; colors come from .chezmoi.yaml.tmpl data block.
+ * NOTE: gtk-3.0/gtk.css must stay empty (USER priority leaks into eww).
  */
 
-@define-color base {{ .colors.base }};
-@define-color mantle {{ .colors.mantle }};
-@define-color crust {{ .colors.crust }};
-@define-color surface0 {{ .colors.surface0 }};
-@define-color surface1 {{ .colors.surface1 }};
-@define-color surface2 {{ .colors.surface2 }};
-@define-color text {{ .colors.text }};
-@define-color subtext1 {{ .colors.subtext1 }};
-@define-color subtext0 {{ .colors.subtext0 }};
-@define-color overlay0 {{ .colors.overlay0 }};
-@define-color overlay1 {{ .colors.overlay1 }};
-@define-color lavender {{ .colors.lavender }};
-@define-color blue {{ .colors.blue }};
+@define-color bg_base {{ .colors.bg_base }};
+@define-color bg_elevated {{ .colors.bg_elevated }};
+@define-color ink {{ .colors.ink }};
+@define-color fg_primary {{ .colors.fg_primary }};
+@define-color fg_secondary {{ .colors.fg_secondary }};
+@define-color accent {{ .colors.accent }};
+@define-color seal {{ .colors.seal }};
+@define-color warn {{ .colors.warn }};
+@define-color error {{ .colors.error }};
 
 /* ── Popovers (primary menu surface in GTK4) ── */
 popover {
-  background-color: alpha(@base, 0.75);
-  border: 1px solid alpha(@text, 0.18);
-  border-radius: 16px;
+  background-color: alpha(@bg_base, 0.65);
+  border: 1px solid alpha(@accent, 0.35);
+  border-radius: 5px;
   padding: 10px;
-  color: @text;
+  color: @fg_primary;
 }
 
 popover modelbutton,
 popover .menuitem {
-  color: @subtext1;
+  color: @fg_secondary;
   padding: 8px 12px;
-  border-radius: 10px;
+  border-radius: 5px;
+  border-left: 2px solid transparent;
 }
 
 popover modelbutton:hover,
 popover modelbutton:selected,
 popover .menuitem:hover,
 popover .menuitem:selected {
-  color: @text;
-  background-color: alpha(@surface1, 0.40);
+  color: @fg_primary;
+  background-color: alpha(@ink, 0.40);
+  border-left-color: @accent;
 }
 
 popover separator {
-  background-color: alpha(@text, 0.08);
+  background-color: alpha(@accent, 0.15);
   min-height: 1px;
   margin: 8px 4px;
 }
 
 /* ── Traditional menubar / menu widgets ── */
 menubar {
-  background-color: alpha(@base, 0.75);
-  color: @text;
+  background-color: alpha(@bg_base, 0.75);
+  color: @fg_primary;
 }
 
 menu {
-  background-color: alpha(@base, 0.75);
-  border: 1px solid alpha(@text, 0.18);
-  border-radius: 16px;
+  background-color: alpha(@bg_base, 0.65);
+  border: 1px solid alpha(@accent, 0.35);
+  border-radius: 5px;
   padding: 10px;
-  color: @text;
+  color: @fg_primary;
 }
 
 menuitem {
-  color: @subtext1;
+  color: @fg_secondary;
   padding: 8px 12px;
-  border-radius: 10px;
+  border-radius: 5px;
+  border-left: 2px solid transparent;
 }
 
 menuitem:hover,
 menuitem:selected {
-  color: @text;
-  background-color: alpha(@surface1, 0.40);
+  color: @fg_primary;
+  background-color: alpha(@ink, 0.40);
+  border-left-color: @accent;
 }
 
 menu separator {
-  background-color: alpha(@text, 0.08);
+  background-color: alpha(@accent, 0.15);
   min-height: 1px;
   margin: 8px 4px;
 }
 
 /* ── Tooltips ── */
 tooltip {
-  background-color: alpha(@base, 0.92);
-  border: 1px solid alpha(@text, 0.15);
-  border-radius: 10px;
+  background-color: alpha(@bg_base, 0.92);
+  border: 1px solid alpha(@accent, 0.25);
+  border-radius: 5px;
   padding: 6px 10px;
-  color: @text;
+  color: @fg_primary;
 }
