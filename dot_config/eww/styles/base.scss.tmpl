@@ -21,9 +21,6 @@
   padding: 22px;
   margin: 0;
 }
-.revealer { animation: popup-in 180ms ease; }
-@keyframes popup-in { from { opacity: 0; margin-top: -4px; } to { opacity: 1; margin-top: 0; } }
-
 .popup-header { padding: 0 0 18px 0; }
 .popup-title {
   color: $accent;
@@ -59,7 +56,7 @@
   transition: all 200ms ease;
 }
 .switch.on { background-color: $accent; }
-.switch.on .switch-knob { margin-left: 22px; background-color: white; }
+.switch.on .switch-knob { margin-left: 22px; background-color: $fg-primary; }
 
 .mini-switch {
   min-width: 42px; min-height: 24px;
@@ -72,4 +69,4 @@
   transition: all 200ms ease;
 }
 .mini-switch.on { background-color: $accent; }
-.mini-switch.on .mini-knob { margin-left: 18px; background-color: white; }
+.mini-switch.on .mini-knob { margin-left: 18px; background-color: $fg-primary; }

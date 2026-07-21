@@ -3,7 +3,7 @@
 /* ============================================================ CONTROL CENTER ============================================================ */
 .tile-grid { padding: 0 0 6px 0; }
 .cc-tile {
-  @include glass-cell(0.32);
+  @include glass-cell(0.30);
   border-radius: $radius;
   padding: 15px; transition: all 120ms;
 }
@@ -12,12 +12,12 @@
 .cc-tile-title { color: $subtext1; font-size: {{ mulf $eww.popupFontSize 0.84 | int }}px; font-weight: bold; }
 .cc-tile-sub   { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; }
 .cc-tile.on { background-color: $accent; }
-.cc-tile.on .cc-tile-icon, .cc-tile.on .cc-tile-title { color: white; }
-.cc-tile.on .cc-tile-sub { color: rgba(255,255,255,0.75); }
+.cc-tile.on .cc-tile-icon, .cc-tile.on .cc-tile-title { color: $fg-primary; }
+.cc-tile.on .cc-tile-sub { color: rgba($fg-primary, 0.75); }
 .cc-tile-arrow { padding: 12px 10px; border-radius: $radius; transition: all 120ms; }
-.cc-tile-arrow:hover { background-color: rgba(255,255,255,0.18); }
+.cc-tile-arrow:hover { background-color: rgba($fg-primary, 0.18); }
 .cc-tile-arrow-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.88 | int }}px; color: $overlay0; }
-.cc-tile.on .cc-tile-arrow-icon { color: rgba(255,255,255,0.85); }
+.cc-tile.on .cc-tile-arrow-icon { color: rgba($fg-primary, 0.85); }
 
 .cc-slider-row { padding: 16px 2px 6px 2px; }
 .cc-slider-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.96 | int }}px; color: $subtext0; }
@@ -29,13 +29,13 @@
 }
 .cc-scale trough highlight { background-color: $accent; border-radius: 4px; }
 .cc-scale slider {
-  background-color: white; border-radius: $radius-sm;
+  background-color: $fg-primary; border-radius: $radius-sm;
   min-width: 18px; min-height: 18px; margin: -7px;
   box-shadow: 0 1px 3px rgba($crust, 0.5);
 }
 
 .cc-audio-devices {
-  @include glass-cell(0.32);
+  @include glass-cell(0.30);
   border-radius: $radius;
   margin: 10px 0 6px 0;
 }

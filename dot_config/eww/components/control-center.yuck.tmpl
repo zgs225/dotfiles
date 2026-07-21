@@ -13,8 +13,8 @@
       (label :text "控制中心" :class "popup-title" :hexpand true :xalign 0))
 
     ;; 2x2 toggle tiles
-    (box :orientation "v" :spacing 10 :class "tile-grid"
-      (box :orientation "h" :spacing 10
+    (box :orientation "v" :spacing 12 :class "tile-grid"
+      (box :orientation "h" :spacing 12
         (button :class "cc-tile ${wifi_on > 0 ? 'on' : ''}" :hexpand true
           :onclick "~/.config/eww/scripts/toggle-wifi.sh"
           :onrightclick "nm-connection-editor &"
@@ -34,7 +34,7 @@
           (button :class "cc-tile-arrow" :valign "center" :halign "end"
             :onclick "~/.config/eww/scripts/open-popup.sh bluetooth-popup"
             (label :text "󰅂" :class "cc-tile-arrow-icon"))))
-      (box :orientation "h" :spacing 10
+      (box :orientation "h" :spacing 12
         (button :class "cc-tile ${airplane_on > 0 ? 'on' : ''}" :hexpand true
           :onclick "~/.config/eww/scripts/toggle-airplane.sh"
           (box :orientation "h" :spacing 10 :valign "center" :space-evenly false
