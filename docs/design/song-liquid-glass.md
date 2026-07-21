@@ -110,6 +110,8 @@ border: 1px solid rgba($accent, 0.15);   // 格内分隔
 - dunst：`LXGW WenKai 10`；rofi launcher：`LXGW WenKai 18`
 - 锁屏时钟：`Source Han Serif CN` 72px
 
+**西文回退机制**：i3 / dunst / rofi / GTK 等组件只设 `LXGW WenKai` 单一字体名，西文/数字的 JetBrains Mono 回退由 fontconfig 全局处理（`dot_config/fontconfig/fonts.conf`）：请求 `LXGW WenKai`（或 `霞鹜文楷`）时，family 列表被替换为 `[JetBrainsMono Nerd Font, LXGW WenKai]`，Latin 字符命中前者、CJK 字符回落后者。新增组件若使用文楷，无需重复配置字体栈，fontconfig 自动生效。
+
 ---
 
 ## 4. 组件规范
@@ -231,6 +233,7 @@ eww 的 bar 与 scrim 在 rounded/shadow/blur exclude 清单中；Rofi `corner-r
 | Qt | `dot_config/Kvantum/` | GeneralColors 取令牌；`kvantum.kvconfig` 必须 INI 格式 |
 | 锁屏 | `dot_config/betterlockscreen/betterlockscreenrc.tmpl` | §4.7 |
 | 壁纸 | `.chezmoiscripts/common/run_once_after_generate-default-wallpaper.sh` | 玄色生成 |
+| fontconfig | `dot_config/fontconfig/fonts.conf` | LXGW WenKai → JetBrainsMono Nerd Font 西文回退（§3） |
 
 **暂未统一**（用户裁定保留现状）：WezTerm（Tokyo Night + 背景图）、tmux（同步 Tokyo Night）。后续若要统一，沿用 §2.1 衍生固定值：终端 ANSI red 必须用赭石而非朱砂，朱砂只可作 tmux 当前窗口标记（印章语义延伸）。
 
