@@ -62,7 +62,7 @@ case "${1:-}" in
         fi
         ;;
     *)
-        echo "unknown args: $*" >&2
+        echo "未知参数：$*" >&2
         exit 1
         ;;
 esac

@@ -3,16 +3,16 @@
 register_module find "find" filter "Alt+Return"
 
 find_init() {
-    printf '\0prompt\x1fFind\n'
-    printf '\0message\x1fEnter = open; Alt+Enter = open folder; Enter on empty result = new search\n'
+    printf '\0prompt\x1f查找\n'
+    printf '\0message\x1f回车=打开；Alt+回车=打开文件夹；无结果时回车=重新搜索\n'
     printf '\0use-hot-keys\x1ftrue\n'
     local q="${LAUNCHER_Q:-}"
     if ! command -v fd >/dev/null 2>&1; then
-        msg_row "fd not installed — sudo pacman -S fd" dialog-warning
+        msg_row "未安装 fd — sudo pacman -S fd" dialog-warning
         return 0
     fi
     if [ -z "$q" ]; then
-        msg_row "Usage: find <name>"
+        msg_row "用法：find <名称>"
         return 0
     fi
     local results
@@ -20,7 +20,7 @@ find_init() {
         --exclude .git --exclude .cache --exclude node_modules --exclude .local/share/Trash \
         -- "$q" "$HOME" 2>/dev/null || true)
     if [ -z "$results" ]; then
-        msg_row "No matches for: $q (press Enter to retry)" dialog-information
+        msg_row "未找到：$q（按回车重试）" dialog-information
         return 0
     fi
     local p display
