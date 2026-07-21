@@ -46,14 +46,21 @@ return {
     },
     init = function()
       local opencode_buf = nil
+      local opencode_tab = nil
 
       vim.o.autoread = true
 
-      local function opencode_window_opts()
-        return {
-          split = "right",
-          width = math.floor(vim.o.columns * 0.5),
-        }
+      local function find_opencode_tab()
+        if opencode_buf and vim.api.nvim_buf_is_valid(opencode_buf) then
+          for _, tab in ipairs(vim.api.nvim_list_tabpages()) do
+            for _, w in ipairs(vim.api.nvim_tabpage_list_wins(tab)) do
+              if vim.api.nvim_win_get_buf(w) == opencode_buf then
+                return tab
+              end
+            end
+          end
+        end
+        return nil
       end
 
       vim.api.nvim_create_autocmd("TermOpen", {
@@ -62,6 +69,7 @@ return {
             return
           end
           opencode_buf = args.buf
+          opencode_tab = vim.api.nvim_get_current_tabpage()
           local buf = args.buf
 
           local pid ---@type integer?
@@ -99,6 +107,7 @@ return {
                 end
               end
               opencode_buf = nil
+              opencode_tab = nil
               vim.schedule(function()
                 if vim.api.nvim_buf_is_valid(buf) then
                   for _, w in ipairs(vim.fn.win_findbuf(buf)) do
@@ -126,19 +135,19 @@ return {
       vim.g.opencode_opts = {
         server = {
           toggle = function()
-            if opencode_buf and vim.api.nvim_buf_is_valid(opencode_buf) then
-              local wins = vim.fn.win_findbuf(opencode_buf)
-              if #wins > 0 then
-                for _, w in ipairs(wins) do
-                  pcall(vim.api.nvim_win_close, w, true)
-                end
+            local tab = find_opencode_tab()
+            if tab then
+              if vim.api.nvim_get_current_tabpage() == tab then
+                vim.cmd "tabclose"
               else
-                vim.api.nvim_open_win(opencode_buf, true, opencode_window_opts())
+                vim.api.nvim_set_current_tabpage(tab)
                 vim.cmd "startinsert"
               end
             else
+              vim.cmd "tabnew"
               local buf = vim.api.nvim_create_buf(false, false)
-              vim.api.nvim_open_win(buf, true, opencode_window_opts())
+              vim.api.nvim_win_set_buf(0, buf)
+              opencode_tab = vim.api.nvim_get_current_tabpage()
               vim.fn.jobstart("opencode --port", { term = true })
             end
           end,
@@ -147,11 +156,13 @@ return {
 
       vim.api.nvim_create_autocmd("WinClosed", {
         callback = function()
-          if #vim.api.nvim_list_wins() == 1 then
-            local winid = vim.api.nvim_get_current_win()
-            local bufnr = vim.api.nvim_win_get_buf(winid)
-            if vim.api.nvim_buf_get_name(bufnr):match "opencode" then
-              vim.cmd "qa"
+          if #vim.api.nvim_list_tabpages() == 1 then
+            local wins = vim.api.nvim_tabpage_list_wins(0)
+            if #wins == 1 then
+              local bufnr = vim.api.nvim_win_get_buf(wins[1])
+              if vim.api.nvim_buf_get_name(bufnr):match "opencode" then
+                vim.cmd "qa"
+              end
             end
           end
         end,
