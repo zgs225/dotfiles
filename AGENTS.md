@@ -5,6 +5,7 @@ chezmoi-based dotfiles repo. Do not edit `~/.` files directly — use chezmoi.
 ## Rules
 
 - **Never modify OS-level configuration.** Do not edit files under `/etc/`, `/usr/`, `/boot/`, systemd units, polkit rules, or any other system-wide config. This repo only manages user-level dotfiles.
+- **Desktop UI design MUST follow `docs/design/song-liquid-glass.md`** （绢纱琉璃·宋式极简）. Any change to colors, radius, fonts, transparency, or new UI components (eww/i3/picom/dunst/rofi/GTK/Qt/lock) must comply with that document — especially the color token discipline (`data.colors` is the single source), the cinnabar-uniqueness rule, and the platform gotchas in its §8 (eww SCSS pure-ASCII rule, gtk-3.0 gtk.css stays empty, no GTK_THEME env, rofi 2.0 two-part element states).
 
 ## Chezmoi conventions
 
