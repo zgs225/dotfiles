@@ -7,7 +7,8 @@ import subprocess
 import hashlib
 import re
 import random
-from datetime import datetime
+import math
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import cairo
@@ -22,6 +23,15 @@ SEAL_COLOR = "{{ .colors.error }}"
 INK_TEXT = "{{ .colors.ink_text }}"
 INK_TEXT_DIM = "{{ .colors.ink_text_dim }}"
 SEAL_FONT = "Chong Xi Small Seal 22"
+LUO_SEAL_TEXT = "自得"
+
+JIEQI24 = [
+    "春分", "清明", "谷雨", "立夏", "小满", "芒种",
+    "夏至", "小暑", "大暑", "立秋", "处暑", "白露",
+    "秋分", "寒露", "霜降", "立冬", "小雪", "大雪",
+    "冬至", "小寒", "大寒", "立春", "雨水", "惊蛰",
+]
+_EPOCH = datetime(1970, 1, 1)
 
 SCRIPTS_DIR = Path(__file__).resolve().parent
 POEMS_FILE = SCRIPTS_DIR / "lock-poems.txt"
@@ -102,6 +112,35 @@ def jdn(year, month, day):
 def ganzhi_day(year, month, day):
     idx = (jdn(year, month, day) + 49) % 60
     return TIAN_GAN[idx % 10] + DI_ZHI[idx % 12]
+
+
+def year_ganzhi(year):
+    return TIAN_GAN[(year - 4) % 10] + DI_ZHI[(year - 4) % 12]
+
+
+def _jd_bjt(t):
+    return ((t - timedelta(hours=8)) - _EPOCH).total_seconds() / 86400.0 + 2440587.5
+
+
+def _solar_lon(jd):
+    T = (jd - 2451545.0) / 36525.0
+    L0 = 280.46646 + 36000.76983 * T + 0.0003032 * T * T
+    M = 357.52911 + 35999.05029 * T - 0.0001537 * T * T
+    Mr = math.radians(M % 360)
+    C = ((1.914602 - 0.004817 * T - 0.000014 * T * T) * math.sin(Mr)
+         + (0.019993 - 0.000101 * T) * math.sin(2 * Mr)
+         + 0.000289 * math.sin(3 * Mr))
+    sun = L0 + C
+    omega = 125.04 - 1934.136 * T
+    return (sun - 0.00569 - 0.00478 * math.sin(math.radians(omega))) % 360
+
+
+def current_jieqi(t):
+    return JIEQI24[int(_solar_lon(_jd_bjt(t)) // 15)]
+
+
+def luo_kuan_str(t):
+    return year_ganzhi(t.year) + "年" + current_jieqi(t)
 
 
 def get_screen_geometry():
@@ -276,7 +315,7 @@ def draw_shichen(cr, text, x, y, font_desc, color, bg=None, color_dark=None):
     PangoCairo.show_layout(cr, layout)
 
 
-def build_surface(base_path, poem, sc_name, gz, date_str):
+def build_surface(base_path, poem, sc_name, gz, luo_kuan):
     base = cairo.ImageSurface.create_from_png(str(base_path))
     W, H = base.get_width(), base.get_height()
 
@@ -305,8 +344,17 @@ def build_surface(base_path, poem, sc_name, gz, date_str):
     shichen_y = int(H * 0.82)
     draw_shichen(cr, sc_name, shichen_x, shichen_y, "Source Han Serif CN Bold 72", fg_rgb,
                  bg=bg, color_dark=ink_text_rgb)
-    draw_shichen(cr, date_str, shichen_x, shichen_y + 112, "LXGW WenKai 16", fg2_rgb,
-                 bg=bg, color_dark=ink_text_dim_rgb)
+    tmp_lay = PangoCairo.create_layout(cr)
+    tmp_lay.set_font_description(Pango.FontDescription("Source Han Serif CN Bold 72"))
+    tmp_lay.set_text(sc_name, -1)
+    w72, _h72 = tmp_lay.get_pixel_size()
+    luo_cx = shichen_x + w72 + 30
+    y_luo_end = draw_vertical_text(
+        cr, luo_kuan, luo_cx, shichen_y - 2,
+        "LXGW WenKai 18", 26, fg2_rgb,
+        bg=bg, color_dark=ink_text_dim_rgb,
+    )
+    draw_seal(cr, LUO_SEAL_TEXT, luo_cx, y_luo_end + 12, SEAL_FONT, 8, seal_rgb, fg_rgb)
 
     return surface
 
@@ -326,8 +374,8 @@ def write_jpeg(surface, out_path):
     )
 
 
-def compose_to(base_path, poem, sc_name, gz, date_str, out_path):
-    surface = build_surface(base_path, poem, sc_name, gz, date_str)
+def compose_to(base_path, poem, sc_name, gz, luo_kuan, out_path):
+    surface = build_surface(base_path, poem, sc_name, gz, luo_kuan)
     write_jpeg(surface, out_path)
 
 
@@ -337,8 +385,8 @@ def make_lock_image(out_path):
     now = datetime.now()
     sc_name = shichen_name(now.hour)
     gz = ganzhi_day(now.year, now.month, now.day)
-    date_str = f"{now.year} · {now.month:02d} · {now.day:02d}"
-    compose_to(base, poem, sc_name, gz, date_str, out_path)
+    luo_kuan = luo_kuan_str(now)
+    compose_to(base, poem, sc_name, gz, luo_kuan, out_path)
     return out_path
 
 
@@ -364,8 +412,8 @@ class RenderDaemon:
         now = datetime.now()
         sc_name = shichen_name(now.hour)
         gz = ganzhi_day(now.year, now.month, now.day)
-        date_str = f"{now.year} · {now.month:02d} · {now.day:02d}"
-        compose_to(base, poem, sc_name, gz, date_str, COMPOSE)
+        luo_kuan = luo_kuan_str(now)
+        compose_to(base, poem, sc_name, gz, luo_kuan, COMPOSE)
 
     def serve(self):
         CACHE_DIR.mkdir(parents=True, exist_ok=True)
