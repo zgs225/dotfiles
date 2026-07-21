@@ -7,19 +7,29 @@ RENDER_SCRIPT="$HOME/.config/i3/scripts/lock-render.py"
 dunstctl set-paused true 2>/dev/null || true
 trap 'dunstctl set-paused false 2>/dev/null || true' EXIT
 
-if ! compgen -G "$CACHE_DIR/lock-*.png" >/dev/null 2>&1; then
-    python3 "$RENDER_SCRIPT" 2>/dev/null || true
-fi
+COMPOSE="$CACHE_DIR/_compose.jpg"
+SOCK="$CACHE_DIR/sock"
+img=""
 
-mapfile -t imgs < <(find "$CACHE_DIR" -maxdepth 1 -name 'lock-*.png' -type f | sort)
-if (( ${#imgs[@]} == 0 )); then
+if [[ -S "$SOCK" ]] && python3 -c '
+import socket, sys, os
+s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM); s.settimeout(3)
+try:
+    s.connect(os.path.expanduser("~/.cache/lockscreen/sock"))
+    s.sendall(b"L\n")
+    r = s.recv(8).strip()
+    sys.exit(0 if r == b"ok" else 1)
+except Exception:
+    sys.exit(2)
+' 2>/dev/null && [[ -f "$COMPOSE" ]]; then
+    img="$COMPOSE"
+elif img=$(python3 "$RENDER_SCRIPT" --lock-image "$COMPOSE" 2>/dev/null) && [[ -f "$img" ]]; then
+    :
+else
     dunstctl set-paused false 2>/dev/null || true
     i3lock -n -c 1a1a1e
     exit 0
 fi
-
-idx=$(( RANDOM % ${#imgs[@]} ))
-img="${imgs[$idx]}"
 
 geom=$(xrandr --current 2>/dev/null | grep -m1 ' connected' | grep -oP '\d+x\d+' | head -1)
 W=${geom%%x*}

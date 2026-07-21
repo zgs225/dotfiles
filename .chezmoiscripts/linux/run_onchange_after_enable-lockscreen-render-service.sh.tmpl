@@ -1,0 +1,9 @@
+{{ if and .isLinux .useI3 -}}
+#!/bin/sh
+# lockscreen-render.service hash: {{ include "dot_config/systemd/user/lockscreen-render.service.tmpl" | sha256sum }}
+
+set -e
+
+systemctl --user daemon-reload
+systemctl --user enable --now lockscreen-render.service
+{{ end -}}

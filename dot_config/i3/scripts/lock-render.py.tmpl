@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import os
 import sys
+import argparse
+import socket
 import subprocess
 import hashlib
 import re
@@ -21,9 +23,9 @@ SEAL_COLOR = "{{ .colors.error }}"
 SCRIPTS_DIR = Path(__file__).resolve().parent
 POEMS_FILE = SCRIPTS_DIR / "lock-poems.txt"
 CACHE_DIR = Path.home() / ".cache" / "lockscreen"
-STAMP_FILE = CACHE_DIR / ".stamp"
-BASE_FILE = CACHE_DIR / "base.png"
 FEHBG = Path.home() / ".fehbg"
+SOCK = CACHE_DIR / "sock"
+COMPOSE = CACHE_DIR / "_compose.jpg"
 
 TIAN_GAN = "甲乙丙丁戊己庚辛壬癸"
 DI_ZHI = "子丑寅卯辰巳午未申酉戌亥"
@@ -93,6 +95,12 @@ def get_wallpaper_path():
     return None
 
 
+def wallpaper_hash(wp_path):
+    if wp_path and wp_path.exists():
+        return hashlib.md5(wp_path.read_bytes()).hexdigest()[:12]
+    return "solid"
+
+
 def blur_wallpaper(src, width, height, dst):
     subprocess.run(
         [
@@ -106,6 +114,31 @@ def blur_wallpaper(src, width, height, dst):
         check=True,
         capture_output=True,
     )
+
+
+def ensure_base():
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    wp_path = get_wallpaper_path()
+    h = wallpaper_hash(wp_path)
+    base = CACHE_DIR / f"base-{h}.png"
+    if base.exists():
+        return base
+    W, H = get_screen_geometry()
+    tmp = CACHE_DIR / f"base-{h}.tmp.{os.getpid()}"
+    try:
+        if wp_path and wp_path.exists():
+            blur_wallpaper(wp_path, W, H, tmp)
+        else:
+            subprocess.run(
+                ["magick", "-size", f"{W}x{H}", "xc:#1a1a1e", str(tmp)],
+                check=True, capture_output=True,
+            )
+        os.replace(tmp, base)
+    except Exception:
+        if tmp.exists():
+            tmp.unlink()
+        raise
+    return base
 
 
 def load_poems():
@@ -155,83 +188,131 @@ def draw_shichen(cr, text, x, y, font_desc, color):
     PangoCairo.show_layout(cr, layout)
 
 
-def compute_stamp(wallpaper_path, now):
-    wp_hash = ""
-    if wallpaper_path and wallpaper_path.exists():
-        wp_hash = hashlib.md5(wallpaper_path.read_bytes()).hexdigest()[:12]
-    sc = shichen_index(now.hour)
-    gz = ganzhi_day(now.year, now.month, now.day)
-    return f"{wp_hash}:{sc}:{now.year}{now.month:02d}{now.day:02d}:{gz}"
-
-
-def render_all():
-    CACHE_DIR.mkdir(parents=True, exist_ok=True)
-
-    now = datetime.now()
-    wp_path = get_wallpaper_path()
-    stamp = compute_stamp(wp_path, now)
-
-    if STAMP_FILE.exists() and STAMP_FILE.read_text().strip() == stamp:
-        print(f"SKIP: stamp unchanged ({stamp})")
-        return
-
-    W, H = get_screen_geometry()
-
-    if wp_path and wp_path.exists():
-        blur_wallpaper(wp_path, W, H, BASE_FILE)
-    else:
-        subprocess.run(
-            ["magick", "-size", f"{W}x{H}", "xc:#1a1a1e", str(BASE_FILE)],
-            check=True, capture_output=True,
-        )
-
-    base_surface = cairo.ImageSurface.create_from_png(str(BASE_FILE))
-    poems = load_poems()
+def build_surface(base_path, poem, sc_name, gz, date_str):
+    base = cairo.ImageSurface.create_from_png(str(base_path))
+    W, H = base.get_width(), base.get_height()
 
     fg_rgb = hex_to_rgb(FG_PRIMARY)
     fg2_rgb = hex_to_rgb(FG_SECONDARY)
     seal_rgb = hex_to_rgb(SEAL_COLOR)
 
-    sc_name = shichen_name(now.hour)
-    gz = ganzhi_day(now.year, now.month, now.day)
-    date_str = f"{now.year} · {now.month:02d} · {now.day:02d}"
+    surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, W, H)
+    cr = cairo.Context(surface)
+    cr.set_source_surface(base, 0, 0)
+    cr.paint()
 
     poem_cx = int(W * 0.88)
     poem_top = int(H * 0.10)
-    poem_step = 56
-    poem_font = "Source Han Serif CN 36"
-
-    seal_size = 48
-    seal_gap = 40
+    y_after = draw_vertical_text(
+        cr, poem, poem_cx, poem_top, "Source Han Serif CN 36", 56, fg_rgb
+    )
+    draw_seal(cr, gz, poem_cx, y_after + 40, 48, seal_rgb, fg_rgb)
 
     shichen_x = int(W * 0.06)
     shichen_y = int(H * 0.82)
-    shichen_font = "Source Han Serif CN Bold 72"
-    date_y = shichen_y + 112
-    date_font = "LXGW WenKai 16"
+    draw_shichen(cr, sc_name, shichen_x, shichen_y, "Source Han Serif CN Bold 72", fg_rgb)
+    draw_shichen(cr, date_str, shichen_x, shichen_y + 112, "LXGW WenKai 16", fg2_rgb)
 
-    for i, poem in enumerate(poems[:12]):
-        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, W, H)
-        cr = cairo.Context(surface)
-        cr.set_source_surface(base_surface, 0, 0)
-        cr.paint()
+    return surface
 
-        y_after = draw_vertical_text(
-            cr, poem, poem_cx, poem_top, poem_font, poem_step, fg_rgb
-        )
-        draw_seal(
-            cr, gz, poem_cx, y_after + seal_gap, seal_size, seal_rgb, fg_rgb
-        )
 
-        draw_shichen(cr, sc_name, shichen_x, shichen_y, shichen_font, fg_rgb)
-        draw_shichen(cr, date_str, shichen_x, date_y, date_font, fg2_rgb)
+def write_jpeg(surface, out_path):
+    W = surface.get_width()
+    H = surface.get_height()
+    raw = bytes(surface.get_data())
+    subprocess.run(
+        [
+            "magick", "-size", f"{W}x{H}", "-depth", "8", "bgra:-",
+            "-quality", "92", "-sampling-factor", "4:2:0", str(out_path),
+        ],
+        input=raw,
+        check=True,
+        capture_output=True,
+    )
 
-        out = CACHE_DIR / f"lock-{i:02d}.png"
-        surface.write_to_png(str(out))
 
-    STAMP_FILE.write_text(stamp)
-    print(f"OK: rendered {min(len(poems), 12)} variants, stamp={stamp}")
+def compose_to(base_path, poem, sc_name, gz, date_str, out_path):
+    surface = build_surface(base_path, poem, sc_name, gz, date_str)
+    write_jpeg(surface, out_path)
+
+
+def make_lock_image(out_path):
+    base = ensure_base()
+    poem = random.choice(load_poems())
+    now = datetime.now()
+    sc_name = shichen_name(now.hour)
+    gz = ganzhi_day(now.year, now.month, now.day)
+    date_str = f"{now.year} · {now.month:02d} · {now.day:02d}"
+    compose_to(base, poem, sc_name, gz, date_str, out_path)
+    return out_path
+
+
+class RenderDaemon:
+    def __init__(self):
+        self.poems = load_poems()
+        self.last_mtime = None
+        self.base_path = None
+
+    def ensure(self):
+        try:
+            mt = FEHBG.stat().st_mtime
+        except FileNotFoundError:
+            mt = 0
+        if mt != self.last_mtime or self.base_path is None:
+            self.base_path = ensure_base()
+            self.last_mtime = mt
+        return self.base_path
+
+    def handle(self):
+        base = self.ensure()
+        poem = random.choice(self.poems)
+        now = datetime.now()
+        sc_name = shichen_name(now.hour)
+        gz = ganzhi_day(now.year, now.month, now.day)
+        date_str = f"{now.year} · {now.month:02d} · {now.day:02d}"
+        compose_to(base, poem, sc_name, gz, date_str, COMPOSE)
+
+    def serve(self):
+        CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        if SOCK.exists():
+            SOCK.unlink()
+        srv = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        srv.bind(str(SOCK))
+        os.chmod(str(SOCK), 0o600)
+        srv.listen(8)
+        print(f"lock-render daemon listening on {SOCK}", file=sys.stderr, flush=True)
+        while True:
+            conn, _ = srv.accept()
+            with conn:
+                try:
+                    conn.recv(64)
+                    self.handle()
+                    conn.sendall(b"ok\n")
+                except Exception as e:
+                    try:
+                        conn.sendall(b"err\n")
+                    except Exception:
+                        pass
+                    print(f"daemon error: {e}", file=sys.stderr, flush=True)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--daemon", action="store_true",
+                        help="run as a常驻 daemon serving lock-image requests over a unix socket")
+    parser.add_argument("--lock-image", metavar="OUT",
+                        help="synchronously compose one lock image to OUT (fallback path)")
+    parser.add_argument("--ensure-base", action="store_true",
+                        help="ensure blurred base exists and print its path")
+    args = parser.parse_args()
+
+    if args.daemon:
+        RenderDaemon().serve()
+    elif args.lock_image:
+        print(make_lock_image(Path(args.lock_image)))
+    else:
+        print(ensure_base())
 
 
 if __name__ == "__main__":
-    render_all()
+    main()
