@@ -13,11 +13,12 @@ default_border pixel 2
 default_floating_border pixel 2
 hide_edge_borders smart
 
-# Colors (Song: tianqing accent, ochre urgent — cinnabar reserved for ws seal)
+# Colors (Song mounting: tianqing hairline frame only, cinnabar reserved for ws seal)
+# Inscription text tiers: yuebai > xiekeqing > xiekeqing-dark (docs/design/window-mounting.md)
 #                          border   bg       text     indicator  child_border
-client.focused            {{ .colors.accent }} {{ .colors.accent }} {{ .colors.bg_base }}    {{ .colors.accent }}    {{ .colors.accent }}
-client.focused_inactive   {{ .colors.ink }} {{ .colors.ink }} {{ .colors.fg_primary }}    {{ .colors.ink }} {{ .colors.ink }}
-client.unfocused          {{ .colors.ink }} {{ .colors.bg_base }}    {{ .colors.fg_secondary }}    {{ .colors.ink }} {{ .colors.ink }}
+client.focused            {{ .colors.accent }} {{ .colors.bg_base }} {{ .colors.fg_primary }}    {{ .colors.accent }}    {{ .colors.accent }}
+client.focused_inactive   {{ .colors.ink }} {{ .colors.ink }} {{ .colors.fg_secondary }}    {{ .colors.ink }} {{ .colors.ink }}
+client.unfocused          {{ .colors.ink }} {{ .colors.bg_base }}    #85857d    {{ .colors.ink }} {{ .colors.ink }}
 client.urgent             {{ .colors.error }}      {{ .colors.error }}      {{ .colors.fg_primary }}    {{ .colors.error }}      {{ .colors.error }}
 client.placeholder        {{ .colors.ink }} {{ .colors.bg_base }}    {{ .colors.fg_primary }}    {{ .colors.ink }} {{ .colors.ink }}
 client.background         {{ .colors.bg_base }}
@@ -148,7 +149,6 @@ exec_always --no-startup-id ~/.config/eww/scripts/launch.sh
 exec --no-startup-id dunst
 exec --no-startup-id greenclip daemon
 exec --no-startup-id fcitx5 -d
-exec --no-startup-id sunshine
 exec --no-startup-id nm-applet
 exec --no-startup-id wezterm start --class dropdown-btop btop
 exec --no-startup-id libinput-gestures-setup start

@@ -217,7 +217,7 @@ eww 的 bar 与 scrim 在 rounded/shadow/blur exclude 清单中；Rofi `corner-r
 
 - 基础单位 4px；阶梯 4 / 8 / 12 / 16 / 24
 - i3 `gaps inner 8`（i3 ≥ 4.22 原生支持），窗口边框 2px
-- i3 边框色：focused 天青 / unfocused 墨 / urgent 赭石（`dot_config/i3/config.tmpl`）
+- i3 边框色：focused 天青（仅 2px 框绫，标题栏玄底，禁横幅）/ unfocused 墨 / urgent 赭石（`dot_config/i3/config.tmpl`）；题款文字三档纵深：focused 月白 > focused_inactive 蟹壳青 > unfocused 蟹壳青暗阶 `#85857d`（画心框绫，见 `docs/design/window-mounting.md`）
 - bar 水平内边距 12px；bar 组内步长统一 8px（模块间距 6px 已废除）；弹层距屏边 12px（与 i3 gap 对齐）
 
 ---
