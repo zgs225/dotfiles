@@ -26,7 +26,7 @@ echo "$idx" > "$state_file"
 current="${wallpapers[$idx]}"
 feh --bg-fill "$current"
 
-betterlockscreen -u "$current" --fx blur --blur 0.3 &>/dev/null &
+systemctl --user start lockscreen-refresh.service >/dev/null 2>&1 &
 
 name=$(basename "$current")
 notify-send -u low -t 4000 -i "$current" "Wallpaper" "$name ($((idx + 1))/$count)"

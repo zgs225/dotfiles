@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+CACHE_DIR="$HOME/.cache/lockscreen"
+RENDER_SCRIPT="$HOME/.config/i3/scripts/lock-render.py"
+
+dunstctl set-paused true 2>/dev/null || true
+trap 'dunstctl set-paused false 2>/dev/null || true' EXIT
+
+if ! compgen -G "$CACHE_DIR/lock-*.png" >/dev/null 2>&1; then
+    python3 "$RENDER_SCRIPT" 2>/dev/null || true
+fi
+
+mapfile -t imgs < <(find "$CACHE_DIR" -maxdepth 1 -name 'lock-*.png' -type f | sort)
+if (( ${#imgs[@]} == 0 )); then
+    dunstctl set-paused false 2>/dev/null || true
+    i3lock -n -c 1a1a1e
+    exit 0
+fi
+
+idx=$(( RANDOM % ${#imgs[@]} ))
+img="${imgs[$idx]}"
+
+geom=$(xrandr --current 2>/dev/null | grep -m1 ' connected' | grep -oP '\d+x\d+' | head -1)
+W=${geom%%x*}
+H=${geom##*x}
+W=${W:-2560}
+H=${H:-1600}
+
+dpi=$(xrdb -query 2>/dev/null | sed -n 's/.*Xft\.dpi:[[:space:]]*\([0-9.]*\).*/\1/p')
+dpi=${dpi:-96}
+
+read -r cx cy radius ringw < <(awk -v w="$W" -v h="$H" -v dpi="$dpi" 'BEGIN{
+  s=dpi/96;
+  printf "%d %d %d %.2f\n", (w/2)/s, (h*0.55)/s, 80/s, 4/s
+}')
+
+i3lock \
+    -n \
+    -i "$img" \
+    --indicator \
+    --radius=$radius \
+    --ring-width=$ringw \
+    --ind-pos="${cx}:${cy}" \
+    --ring-color={{ .colors.accent | trimPrefix "#" }}44 \
+    --ringver-color={{ .colors.accent | trimPrefix "#" }}aa \
+    --ringwrong-color={{ .colors.error | trimPrefix "#" }}ff \
+    --inside-color=00000000 \
+    --line-uses-ring \
+    --keyhl-color={{ .colors.accent | trimPrefix "#" }}ff \
+    --bshl-color={{ .colors.warn | trimPrefix "#" }}ff \
+    --verif-color=00000000 \
+    --wrong-color=00000000 \
+    --separator-color=00000000

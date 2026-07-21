@@ -1,0 +1,237 @@
+#!/usr/bin/env python3
+import os
+import sys
+import subprocess
+import hashlib
+import re
+import random
+from datetime import datetime
+from pathlib import Path
+
+import cairo
+import gi
+gi.require_version("Pango", "1.0")
+gi.require_version("PangoCairo", "1.0")
+from gi.repository import Pango, PangoCairo
+
+FG_PRIMARY = "{{ .colors.fg_primary }}"
+FG_SECONDARY = "{{ .colors.fg_secondary }}"
+SEAL_COLOR = "{{ .colors.error }}"
+
+SCRIPTS_DIR = Path(__file__).resolve().parent
+POEMS_FILE = SCRIPTS_DIR / "lock-poems.txt"
+CACHE_DIR = Path.home() / ".cache" / "lockscreen"
+STAMP_FILE = CACHE_DIR / ".stamp"
+BASE_FILE = CACHE_DIR / "base.png"
+FEHBG = Path.home() / ".fehbg"
+
+TIAN_GAN = "甲乙丙丁戊己庚辛壬癸"
+DI_ZHI = "子丑寅卯辰巳午未申酉戌亥"
+SHICHEN_NAMES = [
+    "子时", "丑时", "寅时", "卯时", "辰时", "巳时",
+    "午时", "未时", "申时", "酉时", "戌时", "亥时",
+]
+
+
+def hex_to_rgb(h):
+    h = h.lstrip("#")
+    return tuple(int(h[i:i+2], 16) / 255.0 for i in (0, 2, 4))
+
+
+def shichen_index(hour):
+    return (hour + 1) // 2 % 12
+
+
+def shichen_name(hour):
+    return SHICHEN_NAMES[shichen_index(hour)]
+
+
+def jdn(year, month, day):
+    a = (14 - month) // 12
+    y = year + 4800 - a
+    m = month + 12 * a - 3
+    return day + (153 * m + 2) // 5 + 365 * y + y // 4 - y // 100 + y // 400 - 32045
+
+
+def ganzhi_day(year, month, day):
+    idx = (jdn(year, month, day) + 49) % 60
+    return TIAN_GAN[idx % 10] + DI_ZHI[idx % 12]
+
+
+def get_screen_geometry():
+    try:
+        out = subprocess.check_output(
+            ["xrandr", "--query"], text=True, stderr=subprocess.DEVNULL
+        )
+        for line in out.splitlines():
+            if " connected" in line and "primary" in line:
+                m = re.search(r"(\d+)x(\d+)\+", line)
+                if m:
+                    return int(m.group(1)), int(m.group(2))
+        for line in out.splitlines():
+            if " connected" in line:
+                m = re.search(r"(\d+)x(\d+)\+", line)
+                if m:
+                    return int(m.group(1)), int(m.group(2))
+    except Exception:
+        pass
+    return 2560, 1600
+
+
+def get_wallpaper_path():
+    if FEHBG.exists():
+        content = FEHBG.read_text()
+        m = re.search(r"--bg-\w+\s+'([^']+)'", content)
+        if m:
+            return Path(m.group(1))
+        m = re.search(r'--bg-\w+\s+"([^"]+)"', content)
+        if m:
+            return Path(m.group(1))
+    default = Path.home() / ".local" / "share" / "wallpapers" / "default.jpg"
+    if default.exists():
+        return default
+    return None
+
+
+def blur_wallpaper(src, width, height, dst):
+    subprocess.run(
+        [
+            "magick", str(src),
+            "-resize", f"{width}x{height}^",
+            "-gravity", "center",
+            "-extent", f"{width}x{height}",
+            "-blur", "0x20",
+            str(dst),
+        ],
+        check=True,
+        capture_output=True,
+    )
+
+
+def load_poems():
+    if not POEMS_FILE.exists():
+        return ["静夜思"]
+    lines = POEMS_FILE.read_text().strip().splitlines()
+    return [l.strip() for l in lines if l.strip()]
+
+
+def draw_vertical_text(cr, text, cx, top_y, font_desc, step, color):
+    layout = PangoCairo.create_layout(cr)
+    layout.set_font_description(Pango.FontDescription(font_desc))
+    layout.set_alignment(Pango.Alignment.CENTER)
+    y = top_y
+    for ch in text:
+        layout.set_text(ch, -1)
+        w, h = layout.get_pixel_size()
+        cr.move_to(cx - w / 2, y)
+        cr.set_source_rgb(*color)
+        PangoCairo.show_layout(cr, layout)
+        y += step
+    return y
+
+
+def draw_seal(cr, text, cx, top_y, size, bg_color, fg_color):
+    sx = cx - size // 2
+    sy = top_y
+    cr.set_source_rgb(*bg_color)
+    cr.rectangle(sx, sy, size, size)
+    cr.fill()
+    layout = PangoCairo.create_layout(cr)
+    layout.set_font_description(Pango.FontDescription("LXGW WenKai Bold 22"))
+    layout.set_alignment(Pango.Alignment.CENTER)
+    layout.set_text(text, -1)
+    tw, th = layout.get_pixel_size()
+    cr.move_to(sx + (size - tw) / 2, sy + (size - th) / 2)
+    cr.set_source_rgb(*fg_color)
+    PangoCairo.show_layout(cr, layout)
+
+
+def draw_shichen(cr, text, x, y, font_desc, color):
+    layout = PangoCairo.create_layout(cr)
+    layout.set_font_description(Pango.FontDescription(font_desc))
+    layout.set_text(text, -1)
+    cr.move_to(x, y)
+    cr.set_source_rgb(*color)
+    PangoCairo.show_layout(cr, layout)
+
+
+def compute_stamp(wallpaper_path, now):
+    wp_hash = ""
+    if wallpaper_path and wallpaper_path.exists():
+        wp_hash = hashlib.md5(wallpaper_path.read_bytes()).hexdigest()[:12]
+    sc = shichen_index(now.hour)
+    gz = ganzhi_day(now.year, now.month, now.day)
+    return f"{wp_hash}:{sc}:{now.year}{now.month:02d}{now.day:02d}:{gz}"
+
+
+def render_all():
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+
+    now = datetime.now()
+    wp_path = get_wallpaper_path()
+    stamp = compute_stamp(wp_path, now)
+
+    if STAMP_FILE.exists() and STAMP_FILE.read_text().strip() == stamp:
+        print(f"SKIP: stamp unchanged ({stamp})")
+        return
+
+    W, H = get_screen_geometry()
+
+    if wp_path and wp_path.exists():
+        blur_wallpaper(wp_path, W, H, BASE_FILE)
+    else:
+        subprocess.run(
+            ["magick", "-size", f"{W}x{H}", "xc:#1a1a1e", str(BASE_FILE)],
+            check=True, capture_output=True,
+        )
+
+    base_surface = cairo.ImageSurface.create_from_png(str(BASE_FILE))
+    poems = load_poems()
+
+    fg_rgb = hex_to_rgb(FG_PRIMARY)
+    fg2_rgb = hex_to_rgb(FG_SECONDARY)
+    seal_rgb = hex_to_rgb(SEAL_COLOR)
+
+    sc_name = shichen_name(now.hour)
+    gz = ganzhi_day(now.year, now.month, now.day)
+    date_str = f"{now.year} · {now.month:02d} · {now.day:02d}"
+
+    poem_cx = int(W * 0.88)
+    poem_top = int(H * 0.10)
+    poem_step = 56
+    poem_font = "Source Han Serif CN 36"
+
+    seal_size = 48
+    seal_gap = 40
+
+    shichen_x = int(W * 0.06)
+    shichen_y = int(H * 0.82)
+    shichen_font = "Source Han Serif CN Bold 72"
+    date_y = shichen_y + 112
+    date_font = "LXGW WenKai 16"
+
+    for i, poem in enumerate(poems[:12]):
+        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, W, H)
+        cr = cairo.Context(surface)
+        cr.set_source_surface(base_surface, 0, 0)
+        cr.paint()
+
+        y_after = draw_vertical_text(
+            cr, poem, poem_cx, poem_top, poem_font, poem_step, fg_rgb
+        )
+        draw_seal(
+            cr, gz, poem_cx, y_after + seal_gap, seal_size, seal_rgb, fg_rgb
+        )
+
+        draw_shichen(cr, sc_name, shichen_x, shichen_y, shichen_font, fg_rgb)
+        draw_shichen(cr, date_str, shichen_x, date_y, date_font, fg2_rgb)
+
+        out = CACHE_DIR / f"lock-{i:02d}.png"
+        surface.write_to_png(str(out))
+
+    STAMP_FILE.write_text(stamp)
+    print(f"OK: rendered {min(len(poems), 12)} variants, stamp={stamp}")
+
+
+if __name__ == "__main__":
+    render_all()

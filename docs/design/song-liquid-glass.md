@@ -173,7 +173,7 @@ border: 1px solid rgba($accent, 0.15);   // 格内分隔
 
 - 时钟：Source Han Serif CN 72px 月白
 - ring：常态/验证 天青（alpha 44），退格 藤黄，错误 赭石；`--radius=80 --ring-width=4`
-- 壁纸缓存：`betterlockscreen -u ~/.local/share/wallpapers --fx blur --blur 0.3`
+- 立轴合成图：换壁纸或每小时由渲染器预生成（模糊壁纸 + 竖排诗句 + 干支印 + 时辰 + 公历，12 诗句变体），锁屏零渲染开销
 
 ### 4.8 壁纸与晕染
 
@@ -231,7 +231,7 @@ eww 的 bar 与 scrim 在 rounded/shadow/blur exclude 清单中；Rofi `corner-r
 | GTK4 | `dot_config/gtk-4.0/{settings.ini,gtk.css}.tmpl` | Adwaita + prefer-dark；popover/menu/tooltip 覆写天青发丝 |
 | GTK3 | `dot_themes/catppuccin-glass/` + `dot_config/gtk-3.0/settings.ini.tmpl` | 主题级玻璃（不单独换宋式，见 §9 妥协） |
 | Qt | `dot_config/Kvantum/` | GeneralColors 取令牌；`kvantum.kvconfig` 必须 INI 格式 |
-| 锁屏 | `dot_config/betterlockscreen/betterlockscreenrc.tmpl` | §4.7 |
+| 锁屏 | `dot_config/i3/scripts/lock-render.py.tmpl` + `executable_lock.sh.tmpl` + `dot_config/systemd/user/lockscreen-refresh.*` | §4.7 |
 | 壁纸 | `.chezmoiscripts/common/run_once_after_generate-default-wallpaper.sh` | 玄色生成 |
 | fontconfig | `dot_config/fontconfig/fonts.conf` | LXGW WenKai → JetBrainsMono Nerd Font 西文回退（§3） |
 
