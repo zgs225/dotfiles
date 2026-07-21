@@ -54,40 +54,40 @@ case "$1" in
     volume-up)
         pamixer -i 5
         vol=$(pamixer --get-volume)
-        show_osd "$(volume_icon "$vol")" "Volume" "$vol" "blue"
+        show_osd "$(volume_icon "$vol")" "音量" "$vol" "blue"
         ;;
     volume-down)
         pamixer -d 5
         vol=$(pamixer --get-volume)
-        show_osd "$(volume_icon "$vol")" "Volume" "$vol" "blue"
+        show_osd "$(volume_icon "$vol")" "音量" "$vol" "blue"
         ;;
     volume-mute)
         pamixer -t
         if [ "$(pamixer --get-mute)" = "true" ]; then
-            show_osd "󰝟" "Muted" "0" "peach"
+            show_osd "󰝟" "已静音" "0" "peach"
         else
             vol=$(pamixer --get-volume)
-            show_osd "$(volume_icon "$vol")" "Volume" "$vol" "blue"
+            show_osd "$(volume_icon "$vol")" "音量" "$vol" "blue"
         fi
         ;;
     mic-mute)
         pamixer --default-source -t
         if [ "$(pamixer --default-source --get-mute)" = "true" ]; then
-            show_osd "󰍭" "Mic Off" "0" "red"
+            show_osd "󰍭" "麦克风关" "0" "red"
         else
             vol=$(pamixer --default-source --get-volume)
-            show_osd "󰍬" "Mic On" "$vol" "green"
+            show_osd "󰍬" "麦克风开" "$vol" "green"
         fi
         ;;
     brightness-up)
         brightnessctl set +5%
         br=$(brightnessctl info 2>/dev/null | grep -oP '([0-9]+)%' | head -1 | tr -d '%' || echo 0)
-        show_osd "󰃝" "Brightness" "$br" "yellow"
+        show_osd "󰃝" "亮度" "$br" "yellow"
         ;;
     brightness-down)
         brightnessctl set 5%-
         br=$(brightnessctl info 2>/dev/null | grep -oP '([0-9]+)%' | head -1 | tr -d '%' || echo 0)
-        show_osd "󰃜" "Brightness" "$br" "yellow"
+        show_osd "󰃜" "亮度" "$br" "yellow"
         ;;
     *)
         echo "Usage: $0 {volume-up|volume-down|volume-mute|mic-mute|brightness-up|brightness-down}" >&2

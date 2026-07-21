@@ -14,5 +14,5 @@ if [ -n "$row" ]; then
     e_name=$(printf '%s' "$name" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
     echo "(box :class \"wired-list\" :orientation \"v\" (box :class \"wired-row wired-active\" :orientation \"h\" :spacing 12 :valign \"center\" (label :class \"wired-icon\" :text \"󰈀\") (label :class \"wired-name\" :xalign 0 :hexpand true :text \"${e_name}\") (label :class \"wired-device\" :text \"${e_dev}\")))"
 else
-    echo "(box :class \"wired-list\" :orientation \"v\" (label :class \"wired-empty\" :xalign 0 :text \"No wired connection\"))"
+    echo "(box :class \"wired-list\" :orientation \"v\" (label :class \"wired-empty\" :xalign 0 :text \"未接入有线网\"))"
 fi

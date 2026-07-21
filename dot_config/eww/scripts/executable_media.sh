@@ -4,21 +4,21 @@
 # Fields: has (bool), title, artist, status ("Playing"|"Paused"), icon.
 
 if ! command -v playerctl >/dev/null 2>&1; then
-    printf '{"has":false,"title":"Nothing Playing","artist":"No media source","status":"Stopped","icon":"\u200b"}\n'
+    printf '{"has":false,"title":"暂无媒体","artist":"无媒体源","status":"Stopped","icon":"\u200b"}\n'
     exit 0
 fi
 
 status=$(playerctl status 2>/dev/null)
 if [ -z "$status" ] || [ "$status" = "Stopped" ]; then
-    printf '{"has":false,"title":"Nothing Playing","artist":"No media source","status":"Stopped","icon":"\u200b"}\n'
+    printf '{"has":false,"title":"暂无媒体","artist":"无媒体源","status":"Stopped","icon":"\u200b"}\n'
     exit 0
 fi
 
 title=$(playerctl metadata title 2>/dev/null)
 artist=$(playerctl metadata artist 2>/dev/null)
 esc() { sed -e 's/\\/\\\\/g' -e 's/"/\\"/g'; }
-title=$(printf '%s' "${title:-Unknown}" | esc)
-artist=$(printf '%s' "${artist:-Unknown}" | esc)
+title=$(printf '%s' "${title:-未知}" | esc)
+artist=$(printf '%s' "${artist:-未知}" | esc)
 
 if [ "$status" = "Playing" ]; then icon="󰏤"; else icon="󰐊"; fi
 printf '{"has":true,"title":"%s","artist":"%s","status":"%s","icon":"%s"}\n' \

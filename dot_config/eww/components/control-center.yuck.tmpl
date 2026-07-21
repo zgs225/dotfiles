@@ -10,7 +10,7 @@
     (box :class "popup-header" :orientation "h" :spacing 10 :valign "center" :space-evenly false
       (button :class "back-btn" :onclick "~/.config/eww/scripts/open-popup.sh control-center"
         (label :text "󰁍" :class "back-icon"))
-      (label :text "Control Center" :class "popup-title" :hexpand true :xalign 0))
+      (label :text "控制中心" :class "popup-title" :hexpand true :xalign 0))
 
     ;; 2x2 toggle tiles
     (box :orientation "v" :spacing 10 :class "tile-grid"
@@ -21,16 +21,16 @@
           (box :orientation "h" :spacing 10 :valign "center" :space-evenly false
             (label :text "󰤨" :class "cc-tile-icon")
             (box :orientation "v" :spacing 0 :hexpand true
-              (label :text "Wi-Fi" :class "cc-tile-title" :xalign 0)
-              (label :text "${wifi_on > 0 ? (wifi_name == 'Disconnected' ? 'On' : wifi_name) : 'Off'}" :class "cc-tile-sub" :xalign 0 :limit-width 12))))
+              (label :text "无线网" :class "cc-tile-title" :xalign 0)
+              (label :text "${wifi_on > 0 ? (wifi_name == '未连接' ? '开' : wifi_name) : '关'}" :class "cc-tile-sub" :xalign 0 :limit-width 12))))
         (box :class "cc-tile ${bt_on > 0 ? 'on' : ''}" :orientation "h" :spacing 4 :valign "center" :space-evenly false :hexpand true
           (button :class "cc-tile-main" :hexpand true
             :onclick "~/.config/eww/scripts/toggle-bt.sh"
             (box :orientation "h" :spacing 10 :valign "center" :space-evenly false
               (label :text "󰂯" :class "cc-tile-icon")
               (box :orientation "v" :spacing 0
-                (label :text "Bluetooth" :class "cc-tile-title" :xalign 0)
-                (label :text "${bt_on > 0 ? 'On' : 'Off'}" :class "cc-tile-sub" :xalign 0))))
+                (label :text "蓝牙" :class "cc-tile-title" :xalign 0)
+                (label :text "${bt_on > 0 ? '开' : '关'}" :class "cc-tile-sub" :xalign 0))))
           (button :class "cc-tile-arrow" :valign "center" :halign "end"
             :onclick "~/.config/eww/scripts/open-popup.sh bluetooth-popup"
             (label :text "󰅂" :class "cc-tile-arrow-icon"))))
@@ -40,22 +40,22 @@
           (box :orientation "h" :spacing 10 :valign "center" :space-evenly false
             (label :text "󰀝" :class "cc-tile-icon")
             (box :orientation "v" :spacing 0 :hexpand true
-              (label :text "Airplane Mode" :class "cc-tile-title" :xalign 0 :limit-width 12)
-              (label :text "${airplane_on > 0 ? 'On' : 'Off'}" :class "cc-tile-sub" :xalign 0))))
+              (label :text "飞行模式" :class "cc-tile-title" :xalign 0 :limit-width 12)
+              (label :text "${airplane_on > 0 ? '开' : '关'}" :class "cc-tile-sub" :xalign 0))))
         (button :class "cc-tile ${dnd ? 'on' : ''}" :hexpand true
           :onclick "~/.config/eww/scripts/toggle-dnd.sh"
           (box :orientation "h" :spacing 10 :valign "center" :space-evenly false
             (label :text "󰂛" :class "cc-tile-icon")
             (box :orientation "v" :spacing 0 :hexpand true
-              (label :text "Do Not Disturb" :class "cc-tile-title" :xalign 0 :limit-width 13)
-              (label :text "${dnd ? 'On' : 'Off'}" :class "cc-tile-sub" :xalign 0))))))
+              (label :text "勿扰" :class "cc-tile-title" :xalign 0 :limit-width 13)
+              (label :text "${dnd ? '开' : '关'}" :class "cc-tile-sub" :xalign 0))))))
 
     ;; Sliders
     (box :class "cc-slider-row" :orientation "h" :spacing 12 :valign "center" :space-evenly false
       (label :text "󰃠" :class "cc-slider-icon")
       (box :orientation "v" :spacing 3 :hexpand true
         (box :orientation "h"
-          (label :text "Brightness" :class "cc-slider-label" :xalign 0 :hexpand true)
+          (label :text "亮度" :class "cc-slider-label" :xalign 0 :hexpand true)
           (label :text "${brightness}%" :class "cc-slider-val" :xalign 1))
         (scale :class "cc-scale" :value "${brightness}" :min 0 :max 100
           :onchange "brightnessctl set {}% >/dev/null")))
@@ -64,7 +64,7 @@
         (label :text "${muted ? '󰝟' : (volume >= 66 ? '󰕾' : (volume >= 33 ? '󰖀' : '󰕿'))}" :class "cc-slider-icon"))
       (box :orientation "v" :spacing 3 :hexpand true
         (box :orientation "h"
-          (label :text "Volume" :class "cc-slider-label" :xalign 0 :hexpand true)
+          (label :text "音量" :class "cc-slider-label" :xalign 0 :hexpand true)
           (label :text "${volume}%" :class "cc-slider-val" :xalign 1))
         (scale :class "cc-scale" :value "${volume}" :min 0 :max 100
           :onchange "pamixer --set-volume {}")))
@@ -99,10 +99,10 @@
     (box :class "cc-quick" :orientation "h" :spacing 10
       (button :class "quick-btn" :hexpand true :onclick "~/.config/eww/scripts/cc-action.sh night-light"
         (box :orientation "v" :spacing 4 :valign "center" :halign "center"
-          (label :text "󰔎" :class "quick-icon") (label :text "Night Light" :class "quick-label")))
+          (label :text "󰔎" :class "quick-icon") (label :text "护眼模式" :class "quick-label")))
       (button :class "quick-btn" :hexpand true :onclick "~/.config/eww/scripts/cc-action.sh screenshot"
         (box :orientation "v" :spacing 4 :valign "center" :halign "center"
-          (label :text "󰹑" :class "quick-icon") (label :text "Screenshot" :class "quick-label")))
+          (label :text "󰹑" :class "quick-icon") (label :text "截图" :class "quick-label")))
       (button :class "quick-btn" :hexpand true :onclick "~/.config/eww/scripts/cc-action.sh performance"
         (box :orientation "v" :spacing 4 :valign "center" :halign "center"
-          (label :text "󰓅" :class "quick-icon") (label :text "Performance" :class "quick-label"))))))
+          (label :text "󰓅" :class "quick-icon") (label :text "性能" :class "quick-label"))))))

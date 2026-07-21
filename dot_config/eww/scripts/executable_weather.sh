@@ -25,4 +25,4 @@ if [ -n "$raw" ] && command -v jq >/dev/null 2>&1; then
     fi
 fi
 
-printf '{"temp":"--\u00b0C","desc":"Unavailable","lohi":"--\u00b0 / --\u00b0"}\n'
+printf '{"temp":"--\u00b0C","desc":"暂无数据","lohi":"--\u00b0 / --\u00b0"}\n'

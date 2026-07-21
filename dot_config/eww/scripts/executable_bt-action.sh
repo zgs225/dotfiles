@@ -49,7 +49,7 @@ case "$action" in
 connect)
     ~/.config/eww/scripts/bt-scan.sh off 8>&-
     sleep 0.5
-    notice "Connecting to $label..."
+    notice "正在连接 $label..."
     out=$(bluetoothctl connect "$mac")
     echo "$out"
     sleep 1
@@ -62,7 +62,7 @@ connect)
     else
         err=$(echo "$out" | grep -o 'org.bluez.Error.*' | head -1)
         [ -z "$err" ] && err="device unreachable or not connectable"
-        notice "Connect failed: $err"
+        notice "连接失败: $err"
     fi
     ;;
 disconnect)
@@ -70,7 +70,7 @@ disconnect)
     sleep 0.5
     out=$(bluetoothctl disconnect "$mac")
     echo "$out"
-    connected && notice "Disconnect failed" || notice ""
+    connected && notice "断开失败" || notice ""
     ;;
 pair)
     ~/.config/eww/scripts/bt-scan.sh off 8>&-
@@ -93,7 +93,7 @@ pair)
         sleep 0.5
     fi
     if ! known; then
-        notice "Device not found - keep $label discoverable and retry"
+        notice "未找到设备 - 请保持 $label 可被发现后重试"
     else
         dbus-send --session --dest=org.eww.BtAgent --type=method_call \
             /org/eww/BtAgent org.eww.BtAgent.PairDevice string:"$mac" string:"$label" 2>/dev/null
