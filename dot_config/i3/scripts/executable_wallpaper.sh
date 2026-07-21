@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+wallpaper_dir="$HOME/.local/share/wallpapers"
+state_file="$HOME/.local/share/wallpapers/.current-index"
+
+mapfile -t wallpapers < <(find "$wallpaper_dir" -maxdepth 1 -type f \
+    \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) \
+    | sort)
+
+count=${#wallpapers[@]}
+if (( count == 0 )); then
+    notify-send -u low "Wallpaper" "No wallpapers found in $wallpaper_dir"
+    exit 1
+fi
+
+idx=0
+if [[ -f "$state_file" ]]; then
+    idx=$(<"$state_file")
+    [[ "$idx" =~ ^[0-9]+$ ]] || idx=0
+fi
+
+idx=$(( (idx + 1) % count ))
+echo "$idx" > "$state_file"
+
+current="${wallpapers[$idx]}"
+feh --bg-fill "$current"
+
+betterlockscreen -u "$current" --fx blur --blur 0.3 &>/dev/null &
+
+name=$(basename "$current")
+notify-send -u low -t 4000 -i "$current" "Wallpaper" "$name ($((idx + 1))/$count)"
