@@ -71,6 +71,7 @@ bindsym $mod+l focus right
 
 # Lock screen
 bindsym $mod+Shift+l exec --no-startup-id ~/.config/i3/scripts/lock.sh
+bindsym $mod+Shift+w exec --no-startup-id betterlockscreen -u ~/.local/share/wallpapers/ --fx blur --blur 0.3 && betterlockscreen -w blur
 
 # Focus parent/child
 bindsym $mod+Ctrl+h focus parent
