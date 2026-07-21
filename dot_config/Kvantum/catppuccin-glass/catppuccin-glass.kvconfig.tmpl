@@ -48,25 +48,25 @@ tooltip_delay=-1
 check_size=16
 
 [GeneralColors]
-window.color={{ .colors.base }}
-base.color={{ .colors.base }}
-alt.base.color={{ .colors.surface0 }}
-button.color={{ .colors.base }}
-light.color={{ .colors.surface2 }}
-mid.light.color={{ .colors.surface1 }}
-dark.color={{ .colors.crust }}
-mid.color={{ .colors.surface1 }}
-highlight.color={{ .colors.lavender }}
-inactive.highlight.color={{ .colors.lavender }}
-text.color={{ .colors.text }}
-window.text.color={{ .colors.text }}
-button.text.color={{ .colors.text }}
-disabled.text.color={{ .colors.overlay0 }}
-tooltip.text.color={{ .colors.text }}
-highlight.text.color={{ .colors.base }}
-link.color={{ .colors.blue }}
-link.visited.color={{ .colors.mauve }}
-progress.indicator.text.color={{ .colors.base }}
+window.color={{ .colors.bg_base }}
+base.color={{ .colors.bg_base }}
+alt.base.color={{ .colors.ink }}
+button.color={{ .colors.bg_base }}
+light.color=#464652
+mid.light.color=#3a3a44
+dark.color=#15151a
+mid.color=#3a3a44
+highlight.color={{ .colors.accent }}
+inactive.highlight.color={{ .colors.accent }}
+text.color={{ .colors.fg_primary }}
+window.text.color={{ .colors.fg_primary }}
+button.text.color={{ .colors.fg_primary }}
+disabled.text.color=#6f6f68
+tooltip.text.color={{ .colors.fg_primary }}
+highlight.text.color={{ .colors.bg_base }}
+link.color={{ .colors.accent }}
+link.visited.color={{ .colors.accent }}
+progress.indicator.text.color={{ .colors.bg_base }}
 
 [Hacks]
 respect_darkness=true
@@ -95,14 +95,14 @@ text.margin.top=2
 text.margin.bottom=2
 text.margin.left=2
 text.margin.right=2
-text.normal.color={{ .colors.text }}
-text.press.color={{ .colors.text }}
-text.toggle.color={{ .colors.base }}
-text.focus.color={{ .colors.text }}
+text.normal.color={{ .colors.fg_primary }}
+text.press.color={{ .colors.fg_primary }}
+text.toggle.color={{ .colors.bg_base }}
+text.focus.color={{ .colors.fg_primary }}
 text.shadow=true
 text.shadow.xshift=0
 text.shadow.yshift=-1
-text.shadow.color={{ .colors.crust }}
+text.shadow.color=#15151a
 text.shadow.alpha=200
 text.shadow.depth=1
 indicator.size=10
@@ -121,11 +121,11 @@ indicator.element=arrow
 
 [DockTitle]
 text.bold=true
-text.focus.color={{ .colors.text }}
+text.focus.color={{ .colors.fg_primary }}
 text.shadow=true
 text.shadow.xshift=0
 text.shadow.yshift=-1
-text.shadow.color={{ .colors.crust }}
+text.shadow.color=#15151a
 text.shadow.alpha=200
 text.shadow.depth=1
 
@@ -184,7 +184,7 @@ text.margin.left=6
 text.margin.right=6
 text.margin.top=4
 text.margin.bottom=3
-text.toggle.color={{ .colors.text }}
+text.toggle.color={{ .colors.fg_primary }}
 text.shadow=false
 frame.top=3
 frame.bottom=3
@@ -192,7 +192,7 @@ frame.left=3
 frame.right=3
 focusFrame=true
 frame.expansion=10
-text.press.color={{ .colors.text }}
+text.press.color={{ .colors.fg_primary }}
 indicator.size=12
 min_width=+0.35font
 min_height=+0.2font
@@ -232,7 +232,7 @@ frame.top=4
 frame.bottom=4
 frame.left=4
 frame.right=4
-text.press.color={{ .colors.text }}
+text.press.color={{ .colors.fg_primary }}
 text.bold=true
 text.shadow=false
 
@@ -279,7 +279,7 @@ frame.right=4
 
 [Progressbar]
 text.bold=true
-text.focus.color={{ .colors.text }}
+text.focus.color={{ .colors.fg_primary }}
 text.shadow=false
 frame.expansion=3.4font
 
@@ -295,10 +295,10 @@ frame.right=2
 [ItemView]
 inherits=PanelButtonCommand
 text.margin=true
-text.normal.color={{ .colors.text }}
-text.press.color={{ .colors.base }}
-text.toggle.color={{ .colors.base }}
-text.focus.color={{ .colors.text }}
+text.normal.color={{ .colors.fg_primary }}
+text.press.color={{ .colors.bg_base }}
+text.toggle.color={{ .colors.bg_base }}
+text.focus.color={{ .colors.fg_primary }}
 frame.element=itemview
 interior.element=itemview
 frame.top=2
@@ -333,7 +333,7 @@ frame.top=2
 frame.bottom=2
 frame.left=2
 frame.right=2
-text.focus.color={{ .colors.base }}
+text.focus.color={{ .colors.bg_base }}
 text.shadow=false
 frame.expansion=8
 min_width=0
@@ -361,13 +361,13 @@ text.margin.left=3
 text.margin.right=3
 text.bold=true
 text.italic=true
-text.focus.color={{ .colors.text }}
+text.focus.color={{ .colors.fg_primary }}
 
 [ComboBox]
 inherits=LineEdit
 text.margin.left=6
 text.margin.right=6
-text.toggle.color={{ .colors.text }}
+text.toggle.color={{ .colors.fg_primary }}
 indicator.element=carrow
 
 [Splitter]

@@ -12,19 +12,19 @@
 
 @import url("resource:///org/gtk/libgtk/theme/Adwaita/gtk-contained-dark.css");
 
-@define-color base {{ .colors.base }};
-@define-color mantle {{ .colors.mantle }};
-@define-color crust {{ .colors.crust }};
-@define-color surface0 {{ .colors.surface0 }};
-@define-color surface1 {{ .colors.surface1 }};
-@define-color surface2 {{ .colors.surface2 }};
-@define-color text {{ .colors.text }};
-@define-color subtext1 {{ .colors.subtext1 }};
-@define-color subtext0 {{ .colors.subtext0 }};
-@define-color overlay0 {{ .colors.overlay0 }};
-@define-color overlay1 {{ .colors.overlay1 }};
-@define-color lavender {{ .colors.lavender }};
-@define-color blue {{ .colors.blue }};
+@define-color base {{ .colors.bg_base }};
+@define-color mantle {{ .colors.bg_elevated }};
+@define-color crust #15151a;
+@define-color surface0 {{ .colors.ink }};
+@define-color surface1 #3a3a44;
+@define-color surface2 #464652;
+@define-color text {{ .colors.fg_primary }};
+@define-color subtext1 #cfccc2;
+@define-color subtext0 {{ .colors.fg_secondary }};
+@define-color overlay0 #6f6f68;
+@define-color overlay1 #85857d;
+@define-color lavender {{ .colors.accent }};
+@define-color blue {{ .colors.accent }};
 
 /* ── Menus and context menus (system tray, right-click, etc.) ── */
 menu,

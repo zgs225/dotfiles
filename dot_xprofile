@@ -8,6 +8,9 @@ export GLFW_IM_MODULE=fcitx
 export QT_STYLE_OVERRIDE=kvantum
 export KVANTUM_THEME=catppuccin-glass
 
-# Electron / Chromium — use Ozone GTK backend and match system GTK theme
+# Electron / Chromium — use Ozone GTK backend; dark mode comes from the
+# freedesktop color-scheme portal (no GTK_THEME override, it would shadow
+# both the GTK3 catppuccin-glass theme and GTK4 Adwaita variant selection)
 export ELECTRON_OZONE_PLATFORM_HINT=auto
-export GTK_THEME=Catppuccin-Mocha-Standard-Lavender-Dark
+
+systemctl --user import-environment DISPLAY
