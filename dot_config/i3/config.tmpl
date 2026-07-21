@@ -71,7 +71,7 @@ bindsym $mod+l focus right
 
 # Lock screen
 bindsym $mod+Shift+l exec --no-startup-id ~/.config/i3/scripts/lock.sh
-bindsym $mod+Shift+w exec --no-startup-id betterlockscreen -u ~/.local/share/wallpapers/ --fx blur --blur 0.3 && betterlockscreen -w blur
+bindsym $mod+Shift+w exec --no-startup-id ~/.config/i3/scripts/wallpaper.sh
 
 # Focus parent/child
 bindsym $mod+Ctrl+h focus parent
@@ -138,8 +138,7 @@ bindsym $mod+Shift+r restart
 bindsym $mod+Shift+e exec --no-startup-id ~/.config/i3/scripts/powermenu
 
 # Autostart
-exec --no-startup-id betterlockscreen -u ~/.local/share/wallpapers/ --fx blur --blur 0.3
-exec --no-startup-id betterlockscreen -w blur
+exec --no-startup-id ~/.config/i3/scripts/wallpaper.sh
 exec_always --no-startup-id ~/.config/i3/scripts/natural-scroll
 {{- if and .useI3 (not .isVM) }}
 exec --no-startup-id picom --config ~/.config/picom/picom.conf
