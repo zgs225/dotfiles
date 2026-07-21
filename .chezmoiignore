@@ -42,7 +42,6 @@ skills-lock.json
 .config/picom/**
 .config/rofi/**
 .config/greenclip.toml
-.config/betterlockscreen/**
 .config/display/**
 .config/systemd/user/screenshot-cleanup.service
 .config/systemd/user/screenshot-cleanup.timer

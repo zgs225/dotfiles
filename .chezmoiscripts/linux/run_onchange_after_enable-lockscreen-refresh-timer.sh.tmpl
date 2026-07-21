@@ -1,0 +1,10 @@
+{{ if and .isLinux .useI3 -}}
+#!/bin/sh
+# lockscreen-refresh.service hash: {{ include "dot_config/systemd/user/lockscreen-refresh.service.tmpl" | sha256sum }}
+# lockscreen-refresh.timer hash: {{ include "dot_config/systemd/user/lockscreen-refresh.timer" | sha256sum }}
+
+set -e
+
+systemctl --user daemon-reload
+systemctl --user enable --now lockscreen-refresh.timer
+{{ end -}}

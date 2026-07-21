@@ -13,4 +13,4 @@ export KVANTUM_THEME=catppuccin-glass
 # both the GTK3 catppuccin-glass theme and GTK4 Adwaita variant selection)
 export ELECTRON_OZONE_PLATFORM_HINT=auto
 
-systemctl --user import-environment DISPLAY
+systemctl --user import-environment DISPLAY PATH
