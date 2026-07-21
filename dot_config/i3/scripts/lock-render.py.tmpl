@@ -24,6 +24,7 @@ INK_TEXT = "{{ .colors.ink_text }}"
 INK_TEXT_DIM = "{{ .colors.ink_text_dim }}"
 SEAL_FONT = "Chong Xi Small Seal 22"
 LUO_SEAL_TEXT = "自得"
+FREEFORM_PERTURB = [0.05, -0.03, 0.07, -0.05, 0.02, 0.08, -0.04, 0.06, -0.02]
 
 JIEQI24 = [
     "春分", "清明", "谷雨", "立夏", "小满", "芒种",
@@ -267,7 +268,31 @@ def round_rect(cr, x, y, w, h, r):
     cr.close_path()
 
 
-def draw_seal(cr, text, cx, top_y, font_desc, pad, bg_color, fg_color):
+def _freeform_path(cr, cx, cy, a, b):
+    n = len(FREEFORM_PERTURB)
+    pts = []
+    for i in range(n):
+        th = 2 * math.pi * i / n
+        c, s = math.cos(th), math.sin(th)
+        r = a * b / math.sqrt((b * c) ** 2 + (a * s) ** 2)
+        r *= 1 + FREEFORM_PERTURB[i]
+        pts.append((cx + r * c, cy + r * s))
+    cr.new_sub_path()
+    cr.move_to(pts[0][0], pts[0][1])
+    for i in range(n):
+        p0 = pts[(i - 1) % n]
+        p1 = pts[i]
+        p2 = pts[(i + 1) % n]
+        p3 = pts[(i + 2) % n]
+        cr.curve_to(
+            p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6,
+            p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6,
+            p2[0], p2[1],
+        )
+    cr.close_path()
+
+
+def draw_seal(cr, text, cx, top_y, font_desc, pad, bg_color, fg_color, shape="rect"):
     gap = 2
     layouts = []
     maxw = 0
@@ -281,6 +306,21 @@ def draw_seal(cr, text, cx, top_y, font_desc, pad, bg_color, fg_color):
         maxw = max(maxw, w)
         totalh += h
     totalh += gap * (len(text) - 1)
+
+    if shape == "freeform":
+        a = maxw / 2 + pad + 2
+        b = totalh / 2 + pad + 2
+        cy = top_y + b
+        _freeform_path(cr, cx, cy, a, b)
+        cr.set_source_rgb(*bg_color)
+        cr.fill()
+        y = cy - totalh / 2
+        for layout, w, h in layouts:
+            cr.move_to(cx - w / 2, y)
+            cr.set_source_rgb(*fg_color)
+            PangoCairo.show_layout(cr, layout)
+            y += h + gap
+        return
 
     box_w = maxw + 2 * pad
     box_h = totalh + 2 * pad
@@ -354,7 +394,8 @@ def build_surface(base_path, poem, sc_name, gz, luo_kuan):
         "LXGW WenKai 18", 26, fg2_rgb,
         bg=bg, color_dark=ink_text_dim_rgb,
     )
-    draw_seal(cr, LUO_SEAL_TEXT, luo_cx, y_luo_end + 12, SEAL_FONT, 8, seal_rgb, fg_rgb)
+    draw_seal(cr, LUO_SEAL_TEXT, luo_cx, y_luo_end + 12, SEAL_FONT, 8, seal_rgb, fg_rgb,
+              shape="freeform")
 
     return surface
 
