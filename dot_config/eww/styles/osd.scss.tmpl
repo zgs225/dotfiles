@@ -4,8 +4,8 @@
 .eww-osd { background-color: transparent; }
 
 .osd {
-  @include glass-shell(0.42, 0.20);
-  border-radius: 26px;
+  @include glass-shell(0.60, 0.35);
+  border-radius: $radius;
   padding: 22px 28px;
   min-width: {{ $eww.osdW }}px;
   min-height: {{ $eww.osdH }}px;
@@ -39,14 +39,14 @@
 }
 
 .osd-scale trough {
-  background-color: rgba($surface0, 0.55);
-  border-radius: 999px;
+  background-color: rgba($ink, 0.55);
+  border-radius: 4px;
   min-width: 150px;
   min-height: 10px;
 }
 .osd-scale trough highlight {
-  background-color: $blue;
-  border-radius: 999px;
+  background-color: $accent;
+  border-radius: 4px;
   transition: all 120ms ease;
 }
 .osd-scale slider {

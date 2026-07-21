@@ -1,20 +1,24 @@
 {{- $eww := includeTemplate "eww-sizes" . | fromJson -}}
 
 /* ============================================================ NOTIFICATIONS ============================================================ */
+/* L4 temporary layer: lighter silk than L2 popups */
+.notification-popup { background-color: rgba($bg-base, 0.60); }
 .notif-scroll-wrap { min-height: 300px; }
 .notif-scroll { padding: 2px; }
 .notif-item {
   @include glass-cell(0.24);
   padding: 12px 10px;
-  border-radius: 13px;
+  border-radius: $radius;
+  border-left: 2px solid transparent;
   transition: all 120ms;
 }
-.notif-item:hover { background-color: rgba($surface1, 0.44); }
+.notif-item:hover { background-color: rgba($surface1, 0.44); border-left-color: $accent; }
 .notif-appicon {
-  min-width: {{ mulf $eww.popupFontSize 2.5 | int }}px; min-height: {{ mulf $eww.popupFontSize 2.5 | int }}px; border-radius: 10px;
-  background-color: rgba($surface0, 0.52);
+  min-width: {{ mulf $eww.popupFontSize 2.5 | int }}px; min-height: {{ mulf $eww.popupFontSize 2.5 | int }}px; border-radius: $radius-sm;
+  background-color: rgba($accent, 0.12);
+  border: 1px solid rgba($accent, 0.35);
 }
-.notif-appicon label { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.92 | int }}px; color: $subtext1; }
+.notif-appicon label { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.92 | int }}px; color: $accent; }
 .icon-slack    { background-color: rgba($mauve, 0.2); }
 .icon-slack label { color: $mauve; }
 .icon-telegram { background-color: rgba($sapphire, 0.2); }
@@ -33,7 +37,7 @@
 .notif-clear-all {
   color: $subtext1; font-size: {{ mulf $eww.popupFontSize 0.82 | int }}px;
   padding: 12px; margin: 12px 0 0 0;
-  border-radius: 13px; background-color: rgba($surface0, 0.42);
+  border-radius: $radius; background-color: rgba($surface0, 0.42);
   transition: all 120ms;
 }
 .notif-clear-all:hover { background-color: rgba($surface1, 0.52); color: $text; }

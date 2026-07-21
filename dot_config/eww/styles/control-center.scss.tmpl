@@ -4,17 +4,17 @@
 .tile-grid { padding: 0 0 6px 0; }
 .cc-tile {
   @include glass-cell(0.32);
-  border-radius: 15px;
+  border-radius: $radius;
   padding: 15px; transition: all 120ms;
 }
 .cc-tile:hover { background-color: rgba($surface1, 0.48); }
 .cc-tile-icon  { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 1.08 | int }}px; color: $subtext0; }
 .cc-tile-title { color: $subtext1; font-size: {{ mulf $eww.popupFontSize 0.84 | int }}px; font-weight: bold; }
 .cc-tile-sub   { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; }
-.cc-tile.on { background-color: $blue; }
+.cc-tile.on { background-color: $accent; }
 .cc-tile.on .cc-tile-icon, .cc-tile.on .cc-tile-title { color: white; }
 .cc-tile.on .cc-tile-sub { color: rgba(255,255,255,0.75); }
-.cc-tile-arrow { padding: 12px 10px; border-radius: 999px; transition: all 120ms; }
+.cc-tile-arrow { padding: 12px 10px; border-radius: $radius; transition: all 120ms; }
 .cc-tile-arrow:hover { background-color: rgba(255,255,255,0.18); }
 .cc-tile-arrow-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.88 | int }}px; color: $overlay0; }
 .cc-tile.on .cc-tile-arrow-icon { color: rgba(255,255,255,0.85); }
@@ -25,18 +25,18 @@
 .cc-slider-label { color: $subtext1; font-size: {{ mulf $eww.popupFontSize 0.82 | int }}px; }
 .cc-slider-val   { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.76 | int }}px; }
 .cc-scale trough {
-  background-color: rgba($surface0, 0.62); border-radius: 999px; min-height: 8px;
+  background-color: rgba($ink, 0.62); border-radius: 4px; min-height: 8px;
 }
-.cc-scale trough highlight { background-color: $blue; border-radius: 999px; }
+.cc-scale trough highlight { background-color: $accent; border-radius: 4px; }
 .cc-scale slider {
-  background-color: white; border-radius: 999px;
+  background-color: white; border-radius: $radius-sm;
   min-width: 18px; min-height: 18px; margin: -7px;
   box-shadow: 0 1px 3px rgba($crust, 0.5);
 }
 
 .cc-audio-devices {
   @include glass-cell(0.32);
-  border-radius: 15px;
+  border-radius: $radius;
   margin: 10px 0 6px 0;
 }
 .audio-device-header {
@@ -60,30 +60,31 @@
 }
 .audio-device-item {
   padding: 10px 12px;
-  border-radius: 10px;
+  border-radius: $radius;
+  border-left: 2px solid transparent;
   background-color: rgba($surface0, 0.42);
   transition: all 120ms;
 }
-.audio-device-item:hover { background-color: rgba($surface1, 0.52); }
-.audio-device-item.active { background-color: rgba($blue, 0.22); }
+.audio-device-item:hover { background-color: rgba($surface1, 0.52); border-left-color: $accent; }
+.audio-device-item.active { background-color: rgba($accent, 0.22); }
 .audio-device-check { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.88 | int }}px; color: $overlay0; }
-.audio-device-item.active .audio-device-check { color: $blue; }
+.audio-device-item.active .audio-device-check { color: $accent; }
 .audio-device-name { color: $subtext1; font-size: {{ mulf $eww.popupFontSize 0.78 | int }}px; }
 .audio-device-item.active .audio-device-name { color: $text; font-weight: bold; }
 
 .media-card {
-  @include glass-cell(0.34);
-  border-radius: 15px;
+  @include glass-cell(0.55);
+  border-radius: $radius;
   padding: 14px; margin: 16px 0 4px 0;
 }
 .media-art {
-  min-width: {{ mulf $eww.popupFontSize 3.2 | int }}px; min-height: {{ mulf $eww.popupFontSize 3.2 | int }}px; border-radius: 11px;
+  min-width: {{ mulf $eww.popupFontSize 3.2 | int }}px; min-height: {{ mulf $eww.popupFontSize 3.2 | int }}px; border-radius: $radius;
   background-color: rgba($mauve, 0.22);
 }
 .media-art-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 1.16 | int }}px; color: $mauve; }
 .media-title  { color: $text; font-size: {{ mulf $eww.popupFontSize 0.82 | int }}px; font-weight: bold; }
 .media-artist { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; }
-.media-btn { padding: 6px; border-radius: 999px; transition: all 120ms; }
+.media-btn { padding: 6px; border-radius: $radius; transition: all 120ms; }
 .media-btn:hover { background-color: rgba($surface1, 0.52); }
 .media-btn-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.92 | int }}px; color: $subtext1; }
 .media-btn.play .media-btn-icon { color: $text; font-size: {{ mulf $eww.popupIconSize 1.10 | int }}px; }
@@ -91,7 +92,7 @@
 .cc-quick { padding: 12px 0 0 0; }
 .quick-btn {
   @include glass-cell(0.30);
-  border-radius: 15px;
+  border-radius: $radius;
   padding: 14px 6px; transition: all 120ms;
 }
 .quick-btn:hover { background-color: rgba($surface1, 0.48); }

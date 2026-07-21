@@ -1,15 +1,15 @@
 {{- $eww := includeTemplate "eww-sizes" . | fromJson -}}
 
 /* ============================================================ BLUETOOTH POPUP ============================================================ */
-.bt-device { padding: 10px 12px; border-radius: 13px; transition: all 120ms; }
-.bt-device:hover { background-color: rgba($surface1, 0.40); }
+.bt-device { padding: 10px 12px; border-radius: $radius; border-left: 2px solid transparent; transition: all 120ms; }
+.bt-device:hover { background-color: rgba($surface1, 0.40); border-left-color: $accent; }
 .bt-device.connected { background-color: rgba($surface1, 0.36); }
 .bt-dev-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.92 | int }}px; color: $subtext0; }
 .bt-device.connected .bt-dev-icon { color: $blue; }
 .bt-dev-name { color: $text; font-size: {{ mulf $eww.popupFontSize 0.86 | int }}px; }
 .bt-device.stale .bt-dev-icon { color: $peach; }
 
-.bt-act { padding: 6px; border-radius: 999px; transition: all 120ms; }
+.bt-act { padding: 6px; border-radius: $radius; transition: all 120ms; }
 .bt-act:hover { background-color: rgba($surface1, 0.52); }
 .bt-act-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.84 | int }}px; color: $subtext0; }
 .bt-act:hover .bt-act-icon { color: $text; }

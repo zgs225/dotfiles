@@ -1,5 +1,5 @@
 [global]
-font = Noto Sans CJK SC 10
+font = LXGW WenKai 10
 markup = yes
 format = "<b>%s</b>\n%b"
 sort = yes
@@ -22,35 +22,35 @@ separator_color = frame
 browser = firefox
 dmenu = rofi -dmenu -p dunst
 icon_position = left
-max_icon_size = 32
-icon_corner_radius = 8
+max_icon_size = 28
+icon_corner_radius = 3
 icon_corners = all
 frame_width = 1
-frame_color = "{{ .colors.text }}2E"
+frame_color = "{{ .colors.accent }}59"
 width = 300
 height = (0, 300)
 origin = top-right
-offset = (20, 20)
+offset = (12, 12)
 notification_limit = 5
-corner_radius = 16
+corner_radius = 5
 corners = all
 gap_size = 8
 transparency = 0
 
 [urgency_low]
-background = "{{ .colors.base }}66"
-foreground = "{{ .colors.text }}"
-frame_color = "{{ .colors.text }}2E"
+background = "{{ .colors.bg_base }}99"
+foreground = "{{ .colors.fg_primary }}"
+frame_color = "{{ .colors.accent }}40"
 timeout = 5
 
 [urgency_normal]
-background = "{{ .colors.base }}A8"
-foreground = "{{ .colors.text }}"
-frame_color = "{{ .colors.text }}2E"
+background = "{{ .colors.bg_base }}99"
+foreground = "{{ .colors.fg_primary }}"
+frame_color = "{{ .colors.accent }}59"
 timeout = 5
 
 [urgency_critical]
-background = "{{ .colors.red }}D9"
-foreground = "{{ .colors.base }}"
-frame_color = "{{ .colors.red }}"
+background = "{{ .colors.bg_base }}E6"
+foreground = "{{ .colors.fg_primary }}"
+frame_color = "{{ .colors.error }}"
 timeout = 0

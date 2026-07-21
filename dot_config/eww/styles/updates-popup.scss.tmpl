@@ -9,25 +9,25 @@
 .update-icon { color: $subtext0; }
 .update-btn.has-updates .update-icon { color: $text; }
 .update-badge {
-  background-color: $red;
-  border-radius: 999px;
+  background-color: $warn;
+  border-radius: $radius-sm;
   min-width: 8px;
   min-height: 8px;
   margin: 0 -1px 0 0;
-  border: 2px solid $base;
+  border: 2px solid $bg-base;
 }
 
 /* ============================================================ UPDATES POPUP ============================================================ */
 
 .updates-popup { padding: 18px; }
 .update-count-badge {
-  background-color: $red;
-  border-radius: 999px;
+  background-color: $warn;
+  border-radius: $radius;
   min-width: 26px;
   padding: 3px 8px;
 }
 .update-count-text {
-  color: white;
+  color: $bg-base;
   font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px;
   font-weight: bold;
 }
@@ -42,7 +42,7 @@
 }
 .update-chip {
   @include glass-cell(0.24);
-  border-radius: 10px;
+  border-radius: $radius;
   padding: 6px 12px;
   transition: all 120ms;
 }
@@ -63,13 +63,13 @@
 
 .update-list-panel {
   @include glass-cell(0.24);
-  border-radius: 14px;
+  border-radius: $radius;
   padding: 10px;
 }
 .update-list { padding: 2px; }
 .update-list-item {
   padding: 7px 8px;
-  border-radius: 10px;
+  border-radius: $radius;
   transition: all 120ms;
 }
 .update-list-item:hover { background-color: rgba($surface1, 0.36); }
@@ -96,7 +96,7 @@
 .update-actions { padding: 10px 0 0 0; }
 .update-action-btn {
   @include glass-cell(0.32);
-  border-radius: 12px;
+  border-radius: $radius;
   padding: 8px;
   transition: all 120ms;
 }

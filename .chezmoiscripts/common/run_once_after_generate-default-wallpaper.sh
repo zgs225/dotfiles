@@ -9,9 +9,9 @@ mkdir -p "$wallpaper_dir"
 
 if [ ! -f "$default_wallpaper" ]; then
     if command -v magick > /dev/null 2>&1; then
-        magick convert -size 1920x1080 xc:"#1e1e2e" "$default_wallpaper"
+        magick convert -size 1920x1080 xc:"#1a1a1e" "$default_wallpaper"
     elif command -v convert > /dev/null 2>&1; then
-        convert -size 1920x1080 xc:"#1e1e2e" "$default_wallpaper"
+        convert -size 1920x1080 xc:"#1a1a1e" "$default_wallpaper"
     else
         echo "Warning: ImageMagick not found, skipping default wallpaper generation" >&2
     fi

@@ -3,72 +3,70 @@
 /* ============================================================ BAR ============================================================ */
 .eww-bar { background-color: transparent; }
 .bar-inner {
-  background-color: rgba($base, 0.72);
+  background-color: rgba($bg-base, 0.75);
   border: none;
-  border-bottom: 1px solid rgba($text, 0.16);
-  box-shadow: 0 5px 10px -4px rgba($crust, 0.45);
+  border-top: 1px solid rgba($accent, 0.35);
+  border-bottom: 1px solid rgba($accent, 0.35);
   border-radius: 0;
   margin: 0;
   min-height: {{ $eww.barHeight }}px;
-  padding: 0 9px;
+  padding: 0 12px;
 }
 
 /* Module buttons */
 .module-btn {
-  color: $subtext0;
+  color: $fg-secondary;
   padding: 0 6px;
   min-width: {{ $eww.cellPad }}px;
   min-height: {{ $eww.cellPad }}px;
-  border-radius: 12px;
+  border-radius: $radius;
   transition: all 120ms ease;
 }
-.module-btn:hover { color: $text; background-color: rgba($surface1, 0.30); }
+.module-btn:hover { color: $fg-primary; background-color: rgba($surface1, 0.30); }
 .module-icon { font-family: "Symbols Nerd Font"; font-size: {{ $eww.iconSize }}px; }
-.app-grid { color: $text; }
-.app-grid:hover { color: $blue; }
+.app-grid { color: $fg-primary; }
+.app-grid:hover { color: $accent; }
+
+/* Group separator - interpunct, quiet */
+.bar-sep { color: rgba($fg-secondary, 0.45); font-size: {{ mulf $eww.fontSize 0.90 | int }}px; padding: 0 2px; }
 
 /* System tray */
 .bar-tray { padding: 1px 5px; }
 
-/* Workspaces */
+/* Workspaces - cinnabar seals on Heavenly Stems */
 .workspaces-container {
   padding: 1px 3px;
   min-height: {{ $eww.pillH }}px;
 }
-.ws-list {
-  min-height: {{ $eww.dotSize }}px;
-}
-.ws-dot {
-  margin: {{ div (sub $eww.pillH $eww.dotSize) 2 }}px 4px 0 4px;
-  min-width: {{ $eww.dotSize }}px;
-  min-height: {{ $eww.dotSize }}px;
-}
-.ws-dot-inner {
-  min-width: {{ $eww.dotSize }}px;
-  min-height: {{ $eww.dotSize }}px;
-  padding: 0;
-  margin: 0;
-  border-radius: 999px;
+.ws-seal {
+  font-family: "LXGW WenKai", "Noto Sans CJK SC";
+  font-size: {{ mulf $eww.fontSize 1.00 | int }}px;
+  border-radius: 3px;
+  padding: 2px 5px;
+  min-width: {{ mulf $eww.fontSize 1.70 | int }}px;
+  min-height: {{ mulf $eww.fontSize 1.70 | int }}px;
   transition: all 180ms ease;
 }
-.ws-dot-inner.idle,
-.ws-dot-inner.occupied,
-.ws-dot-inner.urgent {
-  min-width: {{ $eww.dotSize }}px;
-  min-height: {{ $eww.dotSize }}px;
-  border-radius: 999px;
+.ws-seal.active {
+  background-color: $seal;
+  border: 1px solid $seal;
+  color: $fg-primary;
+  font-weight: bold;
 }
-.ws-dot-inner.idle     { background-color: $surface2; }
-.ws-dot-inner.occupied { background-color: $overlay1; }
-.ws-dot-inner.focused  { background-color: $blue; min-width: {{ $eww.dotSize }}px; min-height: {{ $eww.dotSize }}px; border-radius: 999px; }
-.ws-dot-inner.urgent   { background-color: $red; animation: urgent-pulse 1s ease infinite alternate; }
+.ws-seal.occupied { border: 1px solid $accent; color: $accent; }
+.ws-seal.idle     { border: 1px solid rgba($fg-secondary, 0.40); color: $fg-secondary; }
+.ws-seal.urgent {
+  border: 1px solid $warn;
+  color: $warn;
+  animation: urgent-pulse 1s ease infinite alternate;
+}
 @keyframes urgent-pulse { from { opacity: 1; } to { opacity: 0.4; } }
 
 /* Battery */
 .battery-pct { color: $text; font-size: {{ mulf $eww.fontSize 0.95 | int }}px; }
 .bat-charging { color: $green; }
 .bat-normal   { color: $subtext0; }
-.bat-low      { color: $red; }
+.bat-low      { color: $error; }
 
 /* Time */
 .time-dow  { color: $subtext0; font-size: {{ mulf $eww.fontSize 0.74 | int }}px; }
@@ -88,10 +86,10 @@
 .notif-bell-unread { color: $text; }
 .notif-bell-dnd    { color: $peach; }
 .notif-badge {
-  background-color: $red;
-  border-radius: 999px;
+  background-color: $warn;
+  border-radius: $radius-sm;
   min-width: 8px;
   min-height: 8px;
   margin: 0 -1px 0 0;
-  border: 2px solid $base;
+  border: 2px solid $bg-base;
 }
