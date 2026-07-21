@@ -19,6 +19,7 @@ from gi.repository import Pango, PangoCairo
 FG_PRIMARY = "{{ .colors.fg_primary }}"
 FG_SECONDARY = "{{ .colors.fg_secondary }}"
 SEAL_COLOR = "{{ .colors.error }}"
+SEAL_FONT = "Chong Xi Small Seal 22"
 
 SCRIPTS_DIR = Path(__file__).resolve().parent
 POEMS_FILE = SCRIPTS_DIR / "lock-poems.txt"
@@ -163,20 +164,45 @@ def draw_vertical_text(cr, text, cx, top_y, font_desc, step, color):
     return y
 
 
-def draw_seal(cr, text, cx, top_y, size, bg_color, fg_color):
-    sx = cx - size // 2
+def round_rect(cr, x, y, w, h, r):
+    cr.new_sub_path()
+    cr.arc(x + w - r, y + r, r, -1.5708, 0)
+    cr.arc(x + w - r, y + h - r, r, 0, 1.5708)
+    cr.arc(x + r, y + h - r, r, 1.5708, 3.1416)
+    cr.arc(x + r, y + r, r, 3.1416, 4.7124)
+    cr.close_path()
+
+
+def draw_seal(cr, text, cx, top_y, font_desc, pad, bg_color, fg_color):
+    gap = 2
+    layouts = []
+    maxw = 0
+    totalh = 0
+    for ch in text:
+        layout = PangoCairo.create_layout(cr)
+        layout.set_font_description(Pango.FontDescription(font_desc))
+        layout.set_text(ch, -1)
+        w, h = layout.get_pixel_size()
+        layouts.append((layout, w, h))
+        maxw = max(maxw, w)
+        totalh += h
+    totalh += gap * (len(text) - 1)
+
+    box_w = maxw + 2 * pad
+    box_h = totalh + 2 * pad
+    sx = cx - box_w / 2
     sy = top_y
+
+    round_rect(cr, sx, sy, box_w, box_h, 3)
     cr.set_source_rgb(*bg_color)
-    cr.rectangle(sx, sy, size, size)
     cr.fill()
-    layout = PangoCairo.create_layout(cr)
-    layout.set_font_description(Pango.FontDescription("LXGW WenKai Bold 22"))
-    layout.set_alignment(Pango.Alignment.CENTER)
-    layout.set_text(text, -1)
-    tw, th = layout.get_pixel_size()
-    cr.move_to(sx + (size - tw) / 2, sy + (size - th) / 2)
-    cr.set_source_rgb(*fg_color)
-    PangoCairo.show_layout(cr, layout)
+
+    y = sy + pad
+    for layout, w, h in layouts:
+        cr.move_to(sx + (box_w - w) / 2, y)
+        cr.set_source_rgb(*fg_color)
+        PangoCairo.show_layout(cr, layout)
+        y += h + gap
 
 
 def draw_shichen(cr, text, x, y, font_desc, color):
@@ -206,7 +232,7 @@ def build_surface(base_path, poem, sc_name, gz, date_str):
     y_after = draw_vertical_text(
         cr, poem, poem_cx, poem_top, "Source Han Serif CN 36", 56, fg_rgb
     )
-    draw_seal(cr, gz, poem_cx, y_after + 40, 48, seal_rgb, fg_rgb)
+    draw_seal(cr, gz, poem_cx, y_after + 40, SEAL_FONT, 8, seal_rgb, fg_rgb)
 
     shichen_x = int(W * 0.06)
     shichen_y = int(H * 0.82)
