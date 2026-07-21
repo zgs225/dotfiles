@@ -55,8 +55,9 @@
   min-height: {{ $eww.pillH }}px;
 }
 .ws-seal {
-  font-family: "LXGW WenKai", "Noto Sans CJK SC";
-  font-size: {{ mulf $eww.fontSize 1.00 | int }}px;
+  font-family: "Chong Xi Small Seal", "LXGW WenKai", "Noto Sans CJK SC";
+  /* seal-script glyphs are slim; +0.20 optical compensation keeps the 1.00 type slot */
+  font-size: {{ mulf $eww.fontSize 1.20 | int }}px;
   border-radius: 3px;
   padding: 2px 5px;
   min-width: {{ mulf $eww.fontSize 1.70 | int }}px;
