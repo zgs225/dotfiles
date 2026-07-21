@@ -99,7 +99,7 @@ border: 1px solid rgba($accent, 0.15);   // 格内分隔
 | 中文界面正文 | LXGW WenKai（霞鹜文楷） | Regular，楷体感克制 |
 | 标题 / 时钟展示 | Source Han Serif CN（思源宋体） | Bold/Heavy，取宋刻本筋骨，letter-spacing 2px |
 | 西文 / 数字 | JetBrains Mono(Nerd Font) | 保持工具属性 |
-| workspace 印章字 | LXGW WenKai 十天干字形 | 甲乙丙丁戊己庚辛壬癸，>10 回落数字 |
+| workspace 印章字 | Chong Xi Small Seal（崇羲篆體）十天干字形 | 文楷回退；字形瘦，1.20× 光学补偿（不算第三字阶）；>10 回落数字 |
 
 字体安装：经 eos-bootstrap `ansible/roles/packages`（`adobe-source-han-serif-cn-fonts` 官方源、`ttf-lxgw-wenkai` AUR）。
 
@@ -308,7 +308,7 @@ eww 0.5.0 不能在 `:geometry` 里解析变量，所有尺寸经 `.chezmoitempl
 2. **GTK3 主题保留 catppuccin-glass**：深色底不违和；重制 GTK3 主题工程量大。
 3. **通知图标用天青框方印而非朱砂印**：设计稿自相矛盾处的裁定（见 §4.4）。
 4. **时辰只到"时"不到"刻"**：刻的划分有歧义，性价比低。
-5. **印章用文楷天干字形而非篆体 SVG**：印章的"神"在朱砂方底+白字的形制，不在篆体。
+5. **印章用崇羲篆體而非文楷**（2026-07-21 推翻旧裁定）：旧裁定"用文楷天干而非篆体 SVG"的前提是篆体只能贴 SVG；崇羲小篆以字体形态落地后，篆书印章的形制（朱底白字 + 篆籀）强于文楷，用户裁定更换。字形瘦长，以 1.20× 光学补偿，不破四印同尺寸纪律。
 6. **WezTerm/tmux 保留 Tokyo Night**：用户裁定暂缓统一（见 §7 末）。
 
 ---
