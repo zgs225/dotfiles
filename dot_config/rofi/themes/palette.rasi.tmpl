@@ -1,29 +1,31 @@
 /**
- * palette — shared Catppuccin Mocha palette + glass tokens for all rofi themes.
- * Variables are populated by chezmoi from .chezmoi.yaml.tmpl (data.colors).
+ * palette — Song-dynasty tokens (juansha liuli) for all rofi themes.
+ * Hex variables are populated by chezmoi from .chezmoi.yaml.tmpl (data.colors);
+ * the rgba glass literals below are hand-tuned to the same palette (alpha
+ * layers cannot be produced from hex in rasi, keep them in sync manually).
  */
 
 * {
-    bg-col:        {{ .colors.base }};
-    bg-col-light:  {{ .colors.surface0 }};
-    bg-col-card:   {{ .colors.surface1 }};
-    fg-col:        {{ .colors.text }};
-    fg-col2:       {{ .colors.subtext1 }};
-    fg-col3:       {{ .colors.overlay0 }};
-    accent-col:    {{ .colors.mauve }};
-    accent-col-2:  {{ .colors.blue }};
-    red:           {{ .colors.red }};
+    bg-col:        {{ .colors.bg_base }};
+    bg-col-light:  {{ .colors.ink }};
+    bg-col-card:   #3a3a44;
+    fg-col:        {{ .colors.fg_primary }};
+    fg-col2:       #cfccc2;
+    fg-col3:       #6f6f68;
+    accent-col:    {{ .colors.accent }};
+    accent-col-2:  {{ .colors.accent }};
+    red:           {{ .colors.error }};
 
-    glass-bg:           rgba( 30,  30,  46, 0.75 );
-    glass-inputbar:     rgba( 49,  50,  68, 0.55 );
-    glass-card:         rgba( 49,  50,  68, 0.40 );
-    glass-card-hover:   rgba( 69,  71,  90, 0.52 );
-    glass-card-active:  rgba( 69,  71,  90, 0.62 );
-    glass-selected:     rgba(203, 166, 247, 0.55 );
-    glass-selected-2:   rgba(137, 180, 250, 0.55 );
-    glass-border:       rgba(205, 214, 244, 0.18 );
-    glass-accent:       rgba(203, 166, 247, 0.50 );
-    glass-urgent:       rgba(243, 139, 168, 0.70 );
+    glass-bg:           rgba( 26,  26,  30, 0.75 );
+    glass-inputbar:     rgba( 46,  46,  54, 0.55 );
+    glass-card:         rgba( 46,  46,  54, 0.40 );
+    glass-card-hover:   rgba( 58,  58,  68, 0.52 );
+    glass-card-active:  rgba( 58,  58,  68, 0.62 );
+    glass-selected:     rgba(158, 200, 192, 0.30 );
+    glass-selected-2:   rgba(158, 200, 192, 0.30 );
+    glass-border:       rgba(158, 200, 192, 0.35 );
+    glass-accent:       rgba(158, 200, 192, 0.50 );
+    glass-urgent:       rgba(160,  82,  45, 0.70 );
 
     background-color:   transparent;
     text-color:         @fg-col;

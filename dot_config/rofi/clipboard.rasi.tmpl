@@ -66,35 +66,31 @@ element {
     cursor:         pointer;
 }
 
-element normal {
+element normal.normal, element alternate.normal {
     background-color: @glass-card;
     text-color:       @fg-col;
     border:           1px;
     border-color:     transparent;
 }
 
-element normal.active {
+element normal.active, element alternate.active {
     background-color: @glass-card-hover;
     border-color:     @fg-col3;
 }
 
-element selected {
+element selected.normal, element selected.active {
     background-color: @glass-selected;
     text-color:       @bg-col;
 }
 
-element selected active {
-    background-color: @glass-selected-2;
-    text-color:       @bg-col;
-}
 
-element urgent {
+element normal.urgent, element alternate.urgent {
     background-color: @glass-card;
     text-color:       @red;
     border-color:     @red;
 }
 
-element selected urgent {
+element selected.urgent {
     background-color: @glass-urgent;
     text-color:       @bg-col;
 }
