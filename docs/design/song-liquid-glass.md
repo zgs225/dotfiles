@@ -243,7 +243,7 @@ eww 的 bar 与 scrim 在 rounded/shadow/blur exclude 清单中；Rofi `corner-r
 
 **暂未统一**（用户裁定保留现状）：WezTerm（Tokyo Night + 背景图）、tmux（同步 Tokyo Night）。后续若要统一，沿用 §2.1 衍生固定值：终端 ANSI red 必须用赭石而非朱砂，朱砂只可作 tmux 当前窗口标记（印章语义延伸）。
 
-**色彩飞地登记**：systray 图标色不受令牌约束（外部进程绘制），但必须被 `rgba($ink,0.30)` 墨色容器收容（`.bar-tray`，3px 圆角 + 4px 内 padding）——全系统唯一色彩飞地。
+**色彩飞地登记**：systray 图标色不受令牌约束（外部进程绘制），但必须被墨色容器收容（`.bar-tray`，3px 圆角 + 4px 内 padding）——全系统唯一色彩飞地。容器用墨之亮阶 `#464652`（`$surface2`）alpha 0.40：实测 `rgba($ink,0.30)` 在亮壁纸区段与 bar 底仅差 ≤2 阶近隐形（2026-07-22 裁定），亮阶浅盒在任何壁纸下保持 Δ≥9 阶。
 
 ---
 
