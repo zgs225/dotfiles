@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Next Wallpaper
+GenericName=Wallpaper Rotation
+Comment=Switch to the next wallpaper in sequence
+Exec=bash -c '~/.config/i3/scripts/wallpaper.sh'
+Terminal=false
+Type=Application
+Icon=preferences-desktop-wallpaper
+Keywords=wallpaper;background;
+Categories=Utility;
+StartupNotify=false
