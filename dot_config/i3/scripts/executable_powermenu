@@ -1,25 +1,25 @@
 #!/bin/sh
 
-lock=" Lock"
-logout=" Logout"
-suspend=" Suspend"
-reboot=" Reboot"
-shutdown=" Shutdown"
+lock=" 锁定"
+logout=" 注销"
+suspend=" 睡眠"
+reboot=" 重启"
+shutdown=" 关机"
 
 confirm() {
-    echo -e "Yes\nNo" | rofi -dmenu -i -p "Confirm $1?" \
+    echo -e "是\n否" | rofi -dmenu -i -p "确认$1？" \
         -theme ~/.config/rofi/powermenu.rasi -no-custom -selected-row 1
 }
 
 chosen=$(printf "%s\n%s\n%s\n%s\n%s\n" "$lock" "$logout" "$suspend" "$reboot" "$shutdown" \
-    | rofi -dmenu -i -p "Power" -theme ~/.config/rofi/powermenu.rasi -no-custom)
+    | rofi -dmenu -i -p "电源" -theme ~/.config/rofi/powermenu.rasi -no-custom)
 
 case "$chosen" in
     "$lock")    ~/.config/i3/scripts/lock.sh ;;
     "$logout")  i3-msg exit ;;
     "$suspend") systemctl suspend ;;
     "$reboot")
-        [ "$(confirm Reboot)" = "Yes" ] && systemctl reboot ;;
+        [ "$(confirm 重启)" = "是" ] && systemctl reboot ;;
     "$shutdown")
-        [ "$(confirm Shutdown)" = "Yes" ] && systemctl poweroff ;;
+        [ "$(confirm 关机)" = "是" ] && systemctl poweroff ;;
 esac

@@ -3,17 +3,17 @@
 register_module buku "b" filter
 
 buku_init() {
-    printf '\0prompt\x1fBookmark\n'
+    printf '\0prompt\x1f书签\n'
     printf '\0no-custom\x1ftrue\n'
     if ! command -v buku >/dev/null 2>&1; then
-        msg_row "buku not installed — yay -S buku" dialog-warning
+        msg_row "未安装 buku — yay -S buku" dialog-warning
         return 0
     fi
     local json
     json=$(timeout 5 buku --nostdin --np --sreg . --json </dev/null 2>/dev/null || true)
     case "$json" in "["*) ;; *) json="" ;; esac
     if [ -z "$json" ] || [ "$json" = "[]" ]; then
-        msg_row "No bookmarks in buku — import with: buku --ai" dialog-information
+        msg_row "buku 中没有书签 — 用 buku --ai 导入" dialog-information
         return 0
     fi
     printf '%s' "$json" | /usr/bin/python3 -c '

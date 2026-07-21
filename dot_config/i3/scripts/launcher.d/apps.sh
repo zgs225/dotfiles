@@ -107,7 +107,7 @@ apps_launch() {
 }
 
 apps_init() {
-    printf '\0prompt\x1fLaunch\n'
+    printf '\0prompt\x1f启动\n'
     apps_rebuild_if_stale
     cat "$APPS_CACHE" 2>/dev/null || true
 }
