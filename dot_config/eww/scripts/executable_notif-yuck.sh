@@ -65,4 +65,4 @@ while IFS= read -r row; do
     items="${items}))"
 done < <(printf '%s' "$hist" | jq -c '.data[0][]' 2>/dev/null)
 
-echo "(box :class \"notif-scroll\" :orientation \"v\" :spacing 4 ${items})"
+echo "(box :class \"notif-scroll\" :orientation \"v\" :spacing 4 :space-evenly false ${items})"
