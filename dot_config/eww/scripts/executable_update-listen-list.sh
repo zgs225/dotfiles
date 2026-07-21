@@ -51,7 +51,7 @@ render() {
     esac
 
     if [ ! -f "$CACHE_FILE" ]; then
-        echo "(box :class \"update-empty\" :orientation \"v\" (label :class \"update-empty-text\" :xalign 0.5 :text \"No data\"))"
+        echo "(box :class \"update-empty\" :orientation \"v\" (label :class \"update-empty-text\" :xalign 0.5 :text \"暂无数据\"))"
         return
     fi
 
@@ -64,7 +64,7 @@ render() {
     fi
 
     if [ -z "$items" ]; then
-        items="(label :class \"update-empty-text\" :xalign 0.5 :text \"No updates in this group\")"
+        items="(label :class \"update-empty-text\" :xalign 0.5 :text \"该分组无更新\")"
     fi
 
     echo "(scroll :vscroll true :hscroll false :vexpand true :class \"update-list-scroll\" (box :class \"update-list\" :orientation \"v\" :spacing 4 ${items}))"

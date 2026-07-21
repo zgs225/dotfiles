@@ -10,21 +10,21 @@
     (box :class "popup-header" :orientation "h" :spacing 10 :valign "center" :space-evenly false
       (button :class "back-btn" :onclick "~/.config/eww/scripts/open-popup.sh network-popup"
         (label :text "󰁍" :class "back-icon"))
-      (label :text "Network" :class "popup-title" :hexpand true :xalign 0)
+      (label :text "网络" :class "popup-title" :hexpand true :xalign 0)
       (button :class "header-switch" :onclick "~/.config/eww/scripts/toggle-wifi.sh"
         (box :class "switch ${wifi_on > 0 ? 'on' : ''}" :valign "center" (box :class "switch-knob"))))
 
-    (label :text "Wi-Fi" :class "section-label" :xalign 0)
+    (label :text "无线网" :class "section-label" :xalign 0)
     (literal :content "${wifi_networks}")
 
     (button :class "list-row nav-row" :onclick "nm-connection-editor &"
       (box :orientation "h" :valign "center" :space-evenly false
-        (label :text "Other Networks" :class "row-label" :xalign 0 :hexpand true)
+        (label :text "其他网络" :class "row-label" :xalign 0 :hexpand true)
         (label :text "󰅂" :class "row-chevron")))
 
     (box :class "separator-line")
 
-    (label :text "Wired" :class "section-label" :xalign 0)
+    (label :text "有线" :class "section-label" :xalign 0)
     (literal :content "${wired_detail}")
 
     (box :class "separator-line")
@@ -32,5 +32,5 @@
     (button :class "list-row nav-row" :onclick "nm-connection-editor &"
       (box :orientation "h" :spacing 12 :valign "center" :space-evenly false
         (label :text "󰒓" :class "row-icon")
-        (label :text "Network Settings" :class "row-label" :xalign 0 :hexpand true)
+        (label :text "网络设置" :class "row-label" :xalign 0 :hexpand true)
         (label :text "󰅂" :class "row-chevron")))))

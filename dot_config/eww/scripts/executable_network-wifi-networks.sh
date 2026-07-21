@@ -6,7 +6,7 @@
 source "$(dirname "$0")/network-common.sh"
 
 if ! nmcli radio wifi 2>/dev/null | grep -q "enabled"; then
-    echo "(box :class \"wifi-list\" :orientation \"v\" (label :class \"wifi-off-hint\" :xalign 0 :text \"Wi-Fi is off\"))"
+    echo "(box :class \"wifi-list\" :orientation \"v\" (label :class \"wifi-off-hint\" :xalign 0 :text \"无线网已关闭\"))"
     exit 0
 fi
 
@@ -44,6 +44,6 @@ while IFS=':' read -r in_use ssid signal security; do
 done < <(nmcli -t -f IN-USE,SSID,SIGNAL,SECURITY device wifi list --rescan no 2>/dev/null | awk -F: 'NF>=2 && $2!="" && !seen[$2]++' | head -6)
 
 if [ -z "$rows" ]; then
-    rows="(label :class \"wifi-off-hint\" :xalign 0 :text \"No networks found\")"
+    rows="(label :class \"wifi-off-hint\" :xalign 0 :text \"未发现网络\")"
 fi
 echo "(box :class \"wifi-list\" :orientation \"v\" :spacing 2 ${rows})"

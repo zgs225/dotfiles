@@ -13,7 +13,7 @@
         (label :text "󰣇" :class "profile-avatar-icon"))
       (box :orientation "v" :spacing 2 :valign "center"
         (label :text "${sysinfo.host}" :class "profile-host" :xalign 0)
-        (label :text "Uptime: ${sysinfo.uptime}" :class "profile-uptime" :xalign 0)))
+        (label :text "运行时长: ${sysinfo.uptime}" :class "profile-uptime" :xalign 0)))
 
     ;; Metrics
     (box :class "metrics" :orientation "v" :spacing 14
@@ -21,28 +21,28 @@
         (label :text "󰻠" :class "metric-icon icon-cpu")
         (box :orientation "v" :spacing 4 :hexpand true
           (box :orientation "h"
-            (label :text "CPU" :class "metric-name" :xalign 0 :hexpand true)
+            (label :text "处理器" :class "metric-name" :xalign 0 :hexpand true)
             (label :text "${sysinfo.cpu}%" :class "metric-val" :xalign 1))
           (scale :class "metric-bar cpu" :value "${sysinfo.cpu}" :min 0 :max 100 :active false)))
       (box :class "metric" :orientation "h" :spacing 12 :valign "center" :space-evenly false
         (label :text "󰍛" :class "metric-icon icon-mem")
         (box :orientation "v" :spacing 4 :hexpand true
           (box :orientation "h"
-            (label :text "Memory" :class "metric-name" :xalign 0 :hexpand true)
+            (label :text "内存" :class "metric-name" :xalign 0 :hexpand true)
             (label :text "${sysinfo.mem_used} / ${sysinfo.mem_total}" :class "metric-val" :xalign 1))
           (scale :class "metric-bar mem" :value "${sysinfo.mem_pct}" :min 0 :max 100 :active false)))
       (box :class "metric" :orientation "h" :spacing 12 :valign "center" :space-evenly false
         (label :text "󰋊" :class "metric-icon icon-disk")
         (box :orientation "v" :spacing 4 :hexpand true
           (box :orientation "h"
-            (label :text "Disk (/)" :class "metric-name" :xalign 0 :hexpand true)
+            (label :text "磁盘 (/)" :class "metric-name" :xalign 0 :hexpand true)
             (label :text "${sysinfo.disk_used} / ${sysinfo.disk_total}" :class "metric-val" :xalign 1))
           (scale :class "metric-bar disk" :value "${sysinfo.disk_pct}" :min 0 :max 100 :active false)))
       (box :class "metric" :orientation "h" :spacing 12 :valign "center" :space-evenly false
         (label :text "󰔏" :class "metric-icon icon-temp")
         (box :orientation "v" :spacing 4 :hexpand true
           (box :orientation "h"
-            (label :text "Temperature" :class "metric-name" :xalign 0 :hexpand true)
+            (label :text "温度" :class "metric-name" :xalign 0 :hexpand true)
             (label :text "${sysinfo.temp}°C" :class "metric-val" :xalign 1))
           (scale :class "metric-bar temp" :value "${sysinfo.temp_pct}" :min 0 :max 100 :active false))))
 
@@ -53,16 +53,16 @@
       (button :class "action-row"
         :onclick "~/.config/eww/scripts/power.sh lock && ~/.config/eww/scripts/open-popup.sh profile-card"
         (box :orientation "h" :spacing 12 :valign "center" :space-evenly false
-          (label :text "󰌾" :class "action-icon") (label :text "Lock Screen" :class "action-label" :xalign 0 :hexpand true)))
+          (label :text "󰌾" :class "action-icon") (label :text "锁定屏幕" :class "action-label" :xalign 0 :hexpand true)))
       (button :class "action-row"
         :onclick "~/.config/eww/scripts/power.sh suspend && ~/.config/eww/scripts/open-popup.sh profile-card"
         (box :orientation "h" :spacing 12 :valign "center" :space-evenly false
-          (label :text "󰤄" :class "action-icon") (label :text "Suspend" :class "action-label" :xalign 0 :hexpand true)))
+          (label :text "󰤄" :class "action-icon") (label :text "挂起" :class "action-label" :xalign 0 :hexpand true)))
       (button :class "action-row"
         :onclick "~/.config/eww/scripts/power.sh reboot"
         (box :orientation "h" :spacing 12 :valign "center" :space-evenly false
-          (label :text "󰜉" :class "action-icon") (label :text "Restart" :class "action-label" :xalign 0 :hexpand true)))
+          (label :text "󰜉" :class "action-icon") (label :text "重启" :class "action-label" :xalign 0 :hexpand true)))
       (button :class "action-row danger"
         :onclick "~/.config/eww/scripts/power.sh poweroff"
         (box :orientation "h" :spacing 12 :valign "center" :space-evenly false
-          (label :text "󰐥" :class "action-icon") (label :text "Shutdown" :class "action-label" :xalign 0 :hexpand true))))))
+          (label :text "󰐥" :class "action-icon") (label :text "关机" :class "action-label" :xalign 0 :hexpand true))))))

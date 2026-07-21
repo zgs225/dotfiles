@@ -11,14 +11,14 @@ if [ -f "$CONF" ]; then
     label=${line#*|}
     days=$(( ( $(date -d "$target" +%s 2>/dev/null || date +%s) - $(date +%s) ) / 86400 ))
     [ "$days" -lt 0 ] && days=0
-    printf '{"label":"%s","sub":"%d days left"}\n' "${label:-Countdown}" "$days"
+    printf '{"label":"%s","sub":"还有 %d 天"}\n' "${label:-倒计时}" "$days"
     exit 0
 fi
 
 dow=$(date +%u)   # 1=Mon .. 7=Sun
 if [ "$dow" -ge 6 ]; then
-    printf '{"label":"Weekend","sub":"It'\''s here"}\n'
+    printf '{"label":"周末","sub":"已到"}\n'
 else
     days=$(( 6 - dow ))
-    printf '{"label":"Weekend","sub":"%d days left"}\n' "$days"
+    printf '{"label":"周末","sub":"还有 %d 天"}\n' "$days"
 fi

@@ -7,7 +7,7 @@ hist=$(dunstctl history 2>/dev/null)
 count=$(printf '%s' "$hist" | jq '.data[0] | length' 2>/dev/null || echo 0)
 
 if [ "${count:-0}" -eq 0 ] 2>/dev/null; then
-    echo "(box :class \"notif-scroll\" :orientation \"v\" (label :class \"notif-empty\" :xalign 0.5 :valign \"center\" :text \"All caught up\"))"
+    echo "(box :class \"notif-scroll\" :orientation \"v\" (label :class \"notif-empty\" :xalign 0.5 :valign \"center\" :text \"暂无通知\"))"
     exit 0
 fi
 
@@ -42,10 +42,10 @@ while IFS= read -r row; do
 
     age=$(( uptime_s - ts_us / 1000000 ))
     [ "$age" -lt 0 ] && age=0
-    if   [ "$age" -lt 60 ];    then ago="now"
-    elif [ "$age" -lt 3600 ];  then ago="$((age / 60))m ago"
-    elif [ "$age" -lt 86400 ]; then ago="$((age / 3600))h ago"
-    else ago="$((age / 86400))d ago"; fi
+    if   [ "$age" -lt 60 ];    then ago="刚刚"
+    elif [ "$age" -lt 3600 ];  then ago="$((age / 60)) 分钟前"
+    elif [ "$age" -lt 86400 ]; then ago="$((age / 3600)) 小时前"
+    else ago="$((age / 86400)) 天前"; fi
 
     read -r glyph cls < <(app_icon "$appname")
 

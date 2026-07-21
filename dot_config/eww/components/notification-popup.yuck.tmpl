@@ -10,7 +10,7 @@
     (box :class "popup-header" :orientation "h" :spacing 10 :valign "center" :space-evenly false
       (button :class "back-btn" :onclick "~/.config/eww/scripts/open-popup.sh notification-popup"
         (label :text "󰁍" :class "back-icon"))
-      (label :text "Notifications" :class "popup-title" :hexpand true :xalign 0)
+      (label :text "通知" :class "popup-title" :hexpand true :xalign 0)
       (button :class "header-icon-btn" :onclick "~/.config/eww/scripts/clear-notifs.sh"
         (label :text "󰆴" :class "header-icon"))
       (button :class "header-icon-btn" :onrightclick "~/.config/eww/scripts/toggle-dnd.sh"
@@ -22,4 +22,4 @@
 
     (button :class "notif-clear-all" :halign "fill"
       :onclick "~/.config/eww/scripts/clear-notifs.sh"
-      (label :text "Clear All"))))
+      (label :text "全部清除"))))

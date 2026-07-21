@@ -2,7 +2,7 @@
 
 (defvar popup_open "none")
 (defvar osd_icon "󰕿")
-(defvar osd_label "Volume")
+(defvar osd_label "音量")
 (defvar osd_value "0")
 (defvar osd_color "blue")
 (defvar updates_filter "all")
@@ -52,10 +52,10 @@
 
 ;; ── Network ──
 (defpoll network_status :interval "2s"
-  :initial `{"type":"none","name":"Disconnected","icon":"󰤭"}`
+  :initial `{"type":"none","name":"未连接","icon":"󰤭"}`
   "~/.config/eww/scripts/network-status.sh")
 (defpoll wifi_on   :interval "2s" :initial "0" "~/.config/eww/scripts/network-wifi-on.sh")
-(defpoll wifi_name :interval "2s" :initial "Disconnected" "~/.config/eww/scripts/network-wifi-name.sh")
+(defpoll wifi_name :interval "2s" :initial "未连接" "~/.config/eww/scripts/network-wifi-name.sh")
 (defpoll wifi_networks :interval "2s" :initial "(box)" "~/.config/eww/scripts/network-wifi-networks.sh")
 (defpoll wired_detail :interval "5s" :initial "(box)" "~/.config/eww/scripts/network-wired-detail.sh")
 
@@ -77,7 +77,7 @@
 
 ;; ── Media (control center) ──
 (defpoll media :interval "2s"
-  :initial `{"has":false,"title":"Nothing Playing","artist":"No media source","status":"Stopped","icon":""}`
+  :initial `{"has":false,"title":"暂无媒体","artist":"无媒体源","status":"Stopped","icon":""}`
   "~/.config/eww/scripts/media.sh")
 
 ;; ── Calendar side column ──
@@ -86,7 +86,7 @@
   :initial `{"temp":"--°C","desc":"--","lohi":"--° / --°"}`
   "~/.config/eww/scripts/weather.sh")
 (defpoll countdown :interval "1800s"
-  :initial `{"label":"Weekend","sub":"--"}`
+  :initial `{"label":"周末","sub":"--"}`
   "~/.config/eww/scripts/countdown.sh")
 
 ;; ── Updates ──

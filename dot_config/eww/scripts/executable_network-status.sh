@@ -21,7 +21,7 @@ get_status() {
 
     if [ -n "$wired_dev" ]; then
         name=$(nmcli -t -f GENERAL.CONNECTION device show "$wired_dev" 2>/dev/null | cut -d: -f2)
-        echo "{\"type\":\"wired\",\"name\":\"${name:-Ethernet}\",\"icon\":\"󰈀\"}"
+        echo "{\"type\":\"wired\",\"name\":\"${name:-以太网}\",\"icon\":\"󰈀\"}"
         return
     fi
 
@@ -33,11 +33,11 @@ get_status() {
 
     if [ -n "$wifi_dev" ]; then
         name=$(nmcli -t -f GENERAL.CONNECTION device show "$wifi_dev" 2>/dev/null | cut -d: -f2)
-        echo "{\"type\":\"wifi\",\"name\":\"${name:-Wi-Fi}\",\"icon\":\"󰤨\"}"
+        echo "{\"type\":\"wifi\",\"name\":\"${name:-无线网}\",\"icon\":\"󰤨\"}"
         return
     fi
 
-    echo "{\"type\":\"none\",\"name\":\"Disconnected\",\"icon\":\"󰤭\"}"
+    echo "{\"type\":\"none\",\"name\":\"未连接\",\"icon\":\"󰤭\"}"
 }
 
 get_status

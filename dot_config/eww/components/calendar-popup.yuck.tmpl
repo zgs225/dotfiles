@@ -20,14 +20,14 @@
     (box :orientation "h" :spacing 14 :class "cal-extra" :space-evenly false
       ;; Events column
       (box :orientation "v" :spacing 10 :hexpand true :class "cal-col" :space-evenly false :valign "start"
-        (label :text "Events" :class "cal-col-title" :xalign 0)
+        (label :text "日程" :class "cal-col-title" :xalign 0)
         (literal :content "${events}")
         (button :class "cal-viewall" :onclick "gsimplecal & disown 2>/dev/null || true"
-          (label :text "View All →" :class "cal-viewall-label" :xalign 0)))
+          (label :text "查看全部 →" :class "cal-viewall-label" :xalign 0)))
       ;; Weather + Countdown column
       (box :orientation "v" :spacing 12 :class "cal-col cal-col-right" :space-evenly false :valign "start"
         (box :orientation "v" :spacing 3 :class "weather-box"
-          (label :text "Weather" :class "cal-col-title" :xalign 0)
+          (label :text "天气" :class "cal-col-title" :xalign 0)
           (box :orientation "h" :spacing 8 :valign "center" :space-evenly false
             (label :text "󰖐" :class "weather-icon")
             (box :orientation "v" :spacing 0
@@ -35,6 +35,6 @@
               (label :text "${weather.desc}" :class "weather-desc" :xalign 0)))
           (label :text "${weather.lohi}" :class "weather-lohi" :xalign 0))
         (box :orientation "v" :spacing 3 :class "countdown-box"
-          (label :text "Countdown" :class "cal-col-title" :xalign 0)
+          (label :text "倒计时" :class "cal-col-title" :xalign 0)
           (label :text "${countdown.label}" :class "countdown-label" :xalign 0)
           (label :text "${countdown.sub}" :class "countdown-sub" :xalign 0))))))

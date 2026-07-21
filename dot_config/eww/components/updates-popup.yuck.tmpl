@@ -15,11 +15,11 @@
     (box :class "popup-header" :orientation "h" :spacing 10 :valign "center" :space-evenly false
       (button :class "back-btn" :onclick "~/.config/eww/scripts/open-popup.sh updates-popup"
         (label :text "󰁍" :class "back-icon"))
-      (label :text "Software Updates" :class "popup-title" :hexpand true :xalign 0)
+      (label :text "软件更新" :class "popup-title" :hexpand true :xalign 0)
       (box :class "update-count-badge" :halign "end" :valign "center"
         (label :text "${updates.total}" :class "update-count-text")))
 
-    (label :text "Last checked: ${updates.last_check}" :class "update-last-check" :xalign 0)
+    (label :text "上次检查: ${updates.last_check}" :class "update-last-check" :xalign 0)
 
     (box :class "update-filter-row" :orientation "h" :spacing 8 :hexpand true :space-evenly true :valign "center"
       (button :class "update-chip ${updates_filter == 'all' ? 'active' : ''}"

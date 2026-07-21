@@ -4,7 +4,7 @@
 
 CONF="$HOME/.config/eww/events.json"
 if [ ! -f "$CONF" ]; then
-    echo "(box :orientation \"v\" (label :class \"events-empty\" :xalign 0 :text \"No events\"))"
+    echo "(box :orientation \"v\" (label :class \"events-empty\" :xalign 0 :text \"暂无日程\"))"
     exit 0
 fi
 
@@ -25,6 +25,6 @@ while IFS= read -r item; do
 done < <(jq -c '.[]' "$CONF" 2>/dev/null)
 
 if [ -z "$rows" ]; then
-    rows="(label :class \"events-empty\" :xalign 0 :text \"No events\")"
+    rows="(label :class \"events-empty\" :xalign 0 :text \"暂无日程\")"
 fi
 echo "(box :class \"events-list\" :orientation \"v\" :spacing 10 ${rows})"

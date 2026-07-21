@@ -174,7 +174,7 @@ class BluezAgent(dbus.service.Object):
     def DisplayPinCode(self, device, pincode):
         name = device_name_from_path(self.sys_bus, device)
         log(f"DisplayPinCode: {name} = {pincode}")
-        show_dialog(pincode, name, "display", "Enter this PIN on your device")
+        show_dialog(pincode, name, "display", "请在设备上输入此 PIN")
 
     @dbus.service.method(AGENT_IFACE, in_signature="o", out_signature="u")
     def RequestPasskey(self, device):
@@ -191,7 +191,7 @@ class BluezAgent(dbus.service.Object):
         if not state.active:
             state.begin(str(device), name)
         show_dialog(code, name, "display",
-                    "Enter this code on your keyboard")
+                    "请在键盘上输入此配对码")
 
     @dbus.service.method(AGENT_IFACE, in_signature="ou", out_signature="",
                          async_callbacks=("cb_ok", "cb_err"))
@@ -201,7 +201,7 @@ class BluezAgent(dbus.service.Object):
         log(f"RequestConfirmation: {name} = {code}")
         state.begin(str(device), name)
         show_dialog(code, name, "confirm",
-                    "Does this code match your device?")
+                    "此配对码是否与设备显示的一致？")
         threading.Thread(target=self._wait_confirm,
                          args=(cb_ok, cb_err, name), daemon=True).start()
 
@@ -239,7 +239,7 @@ class BluezAgent(dbus.service.Object):
 
 def do_pair(mac, label):
     state.begin(mac, label)
-    notice(f"Pairing with {label}...")
+    notice(f"正在与 {label} 配对...")
     try:
         root = _sys_bus.get_object(BLUEZ_BUS, "/")
         mgr = dbus.Interface(root, "org.freedesktop.DBus.ObjectManager")
@@ -253,7 +253,7 @@ def do_pair(mac, label):
                     break
 
         if not device_path:
-            notice(f"Device {label} not found")
+            notice(f"未找到设备 {label}")
             state.end()
             return
 
@@ -276,12 +276,12 @@ def do_pair(mac, label):
             err = str(e)
             log(f"Pair error: {err}")
             if "AuthenticationFailed" in err or "AuthenticationRejected" in err or "AuthenticationCanceled" in err:
-                notice(f"Pairing rejected - also forget this computer on {label}, then retry")
+                notice(f"配对被拒绝 — 请同时在 {label} 上忘记此电脑，然后重试")
             elif "AlreadyExists" in err:
                 notice("")
                 log(f"Already paired: {label}")
             else:
-                notice(f"Pairing failed: {err}")
+                notice(f"配对失败：{err}")
             hide_dialog()
             state.end()
 
@@ -290,7 +290,7 @@ def do_pair(mac, label):
 
     except Exception as e:
         log(f"Pair exception: {e}")
-        notice(f"Pairing failed: {e}")
+        notice(f"配对失败：{e}")
         hide_dialog()
         state.end()
 

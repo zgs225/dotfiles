@@ -12,7 +12,7 @@ case "$1" in
         elif command -v gammastep >/dev/null 2>&1; then
             pgrep -x gammastep >/dev/null && pkill -x gammastep || gammastep -O 4000 >/dev/null 2>&1 &
         else
-            notify-send "Night Light" "Install redshift or gammastep" 2>/dev/null
+            notify-send "护眼模式" "请安装 redshift 或 gammastep" 2>/dev/null
         fi
         ;;
     screenshot)
@@ -21,12 +21,12 @@ case "$1" in
         f="$HOME/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png"
         sleep 0.3
         if command -v maim >/dev/null 2>&1; then
-            maim -s "$f" 2>/dev/null && notify-send "Screenshot" "Saved to $f" 2>/dev/null
+            maim -s "$f" 2>/dev/null && notify-send "截图" "已保存到 $f" 2>/dev/null
         fi
         ;;
     performance)
         command -v xfce4-taskmanager >/dev/null 2>&1 && xfce4-taskmanager & \
             || (command -v wezterm >/dev/null 2>&1 && wezterm start -- btop 2>/dev/null &) \
-            || notify-send "Performance" "No monitor tool found" 2>/dev/null
+            || notify-send "性能" "未找到监控工具" 2>/dev/null
         ;;
 esac

@@ -9,7 +9,7 @@
 esc() { printf '%s' "$1" | sed -e 's/"/\\"/g'; }
 
 if ! bluetoothctl show 2>/dev/null | grep -q "Powered: yes"; then
-    echo "(box :class \"bt-list\" :orientation \"v\" (label :class \"bt-hint\" :xalign 0 :text \"Bluetooth is off\"))"
+    echo "(box :class \"bt-list\" :orientation \"v\" (label :class \"bt-hint\" :xalign 0 :text \"蓝牙已关闭\"))"
     exit 0
 fi
 
@@ -57,16 +57,16 @@ while read -r _ mac name; do
 
     if [ "$connected" -eq 1 ]; then
         rowcls="bt-device connected"
-        primary_tip="Disconnect"; primary_act="disconnect"
+        primary_tip="断开"; primary_act="disconnect"
     elif [ "$paired" -eq 1 ]; then
         rowcls="bt-device"
-        primary_tip="Connect"; primary_act="connect"
+        primary_tip="连接"; primary_act="connect"
     elif [ "$trusted" -eq 1 ]; then
         rowcls="bt-device stale"
-        primary_tip="Connect"; primary_act="connect"
+        primary_tip="连接"; primary_act="connect"
     else
         rowcls="bt-device"
-        primary_tip="Pair"; primary_act="pair"
+        primary_tip="配对"; primary_act="pair"
     fi
 
     battery_pct=""
@@ -85,7 +85,7 @@ while read -r _ mac name; do
     if [ -n "$battery_pct" ]; then
         row="${row}(label :class \"bt-battery\" :text \"${battery_pct}%\")"
     fi
-    row="${row}(button :class \"bt-act bt-danger\" :tooltip \"Forget\""
+    row="${row}(button :class \"bt-act bt-danger\" :tooltip \"忘记\""
     row="${row} :onclick \"~/.config/eww/scripts/bt-action.sh forget ${mac}\""
     row="${row}(label :class \"bt-act-icon\" :text \"󰆴\"))))"
 
@@ -106,9 +106,9 @@ fi
 
 if [ -z "$rows" ]; then
     if bluetoothctl show 2>/dev/null | grep -q "Discovering: yes"; then
-        rows="(label :class \"bt-hint\" :xalign 0 :text \"Scanning...\")"
+        rows="(label :class \"bt-hint\" :xalign 0 :text \"扫描中…\")"
     else
-        rows="(label :class \"bt-hint\" :xalign 0 :text \"No devices found\")"
+        rows="(label :class \"bt-hint\" :xalign 0 :text \"未发现设备\")"
     fi
 fi
 echo "(box :class \"bt-list\" :orientation \"v\" :spacing 2 ${rows})"
