@@ -15,11 +15,10 @@
   (centerbox :class "bar-inner" :orientation "h" :valign "fill" :vexpand true
 
     ;; ── Left: app grid + workspace seals ──
-    (box :class "bar-group" :halign "start" :valign "center" :space-evenly false :spacing 6
+    (box :class "bar-group" :halign "start" :valign "center" :space-evenly false :spacing 8
       (button :class "module-btn app-grid" :valign "center"
         :onclick "~/.config/eww/scripts/open-popup.sh profile-card"
         (label :text "󰀻" :class "module-icon"))
-      (label :text "·" :class "bar-sep" :valign "center")
       (eventbox :class "workspaces-container"
         :valign "center"
         :onscroll "if [ {} = up ]; then i3-msg workspace prev; else i3-msg workspace next; fi"
@@ -29,7 +28,7 @@
     (box)
 
     ;; ── Right: tray · wifi · battery · updates · cc · time · bell ──
-    (box :class "bar-group" :halign "end" :valign "center" :space-evenly false :spacing 6
+    (box :class "bar-group" :halign "end" :valign "center" :space-evenly false :spacing 8
 
       (systray :class "bar-tray" :icon-size {{ $eww.iconSize }} :spacing 6 :valign "center")
 
@@ -64,11 +63,7 @@
 
       (button :class "module-btn time-btn" :valign "center"
         :onclick "~/.config/eww/scripts/open-popup.sh calendar-popup"
-        (box :orientation "h" :spacing 10 :valign "center" :space-evenly false
-          (box :orientation "v" :spacing 0 :valign "center"
-            (label :text "${clock_dow}" :class "time-dow" :xalign 0)
-            (label :text "${clock_md}" :class "time-md" :xalign 0))
-          (label :text "${clock_time}" :class "time-main")))
+        (label :text "${clock_time}" :class "time-main"))
 
       (button :class "module-btn notif-btn" :valign "center"
         :onclick "~/.config/eww/scripts/open-popup.sh notification-popup"

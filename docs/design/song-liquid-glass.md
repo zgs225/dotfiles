@@ -122,9 +122,11 @@ border: 1px solid rgba($accent, 0.15);   // 格内分隔
 
 - 高度：DPI 三档 32 / 44 / 64px（`.chezmoitemplates/eww-sizes` 的 `barHeight`）
 - 底色 `bg_base` alpha 0.90；顶、底各一条发丝线；无阴影
-- 模块分隔符用「·」（`.bar-sep`），不用 `|`
-- 布局：`[app-grid] · [印章区] ······ [tray] · [状态模块] · [时辰]`
-- 时钟格式「辰时 · 08:08」：`scripts/shichen.sh`（`hour → (hour+1)/2 %12` 映射十二时辰），`defpoll` 10s
+- 模块分隔符用「·」（`.bar-sep`），不用 `|`；「·」alpha 0.32，只许出现在语义大分组之间（全 bar 仅右端两处）
+- 布局：`[引首章(app-grid)] [印章区] ······ [tray 墨盒] · [状态簇] · [落款款识+押角印]`
+  - 左端 = 引首章（天青发丝线框，与印章同尺寸成族）+ 姓名章组，组内零「·」
+  - 右端 = tray 墨盒 · 状态簇（net/bat/upd/cc，簇内无「·」）· 落款款识 + 押角印（通知铃）
+- 时钟格式「辰时 · 08:08」：`scripts/shichen.sh`（`hour → (hour+1)/2 %12` 映射十二时辰），`defpoll` 10s；落款用思源宋体 + 2px 字距，bar 内唯一展示字；不含 dow/md，完整日期下沉 calendar-popup
 
 ### 4.2 Workspace 指示器 —— 印章
 
@@ -142,7 +144,7 @@ border: 1px solid rgba($accent, 0.15);   // 格内分隔
 }
 ```
 
-三态都必须给 border（含 active），否则切换时尺寸跳动。
+三态都必须给 border（含 active），否则切换时尺寸跳动。左端四枚方印（引首章 + 印章组）同尺寸同 3px 圆角，active 不放大——朱砂实底已是最重一级，靠色不靠尺寸。
 
 ### 4.3 弹层 —— 多宝格
 
@@ -215,7 +217,7 @@ eww 的 bar 与 scrim 在 rounded/shadow/blur exclude 清单中；Rofi `corner-r
 - 基础单位 4px；阶梯 4 / 8 / 12 / 16 / 24
 - i3 `gaps inner 8`（i3 ≥ 4.22 原生支持），窗口边框 2px
 - i3 边框色：focused 天青 / unfocused 墨 / urgent 赭石（`dot_config/i3/config.tmpl`）
-- bar 水平内边距 12px；模块间距 6–8px；弹层距屏边 12px（与 i3 gap 对齐）
+- bar 水平内边距 12px；bar 组内步长统一 8px（模块间距 6px 已废除）；弹层距屏边 12px（与 i3 gap 对齐）
 
 ---
 
@@ -227,6 +229,7 @@ eww 的 bar 与 scrim 在 rounded/shadow/blur exclude 清单中；Rofi `corner-r
 | i3 | `dot_config/i3/config.tmpl` | gaps 8、天青/墨/赭石边框、文楷标题字体 |
 | eww 令牌 | `dot_config/eww/styles/colors.scss.tmpl` | 语义变量 + `$radius/$radius-sm`；旧 Catppuccin 变量仅作别名 |
 | eww 基座 | `dot_config/eww/styles/base.scss.tmpl` | `glass-shell/glass-cell` mixin、`.popup`、开关方化 |
+| eww bar | `dot_config/eww/components/bar.yuck.tmpl` + `dot_config/eww/styles/bar.scss.tmpl` | 立轴重裱（引首章/印章族/墨盒/落款/押角印）见 `docs/design/bar-refactor.md` |
 | eww 尺寸 | `.chezmoitemplates/eww-sizes` | DPI 三档，改尺寸只动这里 |
 | dunst | `dot_config/dunst/dunstrc.tmpl` | §4.4 |
 | rofi | `dot_config/rofi/themes/palette.rasi.tmpl` + `display/post-switch.d/executable_20-rofi-dpi` | 玻璃 rgba + 圆角 3/5/5 |
@@ -238,6 +241,8 @@ eww 的 bar 与 scrim 在 rounded/shadow/blur exclude 清单中；Rofi `corner-r
 | fontconfig | `dot_config/fontconfig/fonts.conf` | LXGW WenKai → JetBrainsMono Nerd Font 西文回退（§3） |
 
 **暂未统一**（用户裁定保留现状）：WezTerm（Tokyo Night + 背景图）、tmux（同步 Tokyo Night）。后续若要统一，沿用 §2.1 衍生固定值：终端 ANSI red 必须用赭石而非朱砂，朱砂只可作 tmux 当前窗口标记（印章语义延伸）。
+
+**色彩飞地登记**：systray 图标色不受令牌约束（外部进程绘制），但必须被 `rgba($ink,0.30)` 墨色容器收容（`.bar-tray`，3px 圆角 + 4px 内 padding）——全系统唯一色彩飞地。
 
 ---
 
@@ -290,6 +295,11 @@ eww 0.5.0 不能在 `:geometry` 里解析变量，所有尺寸经 `.chezmoitempl
 - 开关/旋钮：5px / 3px 方角（不再是胶囊）
 - 角标（更新、未读）：`$radius-sm` 3px 方点 + `warn` 藤黄底
 
+### 8.9 eww label 的两个 GTK 行为坑（bar 重构实战）
+
+- **带 `letter-spacing` 的 label 会被 GTK 少测宽度**（约 字距 × 间隙数），文本直接截成「…」。补偿：给 label 预留 `min-width`（`.time-main` 用 `fontSize × 7.5`，时辰串长恒定所以安全）。任何带字距的 label 改完必须截图确认未截断。
+- **label 自身不接收 `:hover`**——hover 状态落在父 button/eventbox 上。`.child:hover` 永不命中；必须写 `.parent:hover .child` 后代选择器（`.time-btn:hover .time-main` 已验证）。
+
 ---
 
 ## 9. 已知妥协点（不得视为 bug 再改）
@@ -307,7 +317,7 @@ eww 0.5.0 不能在 `:geometry` 里解析变量，所有尺寸经 `.chezmoitempl
 
 1. 先查 §2 令牌：所需颜色是否已有语义？没有 → 先论证是否该加 token，禁止就地硬编码
 2. 查 §4 对应组件规范；列表/菜单必有界引 hover（§4.3）
-3. 圆角只许 3 / 4 / 5px；透明度只许 0.55 / 0.60 / 0.65 / 0.75
+3. 圆角只许 3 / 4 / 5px；透明度只许 0.55 / 0.60 / 0.65 / 0.90
 4. 写完跑 §8.1 的 ASCII 检查；eww 改动后 `eww reload` + `eww logs` 无 CSS 错误
 5. 视觉验证：`import -window root` 截图自查；涉及红色时用像素采样确认红色只出现在当前 workspace 印章：
    ```bash
