@@ -1,8 +1,6 @@
 {{- $eww := includeTemplate "eww-sizes" . | fromJson -}}
 {{- $calFs := mulf $eww.popupFontSize 0.86 | int -}}
 {{- $calLineH := mulf $calFs 1.45 | int -}}
-{{- $calPillR := div $calLineH 2 -}}
-{{- $calPillRb := add $calPillR 8 -}}
 
 /* ============================================================ CALENDAR ============================================================ */
 .cal {
@@ -26,28 +24,26 @@ calendar {
  * text line (padding-bottom + content-box) to keep the number centered. */
 calendar.day-number { padding: 4px 0; }
 calendar:selected {
-  background-color: $blue; color: white;
+  background-color: $accent; color: $bg-base;
   padding: 0 0 8px 0;              /* must equal day-number padding top+bottom */
   background-clip: content-box;
   /* GTK shrinks border radii by the padding when clipping to the content
-   * box, so a plain 999px radius ends up asymmetric (top rounder than
-   * bottom) and the pill looks squashed. Pre-compensate: top corners get
-   * R = line-height/2, bottom corners R+8; after the 8px shrink all four
-   * corners land back on R and the shape is a true stadium again. */
-  border-radius: {{ $calPillR }}px / {{ $calPillR }}px {{ $calPillR }}px {{ $calPillRb }}px {{ $calPillRb }}px;
+   * box, so a plain radius ends up asymmetric. Pre-compensate: bottom
+   * corners get R+8; after the 8px shrink all corners land back on R. */
+  border-radius: 3px / 3px 3px 11px 11px;
 }
-calendar.header { color: $text; font-weight: bold; font-size: {{ mulf $eww.popupFontSize 0.94 | int }}px; }
+calendar.header { color: $fg-primary; font-weight: bold; font-size: {{ mulf $eww.popupFontSize 0.94 | int }}px; }
 calendar.button { color: $subtext0; padding: 4px; }
 calendar.button:hover { color: $text; }
 calendar:indeterminate { color: $overlay0; }
-calendar.highlight { color: $blue; font-weight: bold; }
+calendar.highlight { color: $accent; font-weight: bold; }
 
 .cal-extra { padding: 4px 0 0 0; }
 .cal-col { }
 .cal-col-right { min-width: {{ mulf $eww.popupFontSize 8.4 | int }}px; }
 .cal-col-title { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; font-weight: bold; letter-spacing: 0.4px; }
 
-.event-dot { min-width: 9px; min-height: 9px; border-radius: 999px; margin-top: 5px; }
+.event-dot { min-width: 9px; min-height: 9px; border-radius: $radius-sm; margin-top: 5px; }
 .event-dot-blue  { background-color: $blue; }
 .event-dot-mauve { background-color: $mauve; }
 .event-dot-green { background-color: $green; }
@@ -56,12 +52,12 @@ calendar.highlight { color: $blue; font-weight: bold; }
 .event-time  { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; }
 .events-empty { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.76 | int }}px; }
 .cal-viewall { padding: 2px 0; }
-.cal-viewall-label { color: $blue; font-size: {{ mulf $eww.popupFontSize 0.76 | int }}px; }
-.cal-viewall:hover .cal-viewall-label { color: $sapphire; }
+.cal-viewall-label { color: $accent; font-size: {{ mulf $eww.popupFontSize 0.76 | int }}px; }
+.cal-viewall:hover .cal-viewall-label { color: $fg-primary; }
 
 .weather-box, .countdown-box {
   @include glass-cell(0.28);
-  border-radius: 14px;
+  border-radius: $radius;
   padding: 12px;
 }
 .weather-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 1.28 | int }}px; color: $subtext0; }

@@ -27,10 +27,10 @@ cat > /tmp/rofi-dpi.rasi << EOF
     rofi-window-width: ${window_width}%;
     rofi-win-md: ${window_md}%;
 
-    // Border radius (fixed, not scaled)
-    rofi-bdr-radius4: 4px;
-    rofi-bdr-radius8: 8px;
-    rofi-bdr-radius-lg: 12px;
+    // Border radius (fixed, Song restraint: 3-6px)
+    rofi-bdr-radius4: 3px;
+    rofi-bdr-radius8: 5px;
+    rofi-bdr-radius-lg: 5px;
 
     // Spacing system (fixed)
     rofi-pad-4: 4px;

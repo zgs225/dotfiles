@@ -2,17 +2,17 @@
 
 /* ============================================================ BT PAIR DIALOG ============================================================ */
 .bt-pair-card {
-  @include glass-shell(0.72, 0.22);
-  border-radius: 24px;
+  @include glass-shell(0.65, 0.35);
+  border-radius: $radius;
   padding: 36px 44px;
 }
 .bt-pair-icon-wrap {
   min-width: 56px; min-height: 56px;
-  border-radius: 999px;
-  background-color: rgba($blue, 0.14);
+  border-radius: $radius;
+  background-color: rgba($accent, 0.14);
   margin-bottom: 16px;
 }
-.bt-pair-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 1.3 | int }}px; color: $blue; }
+.bt-pair-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 1.3 | int }}px; color: $accent; }
 .bt-pair-device { color: $text; font-size: {{ mulf $eww.popupFontSize 1.0 | int }}px; font-weight: bold; margin-bottom: 14px; }
 .bt-pair-code {
   color: $text;
@@ -21,18 +21,18 @@
   letter-spacing: 8px;
   font-family: "JetBrainsMono Nerd Font";
   padding: 12px 24px;
-  border-radius: 14px;
+  border-radius: $radius;
   background-color: rgba($surface1, 0.40);
-  border: 1px solid rgba($text, 0.10);
+  border: 1px solid rgba($accent, 0.20);
   margin-bottom: 14px;
 }
 .bt-pair-hint { color: $overlay1; font-size: {{ mulf $eww.popupFontSize 0.82 | int }}px; margin-bottom: 8px; }
 .bt-pair-actions { padding-top: 14px; }
-.bt-pair-btn { padding: 10px 28px; border-radius: 12px; transition: all 140ms; }
+.bt-pair-btn { padding: 10px 28px; border-radius: $radius; transition: all 140ms; }
 .bt-pair-btn-label { font-size: {{ mulf $eww.popupFontSize 0.88 | int }}px; font-weight: bold; }
-.bt-pair-confirm { background-color: rgba($blue, 0.80); }
-.bt-pair-confirm:hover { background-color: rgba($blue, 1.0); }
-.bt-pair-confirm .bt-pair-btn-label { color: $crust; }
+.bt-pair-confirm { background-color: rgba($accent, 0.80); }
+.bt-pair-confirm:hover { background-color: rgba($accent, 1.0); }
+.bt-pair-confirm .bt-pair-btn-label { color: $bg-base; }
 .bt-pair-cancel { background-color: rgba($surface2, 0.50); }
 .bt-pair-cancel:hover { background-color: rgba($surface2, 0.75); }
 .bt-pair-cancel .bt-pair-btn-label { color: $subtext0; }

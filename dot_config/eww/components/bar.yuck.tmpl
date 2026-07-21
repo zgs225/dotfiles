@@ -14,11 +14,12 @@
 
   (centerbox :class "bar-inner" :orientation "h" :valign "fill" :vexpand true
 
-    ;; ── Left: app grid + workspaces ──
+    ;; ── Left: app grid + workspace seals ──
     (box :class "bar-group" :halign "start" :valign "center" :space-evenly false :spacing 6
       (button :class "module-btn app-grid" :valign "center"
         :onclick "~/.config/eww/scripts/open-popup.sh profile-card"
         (label :text "󰀻" :class "module-icon"))
+      (label :text "·" :class "bar-sep" :valign "center")
       (eventbox :class "workspaces-container"
         :valign "center"
         :onscroll "if [ {} = up ]; then i3-msg workspace prev; else i3-msg workspace next; fi"
@@ -27,10 +28,12 @@
     ;; ── Center: empty ──
     (box)
 
-    ;; ── Right: tray | wifi | battery | cc | time | bell ──
+    ;; ── Right: tray · wifi · battery · updates · cc · time · bell ──
     (box :class "bar-group" :halign "end" :valign "center" :space-evenly false :spacing 6
 
       (systray :class "bar-tray" :icon-size {{ $eww.iconSize }} :spacing 6 :valign "center")
+
+      (label :text "·" :class "bar-sep" :valign "center")
 
       (button :class "module-btn net-btn" :valign "center"
         :onclick "~/.config/eww/scripts/open-popup.sh network-popup"
@@ -56,6 +59,8 @@
       (button :class "module-btn" :valign "center"
         :onclick "~/.config/eww/scripts/open-popup.sh control-center"
         (label :text "󰘵" :class "module-icon"))
+
+      (label :text "·" :class "bar-sep" :valign "center")
 
       (button :class "module-btn time-btn" :valign "center"
         :onclick "~/.config/eww/scripts/open-popup.sh calendar-popup"

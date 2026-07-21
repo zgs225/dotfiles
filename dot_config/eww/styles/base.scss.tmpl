@@ -25,9 +25,15 @@
 @keyframes popup-in { from { opacity: 0; margin-top: -4px; } to { opacity: 1; margin-top: 0; } }
 
 .popup-header { padding: 0 0 18px 0; }
-.popup-title { color: $text; font-size: {{ mulf $eww.popupFontSize 1.00 | int }}px; font-weight: bold; }
+.popup-title {
+  color: $accent;
+  font-family: "Source Han Serif CN", "Noto Serif CJK SC", serif;
+  font-size: {{ mulf $eww.popupFontSize 1.00 | int }}px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
 .section-label {
-  color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.76 | int }}px; font-weight: bold;
+  color: $accent; font-size: {{ mulf $eww.popupFontSize 0.76 | int }}px; font-weight: bold;
   letter-spacing: 0.4px; padding: 14px 2px 8px 2px;
 }
 .separator-line { background-color: rgba($text, 0.08); min-height: 1px; margin: 14px 0; }
