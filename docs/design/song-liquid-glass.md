@@ -54,7 +54,9 @@
 | `ink` | 墨 | `#2e2e36` | 分隔线、次要面 |
 | `fg_primary` | 月白 | `#e8e6df` | 正文文字（暖白，不用死白） |
 | `fg_secondary` | 蟹壳青 | `#9a9a92` | 次要文字 |
-| `accent` | 天青（汝窑） | `#9ec8c0` | 强调、激活态、边框高光 |
+| `ink_text`     | 题字墨 | `#202024` | 浅色底上的自适应暗字（`fg_primary` 的暗字双胞胎） |
+| `ink_text_dim` | 次阶墨 | `#3a3a34` | 浅色底上的自适应暗次字（`fg_secondary` 的暗字双胞胎） |
+| `accent`       | 天青（汝窑） | `#9ec8c0` | 强调、激活态、边框高光 |
 | `seal` | 朱砂 | `#c8452c` | **仅当前 workspace 印章** |
 | `warn` | 藤黄 | `#d8a23c` | 警告、urgent、更新角标 |
 | `error` | 赭石 | `#a0522d` | 错误、critical、终端 ANSI red |
@@ -73,7 +75,7 @@
 
 | 层级 | alpha | 用于 | 实现 |
 |---|---|---|---|
-| L1 常驻层 | 0.75 | bar | `.bar-inner` |
+| L1 常驻层 | 0.90 | bar | `.bar-inner`（沉墨立骨，对浅壁纸鲁棒；可调 0.92，以像素采样复核，见 `docs/design/bar-refactor.md` §3.1） |
 | L2 功能面板 | 0.65 | 弹层主体 | `.popup` / `glass-shell(0.65)` |
 | L3 强调格 | 0.55 | 弹层中重点卡片（media-card 等） | `glass-cell(0.55)` |
 | L4 临时层 | 0.60 | 通知、菜单、OSD | `.notification-popup`、`.osd`、dunst `@99` |
@@ -119,7 +121,7 @@ border: 1px solid rgba($accent, 0.15);   // 格内分隔
 ### 4.1 Bar —— 装裱卷轴
 
 - 高度：DPI 三档 32 / 44 / 64px（`.chezmoitemplates/eww-sizes` 的 `barHeight`）
-- 底色 `bg_base` alpha 0.75；顶、底各一条发丝线；无阴影
+- 底色 `bg_base` alpha 0.90；顶、底各一条发丝线；无阴影
 - 模块分隔符用「·」（`.bar-sep`），不用 `|`
 - 布局：`[app-grid] · [印章区] ······ [tray] · [状态模块] · [时辰]`
 - 时钟格式「辰时 · 08:08」：`scripts/shichen.sh`（`hour → (hour+1)/2 %12` 映射十二时辰），`defpoll` 10s
@@ -221,7 +223,7 @@ eww 的 bar 与 scrim 在 rounded/shadow/blur exclude 清单中；Rofi `corner-r
 
 | 组件 | 文件 | 要点 |
 |---|---|---|
-| 令牌根 | `.chezmoi.yaml.tmpl` | 9 个语义 token，全仓库唯一来源 |
+| 令牌根 | `.chezmoi.yaml.tmpl` | 11 个语义 token，全仓库唯一来源 |
 | i3 | `dot_config/i3/config.tmpl` | gaps 8、天青/墨/赭石边框、文楷标题字体 |
 | eww 令牌 | `dot_config/eww/styles/colors.scss.tmpl` | 语义变量 + `$radius/$radius-sm`；旧 Catppuccin 变量仅作别名 |
 | eww 基座 | `dot_config/eww/styles/base.scss.tmpl` | `glass-shell/glass-cell` mixin、`.popup`、开关方化 |
