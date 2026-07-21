@@ -1,13 +1,24 @@
 local wezterm = require('wezterm')
 local gpu_adapters = require('utils.gpu_adapter')
+local platform = require('utils.platform')()
 local colors = require('colors.custom').build_colors('Tokyo Night')
+
+local function pick_gpu()
+   if platform.is_linux then
+      local igpu_gl = gpu_adapters:pick_manual('Gl', 'IntegratedGpu')
+      if igpu_gl then
+         return igpu_gl
+      end
+   end
+   return gpu_adapters:pick_best()
+end
 
 return {
    animation_fps = 60,
    max_fps = 60,
    front_end = 'WebGpu',
    webgpu_power_preference = 'HighPerformance',
-   webgpu_preferred_adapter = gpu_adapters:pick_best(),
+   webgpu_preferred_adapter = pick_gpu(),
 
    -- color scheme
    color_scheme = 'Tokyo Night',
