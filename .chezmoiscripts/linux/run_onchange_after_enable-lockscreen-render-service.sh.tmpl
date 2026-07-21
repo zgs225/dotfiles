@@ -1,9 +1,11 @@
 {{ if and .isLinux .useI3 -}}
 #!/bin/sh
 # lockscreen-render.service hash: {{ include "dot_config/systemd/user/lockscreen-render.service.tmpl" | sha256sum }}
+# lock-render.py hash: {{ include "dot_config/i3/scripts/lock-render.py.tmpl" | sha256sum }}
 
 set -e
 
 systemctl --user daemon-reload
 systemctl --user enable --now lockscreen-render.service
+systemctl --user try-restart lockscreen-render.service
 {{ end -}}
