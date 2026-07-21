@@ -19,6 +19,8 @@ from gi.repository import Pango, PangoCairo
 FG_PRIMARY = "{{ .colors.fg_primary }}"
 FG_SECONDARY = "{{ .colors.fg_secondary }}"
 SEAL_COLOR = "{{ .colors.error }}"
+INK_TEXT = "{{ .colors.ink_text }}"
+INK_TEXT_DIM = "{{ .colors.ink_text_dim }}"
 SEAL_FONT = "Chong Xi Small Seal 22"
 
 SCRIPTS_DIR = Path(__file__).resolve().parent
@@ -39,6 +41,47 @@ SHICHEN_NAMES = [
 def hex_to_rgb(h):
     h = h.lstrip("#")
     return tuple(int(h[i:i+2], 16) / 255.0 for i in (0, 2, 4))
+
+
+def _srgb_lin(c):
+    return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
+
+
+def _rel_lum(rgb):
+    r, g, b = (_srgb_lin(c) for c in rgb)
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+
+def _contrast(la, lb):
+    hi, lo = (la, lb) if la >= lb else (lb, la)
+    return (hi + 0.05) / (lo + 0.05)
+
+
+def _region_lum(data, stride, W, H, x0, y0, x1, y1):
+    x0 = max(0, int(x0))
+    y0 = max(0, int(y0))
+    x1 = min(W, int(x1))
+    y1 = min(H, int(y1))
+    total = 0.0
+    n = 0
+    y = y0
+    while y < y1:
+        row = y * stride
+        x = x0
+        while x < x1:
+            i = row + x * 4
+            b = data[i] / 255.0
+            g = data[i + 1] / 255.0
+            r = data[i + 2] / 255.0
+            total += 0.2126 * _srgb_lin(r) + 0.7152 * _srgb_lin(g) + 0.0722 * _srgb_lin(b)
+            n += 1
+            x += 3
+        y += 3
+    return total / n if n else 0.5
+
+
+def _pick(bg_lum, l_light, l_dark, rgb_light, rgb_dark):
+    return rgb_light if _contrast(l_light, bg_lum) >= _contrast(l_dark, bg_lum) else rgb_dark
 
 
 def shichen_index(hour):
@@ -149,16 +192,28 @@ def load_poems():
     return [l.strip() for l in lines if l.strip()]
 
 
-def draw_vertical_text(cr, text, cx, top_y, font_desc, step, color):
+def draw_vertical_text(cr, text, cx, top_y, font_desc, step, color,
+                       bg=None, color_dark=None):
     layout = PangoCairo.create_layout(cr)
     layout.set_font_description(Pango.FontDescription(font_desc))
     layout.set_alignment(Pango.Alignment.CENTER)
+    adaptive = bg is not None and color_dark is not None
+    if adaptive:
+        data, stride, W, H = bg
+        l_light = _rel_lum(color)
+        l_dark = _rel_lum(color_dark)
     y = top_y
     for ch in text:
         layout.set_text(ch, -1)
         w, h = layout.get_pixel_size()
+        if adaptive:
+            bgL = _region_lum(data, stride, W, H,
+                              cx - w / 2 - 4, y - 4, cx + w / 2 + 4, y + h + 4)
+            col = _pick(bgL, l_light, l_dark, color, color_dark)
+        else:
+            col = color
         cr.move_to(cx - w / 2, y)
-        cr.set_source_rgb(*color)
+        cr.set_source_rgb(*col)
         PangoCairo.show_layout(cr, layout)
         y += step
     return y
@@ -205,12 +260,19 @@ def draw_seal(cr, text, cx, top_y, font_desc, pad, bg_color, fg_color):
         y += h + gap
 
 
-def draw_shichen(cr, text, x, y, font_desc, color):
+def draw_shichen(cr, text, x, y, font_desc, color, bg=None, color_dark=None):
     layout = PangoCairo.create_layout(cr)
     layout.set_font_description(Pango.FontDescription(font_desc))
     layout.set_text(text, -1)
+    if bg is not None and color_dark is not None:
+        data, stride, W, H = bg
+        w, h = layout.get_pixel_size()
+        bgL = _region_lum(data, stride, W, H, x, y, x + w, y + h)
+        col = _pick(bgL, _rel_lum(color), _rel_lum(color_dark), color, color_dark)
+    else:
+        col = color
     cr.move_to(x, y)
-    cr.set_source_rgb(*color)
+    cr.set_source_rgb(*col)
     PangoCairo.show_layout(cr, layout)
 
 
@@ -227,17 +289,24 @@ def build_surface(base_path, poem, sc_name, gz, date_str):
     cr.set_source_surface(base, 0, 0)
     cr.paint()
 
+    bg = (bytes(surface.get_data()), surface.get_stride(), W, H)
+    ink_text_rgb = hex_to_rgb(INK_TEXT)
+    ink_text_dim_rgb = hex_to_rgb(INK_TEXT_DIM)
+
     poem_cx = int(W * 0.88)
     poem_top = int(H * 0.10)
     y_after = draw_vertical_text(
-        cr, poem, poem_cx, poem_top, "Source Han Serif CN 36", 56, fg_rgb
+        cr, poem, poem_cx, poem_top, "Source Han Serif CN 36", 56, fg_rgb,
+        bg=bg, color_dark=ink_text_rgb,
     )
     draw_seal(cr, gz, poem_cx, y_after + 40, SEAL_FONT, 8, seal_rgb, fg_rgb)
 
     shichen_x = int(W * 0.06)
     shichen_y = int(H * 0.82)
-    draw_shichen(cr, sc_name, shichen_x, shichen_y, "Source Han Serif CN Bold 72", fg_rgb)
-    draw_shichen(cr, date_str, shichen_x, shichen_y + 112, "LXGW WenKai 16", fg2_rgb)
+    draw_shichen(cr, sc_name, shichen_x, shichen_y, "Source Han Serif CN Bold 72", fg_rgb,
+                 bg=bg, color_dark=ink_text_rgb)
+    draw_shichen(cr, date_str, shichen_x, shichen_y + 112, "LXGW WenKai 16", fg2_rgb,
+                 bg=bg, color_dark=ink_text_dim_rgb)
 
     return surface
 
