@@ -3,7 +3,7 @@
 /* ============================================================ BAR ============================================================ */
 .eww-bar { background-color: transparent; }
 .bar-inner {
-  background-color: rgba($bg-base, 0.75);
+  background-color: rgba($bg-base, 0.90);
   border: none;
   border-top: 1px solid rgba($accent, 0.35);
   border-bottom: 1px solid rgba($accent, 0.35);
@@ -24,14 +24,30 @@
 }
 .module-btn:hover { color: $fg-primary; background-color: rgba($surface1, 0.30); }
 .module-icon { font-family: "Symbols Nerd Font"; font-size: {{ $eww.iconSize }}px; }
-.app-grid { color: $fg-primary; }
-.app-grid:hover { color: $accent; }
+/* Leading seal (yinshou zhang): celadon hairline frame, same 32px square as ws-seal */
+.app-grid {
+  color: $fg-primary;
+  border: 1px solid rgba($accent, 0.35);
+  border-radius: 3px;
+  padding: 2px 5px;
+  min-width: {{ mulf $eww.fontSize 1.70 | int }}px;
+  min-height: {{ mulf $eww.fontSize 1.70 | int }}px;
+}
+.app-grid:hover {
+  color: $fg-primary;
+  border-color: $accent;
+  background-color: rgba($accent, 0.12);
+}
 
-/* Group separator - interpunct, quiet */
-.bar-sep { color: rgba($fg-secondary, 0.45); font-size: {{ mulf $eww.fontSize 0.90 | int }}px; padding: 0 2px; }
+/* Group separator - interpunct, faint like a ruled line on rice paper */
+.bar-sep { color: rgba($fg-secondary, 0.32); font-size: {{ mulf $eww.fontSize 1.00 | int }}px; padding: 0 2px; }
 
-/* System tray */
-.bar-tray { padding: 1px 5px; }
+/* System tray - color enclave corralled in an ink box */
+.bar-tray {
+  background-color: rgba($ink, 0.30);
+  border-radius: 3px;
+  padding: 4px;
+}
 
 /* Workspaces - cinnabar seals on Heavenly Stems */
 .workspaces-container {
@@ -63,15 +79,23 @@
 @keyframes urgent-pulse { from { opacity: 1; } to { opacity: 0.4; } }
 
 /* Battery */
-.battery-pct { color: $text; font-size: {{ mulf $eww.fontSize 0.95 | int }}px; }
+.battery-pct { color: $text; font-size: {{ mulf $eww.fontSize 1.00 | int }}px; }
 .bat-charging { color: $green; }
 .bat-normal   { color: $subtext0; }
 .bat-low      { color: $error; }
 
-/* Time */
-.time-dow  { color: $subtext0; font-size: {{ mulf $eww.fontSize 0.74 | int }}px; }
-.time-md   { color: $subtext0; font-size: {{ mulf $eww.fontSize 0.74 | int }}px; }
-.time-main { color: $text; font-weight: bold; font-size: {{ mulf $eww.fontSize 1.14 | int }}px; }
+/* Time - colophon in Song serif, the only display face in the bar */
+.time-main {
+  font-family: "Source Han Serif CN", "Noto Serif CJK SC", serif;
+  letter-spacing: 2px;
+  /* GTK under-measures letter-spaced labels by ~gaps*spacing; reserve width or the colophon ellipsizes */
+  min-width: {{ mulf $eww.fontSize 7.5 | int }}px;
+  color: $text;
+  font-weight: bold;
+  font-size: {{ mulf $eww.fontSize 1.14 | int }}px;
+  transition: color 120ms ease;
+}
+.time-btn:hover .time-main { color: lighten($text, 5%); }
 
 /* Notification bell */
 .notif-icon-wrap {

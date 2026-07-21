@@ -45,3 +45,26 @@ neon, glow, bloom, aurora blobs, decorative gradient, gradient text, gradient he
 5. **保住"活气"**：那五个同时发生的瞬间（hover 行的界引、悬停模块的天青底染、未读押角的湿印泥、标题字距的呼吸、终端半行命令的光标）是画面唯一的生命来源，删任何一个都会退回死截图——它们是设计系统"贴面级反馈"的视觉证据。
 6. **核对朱砂唯一**：出图后目视或像素采样确认 `#c8452c` 只落在 active 印章那一格；模型常忍不住在别处加红，必要时在负面提示词里再压一次。
 7. **不对称勿纠偏**：模型本能地把东西摆居中、摆对称、摆成等大卡片网格——本设计的留白是故意偏心的，若它"修正"了对称，就在主提示词的 ASYMMETRICALLY 段后再补一句 `the empty ink in the bar center and the off-center panels are intentional, do not balance them`。
+
+## 修正提示词（第二轮 · 针对《墨色书房桌面_4K》的七处偏差）
+
+第一轮的整屏稿（`墨色书房桌面_4K.png`）章法、深度、落款、印章族、朱砂唯一（组件层）均已立住，但有七处偏差。重出图时把下面这段**原样追加到主提示词末尾**，并把负面词条并入负面提示词。
+
+偏差清单：① 壁纸静物是锐利摄影级（笔筒/毛笔/手卷/册页全清晰），违反"糊到只剩色晕"；② 壁纸手卷里有一枚红色小印章，成了全屏第二处红；③ 朱砂印画成了偏粉的三文鱼红（实测 `(178,82,64)`，应为 `#c8452c`）；④ 右端结构错——状态簇被装进墨盒、控制图标自带方框、「·」只画了一个、电池百分比用了衬线；⑤ 落款缺内部间隔号（应为「戌時 · 19:48」）；⑥ 弹层 hover 行除了界引还给了整行浅底 + 全框，违反"只亮界引、零位移"；⑦ 五个心跳少了一个——bar 状态模块悬停的天青底染没画。
+
+```text
+CORRECTIONS from the previous render — hold these hard:
+1. WALLPAPER BLUR: the wallpaper is UNIFORMLY and heavily compositor-blurred from edge to edge — NO sharp objects anywhere: no brush pot, no brushes, no handscroll, no books, no paper with legible strokes. Only misted mountain haze remains; if any object edge is crisp, the blur has failed. The wallpaper is a painting glimpsed through silk, never a photograph of a desk.
+2. NO RED INSIDE THE PAINTING: cinnabar #c8452c appears ONLY in the active workspace chop. Any scroll or seal depicted inside the wallpaper carries NO red seal paste — stamp marks are faded ink-grey or omitted entirely.
+3. EXACT CINNABAR: the active chop is deep seal-paste cinnabar #c8452c — not salmon, not brick, not coral, not pinkish; its glyph is bold off-white.
+4. RIGHT-END ORDER: the darker ink-box corrals ONLY two or three small foreign third-party tray glyphs, their colors tamed by the box; the status cluster (wifi, battery + small %, update glyph with ochre dot, control glyph) sits OUTSIDE the box as bare grey-green line icons with NO frames of their own; exactly TWO faint middle-dots, placed as: [ink-box] · [status cluster] · [clock colophon + bell]. The battery % uses the same small technical monospace as the terminals, never serif.
+5. CLOCK FORMAT: the colophon reads 戌時 · 19:48 — shichen name, a middle dot, then the digits, one Song-serif string with wide letter-spacing.
+6. HOVER RESTRAINT: the popup's hovered row shows ONLY its 2px celadon left boundary-lead lighting up — NO row background fill, NO full rectangle outline; every other row keeps an identical transparent 2px lead so nothing shifts.
+7. FIVE HEARTBEATS, ALL PRESENT: do not drop the bar hover — one status icon's seat in the bar is faintly washed celadon.
+```
+
+负面提示词追加：
+
+```text
+sharp photographic wallpaper, crisp desk still-life, brush pot, legible calligraphy on wallpaper objects, red seal stamps inside the painting, salmon red, coral red, pinkish red, extra framed boxes around status icons, hover row background fill, hover row full outline, serif digits in the status cluster
+```

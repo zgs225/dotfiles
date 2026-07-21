@@ -21,8 +21,6 @@
 
 ;; ── Clock ── (shichen: traditional double-hour + civil time)
 (defpoll clock_time :interval "10s" :initial "--时 · --:--" "~/.config/eww/scripts/shichen.sh")
-(defpoll clock_dow  :interval "30s" :initial "---"   "LC_ALL=C date +'%a'")
-(defpoll clock_md   :interval "30s" :initial "---"   "LC_ALL=C date +'%b %d'")
 
 ;; ── Calendar hero ──
 (defpoll calendar_monthday :interval "30s" :initial "1"    "date +'%-d'")
