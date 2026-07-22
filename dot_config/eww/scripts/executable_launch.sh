@@ -29,9 +29,7 @@ fi
 
 eww daemon 9>&-
 # `eww daemon` double-forks and returns before its IPC socket is bound (GTK
-# init + SCSS compile still pending). Wait for a ping so `eww open bar` below
-# never hits the "can't connect → auto-spawn a second daemon" branch — that
-# race is what produced the duplicate bar on cold boot.
+# init + SCSS compile still pending). Wait for a ping before talking to it.
 for _ in $(seq 1 50); do
   eww ping >/dev/null 2>&1 && break
   sleep 0.1
@@ -41,7 +39,15 @@ eww close popup-scrim 2>/dev/null
 # Daemon restart orphans any bluetooth scan holder from the previous session —
 # with no popup open nothing polls bt-devices.sh, so stop it explicitly here.
 ~/.config/eww/scripts/bt-scan.sh off 2>/dev/null
-eww open bar
+# --no-daemonize is the actual duplicate-bar fix: `eww open` is a
+# can_start_daemon action, so any transient connect failure right after the
+# daemon spins up its defpoll/deflisten scripts (heavy under i3-restart load)
+# makes it fork a SECOND daemon that opens its own bar. Disable that auto-spawn
+# and retry the open ourselves until the daemon accepts it.
+for _ in $(seq 1 25); do
+  eww open bar --no-daemonize 2>/dev/null && break
+  sleep 0.2
+done
 
 # Start the bluetooth pairing agent daemon (handles both active and passive
 # SSP authentication via the eww bt-pair-dialog window). Close the launch lock
