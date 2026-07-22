@@ -105,7 +105,7 @@ mode "resize" {
 # Applications
 bindsym $mod+Return exec $term
 bindsym $mod+space exec --no-startup-id ~/.config/i3/scripts/launcher.sh
-bindsym $mod+Tab exec "rofi -show window"
+bindsym $mod+Tab exec "rofi -show window -p '窗口'"
 bindsym $mod+Shift+v exec "rofi -modi '剪贴板:greenclip print' -show 剪贴板 -run-command '{cmd}' -theme ~/.config/rofi/clipboard.rasi"
 bindsym $mod+Shift+d exec --no-startup-id dunstctl context
 bindsym $mod+q kill
