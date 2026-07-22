@@ -13,9 +13,12 @@ export KVANTUM_THEME=catppuccin-glass
 # both the GTK3 catppuccin-glass theme and GTK4 Adwaita variant selection)
 export ELECTRON_OZONE_PLATFORM_HINT=auto
 
-# EGL vendor: pin Mesa so wezterm's wgpu Gl backend always sees the Intel
-# adapter. At early login the NVIDIA EGL library can win the enumeration race,
-# landing wezterm on the dGPU and keeping it awake (RTD3 never engages).
+# Hybrid-GPU session default: force EGL onto Mesa so every GUI app's EGL path
+# uses the iGPU (glvnd otherwise defaults to the NVIDIA vendor lib by filename
+# order). prime-run still overrides this per-process for offload. This alone
+# does NOT stop wezterm grabbing the dGPU: wezterm's WebGpu can fall back to
+# NVIDIA *Vulkan* (unaffected by EGL), which the per-launch wrapper
+# (dot_config/wezterm/wezterm-wrap.sh) handles by hiding the NVIDIA ICD.
 export __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/50_mesa.json
 
 systemctl --user import-environment DISPLAY PATH
