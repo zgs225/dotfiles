@@ -2,7 +2,7 @@
 # Managed by chezmoi
 
 set $mod Mod1
-set $term wezterm
+set $term ~/.config/wezterm/wezterm-wrap.sh
 
 # Font for window titles
 font pango:LXGW WenKai 10
@@ -150,7 +150,7 @@ exec --no-startup-id dunst
 exec --no-startup-id greenclip daemon
 exec --no-startup-id fcitx5 -d
 exec --no-startup-id nm-applet
-exec --no-startup-id wezterm start --class dropdown-btop btop
+exec --no-startup-id ~/.config/wezterm/wezterm-wrap.sh start --class dropdown-btop btop
 exec --no-startup-id libinput-gestures-setup start
 {{ if and .isLinux .useI3 }}
 exec --no-startup-id keyd-application-mapper -d
