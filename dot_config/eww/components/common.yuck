@@ -70,8 +70,13 @@
 
 ;; ── Power profile (TLP tlpctl, control center quick button) ──
 (defpoll power_profile :interval "3s"
-  :initial `{"mode":"unavailable","profile":"","source":"","icon":"","label":"电源"}`
+  :initial `{"mode":"unavailable","profile":"","source":"","icon":"","label":"电源","icon_auto":"","icon_powersave":"","icon_performance":""}`
   "~/.config/eww/scripts/power-profile.sh get")
+
+;; ── Power info (power popup panel) ──
+(defpoll power_info :interval "3s"
+  :initial `{"source":"bat","watts":"--","percent":0,"health":"--","cycles":0,"eta":"--","eta_label":"剩余","threshold":"80","dgpu":"unknown","dgpu_icon":"","dgpu_holders":"","icon_fullcharge":""}`
+  "~/.config/eww/scripts/power-info.sh")
 
 ;; ── System (profile card) ──
 (defpoll sysinfo :interval "3s"

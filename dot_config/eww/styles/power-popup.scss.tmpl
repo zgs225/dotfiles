@@ -1,0 +1,57 @@
+{{- $eww := includeTemplate "eww-sizes" . | fromJson -}}
+/* ============================================ POWER POPUP ============================================ */
+
+.dgpu-badge {
+  font-family: "Symbols Nerd Font";
+  color: $subtext0;
+  font-size: {{ mulf $eww.popupFontSize 0.82 | int }}px;
+}
+
+.power-hero {
+  @include glass-cell(0.30);
+  border-radius: $radius;
+  padding: 16px;
+}
+.power-src-icon {
+  font-family: "Symbols Nerd Font";
+  font-size: {{ mulf $eww.popupIconSize 1.40 | int }}px;
+  color: $accent;
+}
+.power-watts { color: $text; font-size: {{ mulf $eww.popupFontSize 1.55 | int }}px; font-weight: bold; }
+.power-src-label { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; }
+
+.seg-btn {
+  @include glass-cell(0.30);
+  border-radius: $radius;
+  padding: 12px 4px;
+  transition: all 120ms;
+}
+.seg-btn:hover { background-color: rgba($surface1, 0.48); }
+.seg-btn.active { border-color: rgba($accent, 0.85); background-color: rgba($accent, 0.16); }
+.seg-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 1.00 | int }}px; color: $subtext0; }
+.seg-num { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 1.00 | int }}px; font-weight: bold; }
+.seg-label { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; }
+.seg-btn.active .seg-icon,
+.seg-btn.active .seg-num { color: $accent; }
+.seg-btn.active .seg-label { color: $text; }
+
+.bat-card {
+  @include glass-cell(0.30);
+  border-radius: $radius;
+  padding: 12px 14px;
+}
+.bat-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 1.10 | int }}px; color: $subtext1; }
+.bat-pct { color: $text; font-size: {{ mulf $eww.popupFontSize 1.05 | int }}px; font-weight: bold; }
+.bat-sub { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; }
+.bat-eta { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.76 | int }}px; }
+
+.fullcharge-btn {
+  @include glass-cell(0.30);
+  border-radius: $radius;
+  padding: 12px;
+  margin-top: 14px;
+  transition: all 120ms;
+}
+.fullcharge-btn:hover { background-color: rgba($surface1, 0.48); }
+.fc-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.92 | int }}px; color: $subtext0; }
+.fc-label { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.80 | int }}px; }

@@ -38,7 +38,8 @@ mode_of() {
 
 cmd_get() {
     if ! command -v tlpctl >/dev/null 2>&1; then
-        printf '{"mode":"unavailable","profile":"","source":"","icon":"%s","label":"电源"}\n' "$ICON_UNKNOWN"
+        printf '{"mode":"unavailable","profile":"","source":"","icon":"%s","label":"电源","icon_auto":"%s","icon_powersave":"%s","icon_performance":"%s"}\n' \
+            "$ICON_UNKNOWN" "$ICON_AUTO" "$ICON_POWERSAVE" "$ICON_PERFORMANCE"
         exit 0
     fi
     local profile mode icon label src
@@ -51,8 +52,8 @@ cmd_get() {
         *)           icon="$ICON_UNKNOWN"; label="电源" ;;
     esac
     if on_ac; then src=ac; else src=bat; fi
-    printf '{"mode":"%s","profile":"%s","source":"%s","icon":"%s","label":"%s"}\n' \
-        "$mode" "$profile" "$src" "$icon" "$label"
+    printf '{"mode":"%s","profile":"%s","source":"%s","icon":"%s","label":"%s","icon_auto":"%s","icon_powersave":"%s","icon_performance":"%s"}\n' \
+        "$mode" "$profile" "$src" "$icon" "$label" "$ICON_AUTO" "$ICON_POWERSAVE" "$ICON_PERFORMANCE"
 }
 
 cmd_set() {
