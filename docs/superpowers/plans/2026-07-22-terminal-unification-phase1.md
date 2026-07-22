@@ -95,21 +95,21 @@ same_pic() { [ "$(compare -metric RMSE -fuzz 3% "$1" "$2" null: 2>&1 | sed 's/.*
 ### M3: Song 注值（i3-only 行为变化）
 
 **Files:** Modify `palette.lua.tmpl`（仅 if 分支）、`appearance.lua.tmpl`（仅 if 分支）
-- [ ] if 分支 palette 换为 Song 全量（18 ANSI 键 + 子表，令牌走 `{{ .colors.* }}`，衍生值字面量+注释）：
+- [x] if 分支 palette 换为 Song 全量（18 ANSI 键 + 子表，令牌走 `{{ .colors.* }}`，衍生值字面量+注释）：
   - bg/fg `bg_base`/`fg_primary`；black `#15151a`；red `error`（赭石）；green `#8a9a6b`；yellow `warn`；blue `accent`（天青）；magenta `#c9b8b3`；cyan `#7fa8a0`；white `#cfccc2`；bright_black `#6f6f68`；bright 组同基色；bright_white `fg_primary`
   - `chrome`：cursor_bg/cursor_border/cursor_fg = `fg_primary`/`fg_primary`/`bg_base`；selection_bg `ink`、selection_fg `fg_primary`；split `#464652`
   - `tab_title`：default{bg `ink`, fg `fg_secondary`} / is_active{bg `accent`, fg `bg_base`} / hover{bg `#464652`, fg `fg_primary`}
   - `left_status`：glyph_semi_circle{bg rgba(0,0,0,0.4), fg `warn`}、text{bg `warn`, fg `bg_base`}
   - else 分支**不动**
-- [ ] `appearance.lua.tmpl`：if 分支删 `color_scheme = 'Tokyo Night'`（colors 表全权驱动）；else 分支保留原行
-- [ ] `chezmoi apply`
-- [ ] **验证（自动，无混色窗）**：`check_win $TU/M3/ansi.png`
+- [x] `appearance.lua.tmpl`：if 分支删 `color_scheme = 'Tokyo Night'`（colors 表全权驱动）；else 分支保留原行
+- [x] `chezmoi apply`
+- [x] **验证（自动，无混色窗）**：`check_win $TU/M3/ansi.png`
   - `has_hex M3/ansi.png a0522d && has_hex 8a9a6b && has_hex d8a23c && has_hex 9ec8c0 && has_hex c9b8b3 && has_hex 7fa8a0 && has_hex 6f6f68` 全过
   - `no_tokyo M3/ansi.png` 全过；`no_hex M3/ansi.png c8452c`（wezterm 域禁朱砂）
   - else 分支与 `git show HEAD` 仍逐字节一致
-- [ ] **验证（视觉 agent）**：ansi 图十六格逐格对值表；开 2 tab 截 `$TU/M3/tabs.png`——active 天青底玄字、inactive 墨底蟹壳青；普通 class 窗口截 `$TU/M3/real.png`（85% 混色真实观感）
-- [ ] **视觉验证（用户）**：三张图——十六色对、tab 天青、真实观感不脏
-- [ ] **回滚**：`git checkout -- palette.lua.tmpl appearance.lua.tmpl` + `chezmoi apply`
+- [x] **验证（视觉 agent）**：ansi 图十六格逐格对值表；开 2 tab 截 `$TU/M3/tabs.png`——active 天青底玄字、inactive 墨底蟹壳青；普通 class 窗口截 `$TU/M3/real.png`（85% 混色真实观感）
+- [x] **视觉验证（用户）**：三张图——十六色对、tab 天青、真实观感不脏
+- [x] **回滚**：`git checkout -- palette.lua.tmpl appearance.lua.tmpl` + `chezmoi apply`
 
 ### M4: tmux Song 块 + 死代码清理
 

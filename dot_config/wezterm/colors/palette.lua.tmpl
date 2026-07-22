@@ -1,28 +1,73 @@
-{{ if and .isLinux .useI3 -}}
--- Single source of truth for the color palette.
--- Consumed by both WezTerm (via custom.lua) and the tmux sync script.
--- No external dependencies: safe to dofile() from any Lua environment.
+{{ if and .isLinux .useI3 }}
+-- Song Ink palette ("juansha liuli") for the WezTerm side of the terminal
+-- unification (docs/design/terminal-unification.md). Values come from chezmoi
+-- data.colors tokens and the registered derived fixed values in
+-- docs/design/song-liquid-glass.md S2.1 -- no invented colors.
+-- Consumed by WezTerm via custom.lua; tmux colors render directly from
+-- dot_tmux.conf.local.tmpl (the old sync script is gone).
 
 local palette = {
-   -- Tokyo Night
-   background = '#1a1b26',
-   foreground = '#c0caf5',
-   black = '#15161e',
-   red = '#f7768e',
-   green = '#9ece6a',
-   yellow = '#e0af68',
-   blue = '#7aa2f7',
-   magenta = '#bb9af7',
-   cyan = '#7dcfff',
-   white = '#a9b1d6',
-   bright_black = '#414868',
-   bright_red = '#f7768e',
-   bright_green = '#9ece6a',
-   bright_yellow = '#e0af68',
-   bright_blue = '#7aa2f7',
-   bright_magenta = '#bb9af7',
-   bright_cyan = '#7dcfff',
-   bright_white = '#c0caf5',
+   background = '{{ .colors.bg_base }}', -- xuan (ink black)
+   foreground = '{{ .colors.fg_primary }}', -- yuebai (moon white)
+   black = '#15151a', -- crust: xuan dark rank (derived)
+   red = '{{ .colors.error }}', -- zheshi (ochre); cinnabar stays seal-only
+   green = '#8a9a6b', -- tai lv (moss): registered ANSI green (derived)
+   yellow = '{{ .colors.warn }}', -- tenghuang (gamboge)
+   blue = '{{ .colors.accent }}', -- tianqing (Ru-ware): blue-purple is forbidden
+   magenta = '#c9b8b3', -- zhefen: registered ANSI magenta (derived)
+   cyan = '#7fa8a0', -- deep tianqing: registered ANSI cyan (derived)
+   white = '#cfccc2', -- yuebai second rank (derived)
+   bright_black = '#6f6f68', -- xieqing dark rank (derived)
+   bright_red = '{{ .colors.error }}',
+   bright_green = '#8a9a6b',
+   bright_yellow = '{{ .colors.warn }}',
+   bright_blue = '{{ .colors.accent }}',
+   bright_magenta = '#c9b8b3',
+   bright_cyan = '#7fa8a0',
+   bright_white = '{{ .colors.fg_primary }}',
+}
+
+palette.ansi = {
+   palette.black,
+   palette.red,
+   palette.green,
+   palette.yellow,
+   palette.blue,
+   palette.magenta,
+   palette.cyan,
+   palette.white,
+}
+
+palette.brights = {
+   palette.bright_black,
+   palette.bright_red,
+   palette.bright_green,
+   palette.bright_yellow,
+   palette.bright_blue,
+   palette.bright_magenta,
+   palette.bright_cyan,
+   palette.bright_white,
+}
+
+palette.chrome = {
+   cursor_bg = '{{ .colors.fg_primary }}',
+   cursor_fg = '{{ .colors.bg_base }}',
+   cursor_border = '{{ .colors.fg_primary }}',
+   selection_bg = '{{ .colors.ink }}',
+   selection_fg = '{{ .colors.fg_primary }}',
+   split = '#464652', -- ink bright rank (derived)
+}
+
+palette.tab_title = {
+   default = { bg = '{{ .colors.ink }}', fg = '{{ .colors.fg_secondary }}' },
+   is_active = { bg = '{{ .colors.accent }}', fg = '{{ .colors.bg_base }}' },
+   hover = { bg = '#464652', fg = '{{ .colors.fg_primary }}' },
+   unseen_fg = '{{ .colors.warn }}',
+}
+
+palette.left_status = {
+   glyph_semi_circle = { bg = 'rgba(0, 0, 0, 0.4)', fg = '{{ .colors.warn }}' },
+   text = { bg = '{{ .colors.warn }}', fg = '{{ .colors.bg_base }}' },
 }
 
 -- Mapping from palette keys -> tmux_conf_theme_colour_N semantics.
@@ -67,7 +112,7 @@ return {
    palette = palette,
    tmux_mapping = tmux_mapping,
 }
-{{ else -}}
+{{ else }}
 -- Single source of truth for the color palette.
 -- Consumed by both WezTerm (via custom.lua) and the tmux sync script.
 -- No external dependencies: safe to dofile() from any Lua environment.
