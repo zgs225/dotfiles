@@ -31,6 +31,3 @@ current="${wallpapers[$idx]}"
 feh --bg-fill "$current"
 
 systemctl --user start lockscreen-refresh.service >/dev/null 2>&1 &
-
-name=$(basename "$current")
-notify-send -u low -t 4000 -i "$current" "Wallpaper" "$name ($((idx + 1))/$count)"
