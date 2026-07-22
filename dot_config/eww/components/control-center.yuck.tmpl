@@ -97,7 +97,7 @@
 
     ;; Quick actions
     (box :class "cc-quick" :orientation "h" :spacing 10
-      (button :class "quick-btn" :hexpand true :onclick "~/.config/eww/scripts/cc-action.sh night-light"
+      (button :class "quick-btn ${night_light == 'true' ? 'on' : ''}" :hexpand true :onclick "~/.config/eww/scripts/cc-action.sh night-light"
         (box :orientation "v" :spacing 4 :valign "center" :halign "center"
           (label :text "󰔎" :class "quick-icon") (label :text "护眼模式" :class "quick-label")))
       (button :class "quick-btn" :hexpand true :onclick "~/.config/eww/scripts/cc-action.sh screenshot"

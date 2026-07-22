@@ -65,6 +65,26 @@ cmd_set() {
     esac
 }
 
+# `tlpctl get` lags ~0.3s behind `tlpctl set`, so re-reading it right after a set
+# yields the PREVIOUS profile (the highlight would show the old mode). Instead
+# emit the deterministic target state straight from the requested mode: the
+# seg-btn highlight / cc quick icon flip the instant the click lands, and the
+# 3s poll reconciles against the real profile afterwards.
+emit_for_mode() {
+    local mode="$1" profile icon label src
+    case "$mode" in
+        auto)        profile="$(source_default_profile)"; icon="$ICON_AUTO";        label="自动" ;;
+        powersave)   profile="power-saver";               icon="$ICON_POWERSAVE";   label="省电" ;;
+        performance) profile="performance";               icon="$ICON_PERFORMANCE"; label="性能" ;;
+        *)           return 0 ;;
+    esac
+    if on_ac; then src=ac; else src=bat; fi
+    printf '{"mode":"%s","profile":"%s","source":"%s","icon":"%s","label":"%s","icon_auto":"%s","icon_powersave":"%s","icon_performance":"%s"}\n' \
+        "$mode" "$profile" "$src" "$icon" "$label" "$ICON_AUTO" "$ICON_POWERSAVE" "$ICON_PERFORMANCE"
+}
+
+show_mode() { eww update power_profile="$(emit_for_mode "$1")" 2>/dev/null; }
+
 # tlpctl takes ~0.6s; eww SIGKILLs onclick children after 200ms.
 # Detach into a new session so the real work survives.
 if [ "${1:-}" = "set" ] || [ "${1:-}" = "cycle" ]; then
@@ -76,12 +96,17 @@ fi
 
 case "${1:-get}" in
     get) cmd_get ;;
-    set) cmd_set "${2:-auto}" ;;
+    set)
+        show_mode "${2:-auto}"   # optimistic highlight, then apply (~0.2s)
+        cmd_set "${2:-auto}"
+        ;;
     cycle)
         case "$(mode_of "$(current_profile)")" in
-            auto) cmd_set powersave ;;
-            powersave) cmd_set performance ;;
-            *) cmd_set auto ;;
+            auto)        next=powersave ;;
+            powersave)   next=performance ;;
+            *)           next=auto ;;
         esac
+        show_mode "$next"
+        cmd_set "$next"
         ;;
 esac

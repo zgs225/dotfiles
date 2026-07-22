@@ -11,6 +11,7 @@ if ! nmcli radio wifi 2>/dev/null | grep -q "enabled"; then
 fi
 
 connected_ssid=$(real_wifi_conns | head -1 | cut -d: -f1)
+connecting=$(eww get wifi_connecting 2>/dev/null | tr -d '"')
 
 rows=""
 while IFS=':' read -r in_use ssid signal security; do
@@ -28,6 +29,9 @@ while IFS=':' read -r in_use ssid signal security; do
     if [ "$ssid" = "$connected_ssid" ]; then
         dot="(box :class \"wifi-dot wifi-dot-on\" :valign \"center\")"
         rowcls="wifi-network connected"
+    elif [ -n "$connecting" ] && [ "$ssid" = "$connecting" ]; then
+        dot="(box :class \"wifi-dot\" :valign \"center\")"
+        rowcls="wifi-network connecting"
     else
         dot="(box :class \"wifi-dot\" :valign \"center\")"
         rowcls="wifi-network"
@@ -35,12 +39,17 @@ while IFS=':' read -r in_use ssid signal security; do
 
     e_ssid=$(printf '%s' "$ssid" | sed -e 's/"/\\"/g')
 
-    if [ "$secured" -eq 1 ]; then lockw="(label :class \"wifi-lock\" :text \"$lock\")"; else lockw=""; fi
+    if [ -n "$connecting" ] && [ "$ssid" = "$connecting" ]; then
+        tailw="(label :class \"wifi-signal\" :text \"连接中…\")"
+    else
+        if [ "$secured" -eq 1 ]; then lockw="(label :class \"wifi-lock\" :text \"$lock\")"; else lockw=""; fi
+        tailw="${lockw}(label :class \"wifi-signal\" :text \"${sig}\")"
+    fi
 
-    rows="${rows}(button :class \"${rowcls}\" :onclick \"nmcli device wifi connect '${e_ssid}' 2>/dev/null || nm-connection-editor &\""
+    rows="${rows}(button :class \"${rowcls}\" :onclick \"~/.config/eww/scripts/wifi-connect.sh '${e_ssid}'\""
     rows="${rows}(box :orientation \"h\" :spacing 10 :space-evenly false ${dot}"
     rows="${rows}(label :class \"wifi-ssid\" :xalign 0 :hexpand true :limit-width 20 :text \"${e_ssid}\")"
-    rows="${rows}${lockw}(label :class \"wifi-signal\" :text \"${sig}\")))"
+    rows="${rows}${tailw}))"
 done < <(nmcli -t -f IN-USE,SSID,SIGNAL,SECURITY device wifi list --rescan no 2>/dev/null | awk -F: 'NF>=2 && $2!="" && !seen[$2]++' | head -6)
 
 if [ -z "$rows" ]; then

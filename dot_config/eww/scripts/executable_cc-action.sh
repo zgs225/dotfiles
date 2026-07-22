@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 # Control-center bottom action buttons.
 # Usage: cc-action.sh {night-light|screenshot}
+# Detach so eww's 200ms onclick SIGKILL can't kill the post-action `eww update`.
+if [ -z "$EWW_CC_ACTION_DETACHED" ]; then
+    EWW_CC_ACTION_DETACHED=1 setsid nohup "$0" "$@" >/dev/null 2>&1 &
+    exit 0
+fi
 case "$1" in
     night-light)
         if command -v redshift >/dev/null 2>&1; then
@@ -14,6 +19,8 @@ case "$1" in
         else
             notify-send "护眼模式" "请安装 redshift 或 gammastep" 2>/dev/null
         fi
+        sleep 0.3
+        eww update night_light="$(~/.config/eww/scripts/night-light-on.sh)"
         ;;
     screenshot)
         eww close-all 2>/dev/null
