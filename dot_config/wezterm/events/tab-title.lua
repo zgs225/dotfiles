@@ -15,7 +15,7 @@ local M = {}
 local __cells__ = {} -- wezterm FormatItems (ref: https://wezfurlong.org/wezterm/config/lua/wezterm/format.html)
 
 -- stylua: ignore
-local colors = {
+local colors = require('colors.custom').tab_title or {
    default   = { bg = '#45475a', fg = '#1c1b19' },
    is_active = { bg = '#7FB4CA', fg = '#11111b' },
    hover     = { bg = '#587d8c', fg = '#1c1b19' },
