@@ -7,6 +7,9 @@
 # variables inside a window :geometry and GTK will not size empty boxes from
 # runtime CSS variables. Re-run `chezmoi apply` after changing the display DPI.
 
+exec 9>/tmp/eww-launch.lock
+flock -n 9 || exit 0
+
 eww kill 2>/dev/null
 
 # Stop the bluetooth agent daemon from the previous session.
@@ -24,7 +27,7 @@ if pgrep -f 'eww daemon' > /dev/null 2>&1; then
   sleep 0.2
 fi
 
-eww daemon
+eww daemon 9>&-
 eww update popup_open="none"
 eww close popup-scrim 2>/dev/null
 # Daemon restart orphans any bluetooth scan holder from the previous session —

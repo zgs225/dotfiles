@@ -65,14 +65,23 @@ cmd_set() {
     esac
 }
 
+# tlpctl takes ~0.6s; eww SIGKILLs onclick children after 200ms.
+# Detach into a new session so the real work survives.
+if [ "${1:-}" = "set" ] || [ "${1:-}" = "cycle" ]; then
+    if [ -z "${_PP_DETACHED:-}" ]; then
+        _PP_DETACHED=1 setsid nohup "$0" "$@" >/dev/null 2>&1 &
+        exit 0
+    fi
+fi
+
 case "${1:-get}" in
     get) cmd_get ;;
     set) cmd_set "${2:-auto}" ;;
     cycle)
         case "$(mode_of "$(current_profile)")" in
-            auto) cmd_set powersave & ;;
-            powersave) cmd_set performance & ;;
-            *) cmd_set auto & ;;
+            auto) cmd_set powersave ;;
+            powersave) cmd_set performance ;;
+            *) cmd_set auto ;;
         esac
         ;;
 esac
