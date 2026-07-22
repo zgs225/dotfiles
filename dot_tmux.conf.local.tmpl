@@ -84,6 +84,7 @@ tmux_conf_24b_colour=auto
 tmux_conf_theme=enabled
 
 # default theme
+{{- if and .isLinux .useI3 }}
 # -- tmux colours: auto-generated begin (sync from config/wezterm/colors/palette.lua) --
 tmux_conf_theme_colour_1="#1a1b26"
 tmux_conf_theme_colour_2="#414868"
@@ -103,6 +104,27 @@ tmux_conf_theme_colour_15="#1a1b26"
 tmux_conf_theme_colour_16="#f7768e"
 tmux_conf_theme_colour_17="#c0caf5"
 # -- tmux colours: auto-generated end --
+{{- else }}
+# -- tmux colours: auto-generated begin (sync from config/wezterm/colors/palette.lua) --
+tmux_conf_theme_colour_1="#1a1b26"
+tmux_conf_theme_colour_2="#414868"
+tmux_conf_theme_colour_3="#a9b1d6"
+tmux_conf_theme_colour_4="#7aa2f7"
+tmux_conf_theme_colour_5="#e0af68"
+tmux_conf_theme_colour_6="#c0caf5"
+tmux_conf_theme_colour_7="#c0caf5"
+tmux_conf_theme_colour_8="#1a1b26"
+tmux_conf_theme_colour_9="#e0af68"
+tmux_conf_theme_colour_10="#bb9af7"
+tmux_conf_theme_colour_11="#9ece6a"
+tmux_conf_theme_colour_12="#a9b1d6"
+tmux_conf_theme_colour_13="#c0caf5"
+tmux_conf_theme_colour_14="#1a1b26"
+tmux_conf_theme_colour_15="#1a1b26"
+tmux_conf_theme_colour_16="#f7768e"
+tmux_conf_theme_colour_17="#c0caf5"
+# -- tmux colours: auto-generated end --
+{{- end }}
 
 # default theme (ansi)
 #tmux_conf_theme_colour_1="colour0"

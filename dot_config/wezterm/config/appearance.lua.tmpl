@@ -23,7 +23,11 @@ return {
    webgpu_preferred_adapter = pick_gpu(),
 
    -- color scheme
+{{- if and .isLinux .useI3 }}
    color_scheme = 'Tokyo Night',
+{{- else }}
+   color_scheme = 'Tokyo Night',
+{{- end }}
    colors = colors,
 
    -- background
