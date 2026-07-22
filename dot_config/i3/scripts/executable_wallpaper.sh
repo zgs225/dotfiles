@@ -14,13 +14,17 @@ if (( count == 0 )); then
     exit 1
 fi
 
-idx=0
-if [[ -f "$state_file" ]]; then
-    idx=$(<"$state_file")
-    [[ "$idx" =~ ^[0-9]+$ ]] || idx=0
+mode="${1:-next}"
+if [[ "$mode" == "random" ]]; then
+    idx=$(( RANDOM % count ))
+else
+    idx=0
+    if [[ -f "$state_file" ]]; then
+        idx=$(<"$state_file")
+        [[ "$idx" =~ ^[0-9]+$ ]] || idx=0
+    fi
+    idx=$(( (idx + 1) % count ))
 fi
-
-idx=$(( (idx + 1) % count ))
 echo "$idx" > "$state_file"
 
 current="${wallpapers[$idx]}"

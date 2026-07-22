@@ -138,7 +138,7 @@ bindsym $mod+Shift+r restart
 bindsym $mod+Shift+e exec --no-startup-id ~/.config/i3/scripts/powermenu
 
 # Autostart
-exec --no-startup-id ~/.config/i3/scripts/wallpaper.sh
+exec --no-startup-id ~/.config/i3/scripts/wallpaper.sh random
 exec_always --no-startup-id ~/.config/i3/scripts/natural-scroll
 {{- if and .useI3 (not .isVM) }}
 exec --no-startup-id picom --config ~/.config/picom/picom.conf
