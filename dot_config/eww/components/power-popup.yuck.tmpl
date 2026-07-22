@@ -1,0 +1,70 @@
+{{- $eww := includeTemplate "eww-sizes" . | fromJson -}}
+;; ============================================ POWER POPUP ============================================
+
+(defwindow power-popup [pos_x pos_y]
+  :stacking "overlay"
+  :windowtype "dialog"
+  :focusable false
+  :geometry (geometry :width "{{ $eww.powerW }}px" :height "{{ $eww.powerH }}px" :x { pos_x } :y { pos_y } :anchor "top left")
+  (box :class "popup revealer power-popup" :orientation "v" :spacing 0 :space-evenly false
+    (box :class "popup-header" :orientation "h" :spacing 10 :valign "center" :space-evenly false
+      (button :class "back-btn" :onclick "~/.config/eww/scripts/open-popup.sh power-popup"
+        (label :text "󰁍" :class "back-icon"))
+      (label :text "电源" :class "popup-title" :hexpand true :xalign 0)
+      (label :text "${power_info.dgpu_icon}${power_info.dgpu_holders}" :class "dgpu-badge"))
+
+    (box :class "power-hero" :orientation "h" :spacing 14 :valign "center" :space-evenly false
+      (label :text "${power_info.source == 'ac' ? '󰚦' : battery_icon}" :class "power-src-icon")
+      (box :orientation "v" :spacing 2 :hexpand true :valign "center"
+        (label :text "${power_info.watts} W" :class "power-watts" :xalign 0)
+        (label :text "${power_info.source == 'ac' ? '交流电' : '电池供电'}" :class "power-src-label" :xalign 0)))
+
+    (label :text "电源模式" :class "section-label" :xalign 0)
+    (box :class "seg-grid" :orientation "h" :spacing 10 :space-evenly false
+      (button :class "seg-btn ${power_profile.mode == 'auto' ? 'active' : ''}" :hexpand true
+        :onclick "~/.config/eww/scripts/power-profile.sh set auto &"
+        (box :orientation "v" :spacing 4 :valign "center" :halign "center"
+          (label :text "${power_profile.icon_auto}" :class "seg-icon")
+          (label :text "自动" :class "seg-label")))
+      (button :class "seg-btn ${power_profile.mode == 'powersave' ? 'active' : ''}" :hexpand true
+        :onclick "~/.config/eww/scripts/power-profile.sh set powersave &"
+        (box :orientation "v" :spacing 4 :valign "center" :halign "center"
+          (label :text "${power_profile.icon_powersave}" :class "seg-icon")
+          (label :text "省电" :class "seg-label")))
+      (button :class "seg-btn ${power_profile.mode == 'performance' ? 'active' : ''}" :hexpand true
+        :onclick "~/.config/eww/scripts/power-profile.sh set performance &"
+        (box :orientation "v" :spacing 4 :valign "center" :halign "center"
+          (label :text "${power_profile.icon_performance}" :class "seg-icon")
+          (label :text "性能" :class "seg-label"))))
+
+    (label :text "充电阈值" :class "section-label" :xalign 0)
+    (box :class "seg-grid" :orientation "h" :spacing 10 :space-evenly false
+      (button :class "seg-btn ${power_info.threshold == '60' ? 'active' : ''}" :hexpand true
+        :onclick "sudo -n /usr/local/sbin/eww-power-admin threshold 60 &"
+        (box :orientation "v" :spacing 4 :valign "center" :halign "center"
+          (label :text "60" :class "seg-num")
+          (label :text "寿命" :class "seg-label")))
+      (button :class "seg-btn ${power_info.threshold == '80' ? 'active' : ''}" :hexpand true
+        :onclick "sudo -n /usr/local/sbin/eww-power-admin threshold 80 &"
+        (box :orientation "v" :spacing 4 :valign "center" :halign "center"
+          (label :text "80" :class "seg-num")
+          (label :text "平衡" :class "seg-label")))
+      (button :class "seg-btn ${power_info.threshold == '100' ? 'active' : ''}" :hexpand true
+        :onclick "sudo -n /usr/local/sbin/eww-power-admin threshold 100 &"
+        (box :orientation "v" :spacing 4 :valign "center" :halign "center"
+          (label :text "100" :class "seg-num")
+          (label :text "出行" :class "seg-label"))))
+
+    (label :text "电池" :class "section-label" :xalign 0)
+    (box :class "bat-card" :orientation "v" :spacing 6
+      (box :orientation "h" :spacing 10 :valign "center" :space-evenly false
+        (label :text "${battery_icon}" :class "bat-icon")
+        (label :text "${power_info.percent}%" :class "bat-pct" :xalign 0 :hexpand true)
+        (label :text "健康 ${power_info.health}% · ${power_info.cycles} 循环" :class "bat-sub"))
+      (label :text "${power_info.eta_label} ${power_info.eta}" :class "bat-eta" :xalign 0
+        :visible "${power_info.eta != '--'}"))
+
+    (button :class "fullcharge-btn" :onclick "sudo -n /usr/local/sbin/eww-power-admin fullcharge &"
+      (box :orientation "h" :spacing 8 :halign "center" :valign "center" :space-evenly false
+        (label :text "${power_info.icon_fullcharge}" :class "fc-icon")
+        (label :text "临时充满至 100%" :class "fc-label")))))

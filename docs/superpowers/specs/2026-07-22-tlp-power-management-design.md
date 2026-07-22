@@ -117,3 +117,19 @@ STOP_CHARGE_THRESH_BAT0=80
 - bar 电源指示器（由 cc 按钮自身承担状态显示）
 - 自定义 CPU 频率/EPP 细调参数（吃 profiles 内置）
 - thermald / auto-cpufreq（与 TLP 职能重叠）
+
+---
+
+## 补充：电源弹窗（2026-07-22 追加，已实现）
+
+bar 电量图标打开 `power-popup`（控制中心电源键保持三态轮转，分工不变）:
+
+- **头部**：电源来源 + 实时功耗（W) + dGPU 徽标（挂起=月亮；活跃=闪电+占用进程名，lsof 读 /dev/nvidia*，不调 nvidia-smi 防唤醒）
+- **电源模式**：一行三格（自动/省电/性能），当前档高亮，`power-profile.sh set`（异步防 eww 200ms 点击超时）
+- **充电阈值**：一行三格预设 60（寿命）/80（平衡）/100（出行），当前值高亮。持久化写 `/etc/tlp.d/99-user.conf`（覆盖 00-eos.conf 的 80)
+- **电池详情**：电量、健康度（energy_full/design)、循环次数、剩余/充满 ETA
+- **临时充满**：`tlp fullcharge`（临时提阈值到充满，不改持久配置）
+
+特权收口：单一 helper `/usr/local/sbin/eww-power-admin`(eos-bootstrap power role 部署，仅 `threshold 60|80|100` / `fullcharge` 两个子命令，参数白名单校验）+ sudoers drop(NOPASSWD 仅该 helper,visudo 校验）。
+
+新增文件：`scripts/executable_power-info.sh`(JSON 数据源）、`components/power-popup.yuck.tmpl`、`styles/power-popup.scss.tmpl`;eww-sizes 三档 DPI 加 powerW/powerH;`open-popup.sh` 注册弹窗。

@@ -39,7 +39,7 @@
         (label :text "${network_status.icon}" :class "module-icon"))
 
       (button :class "module-btn battery-btn" :valign "center"
-        :onclick "~/.config/eww/scripts/open-popup.sh profile-card"
+        :onclick "~/.config/eww/scripts/open-popup.sh power-popup"
         (box :orientation "h" :spacing 6 :valign "center" :space-evenly false
           (label :text "${battery_icon}"
             :class "module-icon bat-${battery_charging ? 'charging' : (battery_percent < 15 ? 'low' : 'normal')}")
