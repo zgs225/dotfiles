@@ -13,4 +13,9 @@ export KVANTUM_THEME=catppuccin-glass
 # both the GTK3 catppuccin-glass theme and GTK4 Adwaita variant selection)
 export ELECTRON_OZONE_PLATFORM_HINT=auto
 
+# EGL vendor: pin Mesa so wezterm's wgpu Gl backend always sees the Intel
+# adapter. At early login the NVIDIA EGL library can win the enumeration race,
+# landing wezterm on the dGPU and keeping it awake (RTD3 never engages).
+export __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/50_mesa.json
+
 systemctl --user import-environment DISPLAY PATH
