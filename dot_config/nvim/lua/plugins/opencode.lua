@@ -46,7 +46,6 @@ return {
     },
     init = function()
       local opencode_buf = nil
-      local opencode_tab = nil
 
       vim.o.autoread = true
 
@@ -69,7 +68,6 @@ return {
             return
           end
           opencode_buf = args.buf
-          opencode_tab = vim.api.nvim_get_current_tabpage()
           local buf = args.buf
 
           local pid ---@type integer?
@@ -107,7 +105,6 @@ return {
                 end
               end
               opencode_buf = nil
-              opencode_tab = nil
               vim.schedule(function()
                 if vim.api.nvim_buf_is_valid(buf) then
                   for _, w in ipairs(vim.fn.win_findbuf(buf)) do
@@ -138,16 +135,20 @@ return {
             local tab = find_opencode_tab()
             if tab then
               if vim.api.nvim_get_current_tabpage() == tab then
-                vim.cmd "tabclose"
+                pcall(vim.cmd, "tabclose")
               else
                 vim.api.nvim_set_current_tabpage(tab)
                 vim.cmd "startinsert"
               end
+              return
+            end
+            vim.cmd "tabnew"
+            if opencode_buf and vim.api.nvim_buf_is_valid(opencode_buf) then
+              vim.api.nvim_win_set_buf(0, opencode_buf)
+              vim.cmd "startinsert"
             else
-              vim.cmd "tabnew"
               local buf = vim.api.nvim_create_buf(false, false)
               vim.api.nvim_win_set_buf(0, buf)
-              opencode_tab = vim.api.nvim_get_current_tabpage()
               vim.fn.jobstart("opencode --port", { term = true })
             end
           end,
