@@ -13,11 +13,13 @@ local function pick_gpu()
    return gpu_adapters:pick_best()
 end
 
+local power_preference = platform.is_linux and 'LowPower' or 'HighPerformance'
+
 return {
    animation_fps = 60,
    max_fps = 60,
    front_end = 'WebGpu',
-   webgpu_power_preference = 'HighPerformance',
+   webgpu_power_preference = power_preference,
    webgpu_preferred_adapter = pick_gpu(),
 
    -- color scheme
