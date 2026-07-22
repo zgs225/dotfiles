@@ -28,6 +28,14 @@ if pgrep -f 'eww daemon' > /dev/null 2>&1; then
 fi
 
 eww daemon 9>&-
+# `eww daemon` double-forks and returns before its IPC socket is bound (GTK
+# init + SCSS compile still pending). Wait for a ping so `eww open bar` below
+# never hits the "can't connect → auto-spawn a second daemon" branch — that
+# race is what produced the duplicate bar on cold boot.
+for _ in $(seq 1 50); do
+  eww ping >/dev/null 2>&1 && break
+  sleep 0.1
+done
 eww update popup_open="none"
 eww close popup-scrim 2>/dev/null
 # Daemon restart orphans any bluetooth scan holder from the previous session —
@@ -36,6 +44,8 @@ eww close popup-scrim 2>/dev/null
 eww open bar
 
 # Start the bluetooth pairing agent daemon (handles both active and passive
-# SSP authentication via the eww bt-pair-dialog window).
-nohup python3 ~/.config/eww/scripts/bt-agent-daemon.py >/dev/null 2>&1 &
+# SSP authentication via the eww bt-pair-dialog window). Close the launch lock
+# fd first — otherwise nohup inherits it and holds the flock for the whole
+# session, silently blocking every later launch.sh (i3 restart / reload).
+nohup python3 ~/.config/eww/scripts/bt-agent-daemon.py >/dev/null 2>&1 9>&- &
 echo $! > /tmp/eww-bt-agent.pid
