@@ -83,14 +83,14 @@ same_pic() { [ "$(compare -metric RMSE -fuzz 3% "$1" "$2" null: 2>&1 | sed 's/.*
 ### M2: 机制——条件发射与 events 收编（Tokyo 仍零变化）
 
 **Files:** Modify `dot_config/wezterm/colors/custom.lua`、`dot_config/wezterm/events/tab-title.lua`、`dot_config/wezterm/events/left-status.lua`（均共享非模板）
-- [ ] `custom.lua`：`build_colors()` 增加条件发射——`palette.ansi`/`palette.brights`（存在才输出）+ `palette.chrome`（cursor_bg/cursor_fg/cursor_border/selection_fg/selection_bg/split，逐键存在才输出）；导出 `M.tab_title = palette.tab_title`、`M.left_status = palette.left_status`（Tokyo 分支为 nil）
-- [ ] `tab-title.lua:19-23`：`local colors = require('colors.custom').tab_title or { 原硬编码三态表 }`（fallback 逐字节保留原表）
-- [ ] `left-status.lua:11-14`：同构改法，fallback 保留 `#fab387` 原表
-- [ ] `chezmoi apply`
-- [ ] **验证（自动）**：`luac -p` 三文件语法通过；`chezmoi cat` palette/appearance 与基线 `diff` 仍为空（本步没动 tmpl）
-- [ ] **验证（视觉 agent）**：`check_win $TU/M2/ansi.png` → `same_pic baseline/ansi.png M2/ansi.png`；新窗无 Lua 错误浮层；开 2 tab 截 `$TU/M2/tabs.png` 与基线 tabs.png 同图判据
-- [ ] **视觉验证（用户）**：M2 与基线无可见差异（机制已换、皮相同）
-- [ ] **回滚**：`git checkout -- <三 lua>` + `chezmoi apply`
+- [x] `custom.lua`：`build_colors()` 增加条件发射——`palette.ansi`/`palette.brights`（存在才输出）+ `palette.chrome`（cursor_bg/cursor_fg/cursor_border/selection_fg/selection_bg/split，逐键存在才输出）；导出 `M.tab_title = palette.tab_title`、`M.left_status = palette.left_status`（Tokyo 分支为 nil）
+- [x] `tab-title.lua:19-23`：`local colors = require('colors.custom').tab_title or { 原硬编码三态表 }`（fallback 逐字节保留原表）
+- [x] `left-status.lua:11-14`：同构改法，fallback 保留 `#fab387` 原表
+- [x] `chezmoi apply`
+- [x] **验证（自动）**：`luac -p` 三文件语法通过；`chezmoi cat` palette/appearance 与基线 `diff` 仍为空（本步没动 tmpl）
+- [x] **验证（视觉 agent）**：`check_win $TU/M2/ansi.png` → `same_pic baseline/ansi.png M2/ansi.png`；新窗无 Lua 错误浮层；开 2 tab 截 `$TU/M2/tabs.png` 与基线 tabs.png 同图判据
+- [x] **视觉验证（用户）**：M2 与基线无可见差异（机制已换、皮相同）
+- [x] **回滚**：`git checkout -- <三 lua>` + `chezmoi apply`
 
 ### M3: Song 注值（i3-only 行为变化）
 
