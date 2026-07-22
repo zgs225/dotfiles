@@ -133,15 +133,16 @@ eww 的点击天生"慢半拍"——`onclick` 有 200ms 死刑、界面状态靠
 ## 6. 绝对要避免的设计（反模式清单）
 
 1. ❌ **onclick 同步跑慢命令**（>200ms）——被 SIGKILL 腰斩，动作做一半或根本没做。
-2. ❌ **`eww update` 放在 >200ms 操作之后却不 detach**——update 永远跑不到，界面干等轮询（修复前的 `toggle-wifi.sh`）。
-3. ❌ **点击反馈只靠 `defpoll`**——天生 1–5s 死区，必然落在"以为死了"区间。
-4. ❌ **写后立刻读慢源做校准**（`tlpctl get`/sysfs 滞后）——读到旧值，高亮"落后一档"或闪烁；成功时必须钉住乐观值（§4.3）。
-5. ❌ **静默失败**——`sudo -n` 失败不报错，用户以为点了没用。失败必 `notify-send`。
-6. ❌ **无可观测状态的开关**——按钮永远不显示开/关，点了看不出结果（修复前的护眼模式）。
-7. ❌ **长操作无"进行中"指示、无 timeout 上限**——5–15s 无反馈，或卡死时"连接中"永远挂着。
-8. ❌ **长生命周期子进程继承锁 fd**——`flock` 的 fd 被子进程继承会导致锁泄漏，后续每次点击都死锁。子进程必须 `8>&-`/`9>&-` 关闭继承的锁 fd；每条 IPC 调用都要套 `timeout`（`open-popup.sh`/`bt-action.sh` 血泪教训）。
-9. ❌ **`eww open`/`close` 返回即假设窗口已就绪**——异步执行，必须 `wait_state` 轮询 `active-windows` 确认可观测后再决策（`open-popup.sh`）。
-10. ❌ **把"宋式克制"做成"无反馈"**——克制的是动画，不是响应（§1 裁定）。
+2. ❌ **defpoll/deflisten 脚本回调 eww（`eww get`/`eww update`）**——轮询脚本跑在 daemon 的轮询循环里，回调 eww 会与 GTK 主线程死锁：弹层冻住、点击失效、窗口关不掉。注意 `active-windows` 等 IPC 由独立线程应答，冻住时**可能仍响应**（假阴性，别用它判"没卡"）。需在轮询里读的状态改用**临时文件**传递（`wifi_networks` 血泪教训：轮询里一句 `eww get wifi_connecting` 直接冻死整个 network-popup）。
+3. ❌ **`eww update` 放在 >200ms 操作之后却不 detach**——update 永远跑不到，界面干等轮询（修复前的 `toggle-wifi.sh`）。
+4. ❌ **点击反馈只靠 `defpoll`**——天生 1–5s 死区，必然落在"以为死了"区间。
+5. ❌ **写后立刻读慢源做校准**（`tlpctl get`/sysfs 滞后）——读到旧值，高亮"落后一档"或闪烁；成功时必须钉住乐观值（§4.3）。
+6. ❌ **静默失败**——`sudo -n` 失败不报错，用户以为点了没用。失败必 `notify-send`。
+7. ❌ **无可观测状态的开关**——按钮永远不显示开/关，点了看不出结果（修复前的护眼模式）。
+8. ❌ **长操作无"进行中"指示、无 timeout 上限**——5–15s 无反馈，或卡死时"连接中"永远挂着。
+9. ❌ **长生命周期子进程继承锁 fd**——`flock` 的 fd 被子进程继承会导致锁泄漏，后续每次点击都死锁。子进程必须 `8>&-`/`9>&-` 关闭继承的锁 fd；每条 IPC 调用都要套 `timeout`（`open-popup.sh`/`bt-action.sh` 血泪教训）。
+10. ❌ **`eww open`/`close` 返回即假设窗口已就绪**——异步执行，必须 `wait_state` 轮询 `active-windows` 确认可观测后再决策（`open-popup.sh`）。
+11. ❌ **把"宋式克制"做成"无反馈"**——克制的是动画，不是响应（§1 裁定）。
 
 ---
 
@@ -195,6 +196,25 @@ eww update wifi_on="$("$S/network-wifi-on.sh")"          # 即时刷新真实态
 exec 9>/tmp/eww-popup.lock
 flock -w 10 9 || exit 0                 # 有界等待，锁被毒化也不永久冻死
 ewwc() { timeout 8 eww "$@" 9>&- 2>/dev/null; }   # 子进程不继承锁 fd(9>&-)，IPC 套 timeout
+```
+
+### 7.5 轮询脚本要读的状态：用文件，不用 eww（避 §6.2 死锁）
+
+```bash
+# 写侧（detached onclick 脚本，如 wifi-connect.sh）——标记 + 退出兜底清理
+CF=/tmp/eww-wifi-connecting
+trap 'rm -f "$CF"' EXIT
+echo "$ssid" > "$CF"
+eww update wifi_networks="$(network-wifi-networks.sh)"   # 立即重绘
+# ……做慢操作……
+rm -f "$CF"
+
+# 读侧（defpoll 脚本，如 network-wifi-networks.sh）——只读文件，绝不 eww get
+connecting=""
+if [ -f "$CF" ]; then
+    age=$(( $(date +%s) - $(stat -c %Y "$CF" 2>/dev/null || echo 0) ))
+    [ "$age" -lt 40 ] && connecting=$(cat "$CF" 2>/dev/null)   # 年龄守卫防孤儿文件
+fi
 ```
 
 ---

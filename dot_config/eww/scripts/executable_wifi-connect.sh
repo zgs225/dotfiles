@@ -12,20 +12,26 @@ fi
 ssid="$1"
 [ -n "$ssid" ] || exit 1
 S=~/.config/eww/scripts
+CF=/tmp/eww-wifi-connecting
 
-# Immediate in-progress feedback: mark this SSID and redraw the list so the row
-# flips to "连接中…" the instant the click lands.
-eww update wifi_connecting="$ssid"
+# Remove the connecting mark on any exit so a killed connect can't leave a stale
+# "连接中…" behind (the poll's age guard is a second line of defense).
+trap 'rm -f "$CF"' EXIT
+
+# Immediate in-progress feedback: mark this SSID in a temp file (NOT an eww var
+# — the poll reads the file; calling eww from the defpoll script deadlocks the
+# GTK main thread), then redraw the list so the row flips to "连接中…" at once.
+echo "$ssid" > "$CF"
 eww update wifi_networks="$("$S/network-wifi-networks.sh")"
 
-# Cap a stuck connect so the "connecting" mark can't linger forever; fall back
-# to the GUI editor when nmcli can't complete (e.g. needs a password).
+# Cap a stuck connect so the mark can't linger forever; fall back to the GUI
+# editor when nmcli can't complete (e.g. needs a password).
 if ! timeout 30 nmcli device wifi connect "$ssid" 2>/dev/null; then
     nm-connection-editor &
 fi
 
 # Clear the mark and reflect the real connection state at once.
-eww update wifi_connecting=""
+rm -f "$CF"
 eww update wifi_on="$("$S/network-wifi-on.sh")"
 eww update wifi_name="$("$S/network-wifi-name.sh")"
 eww update wifi_networks="$("$S/network-wifi-networks.sh")"

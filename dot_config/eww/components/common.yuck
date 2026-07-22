@@ -13,7 +13,6 @@
 (defvar bt_pair_hint "")
 (defvar screenshot_path "")
 (defvar screenshot_thumb "")
-(defvar wifi_connecting "")
 
 ;; ============================================ DATA POLLING (defpoll) ============================================
 

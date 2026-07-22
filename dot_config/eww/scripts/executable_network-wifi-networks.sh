@@ -11,7 +11,18 @@ if ! nmcli radio wifi 2>/dev/null | grep -q "enabled"; then
 fi
 
 connected_ssid=$(real_wifi_conns | head -1 | cut -d: -f1)
-connecting=$(eww get wifi_connecting 2>/dev/null | tr -d '"')
+
+# "Connecting" state arrives via a temp file written by wifi-connect.sh — NOT an
+# `eww get`. A defpoll script calling back into eww deadlocks the GTK main thread
+# (the popup freezes: clicks die, window won't close). The age guard lets an
+# orphaned file (connect killed with -9) expire instead of pinning a row at
+# "连接中…" forever (the connect timeout is 30s).
+connecting=""
+_cf=/tmp/eww-wifi-connecting
+if [ -f "$_cf" ]; then
+    _age=$(( $(date +%s) - $(stat -c %Y "$_cf" 2>/dev/null || echo 0) ))
+    [ "$_age" -lt 40 ] && connecting=$(cat "$_cf" 2>/dev/null)
+fi
 
 rows=""
 while IFS=':' read -r in_use ssid signal security; do
