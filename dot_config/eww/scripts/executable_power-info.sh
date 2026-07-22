@@ -44,7 +44,7 @@ holders=""
 if [ "$dgpu" = "suspended" ]; then
     dgpu_icon="$ICON_DGPU_SLEEP"
 elif [ "$dgpu" = "active" ]; then
-    holders=$(lsof /dev/nvidia* 2>/dev/null | awk 'NR>1 {print $1}' | sort -u | grep -v '^Xorg$' | head -3 | paste -sd, -)
+    holders=$(timeout 2 lsof /dev/nvidia* 2>/dev/null | awk 'NR>1 {print $1}' | sort -u | grep -v '^Xorg$' | head -3 | paste -sd, -)
 fi
 
 printf '{"source":"%s","watts":"%s","percent":%s,"health":"%s","cycles":%s,"eta":"%s","eta_label":"%s","threshold":"%s","dgpu":"%s","dgpu_icon":"%s","dgpu_holders":"%s","icon_fullcharge":"%s"}\n' \
