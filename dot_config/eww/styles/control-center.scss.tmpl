@@ -98,3 +98,5 @@
 .quick-btn:hover { background-color: rgba($surface1, 0.48); }
 .quick-icon  { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 1.06 | int }}px; color: $subtext0; }
 .quick-label { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; }
+.quick-btn.on { background-color: $accent; }
+.quick-btn.on .quick-icon, .quick-btn.on .quick-label { color: $fg-primary; }

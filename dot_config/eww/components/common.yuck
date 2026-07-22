@@ -13,6 +13,7 @@
 (defvar bt_pair_hint "")
 (defvar screenshot_path "")
 (defvar screenshot_thumb "")
+(defvar wifi_connecting "")
 
 ;; ============================================ DATA POLLING (defpoll) ============================================
 
@@ -67,6 +68,10 @@
 (defpoll battery_percent  :interval "5s" :initial "100"  "~/.config/eww/scripts/battery-percent.sh")
 (defpoll battery_charging :interval "5s" :initial "false" "~/.config/eww/scripts/battery-charging.sh")
 (defpoll battery_icon     :interval "5s" :initial "󰁹"    "~/.config/eww/scripts/battery-icon.sh")
+
+;; ── Night light (redshift/gammastep presence) ──
+(defpoll night_light :interval "3s" :initial "false"
+  "~/.config/eww/scripts/night-light-on.sh")
 
 ;; ── Power profile (TLP tlpctl, control center quick button) ──
 (defpoll power_profile :interval "3s"

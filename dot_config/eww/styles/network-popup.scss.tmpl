@@ -15,6 +15,8 @@
 .wifi-lock   { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.72 | int }}px; color: $overlay0; }
 .wifi-signal { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.80 | int }}px; color: $subtext0; }
 .wifi-network.connected .wifi-signal { color: $blue; }
+.wifi-network.connecting { background-color: rgba($surface1, 0.36); border-left-color: $accent; }
+.wifi-network.connecting .wifi-signal { color: $accent; }
 .wifi-off-hint { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.82 | int }}px; padding: 8px; }
 
 .wired-row { padding: 13px 12px; border-radius: $radius; border-left: 2px solid transparent; transition: all 120ms; }

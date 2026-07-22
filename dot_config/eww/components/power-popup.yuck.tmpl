@@ -40,17 +40,17 @@
     (label :text "充电阈值" :class "section-label" :xalign 0)
     (box :class "seg-grid" :orientation "h" :spacing 10 :space-evenly false
       (button :class "seg-btn ${power_info.threshold == '60' ? 'active' : ''}" :hexpand true
-        :onclick "setsid sudo -n /usr/local/sbin/eww-power-admin threshold 60 &"
+        :onclick "~/.config/eww/scripts/power-admin.sh threshold 60"
         (box :orientation "v" :spacing 4 :valign "center" :halign "center"
           (label :text "60" :class "seg-num")
           (label :text "寿命" :class "seg-label")))
       (button :class "seg-btn ${power_info.threshold == '80' ? 'active' : ''}" :hexpand true
-        :onclick "setsid sudo -n /usr/local/sbin/eww-power-admin threshold 80 &"
+        :onclick "~/.config/eww/scripts/power-admin.sh threshold 80"
         (box :orientation "v" :spacing 4 :valign "center" :halign "center"
           (label :text "80" :class "seg-num")
           (label :text "平衡" :class "seg-label")))
       (button :class "seg-btn ${power_info.threshold == '100' ? 'active' : ''}" :hexpand true
-        :onclick "setsid sudo -n /usr/local/sbin/eww-power-admin threshold 100 &"
+        :onclick "~/.config/eww/scripts/power-admin.sh threshold 100"
         (box :orientation "v" :spacing 4 :valign "center" :halign "center"
           (label :text "100" :class "seg-num")
           (label :text "出行" :class "seg-label"))))
@@ -64,7 +64,7 @@
       (label :text "${power_info.eta_label} ${power_info.eta}" :class "bat-eta" :xalign 0
         :visible "${power_info.eta != '--'}"))
 
-    (button :class "fullcharge-btn" :onclick "setsid sudo -n /usr/local/sbin/eww-power-admin fullcharge &"
+    (button :class "fullcharge-btn" :onclick "~/.config/eww/scripts/power-admin.sh fullcharge"
       (box :orientation "h" :spacing 8 :halign "center" :valign "center" :space-evenly false
         (label :text "${power_info.icon_fullcharge}" :class "fc-icon")
         (label :text "临时充满至 100%" :class "fc-label")))))
