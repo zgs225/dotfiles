@@ -241,7 +241,7 @@ eww 的 bar 与 scrim 在 rounded/shadow/blur exclude 清单中；Rofi `corner-r
 | 壁纸 | `.chezmoiscripts/common/run_once_after_generate-default-wallpaper.sh` | 玄色生成 |
 | fontconfig | `dot_config/fontconfig/fonts.conf` | LXGW WenKai → JetBrainsMono Nerd Font 西文回退（§3） |
 
-**暂未统一**（用户裁定保留现状）：WezTerm（Tokyo Night + 背景图）、tmux（同步 Tokyo Night）。后续若要统一，沿用 §2.1 衍生固定值：终端 ANSI red 必须用赭石而非朱砂，朱砂只可作 tmux 当前窗口标记（印章语义延伸）。
+**终端收编**（目标已立 2026-07-22，未实施）：WezTerm / tmux / nvim / pgcli / mycli / opencode 仍持 Tokyo Night / Solarized 等外国旗，收编目标与裁定见 `docs/design/terminal-unification.md`。核心纪律预览：终端 ANSI red 必须用赭石而非朱砂；朱砂只可作 tmux 当前窗口标记（印章语义延伸）；wezterm active tab 用天青界引，不僭印；收编仅限 `useI3` 机器。
 
 **色彩飞地登记**：systray 图标色不受令牌约束（外部进程绘制），但必须被墨色容器收容（`.bar-tray`，3px 圆角 + 4px 内 padding）——全系统唯一色彩飞地。容器用墨之亮阶 `#464652`（`$surface2`）alpha 0.40：实测 `rgba($ink,0.30)` 在亮壁纸区段与 bar 底仅差 ≤2 阶近隐形（2026-07-22 裁定），亮阶浅盒在任何壁纸下保持 Δ≥9 阶。
 
@@ -310,7 +310,7 @@ eww 0.5.0 不能在 `:geometry` 里解析变量，所有尺寸经 `.chezmoitempl
 3. **通知图标用天青框方印而非朱砂印**：设计稿自相矛盾处的裁定（见 §4.4）。
 4. **时辰只到"时"不到"刻"**：刻的划分有歧义，性价比低。
 5. **印章用崇羲篆體而非文楷**（2026-07-21 推翻旧裁定）：旧裁定"用文楷天干而非篆体 SVG"的前提是篆体只能贴 SVG；崇羲小篆以字体形态落地后，篆书印章的形制（朱底白字 + 篆籀）强于文楷，用户裁定更换。字形瘦长，以 1.20× 光学补偿，不破四印同尺寸纪律。
-6. **WezTerm/tmux 保留 Tokyo Night**：用户裁定暂缓统一（见 §7 末）。
+6. **WezTerm/tmux 保留 Tokyo Night**：暂缓统一；统一目标已立（2026-07-22，见 `docs/design/terminal-unification.md`），实施完成后本条移除。
 
 ---
 
