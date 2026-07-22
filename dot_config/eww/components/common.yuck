@@ -68,6 +68,11 @@
 (defpoll battery_charging :interval "5s" :initial "false" "~/.config/eww/scripts/battery-charging.sh")
 (defpoll battery_icon     :interval "5s" :initial "󰁹"    "~/.config/eww/scripts/battery-icon.sh")
 
+;; ── Power profile (TLP tlpctl, control center quick button) ──
+(defpoll power_profile :interval "3s"
+  :initial `{"mode":"unavailable","profile":"","source":"","icon":"","label":"电源"}`
+  "~/.config/eww/scripts/power-profile.sh get")
+
 ;; ── System (profile card) ──
 (defpoll sysinfo :interval "3s"
   :initial `{"host":"linux","uptime":"--","cpu":0,"mem_used":"--","mem_total":"--","mem_pct":0,"disk_used":"--","disk_total":"--","disk_pct":0,"temp":0,"temp_pct":0}`

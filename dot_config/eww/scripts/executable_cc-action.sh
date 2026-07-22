@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Control-center bottom action buttons.
-# Usage: cc-action.sh {night-light|screenshot|performance}
+# Usage: cc-action.sh {night-light|screenshot}
 case "$1" in
     night-light)
         if command -v redshift >/dev/null 2>&1; then
@@ -23,10 +23,5 @@ case "$1" in
         if command -v maim >/dev/null 2>&1; then
             maim -s "$f" 2>/dev/null && notify-send "截图" "已保存到 $f" 2>/dev/null
         fi
-        ;;
-    performance)
-        command -v xfce4-taskmanager >/dev/null 2>&1 && xfce4-taskmanager & \
-            || (command -v wezterm >/dev/null 2>&1 && wezterm start -- btop 2>/dev/null &) \
-            || notify-send "性能" "未找到监控工具" 2>/dev/null
         ;;
 esac
