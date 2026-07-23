@@ -162,10 +162,13 @@ return {
           -- <C-g> prefix inside pi chat buffers (mirrors the pi TUI leader).
           -- s: resume session via telescope (vim.ui.select -> ui-select ext)
           -- n: new session, m: pick from the curated model list
+          -- h/p: move focus between the history and prompt panels
           local leaders = {
             s = { function() require("pi").resume_session() end, "Pi: resume session" },
             n = { function() require("pi").new_session() end, "Pi: new session" },
             m = { function() require("pi").select_model() end, "Pi: select model" },
+            h = { function() require("pi").focus_chat_history() end, "Pi: focus history" },
+            p = { function() require("pi").focus_chat_prompt() end, "Pi: focus prompt" },
           }
           for key, spec in pairs(leaders) do
             vim.keymap.set({ "n", "i" }, "<C-g>" .. key, spec[1], { buffer = args.buf, desc = spec[2] })
