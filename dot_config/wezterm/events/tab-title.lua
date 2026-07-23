@@ -15,7 +15,7 @@ local M = {}
 local __cells__ = {} -- wezterm FormatItems (ref: https://wezfurlong.org/wezterm/config/lua/wezterm/format.html)
 
 -- stylua: ignore
-local colors = require('colors.custom').tab_title or {
+local colors = {
    default   = { bg = '#45475a', fg = '#1c1b19' },
    is_active = { bg = '#7FB4CA', fg = '#11111b' },
    hover     = { bg = '#587d8c', fg = '#1c1b19' },
@@ -123,7 +123,7 @@ M.setup = function()
 
       -- Unseen output alert
       if has_unseen_output then
-         _push(bg, colors.unseen_fg or '#FFA066', { Intensity = 'Bold' }, ' ' .. GLYPH_CIRCLE)
+         _push(bg, '#FFA066', { Intensity = 'Bold' }, ' ' .. GLYPH_CIRCLE)
       end
 
       -- Right padding

@@ -6,20 +6,10 @@ local M = {}
 
 M.background = palette.background
 M.palette = palette
-M.tab_title = palette.tab_title
-M.left_status = palette.left_status
-
-local CHROME_KEYS = {
-   'cursor_bg',
-   'cursor_fg',
-   'cursor_border',
-   'selection_fg',
-   'selection_bg',
-   'split',
-}
+M.tmux_mapping = palette_data.tmux_mapping
 
 function M.build_colors(scheme_name)
-   local colors = {
+   return {
       background = palette.background,
       tab_bar = {
          background = palette.background,
@@ -46,22 +36,6 @@ function M.build_colors(scheme_name)
          },
       },
    }
-   -- Optional subtables, present only in palettes that fully drive the chrome
-   -- (Song Ink). Tokyo Night keeps relying on the builtin scheme for these.
-   if palette.ansi then
-      colors.ansi = palette.ansi
-   end
-   if palette.brights then
-      colors.brights = palette.brights
-   end
-   if palette.chrome then
-      for _, key in ipairs(CHROME_KEYS) do
-         if palette.chrome[key] then
-            colors[key] = palette.chrome[key]
-         end
-      end
-   end
-   return colors
 end
 
 return M

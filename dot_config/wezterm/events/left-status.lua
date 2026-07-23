@@ -8,7 +8,7 @@ local GLYPH_SEMI_CIRCLE_RIGHT = nf.ple_right_half_circle_thick --[[ '' ]]
 local GLYPH_KEY_TABLE = nf.md_table_key --[[ '󱏅' ]]
 local GLYPH_KEY = nf.md_key --[[ '󰌆' ]]
 
-local colors = require('colors.custom').left_status or {
+local colors = {
    glyph_semi_circle = { bg = 'rgba(0, 0, 0, 0.4)', fg = '#fab387' },
    text = { bg = '#fab387', fg = '#1c1b19' },
 }
