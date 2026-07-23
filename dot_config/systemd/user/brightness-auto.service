@@ -1,0 +1,16 @@
+[Unit]
+Description=Auto-adjust brightness on AC/battery switch
+After=graphical-session.target
+
+[Service]
+Type=simple
+Environment="PATH=/usr/local/bin:/usr/bin:/bin"
+Environment="DISPLAY=:0"
+ExecStart=%h/.config/eww/scripts/brightness-auto.sh
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

@@ -2,4 +2,5 @@
 {{ if and .isLinux .useI3 -}}
 systemctl --user daemon-reload
 systemctl --user enable --now update-check.timer
+systemctl --user enable --now brightness-auto.service
 {{ end -}}

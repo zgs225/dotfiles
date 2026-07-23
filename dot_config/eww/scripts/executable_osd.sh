@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # EWW on-screen display for volume/brightness/mic media keys.
-# Usage: osd.sh <volume-up|volume-down|volume-mute|mic-mute|brightness-up|brightness-down>
+# Usage: osd.sh <volume-up|volume-down|volume-mute|mic-mute|brightness-up|brightness-down|brightness-auto [val]>
 
 set -euo pipefail
 
@@ -88,6 +88,10 @@ case "$1" in
         brightnessctl set 5%-
         br=$(brightnessctl info 2>/dev/null | grep -oP '([0-9]+)%' | head -1 | tr -d '%' || echo 0)
         show_osd "󰃜" "亮度" "$br" "yellow"
+        ;;
+    brightness-auto)
+        br="${2:-$(brightnessctl info 2>/dev/null | grep -oP '([0-9]+)%' | head -1 | tr -d '%' || echo 0)}"
+        show_osd "󰃠" "亮度(自动)" "$br" "yellow"
         ;;
     *)
         echo "Usage: $0 {volume-up|volume-down|volume-mute|mic-mute|brightness-up|brightness-down}" >&2
