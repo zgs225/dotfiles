@@ -114,19 +114,19 @@ same_pic() { [ "$(compare -metric RMSE -fuzz 3% "$1" "$2" null: 2>&1 | sed 's/.*
 ### M4: tmux Song 块 + 死代码清理
 
 **Files:** Modify `dot_tmux.conf.local.tmpl`（仅 if 分支色块）、`palette.lua.tmpl`（头部注释）、`custom.lua`（删 `M.tmux_mapping` 行）；Delete `scripts/sync-tmux-colors.lua`
-- [ ] if 分支 17 行换值（else 分支 Tokyo 原样，sentinel 注释两分支保留）：
+- [x] if 分支 17 行换值（else 分支 Tokyo 原样，sentinel 注释两分支保留）：
   1 `#1a1a1e` / 2 `#464652` / 3 `#9a9a92` / 4 `#9ec8c0` / 5 `#d8a23c` / 6 `#e8e6df` / 7 `#e8e6df` / 8 `#1a1a1e` / 9 `#d8a23c` / 10 `#c9b8b3` / 11 `#8a9a6b` / 12 `#cfccc2` / 13 `#e8e6df` / 14 `#1a1a1e` / 15 `#1a1a1e` / **16 `#c8452c`（唯一朱砂）** / 17 `#e8e6df`
-- [ ] 删 `scripts/sync-tmux-colors.lua`；`palette.lua.tmpl` 头部注释去掉 "Consumed by ... tmux sync script"（改为 WezTerm 自用说明，两分支同改）；两分支删 `tmux_mapping` 表；`custom.lua` 删 `M.tmux_mapping` 导出行（部署内容变化、行为零变化：该表仅被已死脚本消费）
-- [ ] `chezmoi apply`
-- [ ] **验证（自动）**：
+- [x] 删 `scripts/sync-tmux-colors.lua`；`palette.lua.tmpl` 头部注释去掉 "Consumed by ... tmux sync script"（改为 WezTerm 自用说明，两分支同改）；两分支删 `tmux_mapping` 表；`custom.lua` 删 `M.tmux_mapping` 导出行（部署内容变化、行为零变化：该表仅被已死脚本消费）
+- [x] `chezmoi apply`
+- [x] **验证（自动）**：
   - 静态：colour_16 在全文件仅被 `window_status_current_fg`（:213）引用（`status_right_bg`=15,4,17 / `status_left_bg`=4,10,11 已查实，回归确认）
   - `tmux -L songtest -f ~/.tmux.conf new-session -d \; new-window \; new-window \; select-window -t :1` 无报错
-- [ ] **验证（视觉 agent）**：songcheck 窗内 `tmux -L songtest attach`，截 `$TU/M4/tmux.png`
+- [x] **验证（视觉 agent）**：songcheck 窗内 `tmux -L songtest attach`，截 `$TU/M4/tmux.png`
   - `has_hex M4/tmux.png c8452c`；`no_tokyo M4/tmux.png`；除 colour_16 区域外无朱砂（目视）
   - 状态栏左三段（天青/赭粉/苔绿）+ 右段、当前窗名朱砂可读
   - `tmux -L songtest kill-server` 清理
-- [ ] **视觉验证（用户）**：tmux 状态栏整体气质 + 朱砂题名可读性（若嫌暗，唯一允许的调整 = colour_16 改 `error` 赭石，本步内重验，不带入 M5）
-- [ ] **回滚**：`git checkout -- dot_tmux.conf.local.tmpl palette.lua.tmpl custom.lua && git checkout -- scripts/sync-tmux-colors.lua` + `chezmoi apply`
+- [x] **视觉验证（用户）**：tmux 状态栏整体气质 + 朱砂题名可读性（若嫌暗，唯一允许的调整 = colour_16 改 `error` 赭石，本步内重验，不带入 M5）
+- [x] **回滚**：`git checkout -- dot_tmux.conf.local.tmpl palette.lua.tmpl custom.lua && git checkout -- scripts/sync-tmux-colors.lua` + `chezmoi apply`
 
 ### M5: 终审 + 文档回写
 

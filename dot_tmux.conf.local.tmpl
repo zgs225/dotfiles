@@ -85,25 +85,27 @@ tmux_conf_theme=enabled
 
 # default theme
 {{- if and .isLinux .useI3 }}
-# -- tmux colours: auto-generated begin (sync from config/wezterm/colors/palette.lua) --
-tmux_conf_theme_colour_1="#1a1b26"
-tmux_conf_theme_colour_2="#414868"
-tmux_conf_theme_colour_3="#a9b1d6"
-tmux_conf_theme_colour_4="#7aa2f7"
-tmux_conf_theme_colour_5="#e0af68"
-tmux_conf_theme_colour_6="#c0caf5"
-tmux_conf_theme_colour_7="#c0caf5"
-tmux_conf_theme_colour_8="#1a1b26"
-tmux_conf_theme_colour_9="#e0af68"
-tmux_conf_theme_colour_10="#bb9af7"
-tmux_conf_theme_colour_11="#9ece6a"
-tmux_conf_theme_colour_12="#a9b1d6"
-tmux_conf_theme_colour_13="#c0caf5"
-tmux_conf_theme_colour_14="#1a1b26"
-tmux_conf_theme_colour_15="#1a1b26"
-tmux_conf_theme_colour_16="#f7768e"
-tmux_conf_theme_colour_17="#c0caf5"
-# -- tmux colours: auto-generated end --
+# -- tmux colours: Song Ink begin (docs/design/terminal-unification.md) --
+# colour_2/10/11/12 are registered derived fixed values (song-liquid-glass.md S2.1);
+# colour_16 is the only cinnabar in the terminal domain (current window name).
+tmux_conf_theme_colour_1="{{ .colors.bg_base }}"
+tmux_conf_theme_colour_2="#464652"
+tmux_conf_theme_colour_3="{{ .colors.fg_secondary }}"
+tmux_conf_theme_colour_4="{{ .colors.accent }}"
+tmux_conf_theme_colour_5="{{ .colors.warn }}"
+tmux_conf_theme_colour_6="{{ .colors.fg_primary }}"
+tmux_conf_theme_colour_7="{{ .colors.fg_primary }}"
+tmux_conf_theme_colour_8="{{ .colors.bg_base }}"
+tmux_conf_theme_colour_9="{{ .colors.warn }}"
+tmux_conf_theme_colour_10="#c9b8b3"
+tmux_conf_theme_colour_11="#8a9a6b"
+tmux_conf_theme_colour_12="#cfccc2"
+tmux_conf_theme_colour_13="{{ .colors.fg_primary }}"
+tmux_conf_theme_colour_14="{{ .colors.bg_base }}"
+tmux_conf_theme_colour_15="{{ .colors.bg_base }}"
+tmux_conf_theme_colour_16="{{ .colors.seal }}"
+tmux_conf_theme_colour_17="{{ .colors.fg_primary }}"
+# -- tmux colours: Song Ink end --
 {{- else }}
 # -- tmux colours: auto-generated begin (sync from config/wezterm/colors/palette.lua) --
 tmux_conf_theme_colour_1="#1a1b26"
@@ -166,7 +168,11 @@ tmux_conf_theme_pane_border_style=thin
 tmux_conf_theme_pane_border="$tmux_conf_theme_colour_2"
 tmux_conf_theme_pane_active_border="$tmux_conf_theme_colour_4"
 %if #{>=:#{version},3.2}
+{{- if and .isLinux .useI3 }}
+tmux_conf_theme_pane_active_border="#{?pane_in_mode,$tmux_conf_theme_colour_9,#{?synchronize-panes,$tmux_conf_theme_colour_5,$tmux_conf_theme_colour_4}}"
+{{- else }}
 tmux_conf_theme_pane_active_border="#{?pane_in_mode,$tmux_conf_theme_colour_9,#{?synchronize-panes,$tmux_conf_theme_colour_16,$tmux_conf_theme_colour_4}}"
+{{- end }}
 %endif
 
 # pane indicator colours (when you hit <prefix> + q)
