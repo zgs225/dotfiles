@@ -1,0 +1,16 @@
+{
+  "lastChangelogVersion": "0.81.1",
+  "theme": "song-liquid-glass",
+  "defaultProvider": "kimi-coding",
+  "defaultModel": "k3",
+  "defaultThinkingLevel": "max",
+  "hideThinkingBlock": true,
+  "defaultProjectTrust": "always",
+  "collapseChangelog": true,
+  "enableInstallTelemetry": false,
+  "retry": {
+    "enabled": true,
+    "maxRetries": 100,
+    "baseDelayMs": 2000
+  }
+}
