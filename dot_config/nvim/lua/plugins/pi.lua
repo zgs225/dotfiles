@@ -97,6 +97,30 @@ return {
       show_thinking = true,
       -- Keep the startup block (skills/extensions/announcements) collapsed.
       expand_startup_details = false,
+      -- Song-style status verb pairs { working, done }, replacing the
+      -- built-in programmer jokes.
+      verbs = {
+        use_defaults = false,
+        pairs = {
+          { "研墨", "墨成" },
+          { "运笔", "笔歇" },
+          { "调釉", "釉匀" },
+          { "入窑", "窑开" },
+          { "烧造", "器成" },
+          { "候火", "火温" },
+          { "装裱", "裱成" },
+          { "铺绢", "绢展" },
+          { "题款", "款落" },
+          { "钤印", "印定" },
+          { "临帖", "帖就" },
+          { "刻版", "版成" },
+          { "点茶", "茶熟" },
+          { "碾香", "香成" },
+          { "洗笔", "笔净" },
+          { "抚琴", "琴歇" },
+          { "听雨", "雨霁" },
+        },
+      },
     },
     keys = {
       {
