@@ -25,6 +25,7 @@
 @define-color overlay1 #85857d;
 @define-color lavender {{ .colors.accent }};
 @define-color blue {{ .colors.accent }};
+@define-color seal {{ .colors.error }};
 
 /* ── Menus and context menus (system tray, right-click, etc.) ── */
 menu,
@@ -212,66 +213,174 @@ separator {
   background-color: alpha(@text, 0.08);
 }
 
-/* ── LightDM GTK Greeter (login screen) ───────────────────────────
+/* ── LightDM GTK Greeter — 门籍签 (login ticket) ──────────────────
  * The greeter runs as the lightdm user against the system copy of this
- * theme (/usr/share/themes/catppuccin-glass). These widget IDs are unique
- * to lightdm-gtk-greeter, so the rules do not leak into other GTK apps.
- * Song liquid glass: glass panel + tianqing hairline + restrained radius. */
+ * theme (/usr/share/themes/catppuccin-glass). Widget IDs are unique to
+ * lightdm-gtk-greeter, so nothing here leaks into other GTK apps.
+ *
+ * Real widget tree (read from the binary's embedded .ui, not guessed):
+ *   #panel_window > #menubar                 top indicators, sunk into silk
+ *   #login_window > #login_box (vertical) >
+ *     #content_frame > #grid1 >
+ *       #user_image_border > #user_image     col0: hidden -> breathing gutter
+ *       #user_combobox / #username_entry     col1: hidden for a single user
+ *       #password_entry                      col1: the 口令 fill-line
+ *     #greeter_infobar > #message_label      the 赭石 error stone-bar
+ *     #buttonbox_frame > #box2 > #cancel_button + #login_button
+ *
+ * GTK3 engine limits, honoured honestly:
+ *   - box-shadow has NO blur radius  -> the light-bleed edge (plan A) is a
+ *     background gradient fading warm silk inward from the four edges.
+ *   - entries have NO :error pseudo  -> on auth failure only the infobar
+ *     tints 赭石; the fill-line and plaque stay tianqing (no CSS hook).
+ *   - no animation anywhere (lock-screen discipline: 静如立轴). Feedback is
+ *     instantaneous colour change only — focus brightens the underline. */
 
-#login_window {
-  background-color: alpha(@base, 0.68);
-  border: 1px solid alpha(@lavender, 0.35);
-  border-radius: 6px;
+/* top indicator bar — fully transparent, captions sunk to faint crab-green */
+#panel_window {
+  background-color: transparent;
+  background-image: none;
 }
-
-#login_window > box {
-  padding: 10px;
+#panel_window .menubar,
+#panel_window .menubar > .menuitem {
+  background-color: transparent;
+  background-image: none;
+  color: alpha(@subtext0, 0.62);
+  font: 13px;
 }
-
-#user_combobox {
+#panel_window .menubar .menuitem:hover {
+  background-color: alpha(@surface1, 0.30);
   color: @text;
-  font-size: 15px;
+}
+#panel_window .menubar .menu {
+  background-color: alpha(@base, 0.88);
+  border: 1px solid alpha(@lavender, 0.30);
+  border-radius: 5px;
+  color: @text;
+}
+#panel_window .menubar .menu .menuitem { color: @subtext1; }
+#panel_window .menubar .menu .menuitem:hover {
+  background-color: alpha(@surface1, 0.40);
+  color: @text;
 }
 
-#prompt_label {
-  color: @subtext0;
+/* the ticket body — thin veil + tianqing hairline + warm light-bleed inset */
+#login_window,
+#shutdown_dialog,
+#restart_dialog {
+  border: 1.5px solid alpha(@lavender, 0.26);
+  border-radius: 5px;
+  background-color: alpha(@base, 0.50);
+  background-image:
+    linear-gradient(to right,  rgba(214,140,86,0.16), rgba(214,140,86,0) 26px, rgba(214,140,86,0) calc(100% - 26px), rgba(214,140,86,0.16)),
+    linear-gradient(to bottom, rgba(214,140,86,0.16), rgba(214,140,86,0) 26px, rgba(214,140,86,0) calc(100% - 26px), rgba(214,140,86,0.16));
+  color: @text;
 }
 
-#password_entry {
-  font-size: 15px;
-  padding: 9px 14px;
-  background-color: alpha(@crust, 0.65);
-  border: 1px solid alpha(@text, 0.14);
-  border-radius: 4px;
+/* 乌丝栏 — left ruling on the box, spans the whole ticket height */
+#login_window #login_box {
+  border-left: 2px solid alpha(@lavender, 0.40);
+}
+#login_window #content_frame { padding-bottom: 10px; }
+
+/* hide the avatar; collapse its column into a breathing gutter */
+#login_window #user_image { opacity: 0; -gtk-icon-size: 1px; }
+#login_window #user_image_border {
+  border: none;
+  background: none;
+  background-image: none;
+  box-shadow: none;
+  min-width: 0;
+}
+
+/* username widgets stay hidden for a single user; if ever shown, quiet */
+#login_window #user_combobox .button,
+#login_window #user_combobox .button:hover,
+#login_window #user_combobox .button:focus {
+  background: none;
+  background-image: none;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+#login_window #user_combobox { color: @text; font: bold 18px; }
+
+/* 口令 fill-line — strip the entry box to a single tianqing underline */
+#login_window #password_entry,
+#login_window #username_entry {
+  background-color: transparent;
+  background-image: none;
+  border: none;
+  border-bottom: 2.5px solid alpha(@lavender, 0.55);
+  border-radius: 0;
+  box-shadow: none;
   color: @text;
   caret-color: @lavender;
+  padding: 8px 2px;
+  font: 18px;
+}
+#login_window #password_entry:focus,
+#login_window #username_entry:focus {
+  border-bottom-color: alpha(@lavender, 0.92);
+  box-shadow: none;
 }
 
-#password_entry:focus {
-  border-color: alpha(@lavender, 0.65);
+/* error stone-bar — the only element that tints on auth failure */
+#login_window #greeter_infobar {
+  border: none;
+  border-radius: 3px;
+  background-color: alpha(@seal, 0.14);
+  background-image: none;
+  box-shadow: none;
+  margin: 6px 0 2px 0;
+}
+#login_window #greeter_infobar label,
+#login_window #greeter_infobar #message_label {
+  color: @seal;
+  font: 13px;
 }
 
-#login_button {
-  background-color: alpha(@lavender, 0.22);
-  border: 1px solid alpha(@lavender, 0.45);
-  border-radius: 4px;
+/* button row — cancel as quiet ghost, login as tianqing plaque */
+#login_window #buttonbox_frame {
+  background: none;
+  background-image: none;
+  border: none;
+  box-shadow: none;
+  padding-top: 14px;
+}
+#login_window #cancel_button {
+  background: none;
+  background-image: none;
+  border: none;
+  box-shadow: none;
+  color: alpha(@subtext0, 0.85);
+  font: 14px;
+}
+#login_window #cancel_button:hover {
+  background: none;
+  background-image: none;
+  box-shadow: none;
   color: @text;
-  padding: 8px 18px;
 }
-
-#login_button:hover {
-  background-color: alpha(@lavender, 0.38);
+#login_window #login_button {
+  background-color: alpha(@lavender, 0.12);
+  background-image: none;
+  border: 1.5px solid alpha(@lavender, 0.45);
+  border-radius: 4px;
+  box-shadow: none;
+  color: @text;
+  font: bold 18px;
+  padding: 9px 26px;
+}
+#login_window #login_button:hover {
+  background-color: alpha(@lavender, 0.24);
   border-color: alpha(@lavender, 0.70);
 }
-
-#cancel_button {
-  background-color: transparent;
-  border: 1px solid alpha(@text, 0.12);
-  border-radius: 4px;
-  color: @subtext0;
-}
-
-#cancel_button:hover {
-  background-color: alpha(@surface1, 0.35);
+#login_window #login_button:focus,
+#login_window #login_button.default {
+  background-color: alpha(@lavender, 0.16);
+  background-image: none;
+  border-color: alpha(@lavender, 0.55);
+  box-shadow: none;
   color: @text;
 }
