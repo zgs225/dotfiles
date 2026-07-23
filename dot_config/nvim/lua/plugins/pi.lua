@@ -95,6 +95,8 @@ return {
       models = { "k3", "kimi-for-coding", "deepseek-v4-pro", "qwen3.8-max-preview" },
       -- Render thinking blocks in chat history (default: hidden).
       show_thinking = true,
+      -- Keep the startup block (skills/extensions/announcements) collapsed.
+      expand_startup_details = false,
     },
     keys = {
       {
