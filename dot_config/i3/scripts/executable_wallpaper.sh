@@ -30,4 +30,8 @@ echo "$idx" > "$state_file"
 current="${wallpapers[$idx]}"
 feh --bg-fill "$current"
 
+# Sync to the system background so the lightdm greeter shows the same
+# wallpaper as the desktop. Best-effort (NOPASSWD sudo via wheel).
+sudo -n cp "$current" /usr/share/backgrounds/default.png 2>/dev/null || true
+
 systemctl --user start lockscreen-refresh.service >/dev/null 2>&1 &
