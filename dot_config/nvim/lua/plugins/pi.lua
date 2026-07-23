@@ -152,6 +152,22 @@ return {
       },
     },
     init = function()
+      -- Left padding inside pi float/side windows: pi.nvim hardcodes
+      -- signcolumn="no" at window open, so override it on the next tick.
+      vim.api.nvim_create_autocmd("BufWinEnter", {
+        group = vim.api.nvim_create_augroup("PiWindowPadding", { clear = true }),
+        callback = function()
+          local ft = vim.bo.filetype
+          if ft == "pi-chat-history" or ft == "pi-chat-prompt" or ft == "pi-chat-attachments" then
+            local win = vim.api.nvim_get_current_win()
+            vim.schedule(function()
+              if vim.api.nvim_win_is_valid(win) then
+                vim.wo[win].signcolumn = "yes:1"
+              end
+            end)
+          end
+        end,
+      })
       -- Abort the current agent turn, matching the opencode terminal mapping.
       -- NOTE: in side layout pi.nvim auto-redirects focus from the history
       -- window to the prompt, so the binding must live on the prompt buffer
