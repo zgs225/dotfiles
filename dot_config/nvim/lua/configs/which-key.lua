@@ -6,7 +6,7 @@ wk.add {
   { "<leader>f", group = "+find", icon = { icon = "", color = "blue" } },
   { "<leader>g", group = "+git", icon = { icon = "", color = "orange" } },
   { "<leader>t", group = "+test", icon = { icon = "", color = "green" } },
-  { "<leader>a", group = "+opencode", icon = { icon = "", color = "magenta" } },
+  { "<leader>a", group = "+agent", icon = { icon = "", color = "magenta" } },
   { "<leader>c", group = "+code", icon = { icon = "", color = "cyan" } },
   { "<leader>w", group = "+workspace", icon = { icon = "", color = "white" } },
 
@@ -75,11 +75,12 @@ wk.add {
   { "<leader>ts", desc = "Toggle Summary", icon = { icon = "", color = "green" } },
 }
 
--- +opencode children
+-- +agent children (opencode / pi)
 wk.add {
   { "<leader>aa", desc = "Toggle", icon = { icon = "", color = "magenta" } },
   { "<leader>aA", desc = "Ask", icon = { icon = "", color = "magenta" } },
   { "<leader>as", desc = "Select Server", icon = { icon = "", color = "magenta" } },
+  { "<leader>ap", desc = "Toggle Pi", icon = { icon = "π", color = "magenta" } },
 }
 
 -- +code children
