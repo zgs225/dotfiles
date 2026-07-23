@@ -45,16 +45,6 @@ read -r cx cy radius ringw < <(awk -v w="$W" -v h="$H" -v dpi="$dpi" 'BEGIN{
   printf "%d %d %d %.2f\n", (w/2)/s, (h*0.55)/s, 80/s, 4/s
 }')
 
-fprint_tier() {
-    [[ -e "$HOME/.config/i3/fprint.disable" ]] && { echo 0; return; }
-    command -v fprintd-list >/dev/null 2>&1 || { echo 0; return; }
-    local out
-    out=$(timeout 5 fprintd-list "$USER" 2>/dev/null) || { echo 0; return; }
-    grep -q '^ - #' <<<"$out" && { echo 2; return; }
-    grep -q 'no fingers enrolled' <<<"$out" && { echo 1; return; }
-    echo 0
-}
-
 lock_args=(
     -n
     -i "$img"
@@ -76,16 +66,14 @@ lock_args=(
     --separator-color=00000000
 )
 
-if [[ "$(fprint_tier)" == "2" ]]; then
-    # Fingerprint path: background i3lock + parallel fprintd-verify listener
-    # that kills i3lock on match (touch sensor any time, no keypress needed).
-    i3lock "${lock_args[@]}" &
-    lock_pid=$!
-    "$HOME/.config/i3/scripts/fprint-unlock.sh" "$lock_pid" &
-    helper_pid=$!
-    wait "$lock_pid" || true
-    pkill -P "$helper_pid" 2>/dev/null || true
-    kill "$helper_pid" 2>/dev/null || true
-else
-    i3lock "${lock_args[@]}"
-fi
+# i3lock runs in the background so the fingerprint listener can kill it on
+# match (touch sensor any time, no keypress needed). The helper self-gates
+# (tier check happens there, off the critical path) and exits instantly on
+# machines without enrolled fingerprints.
+i3lock "${lock_args[@]}" &
+lock_pid=$!
+"$HOME/.config/i3/scripts/fprint-unlock.sh" "$lock_pid" &
+helper_pid=$!
+wait "$lock_pid" || true
+pkill -P "$helper_pid" 2>/dev/null || true
+kill "$helper_pid" 2>/dev/null || true
