@@ -45,6 +45,7 @@ skills-lock.json
 .config/display/**
 .config/systemd/user/screenshot-cleanup.service
 .config/systemd/user/screenshot-cleanup.timer
+.config/systemd/user/brightness-auto.service
 .xinitrc
 .xprofile
 .zprofile
