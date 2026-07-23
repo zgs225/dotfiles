@@ -46,13 +46,21 @@ end
 -- so a manually closed prompt window is never recreated by pi.show().
 -- Hide the partial layout and reopen it fresh.
 local function ensure_full_chat(pi)
+  -- In float mode the [No Name] base window must stay (it hosts the tab);
+  -- only the side layout needs the cleanup to fill the whole tab.
+  local function maybe_close_non_pi()
+    if pi.layout() == "side" then
+      vim.schedule(close_non_pi_windows)
+    end
+  end
+
   if not pi.is_visible() then
     pi.show()
-    vim.schedule(close_non_pi_windows)
+    maybe_close_non_pi()
   elseif not prompt_win_visible() then
     pi.toggle_chat()
     pi.show()
-    vim.schedule(close_non_pi_windows)
+    maybe_close_non_pi()
   end
 end
 
@@ -78,7 +86,9 @@ local function toggle_pi()
   pi_tab = vim.api.nvim_get_current_tabpage()
   pi.show()
   vim.schedule(function()
-    close_non_pi_windows()
+    if pi.layout() == "side" then
+      close_non_pi_windows()
+    end
     pi.focus_chat_prompt()
   end)
 end
@@ -97,6 +107,12 @@ return {
       show_thinking = true,
       -- Keep the startup block (skills/extensions/announcements) collapsed.
       expand_startup_details = false,
+      -- Float layout: centered, bounded width for readable line lengths.
+      -- Switch side/float on the fly with :PiToggleLayout.
+      layout = {
+        default = "float",
+        float = { width = 120, height = 0.85, border = "rounded" },
+      },
       -- Song-style status verb pairs { working, done }, replacing the
       -- built-in programmer jokes.
       verbs = {
