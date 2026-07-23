@@ -23,11 +23,7 @@ return {
    webgpu_preferred_adapter = pick_gpu(),
 
    -- color scheme
-{{- if and .isLinux .useI3 }}
-   -- Song Ink: fully driven by the colors table below (no builtin scheme)
-{{- else }}
    color_scheme = 'Tokyo Night',
-{{- end }}
    colors = colors,
 
    -- background
