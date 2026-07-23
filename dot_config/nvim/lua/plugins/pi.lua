@@ -70,8 +70,14 @@ local function toggle_pi()
 
   if pi_tab and vim.api.nvim_tabpage_is_valid(pi_tab) then
     if cur == pi_tab then
-      -- Keep the session alive; just switch back.
-      leave_pi_tab()
+      if pi.is_visible() then
+        -- Keep the session alive; just switch back.
+        leave_pi_tab()
+      else
+        -- Chat hidden via <C-g>t: <leader>ap brings the float back.
+        ensure_full_chat(pi)
+        pi.focus_chat_prompt()
+      end
       return
     end
     prev_tab = cur
@@ -169,10 +175,20 @@ return {
             m = { function() require("pi").select_model() end, "Pi: select model" },
             h = { function() require("pi").focus_chat_history() end, "Pi: focus history" },
             p = { function() require("pi").focus_chat_prompt() end, "Pi: focus prompt" },
+            t = { function() require("pi").toggle_chat() end, "Pi: hide/show chat float" },
           }
           for key, spec in pairs(leaders) do
             vim.keymap.set({ "n", "i" }, "<C-g>" .. key, spec[1], { buffer = args.buf, desc = spec[2] })
           end
+
+          -- <C-k>/<C-j>: move up to history / down to prompt (float stack
+          -- order: history on top, prompt below). Newline stays on <S-CR>.
+          vim.keymap.set({ "n", "i" }, "<C-k>", function()
+            require("pi").focus_chat_history()
+          end, { buffer = args.buf, desc = "Pi: focus history" })
+          vim.keymap.set({ "n", "i" }, "<C-j>", function()
+            require("pi").focus_chat_prompt()
+          end, { buffer = args.buf, desc = "Pi: focus prompt" })
 
           if vim.bo[args.buf].filetype == "pi-chat-prompt" then
             -- Clear the draft while typing; stays in insert mode.
