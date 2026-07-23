@@ -1,0 +1,6 @@
+[X-GNOME-Metatheme]
+Name=catppuccin-glass
+Type=X-GNOME-Metatheme
+Comment=Glassmorphism dark theme — Song liquid glass
+Encoding=UTF-8
+GtkTheme=catppuccin-glass
