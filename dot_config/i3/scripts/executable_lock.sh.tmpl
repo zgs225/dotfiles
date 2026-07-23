@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Single lock instance: a second i3lock -n would wait on the input grab and
+# its fingerprint listener would fight the first one for the device claim.
+exec 9>"${XDG_RUNTIME_DIR:-/tmp}/i3-lock.$UID.lock"
+flock -n 9 || exit 0
+
 CACHE_DIR="$HOME/.cache/lockscreen"
 RENDER_SCRIPT="$HOME/.config/i3/scripts/lock-render.py"
 
@@ -75,5 +80,6 @@ lock_pid=$!
 "$HOME/.config/i3/scripts/fprint-unlock.sh" "$lock_pid" &
 helper_pid=$!
 wait "$lock_pid" || true
-pkill -P "$helper_pid" 2>/dev/null || true
+# TERM only: the helper defers exit until its in-flight fprintd-verify
+# finishes, keeping the fprintd device claim release clean.
 kill "$helper_pid" 2>/dev/null || true
