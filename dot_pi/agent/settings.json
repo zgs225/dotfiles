@@ -4,7 +4,7 @@
   "defaultProvider": "kimi-coding",
   "defaultModel": "k3",
   "defaultThinkingLevel": "max",
-  "hideThinkingBlock": true,
+  "hideThinkingBlock": false,
   "defaultProjectTrust": "always",
   "collapseChangelog": true,
   "enableInstallTelemetry": false,

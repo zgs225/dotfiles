@@ -93,6 +93,8 @@ return {
     opts = {
       -- Curated model list for <C-g>m (pi.select_model).
       models = { "k3", "kimi-for-coding", "deepseek-v4-pro", "qwen3.8-max-preview" },
+      -- Render thinking blocks in chat history (default: hidden).
+      show_thinking = true,
     },
     keys = {
       {
