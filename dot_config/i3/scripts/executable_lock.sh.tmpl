@@ -45,22 +45,47 @@ read -r cx cy radius ringw < <(awk -v w="$W" -v h="$H" -v dpi="$dpi" 'BEGIN{
   printf "%d %d %d %.2f\n", (w/2)/s, (h*0.55)/s, 80/s, 4/s
 }')
 
-i3lock \
-    -n \
-    -i "$img" \
-    --indicator \
-    --radius=$radius \
-    --ring-width=$ringw \
-    --ind-pos="${cx}:${cy}" \
-    --ring-color={{ .colors.accent | trimPrefix "#" }}44 \
-    --ringver-color={{ .colors.accent | trimPrefix "#" }}aa \
-    --ringwrong-color={{ .colors.error | trimPrefix "#" }}ff \
-    --inside-color=00000000 \
-    --insidever-color=00000000 \
-    --insidewrong-color=00000000 \
-    --line-uses-ring \
-    --keyhl-color={{ .colors.accent | trimPrefix "#" }}ff \
-    --bshl-color={{ .colors.warn | trimPrefix "#" }}ff \
-    --verif-color=00000000 \
-    --wrong-color=00000000 \
+fprint_tier() {
+    [[ -e "$HOME/.config/i3/fprint.disable" ]] && { echo 0; return; }
+    command -v fprintd-list >/dev/null 2>&1 || { echo 0; return; }
+    local out
+    out=$(timeout 5 fprintd-list "$USER" 2>/dev/null) || { echo 0; return; }
+    grep -q '^ - #' <<<"$out" && { echo 2; return; }
+    grep -q 'no fingers enrolled' <<<"$out" && { echo 1; return; }
+    echo 0
+}
+
+lock_args=(
+    -n
+    -i "$img"
+    --indicator
+    --radius=$radius
+    --ring-width=$ringw
+    --ind-pos="${cx}:${cy}"
+    --ring-color={{ .colors.accent | trimPrefix "#" }}44
+    --ringver-color={{ .colors.accent | trimPrefix "#" }}aa
+    --ringwrong-color={{ .colors.error | trimPrefix "#" }}ff
+    --inside-color=00000000
+    --insidever-color=00000000
+    --insidewrong-color=00000000
+    --line-uses-ring
+    --keyhl-color={{ .colors.accent | trimPrefix "#" }}ff
+    --bshl-color={{ .colors.warn | trimPrefix "#" }}ff
+    --verif-color=00000000
+    --wrong-color=00000000
     --separator-color=00000000
+)
+
+if [[ "$(fprint_tier)" == "2" ]]; then
+    # Fingerprint path: background i3lock + parallel fprintd-verify listener
+    # that kills i3lock on match (touch sensor any time, no keypress needed).
+    i3lock "${lock_args[@]}" &
+    lock_pid=$!
+    "$HOME/.config/i3/scripts/fprint-unlock.sh" "$lock_pid" &
+    helper_pid=$!
+    wait "$lock_pid" || true
+    pkill -P "$helper_pid" 2>/dev/null || true
+    kill "$helper_pid" 2>/dev/null || true
+else
+    i3lock "${lock_args[@]}"
+fi
