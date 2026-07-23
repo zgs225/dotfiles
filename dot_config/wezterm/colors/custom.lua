@@ -6,7 +6,6 @@ local M = {}
 
 M.background = palette.background
 M.palette = palette
-M.tmux_mapping = palette_data.tmux_mapping
 M.tab_title = palette.tab_title
 M.left_status = palette.left_status
 
