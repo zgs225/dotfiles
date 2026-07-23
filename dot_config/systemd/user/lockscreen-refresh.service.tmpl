@@ -1,10 +1,10 @@
 [Unit]
-Description=Render lockscreen variants (pycairo + Pango)
+Description=Render lockscreen composite + mirror to greeter (pycairo + Pango)
 
 [Service]
 Type=oneshot
 Environment="PATH={{ .chezmoi.homeDir }}/.local/share/mise/shims:/usr/local/bin:/usr/bin:/bin"
 Environment="DISPLAY=:0"
-ExecStart={{ .chezmoi.homeDir }}/.local/share/mise/shims/python3 %h/.config/i3/scripts/lock-render.py
+ExecStart={{ .chezmoi.homeDir }}/.local/share/mise/shims/python3 %h/.config/i3/scripts/lock-render.py --lock-image %h/.cache/lockscreen/_compose.jpg
 StandardOutput=journal
 StandardError=journal

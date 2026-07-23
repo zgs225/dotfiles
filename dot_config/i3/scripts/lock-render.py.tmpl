@@ -41,6 +41,10 @@ CACHE_DIR = Path.home() / ".cache" / "lockscreen"
 FEHBG = Path.home() / ".fehbg"
 SOCK = CACHE_DIR / "sock"
 COMPOSE = CACHE_DIR / "_compose.jpg"
+# System-readable copy of the composite for the lightdm greeter background.
+# The greeter runs as the lightdm user and cannot read ~/.cache (700 home),
+# so the rendered composite is mirrored here on every compose.
+GREETER_BG = Path("/usr/share/backgrounds/default.png")
 
 TIAN_GAN = "甲乙丙丁戊己庚辛壬癸"
 DI_ZHI = "子丑寅卯辰巳午未申酉戌亥"
@@ -428,9 +432,25 @@ def write_jpeg(surface, out_path):
     )
 
 
+def sync_greeter_background(src):
+    """Best-effort mirror of the rendered composite to the system background
+    so the lightdm greeter shows the same artwork as the lock screen.
+    Requires NOPASSWD sudo (wheel). Failures are silent — the greeter simply
+    keeps the previous background."""
+    try:
+        subprocess.run(["sudo", "-n", "cp", str(src), str(GREETER_BG)],
+                       check=False, capture_output=True)
+        subprocess.run(["sudo", "-n", "chmod", "644", str(GREETER_BG)],
+                       check=False, capture_output=True)
+    except Exception:
+        pass
+
+
 def compose_to(base_path, poem, sc_name, gz, luo_kuan, out_path):
     surface = build_surface(base_path, poem, sc_name, gz, luo_kuan)
     write_jpeg(surface, out_path)
+    if Path(out_path) == COMPOSE:
+        sync_greeter_background(out_path)
 
 
 def make_lock_image(out_path):
