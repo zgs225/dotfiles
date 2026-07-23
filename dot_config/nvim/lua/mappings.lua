@@ -61,8 +61,6 @@ end, { desc = "Switch Tab" })
 map("n", "tp", ":tabprevious<CR>", { desc = "Tab previous" })
 map("n", "tn", ":tabnext<CR>", { desc = "Tab next" })
 map("n", "tm", ":tabmove", { desc = "Tab move" })
-map({ "n", "i" }, "<A-S-h>", "<cmd>tabprevious<CR>", { desc = "Tab previous" })
-map({ "n", "i" }, "<A-S-l>", "<cmd>tabnext<CR>", { desc = "Tab next" })
 
 map("n", "<leader>n", "<cmd>NvimTreeFocus<CR>", { desc = "nvimtree focus" })
 map("n", "<leader>e", "<cmd>NvimTreeToggle<CR>", { desc = "nvimtree toggle" })
