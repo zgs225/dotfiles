@@ -21,4 +21,8 @@ export ELECTRON_OZONE_PLATFORM_HINT=auto
 # (dot_config/wezterm/wezterm-wrap.sh) handles by hiding the NVIDIA ICD.
 export __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/50_mesa.json
 
+# Mise shims — .xinitrc also sets this for the startx path; duplicating here
+# ensures LightDM sessions (which skip .xinitrc) get mise in PATH too.
+export PATH="$HOME/.local/share/mise/shims:$PATH"
+
 systemctl --user import-environment DISPLAY PATH
