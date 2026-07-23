@@ -70,7 +70,10 @@ return {
       -- Required only for :PiPasteImage (clipboard image paste).
       { "HakonHarnes/img-clip.nvim", opts = {} },
     },
-    opts = {},
+    opts = {
+      -- Curated model list for <C-g>m (pi.select_model).
+      models = { "k3", "kimi-for-coding", "deepseek-v4-pro", "qwen3.8-max-preview" },
+    },
     keys = {
       {
         "<leader>ap",
@@ -91,6 +94,19 @@ return {
             require("pi").abort()
           end
           vim.keymap.set("n", "<Esc>", abort, { buffer = args.buf, desc = "Abort current pi turn" })
+
+          -- <C-g> prefix inside pi chat buffers (mirrors the pi TUI leader).
+          -- s: resume session via telescope (vim.ui.select -> ui-select ext)
+          -- n: new session, m: pick from the curated model list
+          local leaders = {
+            s = { function() require("pi").resume_session() end, "Pi: resume session" },
+            n = { function() require("pi").new_session() end, "Pi: new session" },
+            m = { function() require("pi").select_model() end, "Pi: select model" },
+          }
+          for key, spec in pairs(leaders) do
+            vim.keymap.set({ "n", "i" }, "<C-g>" .. key, spec[1], { buffer = args.buf, desc = spec[2] })
+          end
+
           if vim.bo[args.buf].filetype == "pi-chat-prompt" then
             -- Clear the draft while typing; stays in insert mode.
             vim.keymap.set("i", "<C-c>", function()
