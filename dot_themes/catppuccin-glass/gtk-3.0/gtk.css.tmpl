@@ -211,3 +211,67 @@ scrolledwindow {
 separator {
   background-color: alpha(@text, 0.08);
 }
+
+/* ── LightDM GTK Greeter (login screen) ───────────────────────────
+ * The greeter runs as the lightdm user against the system copy of this
+ * theme (/usr/share/themes/catppuccin-glass). These widget IDs are unique
+ * to lightdm-gtk-greeter, so the rules do not leak into other GTK apps.
+ * Song liquid glass: glass panel + tianqing hairline + restrained radius. */
+
+#login_window {
+  background-color: alpha(@base, 0.68);
+  border: 1px solid alpha(@lavender, 0.35);
+  border-radius: 6px;
+}
+
+#login_window > box {
+  padding: 10px;
+}
+
+#user_combobox {
+  color: @text;
+  font-size: 15px;
+}
+
+#prompt_label {
+  color: @subtext0;
+}
+
+#password_entry {
+  font-size: 15px;
+  padding: 9px 14px;
+  background-color: alpha(@crust, 0.65);
+  border: 1px solid alpha(@text, 0.14);
+  border-radius: 4px;
+  color: @text;
+  caret-color: @lavender;
+}
+
+#password_entry:focus {
+  border-color: alpha(@lavender, 0.65);
+}
+
+#login_button {
+  background-color: alpha(@lavender, 0.22);
+  border: 1px solid alpha(@lavender, 0.45);
+  border-radius: 4px;
+  color: @text;
+  padding: 8px 18px;
+}
+
+#login_button:hover {
+  background-color: alpha(@lavender, 0.38);
+  border-color: alpha(@lavender, 0.70);
+}
+
+#cancel_button {
+  background-color: transparent;
+  border: 1px solid alpha(@text, 0.12);
+  border-radius: 4px;
+  color: @subtext0;
+}
+
+#cancel_button:hover {
+  background-color: alpha(@surface1, 0.35);
+  color: @text;
+}
