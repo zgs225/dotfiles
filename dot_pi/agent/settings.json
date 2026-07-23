@@ -8,9 +8,19 @@
   "defaultProjectTrust": "always",
   "collapseChangelog": true,
   "enableInstallTelemetry": false,
+  "quietStartup": true,
+  "editorPaddingX": 1,
+  "autocompleteMaxVisible": 10,
+  "branchSummary": {
+    "skipPrompt": true
+  },
+  "enabledModels": ["k3", "kimi-for-coding", "deepseek-v4-pro", "qwen3.8-max-preview"],
   "retry": {
     "enabled": true,
     "maxRetries": 100,
-    "baseDelayMs": 2000
+    "baseDelayMs": 2000,
+    "provider": {
+      "maxRetryDelayMs": 300000
+    }
   }
 }
