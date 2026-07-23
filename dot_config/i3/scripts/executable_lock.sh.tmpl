@@ -80,6 +80,6 @@ lock_pid=$!
 "$HOME/.config/i3/scripts/fprint-unlock.sh" "$lock_pid" &
 helper_pid=$!
 wait "$lock_pid" || true
-# TERM only: the helper defers exit until its in-flight fprintd-verify
-# finishes, keeping the fprintd device claim release clean.
+# TERM only: the helper stops its in-flight fprintd-verify and waits for the
+# fprintd device claim to be released before exiting.
 kill "$helper_pid" 2>/dev/null || true
