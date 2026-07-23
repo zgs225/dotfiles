@@ -8,6 +8,12 @@ set -u
 
 pid="${1:?usage: fprint-unlock.sh <i3lock-pid>}"
 
+# Single instance per user: two listeners would fight over the device claim.
+# -w waits out a lingering previous instance (its in-flight verify may still
+# be draining, see TERM trap below).
+exec 9>"${XDG_RUNTIME_DIR:-/tmp}/fprint-unlock.$UID.lock"
+flock -w 20 9 || exit 0
+
 fprint_tier() {
     [[ -e "$HOME/.config/i3/fprint.disable" ]] && { echo 0; return; }
     command -v fprintd-list >/dev/null 2>&1 || { echo 0; return; }
@@ -19,6 +25,12 @@ fprint_tier() {
 }
 
 [[ "$(fprint_tier)" == "2" ]] || exit 0
+
+# On TERM (password-unlock cleanup) defer exiting until the in-flight
+# fprintd-verify finishes, so the device claim is released cleanly. Killing
+# mid-verify can leave the claim stuck in fprintd (all later claims get
+# "AlreadyInUse" and fingerprint unlock dies).
+trap 'exit 0' TERM INT
 
 while kill -0 "$pid" 2>/dev/null; do
     if timeout 15 fprintd-verify >/dev/null 2>&1; then
