@@ -33,6 +33,29 @@ local function leave_pi_tab()
   end
 end
 
+local function prompt_win_visible()
+  for _, w in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    if vim.bo[vim.api.nvim_win_get_buf(w)].filetype == "pi-chat-prompt" then
+      return true
+    end
+  end
+  return false
+end
+
+-- pi.nvim considers the chat "visible" when only the history window exists,
+-- so a manually closed prompt window is never recreated by pi.show().
+-- Hide the partial layout and reopen it fresh.
+local function ensure_full_chat(pi)
+  if not pi.is_visible() then
+    pi.show()
+    vim.schedule(close_non_pi_windows)
+  elseif not prompt_win_visible() then
+    pi.toggle_chat()
+    pi.show()
+    vim.schedule(close_non_pi_windows)
+  end
+end
+
 local function toggle_pi()
   local pi = require "pi"
   local cur = vim.api.nvim_get_current_tabpage()
@@ -45,10 +68,7 @@ local function toggle_pi()
     end
     prev_tab = cur
     vim.api.nvim_set_current_tabpage(pi_tab)
-    if not pi.is_visible() then
-      pi.show()
-      vim.schedule(close_non_pi_windows)
-    end
+    ensure_full_chat(pi)
     pi.focus_chat_prompt()
     return
   end
