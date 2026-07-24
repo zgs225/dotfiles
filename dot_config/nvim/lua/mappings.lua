@@ -57,6 +57,13 @@ map("n", "<leader>ft", function()
     :find()
 end, { desc = "Switch Tab" })
 
+-- Open Pi in a new tab
+map("n", "<leader>aP", function()
+  vim.cmd "tabnew"
+  vim.fn.termopen "pi"
+  vim.cmd "startinsert"
+end, { desc = "Open Pi in new tab" })
+
 -- Tab navigation
 map("n", "tp", ":tabprevious<CR>", { desc = "Tab previous" })
 map("n", "tn", ":tabnext<CR>", { desc = "Tab next" })
