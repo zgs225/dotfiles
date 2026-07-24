@@ -129,12 +129,12 @@ return {
       show_thinking = true,
       -- Keep the startup block (skills/extensions/announcements) collapsed.
       expand_startup_details = false,
-      -- Side layout: 50%-width vertical split. pi.nvim always opens it on
+      -- Side layout: 60%-width vertical split. pi.nvim always opens it on
       -- the right; move_pi_to_left() relocates it to the left afterwards.
       -- Switch side/float on the fly with :PiToggleLayout.
       layout = {
         default = "side",
-        side = { width = 0.5 },
+        side = { width = 0.6 },
         float = { width = 120, height = 0.85, border = "rounded" },
       },
       -- Song-style status verb pairs { working, done }, replacing the
