@@ -70,8 +70,9 @@ bindsym $mod+j focus down
 bindsym $mod+k focus up
 bindsym $mod+l focus right
 
-# Lock screen
+# Lock screen ($mod+Ctrl+q matches macOS Cmd+Ctrl+Q)
 bindsym $mod+Shift+l exec --no-startup-id ~/.config/i3/scripts/lock.sh
+bindsym $mod+Ctrl+q exec --no-startup-id ~/.config/i3/scripts/lock.sh
 
 # Focus parent/child
 bindsym $mod+Ctrl+h focus parent
