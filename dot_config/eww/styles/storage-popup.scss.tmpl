@@ -1,0 +1,104 @@
+{{- $eww := includeTemplate "eww-sizes" . | fromJson -}}
+/* HARD RULE: pure ASCII only (see eww.scss.tmpl header). */
+/* ============================================ STORAGE POPUP ============================================ */
+
+.storage-popup { padding: 18px; }
+
+.storage-count-badge {
+  background-color: $accent;
+  border-radius: $radius;
+  min-width: 26px;
+  padding: 3px 8px;
+}
+.storage-count-text {
+  color: $bg-base;
+  font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px;
+  font-weight: bold;
+}
+
+.storage-scroll-wrap { margin: 0; }
+
+/* -- One compact row per device -- */
+.storage-row {
+  @include glass-cell(0.30);
+  border-radius: $radius;
+  padding: 10px 12px;
+  transition: background-color 120ms;
+}
+.storage-row:hover { background-color: rgba($surface1, 0.34); }
+
+.storage-dev-icon {
+  font-family: "Symbols Nerd Font";
+  font-size: {{ mulf $eww.popupIconSize 1.10 | int }}px;
+  color: $accent;
+  min-width: {{ mulf $eww.popupIconSize 1.30 | int }}px;
+}
+.storage-dev-name {
+  color: $text;
+  font-size: {{ mulf $eww.popupFontSize 0.86 | int }}px;
+  font-weight: bold;
+}
+.storage-dev-meta {
+  color: $subtext0;
+  font-size: {{ mulf $eww.popupFontSize 0.70 | int }}px;
+}
+
+/* -- Thin read-only usage bar (scale :active false, profile-card recipe) -- */
+.storage-bar trough {
+  background-color: rgba($ink, 0.64);
+  border-radius: 2px;
+  min-height: 4px;
+  margin: 0;
+}
+.storage-bar trough highlight { border-radius: 2px; background-color: $accent; }
+.storage-bar.mid  trough highlight { background-color: $warn; }
+.storage-bar.high trough highlight { background-color: $error; }
+.storage-bar slider {
+  background-color: transparent;
+  min-width: 0; min-height: 0;
+  margin: 0; padding: 0; border: none; box-shadow: none;
+}
+
+/* -- Right-side icon action buttons (open / eject) -- */
+.storage-act {
+  border-radius: $radius;
+  padding: 5px;
+  transition: background-color 120ms;
+}
+.storage-act:hover { background-color: rgba($surface1, 0.55); }
+.storage-act-icon {
+  font-family: "Symbols Nerd Font";
+  font-size: {{ mulf $eww.popupIconSize 0.92 | int }}px;
+  color: $subtext0;
+}
+.storage-act:hover .storage-act-icon { color: $text; }
+.storage-act.eject:hover { background-color: rgba($warn, 0.16); }
+.storage-act.eject:hover .storage-act-icon { color: $warn; }
+
+/* -- Empty / busy states -- */
+.storage-empty {
+  color: $overlay0;
+  font-size: {{ mulf $eww.popupFontSize 0.80 | int }}px;
+  padding: 20px 0;
+}
+.storage-busy-notice {
+  color: $warn;
+  font-size: {{ mulf $eww.popupFontSize 0.76 | int }}px;
+  padding: 10px 2px 0 2px;
+}
+
+/* ============================================ BAR STORAGE ICON ============================================ */
+
+.storage-icon-wrap {
+  min-width: {{ $eww.iconSize }}px;
+  min-height: {{ $eww.iconSize }}px;
+}
+.storage-icon { color: $text; }
+.storage-badge {
+  background-color: $accent;
+  border-radius: $radius-sm;
+  min-width: 8px;
+  min-height: 8px;
+  margin: 0 -1px 0 0;
+  border: 2px solid $bg-base;
+}

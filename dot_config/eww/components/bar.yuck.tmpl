@@ -55,6 +55,17 @@
               :halign "end" :valign "start"
               :visible "${updates.total > 0}"))))
 
+      (button :class "module-btn storage-btn" :valign "center"
+        :visible "${storage_count > 0}"
+        :onclick "~/.config/eww/scripts/open-popup.sh storage-popup"
+        (box :class "storage-icon-wrap" :halign "center" :valign "center"
+          (overlay
+            (label :text "${storage_icon}" :class "module-icon storage-icon")
+            (box
+              :class "storage-badge"
+              :halign "end" :valign "start"
+              :visible "${storage_count > 1}"))))
+
       (button :class "module-btn" :valign "center"
         :onclick "~/.config/eww/scripts/open-popup.sh control-center"
         (label :text "" :class "module-icon"))

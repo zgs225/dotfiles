@@ -1,0 +1,42 @@
+{{- $eww := includeTemplate "eww-sizes" . | fromJson -}}
+;; ============================================ STORAGE POPUP ============================================
+;; One compact row per mounted removable device.  All icon glyphs come from the
+;; collector JSON (dev.icon / dev.open_icon / dev.eject_icon) so this template
+;; contains zero hand-typed PUA characters.
+
+(defwindow storage-popup [pos_x pos_y]
+  :stacking "overlay"
+  :windowtype "dialog"
+  :focusable false
+  :geometry (geometry :width "{{ $eww.storageW }}px" :height "{{ $eww.storageH }}px" :x { pos_x } :y { pos_y } :anchor "top left")
+  (box :class "popup revealer storage-popup" :orientation "v" :spacing 0 :space-evenly false
+    (box :class "popup-header" :orientation "h" :spacing 10 :valign "center" :space-evenly false
+      (button :class "back-btn" :onclick "~/.config/eww/scripts/open-popup.sh storage-popup"
+        (label :text "󰁍" :class "back-icon"))
+      (label :text "存储设备" :class "popup-title" :hexpand true :xalign 0)
+      (box :class "storage-count-badge" :halign "end" :valign "center"
+        (label :text "${storage_count}" :class "storage-count-text")))
+
+    (scroll :vscroll true :hscroll false :vexpand true :class "storage-scroll-wrap"
+      (box :orientation "v" :spacing 6 :valign "start"
+        (for dev in storage_devices
+          (box :class "storage-row" :orientation "h" :spacing 10 :valign "center" :space-evenly false
+            (label :text "${dev.icon}" :class "storage-dev-icon")
+            (box :orientation "v" :spacing 5 :hexpand true :valign "center"
+              (label :text "${dev.label}" :class "storage-dev-name" :xalign 0 :limit-width 22)
+              (label :text "${dev.fstype} · ${dev.used_str} / ${dev.size_str}" :class "storage-dev-meta" :xalign 0)
+              (scale :class "storage-bar ${dev.used_pct > 90 ? 'high' : (dev.used_pct > 70 ? 'mid' : '')}"
+                :value "${dev.used_pct}" :min 0 :max 100 :active false))
+            (box :orientation "h" :spacing 2 :valign "center" :space-evenly false
+              (button :class "storage-act"
+                :onclick "~/.config/eww/scripts/storage-open.sh '${dev.mountpoint}'"
+                (label :text "${dev.open_icon}" :class "storage-act-icon"))
+              (button :class "storage-act eject"
+                :onclick "~/.config/eww/scripts/storage-eject.sh '${dev.mountpoint}' '${dev.device}'"
+                (label :text "${dev.eject_icon}" :class "storage-act-icon")))))
+
+        (label :text "无已挂载的可移动设备" :class "storage-empty"
+          :visible "${storage_count == '0'}")))
+
+    (label :class "storage-busy-notice" :xalign 0 :wrap true
+      :visible "${storage_busy != ''}" :text "${storage_busy}")))

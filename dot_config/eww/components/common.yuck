@@ -13,6 +13,7 @@
 (defvar bt_pair_hint "")
 (defvar screenshot_path "")
 (defvar screenshot_thumb "")
+(defvar storage_busy "")
 
 ;; ============================================ DATA POLLING (defpoll) ============================================
 
@@ -140,6 +141,21 @@
 (defpoll countdown :interval "1800s"
   :initial `{"label":"周末","sub":"--"}`
   "~/.config/eww/scripts/ewwstate get countdown '{\"label\":\"周末\",\"sub\":\"--\"}'")
+
+;; ── Storage (removable devices) ──
+;; Served by the ewwstate daemon (collectors/storage.py): reads /proc/mounts
+;; + sysfs, zero forks. storage_count in bar (always polled, gates the USB
+;; icon); storage_devices in storage-popup (lazy-polled while open).
+(defpoll storage_count :interval "2s" :initial "0"
+  "~/.config/eww/scripts/ewwstate get storage_count 0")
+(defpoll storage_devices :interval "2s" :initial "[]"
+  "~/.config/eww/scripts/ewwstate get storage_devices []")
+;; Bar USB glyph is injected by the collector (chr()), never typed here.
+;; initial is empty on purpose: the bar button is :visible-gated by
+;; storage_count (initial 0), so the icon is never rendered before the
+;; daemon's first collection fills the real glyph.
+(defpoll storage_icon :interval "2s" :initial ""
+  "~/.config/eww/scripts/ewwstate get storage_icon")
 
 ;; ── Updates ──
 ;; Served by the ewwstate daemon (collectors/updates.py): ONE inotifywait

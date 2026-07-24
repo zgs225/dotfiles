@@ -156,3 +156,61 @@
 **为什么**：daemon 采集有 interval 延迟（1-3s），用户点击 toggle 按钮后需要**即时**反馈。动作脚本（如 `toggle-dnd.sh`）里 `eww update dnd="$(dunstctl is-paused)"` 提供零延迟反馈，daemon 随后异步校正。
 
 **怎么做**：迁 defpoll/deflisten 时，只改 `common.yuck` 的命令；动作脚本里调用的状态脚本（如 `media.sh`、`power-profile.sh`）**必须保留**。
+
+---
+
+## 20. PUA 图标码位禁止手猜——用 fonttools 查 cmap
+
+**为什么**：Nerd Font 的 PUA 区域映射因版本/构建而异。手敲 `\uf1165` 以为是 USB 图标，实际渲染成纸飞机；`\uf01bc` 以为是 eject，实际是 database。肉眼猜码位 = 100% 出错。
+
+**怎么做**：
+1. 用 fonttools 查规范 glyph 名对应的精确码位：
+   ```python
+   from fontTools.ttLib import TTFont
+   t = TTFont("/usr/share/fonts/TTF/JetBrainsMonoNerdFont-Regular.ttf")
+   cmap = t.getBestCmap()
+   for cp, name in sorted(cmap.items()):
+       if "eject" in name.lower() or "usb" in name.lower():
+           print(f"U+{cp:04X}  {name}")
+   ```
+2. 在 collector 里用 `chr(0xF0553)` 注入到 JSON 字段（如 `"icon"`、`"eject_icon"`），**yuck 模板里零 PUA 字符**。
+3. 如果系统 python 受 PEP 668 限制装不了 fonttools，用 mise 的 python：
+   ```bash
+   MPY=$(ls -d ~/.local/share/mise/installs/python/*/bin/python3 | tail -1)
+   "$MPY" -m pip install --quiet fonttools
+   ```
+
+---
+
+## 21. sysfs uevent 不含 ID_FS_TYPE——用 lsblk
+
+**为什么**：`/sys/block/sda/sda1/uevent` 只有 MAJOR/MINOR/DEVNAME/DEVTYPE/PARTN 等内核属性，**不含** udev 数据库里的 `ID_FS_TYPE`。`blkid` 在用户级也可能返回空。启动扫描用 `grep ID_FS_TYPE uevent` 会静默失败。
+
+**怎么做**：用 `lsblk -no FSTYPE /dev/$pname` 读 udev 数据库，用户级可用、零权限问题。同理 `lsblk -no LABEL` 读分区标签。
+
+---
+
+## 22. rotational sysfs 对 USB 闪存盘误报
+
+**为什么**：`/sys/block/sda/queue/rotational` 对某些 USB 闪存盘返回 `1`（内核误判），用它区分 HDD/USB 图标会导致 U 盘拿到机械硬盘图标。
+
+**怎么做**：不要用 rotational 做图标分支。可移动设备统一用一个 USB 图标（`md-usb` U+F0553），或按 fstype/容量做启发式，但**绝不**依赖 rotational。
+
+---
+
+## 23. udevadm monitor 事件过滤——只监听 add
+
+**为什么**：`udevadm monitor --subsystem-match=block` 的 `change` 事件在 mount/unmount 时都会触发。如果自动挂载 daemon 对 `change` 也执行 mount，用户主动弹出（unmount）后 daemon 会**立刻重挂**，弹出被静默撤销，表现为"点弹出没反应"。
+
+**怎么做**：daemon 的事件循环只处理 `ACTION=add`（设备插入创建分区节点），忽略 `change`（mount/unmount 状态变化）。已插入但未挂载的设备由启动时一次性扫描处理。
+
+---
+
+## 24. pkill -f 自杀的深层变体——字符类只保护 pgrep 自身
+
+**为什么**：gotcha #7 说字符类 `[e]wwstate` 排除自身。但这只保护 **pgrep/pkill 自己的参数字符串**。如果你的 bash 脚本里**别处**出现了连续匹配字面（如 `setsid bash .../automount-daemon.sh` 这行路径、echo 文本），当前 bash 的 cmdline 整段含该字面，`$(pgrep -f ...)` 仍会把当前 bash 列进去 → kill 自身 → 缓冲丢失、后续命令全不执行。
+
+**怎么做**：
+1. **pidfile 方案**（最可靠）：daemon 启动时 `echo $$ > /tmp/xxx.pid`，清理时按 pid 精确 kill，完全不匹配命令行。
+2. **写文件再 bash 执行**：把含匹配字面的逻辑写进 `/tmp/t.sh`，用 `bash /tmp/t.sh` 跑。因为 `bash 文件` 的 cmdline 只有 `bash /tmp/t.sh`，不含脚本内容。
+3. 字符类仍作为双保险用在 pgrep 参数上，但**不能**作为唯一防线。
