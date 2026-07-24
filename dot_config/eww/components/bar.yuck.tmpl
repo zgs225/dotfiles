@@ -42,10 +42,10 @@
         :onclick "~/.config/eww/scripts/open-popup.sh power-popup"
         (box :orientation "h" :spacing 6 :valign "center" :space-evenly false
           (label :text "${battery_icon}"
-            :class "module-icon bat-${battery_charging ? 'charging' : (battery_percent < 15 ? 'low' : 'normal')}")
+            :class "module-icon${battery_charging ? '' : (battery_percent < 15 ? ' bat-low' : '')}")
           (label :text "${battery_percent}%" :class "battery-pct")))
 
-      (button :class "module-btn update-btn ${updates.total > 0 ? 'has-updates' : ''}" :valign "center"
+      (button :class "module-btn" :valign "center"
         :onclick "~/.config/eww/scripts/open-popup.sh updates-popup"
         (box :class "update-icon-wrap" :halign "center" :valign "center"
           (overlay
@@ -82,7 +82,7 @@
         (box :class "notif-icon-wrap" :halign "center" :valign "center"
           (overlay
             (label :text "${dnd ? '󰂛' : '󰂚'}"
-              :class "notif-bell notif-bell-${dnd ? 'dnd' : (notif_count > 0 ? 'unread' : 'none')}")
+              :class "notif-bell")
             (box
               :class "notif-badge"
               :halign "end" :valign "start"
