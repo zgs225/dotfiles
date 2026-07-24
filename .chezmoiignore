@@ -7,6 +7,8 @@ CODE_OF_CONDUCT.md
 .opencode/
 .DS_Store
 *.swp
+**/__pycache__/
+**/*.pyc
 AGENTS.md
 docs/
 cursor/

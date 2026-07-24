@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# ewwstate — client for the eww state daemon (see ~/.config/eww/ewwstate/).
+#
+# Stable invocation path used by common.yuck defpoll/deflisten and by action
+# scripts. Reads are served from the tmpfs mirror, so `get` is instant and does
+# not require the daemon to be running.
+#
+#   ewwstate get <topic> [fallback]   last collected value (fallback if none)
+#   ewwstate listen <topic>           value + re-emit on change (for deflisten)
+#   ewwstate dump | status | daemon   debug / lifecycle
+exec python3 "$HOME/.config/eww/ewwstate/main.py" "$@"

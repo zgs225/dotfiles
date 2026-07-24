@@ -34,6 +34,17 @@ for _ in $(seq 1 50); do
   eww ping >/dev/null 2>&1 && break
   sleep 0.1
 done
+# (Re)start the unified state daemon that feeds the `ewwstate get` defpolls.
+# Restarted unconditionally (like bt-agent) so newly-installed collectors take
+# effect on every reload. The tmpfs topic files persist across the restart, so
+# `ewwstate get` never blanks. Close the inherited lock fd (9>&-) so the daemon
+# never holds the launch flock.
+pkill -f 'ewwstate/main.py daemon' 2>/dev/null
+for _ in $(seq 1 20); do
+  ~/.config/eww/scripts/ewwstate status >/dev/null 2>&1 || break
+  sleep 0.1
+done
+nohup env PYTHONDONTWRITEBYTECODE=1 python3 ~/.config/eww/ewwstate/main.py daemon >/tmp/ewwstated.log 2>&1 9>&- &
 eww update popup_open="none"
 eww close popup-scrim 2>/dev/null
 # Daemon restart orphans any bluetooth scan holder from the previous session —
