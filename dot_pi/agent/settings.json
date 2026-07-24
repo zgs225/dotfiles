@@ -1,9 +1,9 @@
 {
   "lastChangelogVersion": "0.81.1",
   "theme": "song-liquid-glass",
-  "defaultProvider": "kimi-coding",
-  "defaultModel": "k3",
-  "defaultThinkingLevel": "max",
+  "defaultProvider": "qwen-token-plan-cn",
+  "defaultModel": "qwen3.8-max-preview",
+  "defaultThinkingLevel": "high",
   "hideThinkingBlock": false,
   "defaultProjectTrust": "always",
   "collapseChangelog": true,
