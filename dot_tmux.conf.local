@@ -425,6 +425,16 @@ tmux_conf_uninstall_plugins_on_reload=true
 # then, use #{foo} in e.g. the 'tmux_conf_theme_status_left' or the
 # 'tmux_conf_theme_status_right' variables.
 
+# -- custom bindings -----------------------------------------------------------
+
+# window navigation with [ and ] (consistent with i3 / wezterm / nvim)
+#   - keeps stock `prefix n` / `prefix p`
+#   - overrides stock `prefix [` (copy-mode → still available on `prefix Enter`)
+#   - overrides stock `prefix ]` (paste-buffer → moved to `prefix P` below)
+bind -r [ previous-window
+bind -r ] next-window
+bind P paste-buffer -p
+
 # ------------------------------------------------------------------------------
 
 # # /!\ do not remove the following line
