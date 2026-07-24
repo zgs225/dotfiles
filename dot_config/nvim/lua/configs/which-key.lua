@@ -81,6 +81,7 @@ wk.add {
   { "<leader>aA", desc = "Ask", icon = { icon = "", color = "magenta" } },
   { "<leader>as", desc = "Select Server", icon = { icon = "", color = "magenta" } },
   { "<leader>ap", desc = "Toggle Pi", icon = { icon = "π", color = "magenta" } },
+  { "<leader>aP", desc = "Pi (new tab)", icon = { icon = "π", color = "magenta" } },
 }
 
 -- +code children
