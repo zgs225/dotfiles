@@ -1,41 +1,60 @@
 local opts = require "nvchad.configs.treesitter"
 
+-- 预装 parser 列表：nvim 启动时由 nvim-treesitter 自动 ensure_installed。
+-- 增删 parser 直接改这里即可；新增项下次启动会自动安装，
+-- 也可手动执行 `:TSInstall <lang>` / `:TSUpdate` 立即生效。
 opts.ensure_installed = {
-  "astro",
-  "bash",
+  -- 核心语言：Go / Python / C 系 / Node.js / TypeScript / CSS / HTML / Java
+  "go",
+  "gomod",
+  "gosum",
+  "gowork",
+  "gotmpl",
+  "python",
+  "c",
   "cpp",
+  "javascript",
+  "typescript",
+  "tsx",
+  "astro",
   "css",
-  "csv",
-  "dockerfile",
+  "scss",
+  "html",
+  "java",
+  "xml", -- Maven pom.xml 等
+
+  -- 配置 / 数据格式
+  "json",
+  "yaml",
+  "toml",
+  "proto",
+  "yuck", -- eww 配置语言
+
+  -- 脚本
+  "bash",
+  "lua",
+
+  -- Markdown（render-markdown.nvim 依赖 markdown / markdown_inline）
+  "markdown",
+  "markdown_inline",
+
+  -- Git
   "git_config",
   "git_rebase",
   "gitattributes",
-  "go",
-  "goctl",
-  "gomod",
-  "gosum",
-  "gotmpl",
-  "gowork",
-  "html",
-  "java",
-  "javascript",
-  "json",
-  "lua",
-  "luadoc",
+  "gitcommit",
+  "gitignore",
+
+  -- 构建 / 工具
+  "dockerfile",
   "make",
-  "printf",
-  "proto",
-  "pymanifest",
-  "python",
-  "rust",
-  "starlark",
-  "tmux",
-  "toml",
-  "typescript",
+  "diff",
+  "regex",
+
+  -- Neovim / treesitter 自身
   "vim",
   "vimdoc",
-  "xml",
-  "yaml",
+  "query",
 }
 
 return opts
