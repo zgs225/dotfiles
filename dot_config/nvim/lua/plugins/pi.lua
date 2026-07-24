@@ -1,102 +1,97 @@
--- pi.nvim: pi coding agent in a dedicated tab, toggled with <leader>ap.
--- Mirrors the opencode toggle UX: first press opens a tab with the chat
--- filling the whole tab, pressing again switches back to the previous tab
--- (session stays alive), pressing once more jumps back in.
+-- pi.nvim: pi coding agent as a vertical split (side layout, 50% width).
+--   <leader>ap  toggle the pi side panel in the current tab
+--   <leader>aP  open pi in a new tab (also as a 50% vertical split)
+-- The chat is a single global session; showing it somewhere recreates its
+-- windows in the current tab, so it effectively follows the last request.
 
-local pi_tab = nil
-local prev_tab = nil
-
-local pi_filetypes = {
-  ["pi-chat-history"] = true,
-  ["pi-chat-prompt"] = true,
-  ["pi-chat-attachments"] = true,
-}
-
--- Close leftover non-pi windows (e.g. the [No Name] buffer from :tabnew)
--- so the chat panels fill the entire tab.
-local function close_non_pi_windows()
-  for _, w in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
-    local buf = vim.api.nvim_win_get_buf(w)
-    if not pi_filetypes[vim.bo[buf].filetype] then
-      pcall(vim.api.nvim_win_close, w, true)
-    end
-  end
+local function get_chat()
+  local session = require("pi.sessions.manager").get()
+  return session and session.chat or nil
 end
 
-local function leave_pi_tab()
-  if prev_tab and prev_tab ~= pi_tab and vim.api.nvim_tabpage_is_valid(prev_tab) then
-    vim.api.nvim_set_current_tabpage(prev_tab)
-  elseif #vim.api.nvim_list_tabpages() > 1 then
-    vim.cmd "tabprevious"
+-- True when the pi chat windows currently live in the active tabpage.
+local function chat_in_current_tab()
+  local chat = get_chat()
+  if not chat or not chat:is_visible() then
+    return false
+  end
+  local pwin = chat:prompt_win()
+  if not pwin then
+    return false
+  end
+  return vim.api.nvim_win_get_tabpage(pwin) == vim.api.nvim_get_current_tabpage()
+end
+
+-- (Re)create the side-layout windows in the current tab and focus the prompt.
+local function show_pi_here(pi)
+  local chat = get_chat()
+  if chat then
+    -- set_layout hides any existing windows and reopens them in the current
+    -- tab, which is exactly the "bring pi here" behaviour we want.
+    chat:set_layout "side"
   else
-    vim.cmd "tabnew"
+    pi.show { layout = "side" }
   end
-end
-
-local function prompt_win_visible()
-  for _, w in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
-    if vim.bo[vim.api.nvim_win_get_buf(w)].filetype == "pi-chat-prompt" then
-      return true
-    end
-  end
-  return false
-end
-
--- pi.nvim considers the chat "visible" when only the history window exists,
--- so a manually closed prompt window is never recreated by pi.show().
--- Hide the partial layout and reopen it fresh.
-local function ensure_full_chat(pi)
-  -- In float mode the [No Name] base window must stay (it hosts the tab);
-  -- only the side layout needs the cleanup to fill the whole tab.
-  local function maybe_close_non_pi()
-    if pi.layout() == "side" then
-      vim.schedule(close_non_pi_windows)
-    end
-  end
-
-  if not pi.is_visible() then
-    pi.show()
-    maybe_close_non_pi()
-  elseif not prompt_win_visible() then
-    pi.toggle_chat()
-    pi.show()
-    maybe_close_non_pi()
-  end
+  pi.focus_chat_prompt()
 end
 
 local function toggle_pi()
   local pi = require "pi"
-  local cur = vim.api.nvim_get_current_tabpage()
+  if chat_in_current_tab() then
+    -- Keep the session alive; just hide the panels.
+    get_chat():hide()
+  else
+    show_pi_here(pi)
+  end
+end
 
-  if pi_tab and vim.api.nvim_tabpage_is_valid(pi_tab) then
-    if cur == pi_tab then
-      if pi.is_visible() then
-        -- Keep the session alive; just switch back.
-        leave_pi_tab()
-      else
-        -- Chat hidden via <C-g>t: <leader>ap brings the float back.
-        ensure_full_chat(pi)
-        pi.focus_chat_prompt()
-      end
-      return
-    end
-    prev_tab = cur
-    vim.api.nvim_set_current_tabpage(pi_tab)
-    ensure_full_chat(pi)
-    pi.focus_chat_prompt()
+local function pi_new_tab()
+  local pi = require "pi"
+  vim.cmd "tabnew"
+  show_pi_here(pi)
+end
+
+-- ---------------------------------------------------------------------------
+-- Double-<Esc> abort confirm
+-- ---------------------------------------------------------------------------
+
+-- Double-<Esc> abort confirm state (shared across pi buffers).
+local esc_armed = false
+local esc_timer = nil
+
+local function pi_is_busy()
+  local chat = get_chat()
+  if not chat then
+    return false
+  end
+  return chat:is_streaming() or chat:is_compacting()
+end
+
+local function disarm_esc()
+  esc_armed = false
+  if esc_timer then
+    vim.fn.timer_stop(esc_timer)
+    esc_timer = nil
+  end
+end
+
+-- First <Esc> arms and warns; a second <Esc> within the window aborts the turn.
+local function esc_abort()
+  if not pi_is_busy() then
+    return -- idle: keep <Esc> a no-op, no misleading hint
+  end
+  if esc_armed then
+    disarm_esc()
+    require("pi").abort()
     return
   end
-
-  prev_tab = cur
-  vim.cmd "tabnew"
-  pi_tab = vim.api.nvim_get_current_tabpage()
-  pi.show()
-  vim.schedule(function()
-    if pi.layout() == "side" then
-      close_non_pi_windows()
-    end
-    pi.focus_chat_prompt()
-  end)
+  esc_armed = true
+  esc_timer = vim.fn.timer_start(1500, disarm_esc)
+  vim.notify("再按一次 <Esc> 中断当前回合", vim.log.levels.WARN, {
+    title = "π",
+    id = "pi-esc-confirm",
+    timeout = 1500,
+  })
 end
 
 return {
@@ -113,10 +108,11 @@ return {
       show_thinking = true,
       -- Keep the startup block (skills/extensions/announcements) collapsed.
       expand_startup_details = false,
-      -- Float layout: centered, bounded width for readable line lengths.
+      -- Side layout: 50%-width vertical split on the right.
       -- Switch side/float on the fly with :PiToggleLayout.
       layout = {
-        default = "float",
+        default = "side",
+        side = { position = "right", width = 0.5 },
         float = { width = 120, height = 0.85, border = "rounded" },
       },
       -- Song-style status verb pairs { working, done }, replacing the
@@ -150,6 +146,11 @@ return {
         toggle_pi,
         desc = "Toggle Pi",
       },
+      {
+        "<leader>aP",
+        pi_new_tab,
+        desc = "Pi (new tab)",
+      },
     },
     init = function()
       -- Left padding inside pi float/side windows: pi.nvim hardcodes
@@ -171,15 +172,18 @@ return {
       -- Abort the current agent turn, matching the opencode terminal mapping.
       -- NOTE: in side layout pi.nvim auto-redirects focus from the history
       -- window to the prompt, so the binding must live on the prompt buffer
-      -- too: <Esc> in normal mode aborts, <C-c> while typing clears the draft.
+      -- too: <Esc><Esc> in normal mode aborts (double press to avoid mistaps),
+      -- <C-c> while typing clears the draft.
       vim.api.nvim_create_autocmd("FileType", {
         group = vim.api.nvim_create_augroup("PiBufferKeys", { clear = true }),
         pattern = { "pi-chat-history", "pi-chat-prompt" },
         callback = function(args)
-          local abort = function()
-            require("pi").abort()
-          end
-          vim.keymap.set("n", "<Esc>", abort, { buffer = args.buf, desc = "Abort current pi turn" })
+          -- Abort the current turn with a double-<Esc> confirm (see esc_abort):
+          -- a lone <Esc> in normal mode is too easy to hit by accident.
+          vim.keymap.set("n", "<Esc>", esc_abort, {
+            buffer = args.buf,
+            desc = "Abort current pi turn (press <Esc> twice)",
+          })
 
           -- <C-g> prefix inside pi chat buffers (mirrors the pi TUI leader).
           -- s: resume session via telescope (vim.ui.select -> ui-select ext)
@@ -197,14 +201,22 @@ return {
             vim.keymap.set({ "n", "i" }, "<C-g>" .. key, spec[1], { buffer = args.buf, desc = spec[2] })
           end
 
-          -- <C-k>/<C-j>: move up to history / down to prompt (float stack
-          -- order: history on top, prompt below). Newline stays on <S-CR>.
-          vim.keymap.set({ "n", "i" }, "<C-k>", function()
-            require("pi").focus_chat_history()
-          end, { buffer = args.buf, desc = "Pi: focus history" })
-          vim.keymap.set({ "n", "i" }, "<C-j>", function()
-            require("pi").focus_chat_prompt()
-          end, { buffer = args.buf, desc = "Pi: focus prompt" })
+          -- <C-h>/<C-j>/<C-k>/<C-l>: standard window navigation, kept working
+          -- inside pi buffers. pi auto-enters insert mode on the prompt, so
+          -- bind insert mode too and drop back to normal mode before moving
+          -- (same UX as the terminal-nav helper in mappings.lua). Panel focus
+          -- stays available via <C-g>h (history) / <C-g>p (prompt).
+          local function win_nav(dir)
+            if vim.api.nvim_get_mode().mode ~= "n" then
+              vim.cmd "stopinsert"
+            end
+            vim.cmd("wincmd " .. dir)
+          end
+          for _, dir in ipairs { "h", "j", "k", "l" } do
+            vim.keymap.set({ "n", "i" }, "<C-" .. dir .. ">", function()
+              win_nav(dir)
+            end, { buffer = args.buf, desc = "Window " .. dir })
+          end
 
           if vim.bo[args.buf].filetype == "pi-chat-prompt" then
             -- Clear the draft while typing; stays in insert mode.
