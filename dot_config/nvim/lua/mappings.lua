@@ -62,6 +62,11 @@ map("n", "tp", ":tabprevious<CR>", { desc = "Tab previous" })
 map("n", "tn", ":tabnext<CR>", { desc = "Tab next" })
 map("n", "tm", ":tabmove", { desc = "Tab move" })
 
+-- C-g prefix: tab switching + file info
+map({ "n", "i" }, "<C-g>[", "<cmd>tabprevious<CR>", { desc = "Tab previous" })
+map({ "n", "i" }, "<C-g>]", "<cmd>tabnext<CR>", { desc = "Tab next" })
+map({ "n", "i" }, "<C-g>g", "<cmd>file<CR>", { desc = "Show file info" })
+
 map("n", "<leader>n", "<cmd>NvimTreeFocus<CR>", { desc = "nvimtree focus" })
 map("n", "<leader>e", "<cmd>NvimTreeToggle<CR>", { desc = "nvimtree toggle" })
 -- map({ "n", "i", "v" }, "<C-s>", "<cmd> w <cr>")
