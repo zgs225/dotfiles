@@ -117,7 +117,7 @@ end
 
 return {
   {
-    "alex35mil/pi.nvim",
+    "git@github.com:zgs225/pi.nvim.git",
     dependencies = {
       -- Required only for :PiPasteImage (clipboard image paste).
       { "HakonHarnes/img-clip.nvim", opts = {} },
