@@ -129,6 +129,9 @@ return {
       show_thinking = true,
       -- Keep the startup block (skills/extensions/announcements) collapsed.
       expand_startup_details = false,
+      -- Richer markdown rendering of the chat history via render-markdown.nvim
+      -- (already installed). Falls back to pi's builtin renderer if absent.
+      render = { engine = "render-markdown" },
       -- Side layout: 60%-width vertical split. pi.nvim always opens it on
       -- the right; move_pi_to_left() relocates it to the left afterwards.
       -- Switch side/float on the fly with :PiToggleLayout.
