@@ -128,6 +128,7 @@ border: 1px solid rgba($accent, 0.15);   // 格内分隔
   - 左端 = 引首章（天青发丝线框，与印章同尺寸成族）+ 姓名章组，组内零「·」
   - 右端 = tray 墨盒 · 状态簇（net/bat/upd/cc，簇内无「·」）· 落款款识 + 押角印（通知铃）
 - 时钟格式「辰时 · 08:08」：`scripts/shichen.sh`（`hour → (hour+1)/2 %12` 映射十二时辰），`defpoll` 10s；落款用思源宋体 + 2px 字距，bar 内唯一展示字；不含 dow/md，完整日期下沉 calendar-popup
+- 状态簇图标色固定两档：常态 `fg_secondary`、hover `fg_primary`；状态只由**字形与角标**表达，图标色不参与状态编码。唯一例外：电池 <15% 用赭石（`error`）告警——该模块无角标机制（2026-07-25 裁定，见 `docs/design/bar-refactor.md` §3.6）
 
 ### 4.2 Workspace 指示器 —— 印章
 

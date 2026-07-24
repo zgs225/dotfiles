@@ -13,7 +13,10 @@
   padding: 0 12px;
 }
 
-/* Module buttons */
+/* Module buttons - the ONLY two icon ranks in the status cluster:
+   resting crab-shell (fg_secondary), hover moon-white (fg_primary).
+   State is encoded by glyph + badge dot, never by icon color
+   (bar-refactor.md 3.6). Sole exception: .bat-low (no badge on battery). */
 .module-btn {
   color: $fg-secondary;
   padding: 0 6px;
@@ -79,11 +82,10 @@
 }
 @keyframes urgent-pulse { from { opacity: 1; } to { opacity: 0.4; } }
 
-/* Battery */
-.battery-pct { color: $text; font-size: {{ mulf $eww.fontSize 1.00 | int }}px; }
-.bat-charging { color: $green; }
-.bat-normal   { color: $subtext0; }
-.bat-low      { color: $error; }
+/* Battery - pct inherits module color (dims/lifts with the button);
+   only low charge overrides to error ochre */
+.battery-pct { font-size: {{ mulf $eww.fontSize 1.00 | int }}px; }
+.bat-low { color: $error; }
 
 /* Time - colophon in Song serif, the only display face in the bar */
 .time-main {
@@ -107,9 +109,6 @@
   font-family: "Symbols Nerd Font";
   font-size: {{ $eww.iconSize }}px;
 }
-.notif-bell-none   { color: $subtext0; }
-.notif-bell-unread { color: $text; }
-.notif-bell-dnd    { color: $peach; }
 .notif-badge {
   background-color: $warn;
   border-radius: $radius-sm;
