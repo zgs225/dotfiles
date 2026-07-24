@@ -9,6 +9,26 @@ local function get_chat()
   return session and session.chat or nil
 end
 
+local pi_filetypes = {
+  ["pi-chat-history"] = true,
+  ["pi-chat-prompt"] = true,
+  ["pi-chat-attachments"] = true,
+}
+
+-- pi.nvim hardcodes the side panel to the right (botright vsplit) and ignores
+-- the layout.side.position option. To get it on the left, push every non-pi
+-- window in the current tab to the far right; the pi history/prompt column is
+-- left untouched, so it ends up on the left with its stacking preserved.
+local function move_pi_to_left()
+  for _, w in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    local buf = vim.api.nvim_win_get_buf(w)
+    if not pi_filetypes[vim.bo[buf].filetype] then
+      vim.api.nvim_set_current_win(w)
+      vim.cmd "wincmd L"
+    end
+  end
+end
+
 -- True when the pi chat windows currently live in the active tabpage.
 local function chat_in_current_tab()
   local chat = get_chat()
@@ -32,6 +52,7 @@ local function show_pi_here(pi)
   else
     pi.show { layout = "side" }
   end
+  move_pi_to_left()
   pi.focus_chat_prompt()
 end
 
@@ -108,11 +129,12 @@ return {
       show_thinking = true,
       -- Keep the startup block (skills/extensions/announcements) collapsed.
       expand_startup_details = false,
-      -- Side layout: 50%-width vertical split on the right.
+      -- Side layout: 50%-width vertical split. pi.nvim always opens it on
+      -- the right; move_pi_to_left() relocates it to the left afterwards.
       -- Switch side/float on the fly with :PiToggleLayout.
       layout = {
         default = "side",
-        side = { position = "right", width = 0.5 },
+        side = { width = 0.5 },
         float = { width = 120, height = 0.85, border = "rounded" },
       },
       -- Song-style status verb pairs { working, done }, replacing the
