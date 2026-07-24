@@ -1,5 +1,9 @@
 local M = {}
 
+M.view = {
+  side = "right",
+}
+
 M.renderer = {
   group_empty = true,
 }
