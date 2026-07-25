@@ -17,24 +17,18 @@
 
     (box :class "separator-line")
 
-    (box :orientation "h" :spacing 14 :class "cal-extra" :space-evenly false
-      ;; Events column
-      (box :orientation "v" :spacing 10 :hexpand true :class "cal-col" :space-evenly false :valign "start"
-        (label :text "日程" :class "cal-col-title" :xalign 0)
-        (literal :content "${events}")
-        (button :class "cal-viewall" :onclick "gsimplecal & disown 2>/dev/null || true"
-          (label :text "查看全部 →" :class "cal-viewall-label" :xalign 0)))
-      ;; Weather + Countdown column
-      (box :orientation "v" :spacing 12 :class "cal-col cal-col-right" :space-evenly false :valign "start"
-        (box :orientation "v" :spacing 3 :class "weather-box"
-          (label :text "天气" :class "cal-col-title" :xalign 0)
-          (box :orientation "h" :spacing 8 :valign "center" :space-evenly false
-            (label :text "󰖐" :class "weather-icon")
-            (box :orientation "v" :spacing 0
-              (label :text "${weather.temp}" :class "weather-temp" :xalign 0)
-              (label :text "${weather.desc}" :class "weather-desc" :xalign 0)))
-          (label :text "${weather.lohi}" :class "weather-lohi" :xalign 0))
-        (box :orientation "v" :spacing 3 :class "countdown-box"
-          (label :text "倒计时" :class "cal-col-title" :xalign 0)
-          (label :text "${countdown.label}" :class "countdown-label" :xalign 0)
-          (label :text "${countdown.sub}" :class "countdown-sub" :xalign 0))))))
+    ;; Date navigation bar
+    (box :orientation "h" :spacing 6 :class "cal-nav" :space-evenly false :valign "center"
+      (button :class "cal-nav-btn" :onclick "~/.config/eww/scripts/cal-nav.sh prev"
+        (label :text "‹" :class "cal-nav-arrow"))
+      (label :text "${cal_date_label}" :class "cal-nav-label" :xalign 0 :hexpand true)
+      (button :class "cal-nav-btn cal-nav-today" :onclick "~/.config/eww/scripts/cal-nav.sh today"
+        (label :text "今天" :class "cal-nav-today-label"))
+      (button :class "cal-nav-btn" :onclick "~/.config/eww/scripts/cal-nav.sh next"
+        (label :text "›" :class "cal-nav-arrow"))
+      (button :class "cal-nav-btn cal-nav-add" :onclick "~/.config/eww/scripts/cal-add-action.sh init"
+        (label :text "+" :class "cal-nav-add-label")))
+
+    ;; Events list — full width
+    (scroll :vscroll true :hscroll false :vexpand true :class "cal-events-scroll"
+      (literal :content "${events}"))))

@@ -14,6 +14,21 @@
 (defvar screenshot_path "")
 (defvar screenshot_thumb "")
 (defvar storage_busy "")
+(defvar cal_selected_date "")
+(defvar cal_add_account "")
+(defvar cal_add_accounts_yuck "(box)")
+(defvar cal_add_title "")
+(defvar cal_add_date "")
+(defvar cal_add_date_label "")
+(defvar cal_add_start "")
+(defvar cal_add_end "")
+(defvar cal_add_all_day "false")
+(defvar cal_add_rrule_freq "")
+(defvar cal_add_rrule "")
+(defvar cal_add_byday "")
+(defvar cal_add_weekdays_yuck "(box)")
+(defvar cal_add_weekdays_vis "false")
+(defvar cal_add_remind "10")
 
 ;; ============================================ DATA POLLING (defpoll) ============================================
 
@@ -127,10 +142,15 @@
   "~/.config/eww/scripts/ewwstate get media '{\"has\":false,\"title\":\"暂无媒体\",\"artist\":\"无媒体源\",\"status\":\"Stopped\",\"icon\":\"\"}'" )
 
 ;; ── Calendar side column ──
-;; Served by the ewwstate daemon (collectors/events.py): pure file I/O,
-;; zero forks. calendar-popup only → lazy-polled while open.
+;; Served by the ewwstate daemon (collectors/calendar.py): SQLite + RRULE
+;; expansion, zero forks. calendar-popup only → lazy-polled while open.
+;; cal_selected_date is set by the popup nav buttons (empty = today).
 (defpoll events :interval "60s" :initial "(box)"
   "~/.config/eww/scripts/ewwstate get events '(box)'")
+(defpoll cal_date_label :interval "60s" :initial "今天"
+  "~/.config/eww/scripts/ewwstate get cal_date_label 今天")
+(defpoll cal_has_events :interval "60s" :initial "false"
+  "~/.config/eww/scripts/ewwstate get cal_has_events false")
 ;; Served by the ewwstate daemon (collectors/weather.py): async curl + 30-min
 ;; /tmp cache. calendar-popup only → lazy-polled while open.
 (defpoll weather :interval "900s"

@@ -9,27 +9,14 @@
   margin: 4px;
   font-size: {{ mulf $eww.popupFontSize 0.86 | int }}px;
 }
-/* Use margin, NOT padding, on the calendar widget: GtkCalendar adds the
- * element's CSS padding to EVERY day cell's height (via the "day-number"
- * style-context class) while drawing the day number at the TOP of its cell
- * and the :selected background over the WHOLE cell. Padding therefore makes
- * each row taller than the text line and the selected number rides high in
- * its pill. Margin keeps the same outer spacing without inflating cells. */
 calendar {
   background-color: transparent; color: $subtext1;
 }
-/* Row breathing room: day-number padding inflates every cell (and thus the
- * row pitch) without touching the outer spacing. The text still anchors to
- * the cell top, so calendar:selected below clips its background back to the
- * text line (padding-bottom + content-box) to keep the number centered. */
 calendar.day-number { padding: 4px 0; }
 calendar:selected {
   background-color: $accent; color: $bg-base;
-  padding: 0 0 8px 0;              /* must equal day-number padding top+bottom */
+  padding: 0 0 8px 0;
   background-clip: content-box;
-  /* GTK shrinks border radii by the padding when clipping to the content
-   * box, so a plain radius ends up asymmetric. Pre-compensate: bottom
-   * corners get R+8; after the 8px shrink all corners land back on R. */
   border-radius: 3px / 3px 3px 11px 11px;
 }
 calendar.header { color: $fg-primary; font-weight: bold; font-size: {{ mulf $eww.popupFontSize 0.94 | int }}px; }
@@ -38,31 +25,56 @@ calendar.button:hover { color: $text; }
 calendar:indeterminate { color: $overlay0; }
 calendar.highlight { color: $accent; font-weight: bold; }
 
-.cal-extra { padding: 4px 0 0 0; }
-.cal-col { }
-.cal-col-right { min-width: {{ mulf $eww.popupFontSize 8.4 | int }}px; }
-.cal-col-title { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; font-weight: bold; letter-spacing: 0.4px; }
+/* -- Date navigation bar -- */
+.cal-nav { padding: 6px 4px; }
+.cal-nav-btn {
+  background: transparent;
+  border: none;
+  padding: 2px 6px;
+  border-radius: $radius-sm;
+}
+.cal-nav-btn:hover { background: rgba($accent, 0.15); }
+.cal-nav-arrow { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 1.10 | int }}px; }
+.cal-nav-btn:hover .cal-nav-arrow { color: $fg-primary; }
+.cal-nav-label { color: $fg-primary; font-size: {{ mulf $eww.popupFontSize 0.82 | int }}px; font-weight: bold; }
+.cal-nav-today { padding: 2px 8px; }
+.cal-nav-today-label { color: $accent; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; }
+.cal-nav-btn:hover .cal-nav-today-label { color: $fg-primary; }
+.cal-nav-add { padding: 2px 8px; }
+.cal-nav-add-label { color: $accent; font-size: {{ mulf $eww.popupFontSize 1.00 | int }}px; font-weight: bold; }
+.cal-nav-btn:hover .cal-nav-add-label { color: $fg-primary; }
 
+/* -- Events scroll area -- */
+.cal-events-scroll { padding: 4px 8px 8px 8px; }
+
+/* -- Event items with hover border-left (design doc 4.3) -- */
+.event-item {
+  border-left: 2px solid transparent;
+  padding: 4px 0 4px 8px;
+  border-radius: 0 $radius-sm $radius-sm 0;
+}
+.event-item:hover { border-left-color: $accent; background: rgba($accent, 0.06); }
 .event-dot { min-width: 9px; min-height: 9px; border-radius: $radius-sm; margin-top: 5px; }
-.event-dot-blue  { background-color: $blue; }
-.event-dot-mauve { background-color: $mauve; }
-.event-dot-green { background-color: $green; }
-.event-dot-peach { background-color: $peach; }
+.event-dot-blue   { background-color: $accent; }
+.event-dot-mauve  { background-color: $pink; }
+.event-dot-green  { background-color: $green; }
+.event-dot-peach  { background-color: $peach; }
+.event-dot-teal   { background-color: $sapphire; }
+.event-dot-yellow { background-color: $warn; }
 .event-title { color: $text; font-size: {{ mulf $eww.popupFontSize 0.82 | int }}px; }
 .event-time  { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; }
-.events-empty { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.76 | int }}px; }
-.cal-viewall { padding: 2px 0; }
-.cal-viewall-label { color: $accent; font-size: {{ mulf $eww.popupFontSize 0.76 | int }}px; }
-.cal-viewall:hover .cal-viewall-label { color: $fg-primary; }
+.event-acct  { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.64 | int }}px; }
+.events-empty { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.76 | int }}px; padding: 8px 0; }
 
-.weather-box, .countdown-box {
-  @include glass-cell(0.30);
-  border-radius: $radius;
-  padding: 12px;
+/* -- Delete button on event items -- */
+.event-del-btn {
+  background: transparent;
+  border: none;
+  padding: 2px 6px;
+  border-radius: $radius-sm;
+  opacity: 0;
 }
-.weather-icon { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 1.28 | int }}px; color: $subtext0; }
-.weather-temp { color: $text; font-size: {{ mulf $eww.popupFontSize 1.20 | int }}px; font-weight: bold; }
-.weather-desc { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.76 | int }}px; }
-.weather-lohi { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.76 | int }}px; }
-.countdown-label { color: $text; font-size: {{ mulf $eww.popupFontSize 0.88 | int }}px; font-weight: bold; }
-.countdown-sub   { color: $subtext0; font-size: {{ mulf $eww.popupFontSize 0.76 | int }}px; }
+.event-item:hover .event-del-btn { opacity: 1; }
+.event-del-btn:hover { background: rgba($error, 0.20); }
+.event-del-icon { color: $overlay0; font-size: {{ mulf $eww.popupFontSize 0.72 | int }}px; }
+.event-del-btn:hover .event-del-icon { color: $error; }

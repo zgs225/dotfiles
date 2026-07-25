@@ -1,0 +1,139 @@
+{{- $eww := includeTemplate "eww-sizes" . | fromJson -}}
+;; ============================================ CALENDAR ADD POPUP ============================================
+
+(defwindow calendar-add-popup
+  :stacking "overlay"
+  :windowtype "dialog"
+  :focusable false
+  :wm-ignore true
+  :geometry (geometry :width "{{ $eww.calendarAddW }}px" :height "{{ $eww.calendarAddH }}px" :anchor "center")
+  (box :class "popup ca-popup" :orientation "v" :spacing 0 :space-evenly false
+    ;; Header
+    (box :orientation "h" :spacing 0 :class "ca-header-row" :space-evenly false
+      (label :text "添加日程" :class "ca-header" :xalign 0 :hexpand true)
+      (button :class "ca-close-btn" :onclick "~/.config/eww/scripts/cal-add-action.sh cancel"
+        (label :text "✕" :class "ca-close-icon")))
+
+    (box :class "separator-line")
+
+    ;; Scrollable form body
+    (scroll :vscroll true :hscroll false :vexpand true :class "ca-scroll"
+      (box :orientation "v" :spacing 14 :class "ca-body" :space-evenly false
+
+        ;; -- Account --
+        (box :orientation "v" :spacing 5 :space-evenly false
+          (label :text "账户" :class "ca-section" :xalign 0)
+          (literal :content "${cal_add_accounts_yuck}"))
+
+        ;; -- Title --
+        (box :orientation "v" :spacing 5 :space-evenly false
+          (label :text "标题" :class "ca-section" :xalign 0)
+          (input :value "${cal_add_title}"
+            :onchange "~/.config/eww/scripts/cal-add-action.sh title-set {}"
+            :class "ca-title-input")
+          (box :orientation "h" :spacing 6 :space-evenly false
+            (button :class "ca-chip" :onclick "~/.config/eww/scripts/cal-add-action.sh title-paste"
+              (label :text "剪贴板" :class "ca-chip-label"))
+            (button :class "ca-chip" :onclick "~/.config/eww/scripts/cal-add-action.sh title-tpl 会议"
+              (label :text "会议" :class "ca-chip-label"))
+            (button :class "ca-chip" :onclick "~/.config/eww/scripts/cal-add-action.sh title-tpl 午餐"
+              (label :text "午餐" :class "ca-chip-label"))
+            (button :class "ca-chip" :onclick "~/.config/eww/scripts/cal-add-action.sh title-tpl 运动"
+              (label :text "运动" :class "ca-chip-label"))
+            (button :class "ca-chip" :onclick "~/.config/eww/scripts/cal-add-action.sh title-tpl 学习"
+              (label :text "学习" :class "ca-chip-label"))))
+
+        ;; -- Date --
+        (box :orientation "v" :spacing 5 :space-evenly false
+          (label :text "日期" :class "ca-section" :xalign 0)
+          (box :orientation "h" :spacing 6 :valign "center" :space-evenly false
+            (button :class "ca-arrow-btn" :onclick "~/.config/eww/scripts/cal-add-action.sh date-prev"
+              (label :text "‹" :class "ca-arrow-icon"))
+            (label :text "${cal_add_date_label}" :class "ca-date-label" :xalign 0 :hexpand true)
+            (button :class "ca-arrow-btn" :onclick "~/.config/eww/scripts/cal-add-action.sh date-next"
+              (label :text "›" :class "ca-arrow-icon"))
+            (button :class "ca-chip" :onclick "~/.config/eww/scripts/cal-add-action.sh date-today"
+              (label :text "今天" :class "ca-chip-label"))))
+
+        ;; -- Time --
+        (box :orientation "v" :spacing 5 :space-evenly false
+          (label :text "时间" :class "ca-section" :xalign 0)
+          ;; Start time row
+          (box :orientation "h" :spacing 6 :valign "center" :space-evenly false
+            (label :text "起" :class "ca-time-tag")
+            (button :class "ca-arrow-btn" :onclick "~/.config/eww/scripts/cal-add-action.sh start-dec"
+              (label :text "−" :class "ca-arrow-icon"))
+            (label :text "${cal_add_start}" :class "ca-time-val" :xalign 0.5 :hexpand true)
+            (button :class "ca-arrow-btn" :onclick "~/.config/eww/scripts/cal-add-action.sh start-inc"
+              (label :text "+" :class "ca-arrow-icon"))
+            (button :class "ca-chip ${cal_add_all_day == 'true' ? 'ca-chip-on' : ''}"
+              :onclick "~/.config/eww/scripts/cal-add-action.sh start-allday"
+              (label :text "全天" :class "ca-chip-label")))
+          ;; End time row (hidden when all-day)
+          (box :orientation "h" :spacing 6 :valign "center" :space-evenly false
+            :visible "${cal_add_all_day == 'false'}"
+            (label :text "止" :class "ca-time-tag")
+            (button :class "ca-arrow-btn" :onclick "~/.config/eww/scripts/cal-add-action.sh end-dec"
+              (label :text "−" :class "ca-arrow-icon"))
+            (label :text "${cal_add_end}" :class "ca-time-val" :xalign 0.5 :hexpand true)
+            (button :class "ca-arrow-btn" :onclick "~/.config/eww/scripts/cal-add-action.sh end-inc"
+              (label :text "+" :class "ca-arrow-icon"))
+            (button :class "ca-chip" :onclick "~/.config/eww/scripts/cal-add-action.sh end-clear"
+              (label :text "清除" :class "ca-chip-label"))))
+
+        ;; -- Recurrence --
+        (box :orientation "v" :spacing 5 :space-evenly false
+          (label :text "重复" :class "ca-section" :xalign 0)
+          (box :orientation "h" :spacing 6 :space-evenly false
+            (button :class "ca-chip ${cal_add_rrule_freq == '' ? 'ca-chip-on' : ''}"
+              :onclick "~/.config/eww/scripts/cal-add-action.sh rrule none"
+              (label :text "无" :class "ca-chip-label"))
+            (button :class "ca-chip ${cal_add_rrule_freq == 'DAILY' ? 'ca-chip-on' : ''}"
+              :onclick "~/.config/eww/scripts/cal-add-action.sh rrule DAILY"
+              (label :text "每天" :class "ca-chip-label"))
+            (button :class "ca-chip ${cal_add_rrule_freq == 'WEEKLY' ? 'ca-chip-on' : ''}"
+              :onclick "~/.config/eww/scripts/cal-add-action.sh rrule WEEKLY"
+              (label :text "每周" :class "ca-chip-label"))
+            (button :class "ca-chip ${cal_add_rrule_freq == 'MONTHLY' ? 'ca-chip-on' : ''}"
+              :onclick "~/.config/eww/scripts/cal-add-action.sh rrule MONTHLY"
+              (label :text "每月" :class "ca-chip-label"))
+            (button :class "ca-chip ${cal_add_rrule_freq == 'YEARLY' ? 'ca-chip-on' : ''}"
+              :onclick "~/.config/eww/scripts/cal-add-action.sh rrule YEARLY"
+              (label :text "每年" :class "ca-chip-label")))
+          ;; Weekday toggles (visible only for WEEKLY)
+          (literal :content "${cal_add_weekdays_yuck}"
+            :visible "${cal_add_weekdays_vis == 'true'}"))
+
+        ;; -- Remind --
+        (box :orientation "v" :spacing 5 :space-evenly false
+          (label :text "提醒" :class "ca-section" :xalign 0)
+          (box :orientation "h" :spacing 6 :space-evenly false
+            (button :class "ca-chip ${cal_add_remind == '0' ? 'ca-chip-on' : ''}"
+              :onclick "~/.config/eww/scripts/cal-add-action.sh remind 0"
+              (label :text "无" :class "ca-chip-label"))
+            (button :class "ca-chip ${cal_add_remind == '5' ? 'ca-chip-on' : ''}"
+              :onclick "~/.config/eww/scripts/cal-add-action.sh remind 5"
+              (label :text "5分" :class "ca-chip-label"))
+            (button :class "ca-chip ${cal_add_remind == '10' ? 'ca-chip-on' : ''}"
+              :onclick "~/.config/eww/scripts/cal-add-action.sh remind 10"
+              (label :text "10分" :class "ca-chip-label"))
+            (button :class "ca-chip ${cal_add_remind == '30' ? 'ca-chip-on' : ''}"
+              :onclick "~/.config/eww/scripts/cal-add-action.sh remind 30"
+              (label :text "30分" :class "ca-chip-label"))
+            (button :class "ca-chip ${cal_add_remind == '60' ? 'ca-chip-on' : ''}"
+              :onclick "~/.config/eww/scripts/cal-add-action.sh remind 60"
+              (label :text "1时" :class "ca-chip-label"))
+            (button :class "ca-chip ${cal_add_remind == '1440' ? 'ca-chip-on' : ''}"
+              :onclick "~/.config/eww/scripts/cal-add-action.sh remind 1440"
+              (label :text "1天" :class "ca-chip-label"))))
+
+      )) ;; end scroll + body
+
+    (box :class "separator-line")
+
+    ;; Footer actions
+    (box :orientation "h" :spacing 14 :class "ca-footer" :halign "end" :space-evenly false
+      (button :class "ca-btn ca-btn-cancel" :onclick "~/.config/eww/scripts/cal-add-action.sh cancel"
+        (label :text "取消" :class "ca-btn-label"))
+      (button :class "ca-btn ca-btn-submit" :onclick "~/.config/eww/scripts/cal-add-action.sh submit"
+        (label :text "添加" :class "ca-btn-label")))))

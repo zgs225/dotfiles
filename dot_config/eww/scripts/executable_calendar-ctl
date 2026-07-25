@@ -1,0 +1,220 @@
+#!/usr/bin/env bash
+# calendar-ctl — CLI for the eww calendar event database.
+#
+# Usage:
+#   calendar-ctl init
+#   calendar-ctl add --date YYYY-MM-DD --title "..." [--start HH:MM] [--end HH:MM]
+#                    [--account NAME] [--rrule "FREQ=WEEKLY;BYDAY=MO,WE"] [--remind N] [--notes "..."]
+#   calendar-ctl list [--date YYYY-MM-DD] [--account NAME] [--all]
+#   calendar-ctl delete ID
+#   calendar-ctl account-add --name "..." [--color COLOR]
+#   calendar-ctl account-list
+#
+# Colors: blue mauve green peach teal yellow
+set -euo pipefail
+
+# Resolve ewwstate dir (sibling of this script's parent)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+EWWSTATE_DIR="$(cd "$SCRIPT_DIR/../ewwstate" && pwd)"
+
+export PYTHONDONTWRITEBYTECODE=1
+
+_py() {
+    python3 -c "
+import sys; sys.path.insert(0, '$EWWSTATE_DIR')
+$1
+"
+}
+
+cmd="${1:-help}"
+shift 2>/dev/null || true
+
+case "$cmd" in
+init)
+    _py "
+import caldb
+caldb.ensure_db()
+print('DB initialized at', caldb.db_path())
+accts = caldb.account_list()
+for a in accts:
+    tag = ' (local)' if a['is_local'] else ''
+    print(f\"  [{a['id']}] {a['name']} [{a['color']}]{tag}\")
+"
+    ;;
+
+add)
+    # Parse args
+    A_DATE="" A_TITLE="" A_START="" A_END="" A_ACCOUNT="" A_RRULE="" A_REMIND="10" A_NOTES=""
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --date)  A_DATE="$2"; shift 2 ;;
+            --title) A_TITLE="$2"; shift 2 ;;
+            --start) A_START="$2"; shift 2 ;;
+            --end)   A_END="$2"; shift 2 ;;
+            --account) A_ACCOUNT="$2"; shift 2 ;;
+            --rrule) A_RRULE="$2"; shift 2 ;;
+            --remind) A_REMIND="$2"; shift 2 ;;
+            --notes) A_NOTES="$2"; shift 2 ;;
+            *) echo "Unknown arg: $1" >&2; exit 1 ;;
+        esac
+    done
+    if [[ -z "$A_DATE" || -z "$A_TITLE" ]]; then
+        echo "Error: --date and --title are required" >&2
+        exit 1
+    fi
+    _py "
+import caldb
+caldb.ensure_db()
+acct_id = None
+acct_name = '$A_ACCOUNT'
+if acct_name:
+    acct_id = caldb.account_id_by_name(acct_name)
+    if acct_id is None:
+        print(f'Error: account \"{acct_name}\" not found')
+        import sys; sys.exit(1)
+eid = caldb.event_add(
+    title='''$A_TITLE''',
+    event_date='$A_DATE',
+    time_start='$A_START',
+    time_end='$A_END',
+    account_id=acct_id,
+    rrule='$A_RRULE',
+    remind_minutes=int('$A_REMIND' or '10'),
+    notes='''$A_NOTES''',
+)
+print(f'Event #{eid} added: $A_TITLE on $A_DATE')
+"
+    ;;
+
+list)
+    L_DATE="" L_ACCOUNT="" L_ALL=""
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --date)    L_DATE="$2"; shift 2 ;;
+            --account) L_ACCOUNT="$2"; shift 2 ;;
+            --all)     L_ALL="1"; shift ;;
+            *) echo "Unknown arg: $1" >&2; exit 1 ;;
+        esac
+    done
+    _py "
+import caldb
+from datetime import date
+caldb.ensure_db()
+
+if '$L_ALL':
+    from datetime import timedelta
+    today = date.today()
+    events = caldb.events_for_range(today - timedelta(days=30), today + timedelta(days=365))
+    for e in events:
+        occ = e.get('occurrences', [])
+        occ_str = f' ({len(occ)} occurrences)' if e.get('is_recurring') else ''
+        print(f\"  #{e['id']}  {e['date']} {e['time_start'] or '--:--'}  [{e['account_name']}]  {e['title']}{occ_str}\")
+        if e.get('rrule'):
+            from rrule import describe
+            print(f\"         repeat: {describe(e['rrule'])}\")
+elif '$L_DATE':
+    target = date.fromisoformat('$L_DATE')
+    events = caldb.events_for_date(target)
+    if not events:
+        print(f'No events on $L_DATE')
+    for e in events:
+        time_str = e['time_start'] or '--:--'
+        if e['time_end']:
+            time_str += f\" - {e['time_end']}\"
+        recur = ' ↻' if e.get('is_recurring') else ''
+        print(f\"  #{e['id']}  {time_str}  [{e['account_name']}]  {e['title']}{recur}\")
+else:
+    target = date.today()
+    events = caldb.events_for_date(target)
+    if not events:
+        print(f'No events today ({target.isoformat()})')
+    for e in events:
+        time_str = e['time_start'] or '--:--'
+        if e['time_end']:
+            time_str += f\" - {e['time_end']}\"
+        recur = ' ↻' if e.get('is_recurring') else ''
+        print(f\"  #{e['id']}  {time_str}  [{e['account_name']}]  {e['title']}{recur}\")
+"
+    ;;
+
+delete)
+    D_ID="${1:-}"
+    if [[ -z "$D_ID" ]]; then
+        echo "Error: event ID required" >&2
+        exit 1
+    fi
+    _py "
+import caldb
+caldb.ensure_db()
+ok = caldb.event_delete(int('$D_ID'))
+if ok:
+    print(f'Event #$D_ID deleted')
+else:
+    print(f'Event #$D_ID not found')
+    import sys; sys.exit(1)
+"
+    ;;
+
+account-add)
+    AA_NAME="" AA_COLOR="blue"
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --name)  AA_NAME="$2"; shift 2 ;;
+            --color) AA_COLOR="$2"; shift 2 ;;
+            *) echo "Unknown arg: $1" >&2; exit 1 ;;
+        esac
+    done
+    if [[ -z "$AA_NAME" ]]; then
+        echo "Error: --name is required" >&2
+        exit 1
+    fi
+    _py "
+import caldb
+caldb.ensure_db()
+try:
+    aid = caldb.account_add('$AA_NAME', '$AA_COLOR')
+    print(f'Account #{aid} added: $AA_NAME [$AA_COLOR]')
+except Exception as e:
+    print(f'Error: {e}')
+    import sys; sys.exit(1)
+"
+    ;;
+
+account-list|accounts)
+    _py "
+import caldb
+caldb.ensure_db()
+for a in caldb.account_list():
+    tag = ' (local)' if a['is_local'] else ''
+    print(f\"  [{a['id']}] {a['name']} [{a['color']}]{tag}\")
+"
+    ;;
+
+help|--help|-h)
+    cat <<'EOF'
+calendar-ctl — eww calendar event manager
+
+Commands:
+  init                              Initialize DB + default local account
+  add --date D --title T [opts]     Add an event
+    --start HH:MM                   Start time
+    --end HH:MM                     End time
+    --account NAME                  Account name (default: local)
+    --rrule "FREQ=WEEKLY;BYDAY=MO"  Recurrence rule
+    --remind N                      Remind N minutes before (default: 10)
+    --notes "..."                   Notes
+  list [--date D] [--all]           List events
+  delete ID                         Delete an event
+  account-add --name N [--color C]  Add an account
+  account-list                      List accounts
+
+Colors: blue mauve green peach teal yellow
+RRULE:  FREQ=DAILY|WEEKLY|MONTHLY|YEARLY[;INTERVAL=N][;COUNT=N][;UNTIL=YYYYMMDD][;BYDAY=MO,TU,...]
+EOF
+    ;;
+
+*)
+    echo "Unknown command: $cmd (try 'calendar-ctl help')" >&2
+    exit 1
+    ;;
+esac
