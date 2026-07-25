@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Single lock instance: a second i3lock -n would wait on the input grab and
-# its fingerprint listener would fight the first one for the device claim.
-exec 9>"${XDG_RUNTIME_DIR:-/tmp}/i3-lock.$UID.lock"
-flock -n 9 || exit 0
-
 CACHE_DIR="$HOME/.cache/lockscreen"
 RENDER_SCRIPT="$HOME/.config/i3/scripts/lock-render.py"
 
@@ -50,36 +45,22 @@ read -r cx cy radius ringw < <(awk -v w="$W" -v h="$H" -v dpi="$dpi" 'BEGIN{
   printf "%d %d %d %.2f\n", (w/2)/s, (h*0.55)/s, 80/s, 4/s
 }')
 
-lock_args=(
-    -n
-    -i "$img"
-    --indicator
-    --radius=$radius
-    --ring-width=$ringw
-    --ind-pos="${cx}:${cy}"
-    --ring-color={{ .colors.accent | trimPrefix "#" }}44
-    --ringver-color={{ .colors.accent | trimPrefix "#" }}aa
-    --ringwrong-color={{ .colors.error | trimPrefix "#" }}ff
-    --inside-color=00000000
-    --insidever-color=00000000
-    --insidewrong-color=00000000
-    --line-uses-ring
-    --keyhl-color={{ .colors.accent | trimPrefix "#" }}ff
-    --bshl-color={{ .colors.warn | trimPrefix "#" }}ff
-    --verif-color=00000000
-    --wrong-color=00000000
+i3lock \
+    -n \
+    -i "$img" \
+    --indicator \
+    --radius=$radius \
+    --ring-width=$ringw \
+    --ind-pos="${cx}:${cy}" \
+    --ring-color={{ .colors.accent | trimPrefix "#" }}44 \
+    --ringver-color={{ .colors.accent | trimPrefix "#" }}aa \
+    --ringwrong-color={{ .colors.error | trimPrefix "#" }}ff \
+    --inside-color=00000000 \
+    --insidever-color=00000000 \
+    --insidewrong-color=00000000 \
+    --line-uses-ring \
+    --keyhl-color={{ .colors.accent | trimPrefix "#" }}ff \
+    --bshl-color={{ .colors.warn | trimPrefix "#" }}ff \
+    --verif-color=00000000 \
+    --wrong-color=00000000 \
     --separator-color=00000000
-)
-
-# i3lock runs in the background so the fingerprint listener can kill it on
-# match (touch sensor any time, no keypress needed). The helper self-gates
-# (tier check happens there, off the critical path) and exits instantly on
-# machines without enrolled fingerprints.
-i3lock "${lock_args[@]}" &
-lock_pid=$!
-"$HOME/.config/i3/scripts/fprint-unlock.sh" "$lock_pid" &
-helper_pid=$!
-wait "$lock_pid" || true
-# TERM only: the helper stops its in-flight fprintd-verify and waits for the
-# fprintd device claim to be released before exiting.
-kill "$helper_pid" 2>/dev/null || true
