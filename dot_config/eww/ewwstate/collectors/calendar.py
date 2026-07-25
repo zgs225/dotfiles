@@ -88,7 +88,7 @@ def _build_yuck(items: list[dict]) -> str:
             f'(label :class "event-acct" :xalign 0 :text "{acct}")))'
             f'(button :class "event-del-btn" :valign "center"'
             f' :onclick "~/.config/eww/scripts/cal-add-action.sh delete {eid}"'
-            f' (label :text "✕" :class "event-del-icon"))'
+            f' (label :text "✕" :class "event-del-icon")))'
         )
 
     return ('(box :class "events-list" :orientation "v" :spacing 6 '
