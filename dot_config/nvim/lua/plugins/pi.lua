@@ -1,32 +1,12 @@
--- pi.nvim: pi coding agent as a vertical split (side layout, 50% width).
+-- pi.nvim: pi coding agent as a vertical split (side layout, 60% width).
 --   <leader>ap  toggle the pi side panel in the current tab
---   <leader>aP  open pi in a new tab (also as a 50% vertical split)
+--   <leader>aP  open pi in a new tab (also as a 60% vertical split)
 -- The chat is a single global session; showing it somewhere recreates its
 -- windows in the current tab, so it effectively follows the last request.
 
 local function get_chat()
   local session = require("pi.sessions.manager").get()
   return session and session.chat or nil
-end
-
-local pi_filetypes = {
-  ["pi-chat-history"] = true,
-  ["pi-chat-prompt"] = true,
-  ["pi-chat-attachments"] = true,
-}
-
--- pi.nvim hardcodes the side panel to the right (botright vsplit) and ignores
--- the layout.side.position option. To get it on the left, push every non-pi
--- window in the current tab to the far right; the pi history/prompt column is
--- left untouched, so it ends up on the left with its stacking preserved.
-local function move_pi_to_left()
-  for _, w in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
-    local buf = vim.api.nvim_win_get_buf(w)
-    if not pi_filetypes[vim.bo[buf].filetype] then
-      vim.api.nvim_set_current_win(w)
-      vim.cmd "wincmd L"
-    end
-  end
 end
 
 -- True when the pi chat windows currently live in the active tabpage.
@@ -52,7 +32,6 @@ local function show_pi_here(pi)
   else
     pi.show { layout = "side" }
   end
-  move_pi_to_left()
   pi.focus_chat_prompt()
 end
 
@@ -93,12 +72,12 @@ return {
       -- Richer markdown rendering of the chat history via render-markdown.nvim
       -- (already installed). Falls back to pi's builtin renderer if absent.
       render = { engine = "render-markdown" },
-      -- Side layout: 60%-width vertical split. pi.nvim always opens it on
-      -- the right; move_pi_to_left() relocates it to the left afterwards.
-      -- Switch side/float on the fly with :PiToggleLayout.
+      -- Side layout: 60%-width vertical split on the left (position = "left"
+      -- is honored natively by pi.nvim now). Switch side/float on the fly
+      -- with :PiToggleLayout.
       layout = {
         default = "side",
-        side = { width = 0.6 },
+        side = { position = "left", width = 0.6 },
         float = { width = 120, height = 0.85, border = "rounded" },
       },
       -- Song-style status verb pairs { working, done }, replacing the
