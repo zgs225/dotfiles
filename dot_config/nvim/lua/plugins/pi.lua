@@ -72,49 +72,6 @@ local function pi_new_tab()
   show_pi_here(pi)
 end
 
--- ---------------------------------------------------------------------------
--- Double-<Esc> abort confirm
--- ---------------------------------------------------------------------------
-
--- Double-<Esc> abort confirm state (shared across pi buffers).
-local esc_armed = false
-local esc_timer = nil
-
-local function pi_is_busy()
-  local chat = get_chat()
-  if not chat then
-    return false
-  end
-  return chat:is_streaming() or chat:is_compacting()
-end
-
-local function disarm_esc()
-  esc_armed = false
-  if esc_timer then
-    vim.fn.timer_stop(esc_timer)
-    esc_timer = nil
-  end
-end
-
--- First <Esc> arms and warns; a second <Esc> within the window aborts the turn.
-local function esc_abort()
-  if not pi_is_busy() then
-    return -- idle: keep <Esc> a no-op, no misleading hint
-  end
-  if esc_armed then
-    disarm_esc()
-    require("pi").abort()
-    return
-  end
-  esc_armed = true
-  esc_timer = vim.fn.timer_start(1500, disarm_esc)
-  vim.notify("再按一次 <Esc> 中断当前回合", vim.log.levels.WARN, {
-    title = "π",
-    id = "pi-esc-confirm",
-    timeout = 1500,
-  })
-end
-
 return {
   {
     "git@github.com:zgs225/pi.nvim.git",
@@ -129,6 +86,10 @@ return {
       show_thinking = true,
       -- Keep the startup block (skills/extensions/announcements) collapsed.
       expand_startup_details = false,
+      -- Double-<Esc> aborts the running turn (native pi.nvim feature; replaces
+      -- the old hand-rolled esc_abort confirm). First <Esc> shows a gentle
+      -- command-line hint, a second within `timeout` ms aborts (:PiAbort).
+      abort = { enabled = true, timeout = 1500, message = "再按一次 <Esc> 中断当前回合" },
       -- Richer markdown rendering of the chat history via render-markdown.nvim
       -- (already installed). Falls back to pi's builtin renderer if absent.
       render = { engine = "render-markdown" },
@@ -194,21 +155,17 @@ return {
           end
         end,
       })
-      -- Abort the current agent turn, matching the opencode terminal mapping.
-      -- NOTE: in side layout pi.nvim auto-redirects focus from the history
-      -- window to the prompt, so the binding must live on the prompt buffer
-      -- too: <Esc><Esc> in normal mode aborts (double press to avoid mistaps),
-      -- <C-c> while typing clears the draft.
+      -- Extra buffer-local keys for the pi chat panels: a <C-g> leader prefix
+      -- (session/model/panel actions), <C-h/j/k/l> window navigation, and
+      -- <C-c> to clear the draft while typing. (Double-<Esc> abort is native
+      -- to pi.nvim now — see the `abort` option — so it is not bound here.)
       vim.api.nvim_create_autocmd("FileType", {
         group = vim.api.nvim_create_augroup("PiBufferKeys", { clear = true }),
         pattern = { "pi-chat-history", "pi-chat-prompt" },
         callback = function(args)
-          -- Abort the current turn with a double-<Esc> confirm (see esc_abort):
-          -- a lone <Esc> in normal mode is too easy to hit by accident.
-          vim.keymap.set("n", "<Esc>", esc_abort, {
-            buffer = args.buf,
-            desc = "Abort current pi turn (press <Esc> twice)",
-          })
+          -- NOTE: double-<Esc> to abort is now provided natively by pi.nvim
+          -- (see the `abort` option above), so no local <Esc> mapping is needed
+          -- here. The native version also works from insert mode on the prompt.
 
           -- <C-g> prefix inside pi chat buffers (mirrors the pi TUI leader).
           -- s: resume session via telescope (vim.ui.select -> ui-select ext)
