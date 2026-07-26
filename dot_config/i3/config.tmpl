@@ -84,6 +84,11 @@ bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
 
+# Output (screen) switch — bare = move focus only; Shift = move the window
+# (toggle across the two outputs, so pressing again borrows it back).
+bindsym $mod+o focus output next
+bindsym $mod+Shift+o move window to output next
+
 # Resize mode
 bindsym $mod+r mode "resize"
 mode "resize" {
