@@ -1,8 +1,11 @@
 """Network collector.
 
-Replaces the five network defpolls:
+Replaces the four network defpolls:
 
-  network_status, wifi_on, wifi_name, wifi_networks, wired_detail
+  network_status, wifi_on, wifi_name, wired_detail
+
+``wifi_networks`` has been moved to ``collectors/wifi_scan.py`` (fully
+event-driven via NM D-Bus — zero nmcli, zero polling).
 
 A single ``collect()`` runs the nmcli queries concurrently and derives every
 topic from one snapshot, instead of the legacy four-to-five independent nmcli
@@ -12,10 +15,8 @@ The legacy filtering logic (network-common.sh) is reimplemented in Python:
 exclude bridge/loopback/wifi-p2p/dummy types and the docker/br-/veth/virbr/lo
 name patterns.
 
-``wifi_networks`` / ``wired_detail`` are yuck-literal strings (they embed
-onclick handlers into wifi-connect.sh), reproduced byte-for-byte from the
-legacy scripts — including the ``/tmp/eww-wifi-connecting`` "connecting…"
-overlay with its 40s age guard.
+``wired_detail`` is a yuck-literal string, reproduced byte-for-byte from the
+legacy scripts.
 
 Legacy files kept (onclick optimistic updates): network-wifi-on.sh,
 network-wifi-name.sh, network-wifi-networks.sh, network-common.sh.
@@ -25,12 +26,10 @@ from __future__ import annotations
 
 import asyncio
 import json
-import os
 import re
-import time
 
 from framework import PollCollector, collector
-from util import run, shell
+from util import run
 
 _EXCLUDE_TYPES = {"bridge", "loopback", "wifi-p2p", "dummy", "tun"}
 _EXCLUDE_NAME_RE = re.compile(r"^(docker[0-9]*|br-[0-9a-f]+|veth[0-9a-f]*|virbr[0-9]*|lo|p2p-)$")
@@ -67,15 +66,14 @@ def _parse_active_conns(text: str):
 @collector
 class Network(PollCollector):
     name = "network"
-    topics = ("network_status", "wifi_on", "wifi_name", "wifi_networks", "wired_detail")
+    topics = ("network_status", "wifi_on", "wifi_name", "wired_detail")
     interval = 2.0
 
     async def collect(self):
-        dev_status, active_conns, wifi_radio, wifi_list = await asyncio.gather(
+        dev_status, active_conns, wifi_radio = await asyncio.gather(
             run(["nmcli", "-t", "-f", "DEVICE,TYPE,STATE", "device", "status"], timeout=3.0),
             run(["nmcli", "-t", "-f", "NAME,TYPE,DEVICE,STATE", "connection", "show", "--active"], timeout=3.0),
             run(["nmcli", "radio", "wifi"], timeout=3.0),
-            run(["nmcli", "-t", "-f", "IN-USE,SSID,SIGNAL,SECURITY", "device", "wifi", "list", "--rescan", "no"], timeout=3.0),
         )
 
         # --- wifi_on ---
@@ -126,82 +124,9 @@ class Network(PollCollector):
         else:
             wired_detail = '(box :class "wired-list" :orientation "v" (label :class "wired-empty" :xalign 0 :text "未接入有线网"))'
 
-        # --- wifi_networks (yuck literal) ---
-        wifi_networks = self._build_wifi_networks(wifi_on, wifi_name, wifi_list)
-
         return {
             "network_status": network_status,
             "wifi_on": wifi_on,
             "wifi_name": wifi_name,
-            "wifi_networks": wifi_networks,
             "wired_detail": wired_detail,
         }
-
-    @staticmethod
-    def _build_wifi_networks(wifi_on: str, connected_ssid: str, wifi_list: str) -> str:
-        if wifi_on != "1":
-            return '(box :class "wifi-list" :orientation "v" (label :class "wifi-off-hint" :xalign 0 :text "无线网已关闭"))'
-
-        # connecting overlay (40s age guard), same as legacy
-        connecting = ""
-        cf = "/tmp/eww-wifi-connecting"
-        try:
-            age = int(time.time()) - int(os.path.getmtime(cf))
-            if age < 40:
-                with open(cf) as f:
-                    connecting = f.read().strip()
-        except OSError:
-            pass
-
-        seen: set[str] = set()
-        rows = ""
-        count = 0
-        for line in wifi_list.splitlines():
-            parts = line.split(":")
-            if len(parts) < 4:
-                continue
-            in_use, ssid, signal_s, security = parts[0], parts[1], parts[2], parts[3]
-            if not ssid or ssid in seen:
-                continue
-            seen.add(ssid)
-            if count >= 6:
-                break
-            count += 1
-
-            try:
-                sig_val = int(signal_s)
-            except ValueError:
-                sig_val = 0
-            sig = "󰤨" if sig_val >= 75 else "󰤥" if sig_val >= 50 else "󰤢" if sig_val >= 25 else "󰤟"
-
-            secured = bool(re.search(r"WPA|WEP|802", security))
-            lock = "󰌾" if secured else "󰤾"
-
-            e_ssid = _esc(ssid)
-
-            if ssid == connected_ssid:
-                dot = '(box :class "wifi-dot wifi-dot-on" :valign "center")'
-                rowcls = "wifi-network connected"
-            elif connecting and ssid == connecting:
-                dot = '(box :class "wifi-dot" :valign "center")'
-                rowcls = "wifi-network connecting"
-            else:
-                dot = '(box :class "wifi-dot" :valign "center")'
-                rowcls = "wifi-network"
-
-            if connecting and ssid == connecting:
-                tailw = '(label :class "wifi-signal" :text "连接中…")'
-            else:
-                lockw = f'(label :class "wifi-lock" :text "{lock}")' if secured else ""
-                tailw = f'{lockw}(label :class "wifi-signal" :text "{sig}")'
-
-            rows += (
-                f'(button :class "{rowcls}" :onclick "~/.config/eww/scripts/wifi-connect.sh \'{e_ssid}\'"'
-                f'(box :orientation "h" :spacing 10 :space-evenly false {dot}'
-                f'(label :class "wifi-ssid" :xalign 0 :hexpand true :limit-width 20 :text "{e_ssid}")'
-                f'{tailw}))'
-            )
-
-        if not rows:
-            rows = '(label :class "wifi-off-hint" :xalign 0 :text "未发现网络")'
-        return f'(box :class "wifi-list" :orientation "v" :spacing 2 {rows})'
