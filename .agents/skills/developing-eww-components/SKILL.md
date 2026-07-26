@@ -94,6 +94,7 @@ bar 的 on-click 处理器是 i3 命令;用 `xdotool` 模拟点击等价于用�
 - **daemon 卡死，launch.sh 的等待循环超时** — `pkill -9 -f 'eww daemon'`，再重载。
 - **点击没弹出 popup** — 确认 `(defwidget ...)` 的 `:name` 和你 `eww open <name>` 用的名字一致，看 log 里那条 open 调用有没有失败。
 - **`maim -i` 截错了窗口** — 重新拿 WID：`wmctrl -l | grep eww`，daemon 每次重启后 hex ID 都会变。
+- **`eww update` 成功但 `eww get` 返回空** — daemon 内部变量存储损坏（长时间运行后的已知脆弱性）。`eww ping` 正常、`eww open/close` 正常，但 `eww state` 输出为空或残缺。修复：`i3-msg exec ~/.config/eww/scripts/launch.sh` 重启 daemon。排查方法：截图后立刻 `eww get screenshot_path`，如果为空就是此问题。
 
 ---
 
@@ -116,7 +117,9 @@ fi
 # ... real work below (can take seconds) ...
 ```
 
-**参考实现**：`open-popup.sh`、`storage-eject.sh`、`storage-open.sh` 均使用此模式。
+**参考实现**：`open-popup.sh`、`storage-eject.sh`、`storage-open.sh`、`screenshot-action.sh` 均使用此模式。
+
+**踩坑实录**：`screenshot-action.sh` 的 annotate 分支直接在前台跑 `satty`（GUI 标注工具，阻塞到用户关闭），没有 detach guard。eww 在 200ms 后 SIGKILL `/bin/sh`，satty 作为子进程被连带杀死，表现为"点击标注没反应"。
 
 **注意**：detached 进程可能丢失 `DBUS_SESSION_BUS_ADDRESS` 等环境变量。如果脚本里需要发 D-Bus 通知（如 `dunstify`），确保环境变量被继承——`setsid nohup` 会保留当前环境，但如果 i3 启动时没 export 该变量，detached 进程也拿不到。验证方法：在脚本里 `echo $DBUS_SESSION_BUS_ADDRESS >> /tmp/probe`。
 
