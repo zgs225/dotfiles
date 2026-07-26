@@ -21,13 +21,28 @@ urlencode() {
 }
 
 declare -a MODS=()
-declare -A MOD_PREFIX=() MOD_STAGE=() MOD_HOTKEY=()
+declare -A MOD_PREFIX=() MOD_STAGE=() MOD_HOTKEY=() MOD_DESC=()
 
 register_module() {
     MODS+=("$1")
     MOD_PREFIX[$1]="$2"
     MOD_STAGE[$1]="$3"
     MOD_HOTKEY[$1]="${4:-}"
+    MOD_DESC[$1]="${5:-}"
+}
+
+# Build a dynamic message line listing all modules that have a
+# description (i.e. a prefix shortcut). Output via rofi protocol.
+# Note: rofi script mode does NOT support \0placeholder; use \0message instead.
+build_placeholder() {
+    local parts=() m
+    for m in "${MODS[@]}"; do
+        [ -z "${MOD_DESC[$m]:-}" ] && continue
+        parts+=("${MOD_PREFIX[$m]}(${MOD_DESC[$m]})")
+    done
+    if [ ${#parts[@]} -gt 0 ]; then
+        printf '\0message\x1f前缀：%s\n' "$(IFS='、'; echo "${parts[*]}")"
+    fi
 }
 
 load_modules() {

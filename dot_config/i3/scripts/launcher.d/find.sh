@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-register_module find "find" filter "Alt+Return"
+register_module find "find" filter "Alt+Return" "查找"
 
 find_init() {
     printf '\0prompt\x1f查找\n'

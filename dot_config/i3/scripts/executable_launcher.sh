@@ -8,6 +8,7 @@ load_modules
 
 mode_main() {
     if [ "$#" -eq 0 ]; then
+        build_placeholder
         apps_init
         return 0
     fi

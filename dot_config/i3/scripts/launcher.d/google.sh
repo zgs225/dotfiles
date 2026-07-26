@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-register_module google "g" direct
+register_module google "g" direct "" "搜索"
 
 google_direct() {
     local q="$1"

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-register_module calc "=" plain
+register_module calc "=" plain "" "计算"
 
 calc_init() {
     printf '\0prompt\x1f计算\n'

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-register_module buku "b" filter
+register_module buku "b" filter "" "书签"
 
 buku_init() {
     printf '\0prompt\x1f书签\n'

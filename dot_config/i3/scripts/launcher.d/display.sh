@@ -4,7 +4,7 @@
 # 前缀：display。菜单 = 状态行 / 布局快捷 / 已存配置 / 管理。
 # 依赖 displayctl v2 的 CLI 契约：current --json / list --json / layout / apply / save。
 
-register_module display "display" plain
+register_module display "display" plain "" "显示"
 
 # 内屏判定：名字前缀 eDP- / LVDS-
 _display_is_internal() {
