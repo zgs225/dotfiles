@@ -1,0 +1,24 @@
+# 坞站扩展：内屏 eDP-1 + 外接 DP-1 (Dell U2720QM 4K) 双屏扩展。
+# 指纹 3e12ee9ba2b37229 = docked 组合 (DP-1:7a00daa0 + eDP-1:686973d4)。
+# 由 `displayctl save dock-extend` 在真实扩展态捕获，几何为实测值。
+# 机器特定：其他机器上指纹不匹配即惰性，无害。
+default = false
+layout = "extend"
+manage = "full"
+
+[match]
+id = "3e12ee9ba2b37229"
+outputs = ["DP-1:7a00daa0", "eDP-1:686973d4"]
+
+[outputs.DP-1]
+mode = "3840x2160"
+pos = "2560x0"
+
+[outputs.eDP-1]
+mode = "2560x1600"
+pos = "0x0"
+primary = true
+
+[dpi]
+tiers = true
+reference = "eDP-1"

@@ -25,4 +25,8 @@ export __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/50_mesa.json
 # ensures LightDM sessions (which skip .xinitrc) get mise in PATH too.
 export PATH="$HOME/.local/share/mise/shims:$PATH"
 
-systemctl --user import-environment DISPLAY PATH
+# Import into the systemd user environment so services started via
+# `systemctl --user` (eww, dunst, …) inherit DISPLAY and the fcitx IM vars —
+# otherwise those processes miss the input-method context (needs 5/6).
+systemctl --user import-environment DISPLAY PATH \
+    GTK_IM_MODULE QT_IM_MODULE XMODIFIERS SDL_IM_MODULE GLFW_IM_MODULE

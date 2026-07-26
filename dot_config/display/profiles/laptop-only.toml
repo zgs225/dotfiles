@@ -1,0 +1,19 @@
+# 纯笔记本（undocked）：仅内屏 eDP-1 连接时自动匹配。
+# 指纹 = sha256("eDP-1:686973d4")[:16]，686973d4 是本机 BOE 面板 EDID 哈希。
+# 机器特定：其他机器上指纹不匹配即惰性，无害。
+default = false
+layout = "single"
+manage = "full"
+
+[match]
+id = "ef2d1cc808d7c811"
+outputs = ["eDP-1:686973d4"]
+
+[outputs.eDP-1]
+mode = "2560x1600"
+pos = "0x0"
+primary = true
+
+[dpi]
+tiers = true
+reference = "eDP-1"
