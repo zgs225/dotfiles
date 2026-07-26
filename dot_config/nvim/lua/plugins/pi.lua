@@ -53,7 +53,7 @@ end
 
 return {
   {
-    "https://github.com/zgs225/pi.nvim.git",
+    "https://github.com/zgs225/pi2.nvim.git",
     dependencies = {
       -- Required only for :PiPasteImage (clipboard image paste).
       { "HakonHarnes/img-clip.nvim", opts = {} },
