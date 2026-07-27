@@ -59,8 +59,10 @@ return {
       { "HakonHarnes/img-clip.nvim", opts = {} },
     },
     opts = {
-      -- Curated model list for <C-g>m (pi.select_model).
-      models = { "k3", "kimi-for-coding", "deepseek-v4-pro", "qwen3.8-max-preview" },
+      -- Curated model list for <C-g>m (pi.select_model). Without this the
+      -- picker falls back to the backend's full model list (get_available_models
+      -- ignores pi's enabledModels setting), so we keep an explicit shortlist.
+      models = { "k3", "kimi-for-coding", "deepseek-v4-pro", "qwen3.8-max-preview", "k3-256k" },
       -- Render thinking blocks in chat history (default: hidden).
       show_thinking = true,
       -- Keep the startup block (skills/extensions/announcements) collapsed.
