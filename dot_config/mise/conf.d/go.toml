@@ -3,3 +3,6 @@ go = "latest"
 "staticcheck" = "2026.1"
 "gomplate" = "latest"
 "air" = "latest"
+
+"go:github.com/zgs225/simple-server" = "latest"
+
