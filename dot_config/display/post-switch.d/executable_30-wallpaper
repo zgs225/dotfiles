@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Post-switch hook: repaint wallpaper after geometry change.
+# feh --bg-fill sets a root pixmap sized to the geometry at set-time;
+# when outputs change the new area is black. This re-applies the same
+# image (read from wallpaper.sh's state file) so it covers the new geometry.
+
+wallpaper_dir="$HOME/.local/share/wallpapers"
+state_file="$wallpaper_dir/.current-index"
+
+[ -f "$state_file" ] || exit 0
+idx=$(<"$state_file")
+[[ "$idx" =~ ^[0-9]+$ ]] || exit 0
+
+mapfile -t wallpapers < <(find "$wallpaper_dir" -maxdepth 1 -type f \
+    \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) \
+    | sort)
+
+current="${wallpapers[$idx]:-}"
+[ -f "$current" ] && feh --bg-fill "$current"
