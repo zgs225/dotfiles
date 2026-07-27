@@ -14,7 +14,7 @@
   "branchSummary": {
     "skipPrompt": true
   },
-  "enabledModels": ["k3", "kimi-for-coding", "deepseek-v4-pro", "qwen3.8-max-preview"],
+  "enabledModels": ["k3", "kimi-for-coding", "deepseek-v4-pro", "qwen3.8-max-preview", "k3-256k"],
   "retry": {
     "enabled": true,
     "maxRetries": 100,
