@@ -93,27 +93,28 @@ enable_pager = False
 pager = 'less'
 
 # Custom colors for the completion menu, toolbar, etc.
+# Palette: Tokyo Night — keep in sync with ~/.config/wezterm/colors/palette.lua
 [colors]
 # Completion menu
-completion-menu.completion.current = 'bg:#002b36 #93a1a1'
-completion-menu.completion = 'bg:#002b36 #839496'
-completion-menu.meta.completion.current = 'bg:#073642 #93a1a1'
-completion-menu.meta.completion = 'bg:#073642 #839496'
-completion-menu.multi-column-meta = 'bg:#586e75 #002b36'
+completion-menu.completion.current = 'bg:#1a1b26 #c0caf5'
+completion-menu.completion = 'bg:#1a1b26 #a9b1d6'
+completion-menu.meta.completion.current = 'bg:#15161e #c0caf5'
+completion-menu.meta.completion = 'bg:#15161e #a9b1d6'
+completion-menu.multi-column-meta = 'bg:#414868 #1a1b26'
 
 # Scrollbar
-scrollbar.arrow = 'bg:#002b36'
-scrollbar = 'bg:#268bd2'
+scrollbar.arrow = 'bg:#1a1b26'
+scrollbar = 'bg:#7aa2f7'
 
 # Selection
-selected = '#93a1a1 bg:#586e75'
-search = '#93a1a1 bg:#268bd2'
-search.current = '#93a1a1 bg:#2aa198'
+selected = '#c0caf5 bg:#414868'
+search = '#1a1b26 bg:#7aa2f7'
+search.current = '#1a1b26 bg:#7dcfff'
 
-# Bottom toolbar
-bottom-toolbar = 'bg:#002b36 #93a1a1'
-bottom-toolbar.off = 'bg:#073642 #586e75'
-bottom-toolbar.on = 'bg:#002b36 #93a1a1'
+# Bottom toolbar (statusline)
+bottom-toolbar = 'bg:#1a1b26 #c0caf5'
+bottom-toolbar.off = 'bg:#15161e #414868'
+bottom-toolbar.on = 'bg:#1a1b26 #c0caf5'
 
 # Search toolbar
 search-toolbar = 'noinherit bold'
@@ -123,44 +124,44 @@ arg-toolbar = 'noinherit bold'
 arg-toolbar.text = 'nobold'
 
 # Transaction indicators
-bottom-toolbar.transaction.valid = 'bg:#002b36 #859900 bold'
-bottom-toolbar.transaction.failed = 'bg:#002b36 #dc322f bold'
+bottom-toolbar.transaction.valid = 'bg:#1a1b26 #9ece6a bold'
+bottom-toolbar.transaction.failed = 'bg:#1a1b26 #f7768e bold'
 
 # Output header (bold, green)
-output.header = "#859900 bold"
+output.header = "#9ece6a bold"
 output.odd-row = ""
 output.even-row = ""
-output.null = "#93a1a1"
+output.null = "#565f89"
 
 
 # SQL syntax highlighting overrides
-sql.comment = 'italic #93a1a1'
-sql.comment.multi-line = 'italic #586e75'
-sql.comment.single-line = 'italic #586e75'
-sql.comment.optimizer-hint = 'italic #839496'
-sql.escape = 'border:#d33682'
-sql.keyword = 'bold #859900'
-sql.datatype = 'nobold #b58900'
-sql.literal = '#2aa198'
-sql.literal.date = '#268bd2'
-sql.symbol = '#6c71c4'
-sql.quoted-schema-object = '#268bd2'
-sql.quoted-schema-object.escape = '#b58900'
-sql.constant = '#dc322f'
-sql.function = '#268bd2'
-sql.variable = '#839496'
-sql.number = '#93a1a1'
-sql.number.binary = '#d33682'
-sql.number.float = '#268bd2'
-sql.number.hex = '#859900'
-sql.number.integer = '#93a1a1'
-sql.operator = '#859900'
-sql.punctuation = '#2aa198'
-sql.string = '#d33682'
-sql.string.double-quouted = '#cb4b16'
-sql.string.escape = 'bold #d75f00'
-sql.string.single-quoted = '#d33682'
-sql.whitespace = '#586e75'
+sql.comment = 'italic #565f89'
+sql.comment.multi-line = 'italic #565f89'
+sql.comment.single-line = 'italic #565f89'
+sql.comment.optimizer-hint = 'italic #565f89'
+sql.escape = 'border:#bb9af7'
+sql.keyword = 'bold #bb9af7'
+sql.datatype = 'nobold #e0af68'
+sql.literal = '#7dcfff'
+sql.literal.date = '#7aa2f7'
+sql.symbol = '#bb9af7'
+sql.quoted-schema-object = '#7aa2f7'
+sql.quoted-schema-object.escape = '#e0af68'
+sql.constant = '#ff9e64'
+sql.function = '#7aa2f7'
+sql.variable = '#a9b1d6'
+sql.number = '#ff9e64'
+sql.number.binary = '#bb9af7'
+sql.number.float = '#ff9e64'
+sql.number.hex = '#9ece6a'
+sql.number.integer = '#ff9e64'
+sql.operator = '#7dcfff'
+sql.punctuation = '#a9b1d6'
+sql.string = '#9ece6a'
+sql.string.double-quouted = '#ff9e64'
+sql.string.escape = 'bold #e0af68'
+sql.string.single-quoted = '#9ece6a'
+sql.whitespace = '#414868'
 
 # Favorite queries.
 [favorite_queries]
