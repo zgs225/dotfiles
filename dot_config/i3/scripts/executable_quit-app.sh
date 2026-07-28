@@ -14,6 +14,8 @@ for w in $(xdotool search --pid "$pid" 2>/dev/null); do
 done
 
 sleep 0.5
-if kill -0 "$pid" 2>/dev/null && [ -z "$(xdotool search --pid "$pid" 2>/dev/null)" ]; then
+# Use --onlyvisible: apps like Clash Verge hide to tray by *unmapping*
+# their window, so a plain search would still find it and skip SIGTERM.
+if kill -0 "$pid" 2>/dev/null && [ -z "$(xdotool search --onlyvisible --pid "$pid" 2>/dev/null)" ]; then
     kill "$pid" 2>/dev/null
 fi
