@@ -115,7 +115,11 @@ bindsym $mod+space exec --no-startup-id ~/.config/i3/scripts/launcher.sh
 bindsym $mod+Tab exec "rofi -show window -display-window '窗口'"
 bindsym $mod+Shift+v exec "rofi -modi '剪贴板:greenclip print' -show 剪贴板 -run-command '{cmd}' -theme ~/.config/rofi/clipboard.rasi"
 bindsym $mod+Shift+d exec --no-startup-id dunstctl context
-bindsym $mod+q kill
+# $mod+w: close window (WM_DELETE)
+bindsym $mod+w kill
+# $mod+q: quit app gracefully (macOS Cmd+Q style); $mod+Shift+q: force kill -9
+bindsym $mod+q exec --no-startup-id ~/.config/i3/scripts/quit-app.sh
+bindsym $mod+Shift+q exec --no-startup-id ~/.config/i3/scripts/force-kill.sh
 # Screenshots
 bindsym $mod+Shift+3 exec --no-startup-id ~/.config/i3/scripts/screenshot.sh full
 bindsym $mod+Shift+4 exec --no-startup-id ~/.config/i3/scripts/screenshot.sh select
