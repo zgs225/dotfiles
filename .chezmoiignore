@@ -45,9 +45,7 @@ skills-lock.json
 .config/rofi/**
 .config/greenclip.toml
 .config/display/**
-.config/systemd/user/screenshot-cleanup.service
-.config/systemd/user/screenshot-cleanup.timer
-.config/systemd/user/brightness-auto.service
+.config/systemd/**
 .xinitrc
 .xprofile
 .zprofile
