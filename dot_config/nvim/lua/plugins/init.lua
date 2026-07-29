@@ -10,7 +10,11 @@ return {
   {
     "akinsho/toggleterm.nvim",
     version = "*",
-    keys = { "<c-\\>" },
+    -- mode includes "i" so the lazy placeholder also fires from insert mode.
+    -- toggleterm's real insert-mode <C-\> mapping is only created in setup(),
+    -- which runs on load; without "i" here, pressing <C-\> in insert mode
+    -- (e.g. pi's auto-insert prompt) before the plugin loads does nothing.
+    keys = { { "<c-\\>", mode = { "n", "i" } } },
     cmd = { "ToggleTerm", "TermSelect", "TermNew", "TermExec" },
     config = function()
       require("toggleterm").setup(require "configs.toggleterm")
