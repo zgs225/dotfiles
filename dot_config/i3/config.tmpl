@@ -115,8 +115,10 @@ bindsym $mod+space exec --no-startup-id ~/.config/i3/scripts/launcher.sh
 bindsym $mod+Tab exec "rofi -show window -display-window '窗口'"
 bindsym $mod+Shift+v exec "rofi -modi '剪贴板:greenclip print' -show 剪贴板 -run-command '{cmd}' -theme ~/.config/rofi/clipboard.rasi"
 bindsym $mod+Shift+d exec --no-startup-id dunstctl context
-# $mod+w: close window (WM_DELETE)
-bindsym $mod+w kill
+# NOTE: $mod+w intentionally unbound — lets WezTerm's Alt+w (CloseCurrentTab)
+# close only the active tab. A global `kill` here would WM_DELETE the whole
+# window and, with window_close_confirmation=NeverPrompt, close ALL tabs.
+# Close window/app: $mod+q (quit-app); force kill -9: $mod+Shift+q
 # $mod+q: quit app gracefully (macOS Cmd+Q style); $mod+Shift+q: force kill -9
 bindsym $mod+q exec --no-startup-id ~/.config/i3/scripts/quit-app.sh
 bindsym $mod+Shift+q exec --no-startup-id ~/.config/i3/scripts/force-kill.sh
