@@ -26,3 +26,6 @@ application/zip=xarchiver.desktop
 application/x-tar=xarchiver.desktop
 application/x-7z-compressed=xarchiver.desktop
 application/gzip=xarchiver.desktop
+application/x-synology-drive-doc=synology-drive-open-file.desktop
+application/x-synology-drive-sheet=synology-drive-open-file.desktop
+application/x-synology-drive-slides=synology-drive-open-file.desktop

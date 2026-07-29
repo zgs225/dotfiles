@@ -54,9 +54,18 @@ end
 return {
   {
     "https://github.com/zgs225/pi2.nvim.git",
+    -- Dev escape hatch: point lazy at a feature worktree by launching nvim
+    -- with PI_DEV_DIR set (nil = normal installed path). See pi.nvim G23.
+    dir = vim.env.PI_DEV_DIR or nil,
     dependencies = {
-      -- Required only for :PiPasteImage (clipboard image paste).
-      { "HakonHarnes/img-clip.nvim", opts = {} },
+      -- Required only for :PiPasteImage (clipboard image paste); π uses just
+      -- its clipboard module. Disable img-clip's own drag-and-drop vim.paste
+      -- override: it treats every short text paste in terminal mode as a
+      -- potential image drop and warns "Content is not an image." π handles
+      -- prompt drag-and-drop itself, so this global hook is pure noise.
+      -- NB: must nest under `default` — img-clip resolves `default.<key>`
+      -- before the unscoped top level, so a flat `drag_and_drop` is shadowed.
+      { "HakonHarnes/img-clip.nvim", opts = { default = { drag_and_drop = { enabled = false } } } },
     },
     opts = {
       -- Curated model list for <C-g>m (pi.select_model). Without this the
