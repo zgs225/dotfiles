@@ -5,6 +5,14 @@
 # device events via ``udevadm monitor`` and mounts newly-inserted removable
 # partitions through udisks2 (which places them under /run/media/$USER/<label>).
 #
+# WHAT COUNTS AS AUTOMOUNTABLE: udisks2's own Drive.Removable logic --
+# sysfs /sys/block/<disk>/removable==1 OR the sysfs device path passes
+# through a USB host.  (UDISKS_AUTO was dropped by udisks2 2.10+; the rules
+# file no longer sets it.  ID_BUS is equally unusable: USB-SATA bridge chips
+# make udev report ID_BUS=ata for the SATA disk behind them -- observed on a
+# TOSHIBA HDD in a USB enclosure.  The sysfs path never lies: it contains a
+# /usbN/ component iff the device is USB-attached.)
+#
 # EVENT MODEL (critical -- read before changing):
 #   We react ONLY to ``add`` events, never ``change``.  A fresh USB insertion
 #   creates the partition node -> ``add``.  A mount or unmount only changes the
@@ -61,12 +69,37 @@ is_skip_label() {
     return 1
 }
 
-is_removable() {
-    local devname="$1"  # e.g. sda1
-    local disk
-    disk=$(basename "$(dirname "$(readlink -f "/sys/class/block/$devname" 2>/dev/null)" 2>/dev/null)" 2>/dev/null)
-    [ -n "$disk" ] || return 1
-    [ "$(cat "/sys/block/$disk/removable" 2>/dev/null)" = "1" ]
+# True when udisks2 would consider the parent drive removable (see header):
+# sysfs removable flag OR USB-attached.  Pure sysfs reads, zero forks; used
+# by both the startup scan and the live event loop.
+is_hotpluggable() {
+    local devname="$1"  # e.g. sdb1
+    local real disk
+    real=$(readlink -f "/sys/class/block/$devname" 2>/dev/null) || return 1
+    [ -n "$real" ] || return 1
+    disk=$(basename "$(dirname "$real")")
+    [ "$(cat "/sys/block/$disk/removable" 2>/dev/null)" = "1" ] && return 0
+    case "$real" in
+        */usb*) return 0 ;;
+    esac
+    return 1
+}
+
+# Mount-failure notification.  The common NTFS case -- Windows fast startup
+# or hibernation leaves the volume dirty and udisks2 refuses to mount --
+# gets a targeted hint; anything else surfaces udisks2's own last error line.
+notify_mount_failed() {
+    local devpath="$1" out="$2"
+    local label body
+    label=$(lsblk -no LABEL "$devpath" 2>/dev/null)
+    [ -n "$label" ] || label="$devpath"
+    if printf '%s' "$out" | grep -qiE 'hibernat|unclean|dirty|unsafe'; then
+        body="NTFS 卷处于休眠/脏状态：请完全关机 Windows（或关闭快速启动）后重试"
+    else
+        body=$(printf '%s' "$out" | tail -n 1)
+    fi
+    dunstify -a "eww" -i "drive-removable-media" -u critical \
+        "挂载失败：${label}" "$body" >/dev/null 2>&1 || true
 }
 
 try_mount() {
@@ -74,7 +107,7 @@ try_mount() {
     local devpath="/dev/$devname"
 
     is_mounted "$devpath" && { log "skip (mounted): $devpath"; return 0; }
-    is_removable "$devname" || return 0
+    # Callers gate on is_hotpluggable before invoking us.
 
     # Skip EFI / boot partitions (label known before mounting via lsblk/udev db)
     local label
@@ -85,34 +118,26 @@ try_mount() {
     fi
 
     log "mounting: $devpath"
-    if udisksctl mount -b "$devpath" >> "$LOG" 2>&1; then
+    local out
+    if out=$(udisksctl mount -b "$devpath" 2>&1); then
         log "mounted OK: $devpath"
     else
-        log "mount FAILED: $devpath"
+        log "mount FAILED: $devpath: $out"
+        notify_mount_failed "$devpath" "$out"
     fi
 }
 
 log "automount-daemon starting (pid $$)"
 
 # ── Startup scan: mount already-inserted-but-unmounted data partitions ──
-for syspath in /sys/block/sd*/removable; do
-    [ -f "$syspath" ] || continue
-    [ "$(cat "$syspath" 2>/dev/null)" = "1" ] || continue
-    disk=$(basename "$(dirname "$syspath")")
-    for part in /sys/block/${disk}/${disk}*; do
-        [ -d "$part" ] || continue
-        pname=$(basename "$part")
-        [ "$pname" = "$disk" ] && continue
-        _fst=$(lsblk -no FSTYPE "/dev/$pname" 2>/dev/null)
-        [ -n "$_fst" ] || continue
-        _lbl=$(lsblk -no LABEL "/dev/$pname" 2>/dev/null)
-        is_skip_label "$_lbl" && { log "startup-skip (efi/boot): /dev/$pname"; continue; }
-        if ! is_mounted "/dev/$pname"; then
-            log "startup-mount: /dev/$pname ($_fst)"
-            udisksctl mount -b "/dev/$pname" >> "$LOG" 2>&1 || true
-        fi
-    done
-done
+# Enumerate every partition that has a filesystem, keep only hotpluggable
+# ones (see header).  try_mount handles mounted/label-skip/notify details.
+while read -r devpath fstype; do
+    [ -n "$devpath" ] && [ -n "$fstype" ] || continue
+    is_hotpluggable "$(basename "$devpath")" || continue
+    log "startup-mount: $devpath ($fstype)"
+    try_mount "$(basename "$devpath")"
+done < <(lsblk -pnro NAME,FSTYPE 2>/dev/null)
 
 # ── Live monitor: react to device insertion (add) only ────────────────
 while true; do
@@ -131,7 +156,13 @@ while true; do
                     if [ -z "$fs_type" ]; then
                         fs_type=$(lsblk -no FSTYPE "/dev/$devname" 2>/dev/null)
                     fi
-                    [ -n "$fs_type" ] && try_mount "$devname"
+                    if [ -n "$fs_type" ]; then
+                        if is_hotpluggable "$devname"; then
+                            try_mount "$devname"
+                        else
+                            log "skip (not hotpluggable): /dev/$devname"
+                        fi
+                    fi
                 fi
                 devname=""; devtype=""; fs_type=""; action=""
                 continue

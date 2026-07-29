@@ -11,10 +11,16 @@ Publishes:
 Data sources (all zero-fork, pure file reads + one ``os.statvfs``):
 
 * ``/proc/mounts``                -- mount entries under ``/run/media/$USER/``
+                                     (octal escapes decoded at byte level)
 * ``/sys/class/block/<dev>``      -- resolve partition -> parent disk
-* ``/sys/block/<disk>/removable`` -- removable flag (``1``)
 * ``/sys/block/<disk>/device/``   -- vendor / model strings
 * ``os.statvfs(mountpoint)``      -- capacity / usage
+
+There is deliberately NO ``/sys/block/<disk>/removable`` check: the
+``/run/media/$USER/`` prefix is already udisks2's own verdict (it never
+places internal/system disks there), while the sysfs removable flag
+false-negatives USB HDD/SSD enclosures whose bridge chips report ``0`` --
+exactly the NTFS/exFAT external drives this component exists for.
 
 The collector is read-only: it never mounts, unmounts, or touches udev.
 Mounting is thunar-volman's job; unmounting is the user-initiated
@@ -27,6 +33,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from typing import Optional
 
 from framework import PollCollector, collector
@@ -58,6 +65,23 @@ def _parent_disk(part_name: str) -> str:
         return part_name.rstrip("0123456789")
 
 
+_OCTAL_ESC = re.compile(rb"\\([0-7]{3})")
+
+
+def _unescape(raw: bytes) -> str:
+    """Decode a ``/proc/mounts`` field: byte-level octal unescape, then UTF-8.
+
+    The kernel escapes space/tab/newline/backslash in paths as ``\040`` /
+    ``\011`` / ``\012`` / ``\134`` but leaves multi-byte UTF-8 label bytes
+    untouched, so unescaping must happen on the raw bytes *before* the UTF-8
+    decode -- doing it on the decoded str (e.g. ``unicode_escape``) mangles
+    non-ASCII labels (Windows-style NTFS labels with spaces need this).
+    """
+    return _OCTAL_ESC.sub(lambda m: bytes([int(m.group(1), 8)]), raw).decode(
+        "utf-8", "replace"
+    )
+
+
 def _fmt_size(nbytes: float) -> str:
     if nbytes >= 1e12:
         return f"{nbytes / 1e12:.1f}T"
@@ -82,12 +106,14 @@ def _scan_mounts() -> list[dict]:
     devices: list[dict] = []
     seen_mounts: set[str] = set()
     try:
-        with open("/proc/mounts") as f:
+        with open("/proc/mounts", "rb") as f:
             for line in f:
                 parts = line.split()
                 if len(parts) < 4:
                     continue
-                dev_path, mountpoint, fstype = parts[0], parts[1], parts[2]
+                dev_path = _unescape(parts[0])
+                mountpoint = _unescape(parts[1])
+                fstype = _unescape(parts[2])
                 if not mountpoint.startswith(_MEDIA_PREFIX):
                     continue
                 if mountpoint in seen_mounts:
@@ -96,10 +122,6 @@ def _scan_mounts() -> list[dict]:
 
                 part_name = os.path.basename(dev_path)
                 disk = _parent_disk(part_name)
-
-                removable = read_sysfs(f"/sys/block/{disk}/removable", "0")
-                if removable != "1":
-                    continue
 
                 # Skip EFI / boot partitions (label heuristic)
                 _label = os.path.basename(mountpoint).upper()
