@@ -45,6 +45,7 @@ skills-lock.json
 .config/rofi/**
 .config/greenclip.toml
 .config/display/**
+.config/autostart/synology-drive-autostart.desktop
 .config/systemd/**
 .xinitrc
 .xprofile

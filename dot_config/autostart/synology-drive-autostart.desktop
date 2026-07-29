@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Synology Drive Client
+Comment=Synology Drive Client (waits for SNI watcher to avoid tray race with eww)
+Exec=sh -c "for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do busctl --user list 2>/dev/null | grep -q org.kde.StatusNotifierWatcher && break; sleep 1; done; exec synology-drive autostart"
+Icon=synology-drive
+Terminal=false
+Type=Application
+Categories=Network;FileTransfer;
