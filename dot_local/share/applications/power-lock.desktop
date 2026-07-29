@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Lock
+GenericName=Lock Screen
+Comment=Lock the screen immediately
+Exec=bash -c '~/.config/i3/scripts/lock.sh'
+Terminal=false
+Type=Application
+Icon=system-lock-screen
+Keywords=lock;screen;锁定;锁屏;
+Categories=System;
+StartupNotify=false

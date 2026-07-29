@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Reboot
+GenericName=Reboot
+Comment=Reboot the machine immediately
+Exec=systemctl reboot
+Terminal=false
+Type=Application
+Icon=system-reboot
+Keywords=reboot;restart;重启;重新启动;
+Categories=System;
+StartupNotify=false

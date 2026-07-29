@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Shutdown
+GenericName=Shut Down
+Comment=Power off the machine immediately
+Exec=systemctl poweroff
+Terminal=false
+Type=Application
+Icon=system-shutdown
+Keywords=shutdown;poweroff;power off;关机;关闭;
+Categories=System;
+StartupNotify=false

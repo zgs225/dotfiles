@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Log Out
+GenericName=Log Out
+Comment=Exit the i3 session
+Exec=i3-msg exit
+Terminal=false
+Type=Application
+Icon=system-log-out
+Keywords=logout;exit;session;注销;退出;
+Categories=System;
+StartupNotify=false

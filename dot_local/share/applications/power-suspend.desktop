@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Suspend
+GenericName=Suspend
+Comment=Suspend the machine to RAM
+Exec=systemctl suspend
+Terminal=false
+Type=Application
+Icon=system-suspend
+Keywords=suspend;sleep;睡眠;休眠;
+Categories=System;
+StartupNotify=false
