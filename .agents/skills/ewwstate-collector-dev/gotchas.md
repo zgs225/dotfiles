@@ -214,3 +214,39 @@
 1. **pidfile 方案**（最可靠）：daemon 启动时 `echo $$ > /tmp/xxx.pid`，清理时按 pid 精确 kill，完全不匹配命令行。
 2. **写文件再 bash 执行**：把含匹配字面的逻辑写进 `/tmp/t.sh`，用 `bash /tmp/t.sh` 跑。因为 `bash 文件` 的 cmdline 只有 `bash /tmp/t.sh`，不含脚本内容。
 3. 字符类仍作为双保险用在 pgrep 参数上，但**不能**作为唯一防线。
+
+---
+
+## 25. 长寿命后台子进程会继承调用者的 flock fd
+
+**为什么**：bash 的 `nohup ... &` / `setsid ... &` 子进程默认继承**所有**已打开的 fd。flock 的释放条件是「持有该 open file description 的最后一个 fd 关闭」——父脚本退出不够，任何继承了锁 fd 的存活子进程都会让锁继续被持有。实例：`bt-scan.sh on` 启动的 `bluetoothctl --timeout 31536000 scan on`（故意活一年）继承了 open-popup.sh 的 fd 9（popup 全局锁），开过一次 bluetooth-popup 后所有 popup 点击永久失效。
+
+**怎么做**：
+1. 被持锁区调用的脚本，其长寿命后台进程必须显式关闭所有外来 fd：`nohup cmd >/dev/null 2>&1 8>&- 9>&- &`（关闭未打开的 fd 是无害的 no-op）。
+2. 排查：`fuser -v <lockfile>` 列出所有持 fd 进程（打开就算，不只是 flock 持有者）；`ps -o etimes= -p <pid>` 看年龄，健康持锁 <2s，分钟级即毒化。
+3. 诊断 popup 卡死先查这个，别急着怪 eww daemon——`eww ping` 正常 + popup 关不掉 ≈ 锁毒化。
+
+---
+
+## 26. eww 侧「即时刷新」读 daemon 快照，不同步跑采集链
+
+**为什么**：open-popup.sh 旧逻辑在持全局锁时同步执行 `audio-devices.sh`（内部 4 次无超时 pactl 往返）做 control-center 的即时刷新——PipeWire 一卡顿锁即被毒化。ewwstate 架构下 daemon 本来就在持续采集（audio.py 每 2s、内部 3s 超时），tmpfs 快照永远是新鲜的，没必要在关键路径上重新采集。
+
+**怎么做**：eww 侧需要「点击瞬间的新鲜值」时：
+
+```bash
+AUDIO_JSON=$(timeout 3 ~/.config/eww/scripts/ewwstate get audio_devices 9>&- | tr -d '\n' 9>&-)
+[ -n "$AUDIO_JSON" ] && ewwc update audio_devices="$AUDIO_JSON"
+```
+
+要点：`timeout` 兜底 + `9>&-` 不泄锁 fd + 空值守卫（拿不到快照就跳过，**绝不把空值 update 进去**——空值会让 `${var.field}` 报 `Failed to turn \`\` into a value of type json-value`）。**绝不**在锁持有/onclick 关键路径上同步调用 pactl/bluetoothctl/nmcli 链。
+
+---
+
+## 27. `timeout N eww update var="$(script.sh)"` 会注入截断 literal
+
+**为什么**：乐观更新脚本常用 `eww update bt_devices="$(bt-devices.sh)"` 这种模式。如果内层脚本被 timeout/信号 kill 在**打印中途**，命令替换捕获到的是截断输出，`eww update` 把半个 yuck-literal 写进变量 → literal 解析失败（eww 日志报 `Input ended unexpectedly. Check if you have any unclosed delimiters`，位置 `<literal-content>:1:<N>`），组件显示旧内容/空白。eww 日志里曾出现多条 5–7KB 的此类错误（bt_devices）。
+
+**怎么做**：
+1. 排查 literal 解析错误时，先怀疑「值被截断」而非「值语法错误」——看错误里的列号是否恰好在某个文本属性中间断开。
+2. 大 literal 的即时刷新优先走 gotcha #26 的 daemon 快照路径（`ewwstate get` 是原子读，不会截断）；必须跑脚本时，timeout 只裹外层 `eww`，别裹内层采集脚本，或在采集脚本内部自己保证完整性。

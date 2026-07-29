@@ -125,6 +125,30 @@ fi
 
 ---
 
+## popup 全局 flock 毒化——popup 卡死无法关闭但 eww ping 正常
+
+**为什么**：`open-popup.sh` 是所有 popup 开关的唯一入口（bar 按钮、scrim 点击都走它），所有调用串行在全局锁 `/tmp/eww-popup.lock`（fd 9）上；`flock -w 10` 拿不到锁会**静默丢弃本次点击**。两类持锁毒化会让所有 popup 点击永久失效：
+
+1. **锁持有区内的无超时外部调用**。任何 D-Bus/socket 调用（`pactl`/`bluetoothctl`/`nmcli`）都可能偶发阻塞。旧逻辑在持锁时同步跑 `audio-devices.sh`（4 次无 timeout 的 pactl 往返），PipeWire 一卡顿脚本就挂在锁内。
+2. **fd 9 泄漏给长寿命子进程**。bash 后台子进程默认继承所有 fd，而 flock 要等最后一个持 fd 的进程关闭才释放。`bt-scan.sh on` 启动的 `bluetoothctl --timeout 31536000 scan on`（故意活一年的扫描保持进程）继承了 fd 9 → **开过一次 bluetooth-popup 后锁被永久持有**（用 `fuser -v` 实证）。
+
+**症状识别**（关键鉴别特征）：popup 开着、怎么点都关不掉，但 `eww ping` 正常、bar 其它部分活着 → 几乎一定是锁毒化而非 eww daemon 卡死。诊断：
+
+```bash
+fuser -v /tmp/eww-popup.lock        # 列出所有持 fd 进程（打开就算，不只是 flock 持有者）
+ps -o etimes= -p <pid>              # 持锁多久了（健康调用 <2s）
+```
+
+**怎么做**：
+- 锁持有区内每个外部命令都必须有 `timeout`，并给子进程 `9>&-`；长寿命后台进程（`nohup`/`setsid`）**必须显式关闭继承的锁 fd**：`nohup cmd >/dev/null 2>&1 8>&- 9>&- &`。
+- popup 打开时的「即时刷新」不要同步跑状态脚本链，改读 daemon 快照：`timeout 3 ewwstate get <topic>` + 空值守卫 + `eww update`（见 ewwstate-collector-dev gotcha #26）。
+- 兜底看门狗（已内置于 open-popup.sh）：`flock -w 10` 失败后枚举持锁者，有进程存活 >30s 即 SIGKILL 全部持锁者（排除自身）并重试一次；年轻持锁者维持丢弃点击、不误杀。
+- 调试：`EWW_POPUP_DEBUG=1` 后触发点击，查 `/tmp/popup-debug.log` 里的 `watchdog: killing...` / `lock busy...` 记录。
+
+**踩坑实录**：2026-07 用户报告 wifi/电源/控制中心 popup 有概率卡死无法关闭。先用开关压测/竞态/浸泡/update 风暴实测排除 eww daemon（ping/CPU/线程全程健康）；人为持锁 1:1 复现症状；最终 `fuser` 实证 bluetoothctl 扫描进程永久持锁——只要会话中开过蓝牙菜单，后续所有 popup 点击全失效，表象上分不清是哪个 popup 卡住的。
+
+---
+
 ## SCSS 非 ASCII 注释 = 全样式表丢弃
 
 **为什么**：eww 用 grass（Rust SCSS 编译器）编译样式。如果编译输出含任何非 ASCII 字节，grass 会在头部插入 `@charset "UTF-8"`。GTK3 的 CSS 解析器把 `@charset` 当无效规则，**整个样式表被丢弃**——bar 和所有 popup 瞬间变无样式裸窗。
