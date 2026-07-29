@@ -140,8 +140,8 @@ for_window [class="dropdown-.*"] \
     move position center, \
     move scratchpad
 
-bindsym $mod+backslash [class="dropdown-.*"] scratchpad show
-bindsym $mod+Shift+backslash [class="dropdown-.*"] floating enable, resize set 70 ppt 70 ppt, move position center
+bindsym $mod+backslash exec --no-startup-id ~/.config/i3/scripts/pi-dropdown-toggle.sh
+bindsym $mod+Shift+backslash [class="dropdown-pi"] floating enable, resize set 70 ppt 70 ppt, move position center
 
 # Autostart the pi coding agent as a dropdown (parked in scratchpad, $mod+\ to toggle)
 exec --no-startup-id ~/.config/i3/scripts/pi-dropdown.sh
