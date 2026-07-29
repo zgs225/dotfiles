@@ -23,14 +23,18 @@ on)
         echo "$existing" > "$PIDFILE"
         exit 0
     fi
-    bluetoothctl show 2>/dev/null | grep -q "Powered: yes" || exit 0
-    # 8>&-: the holder must not inherit the lock fd.
-    nohup $SCAN_CMD >/dev/null 2>&1 8>&- &
+    # Unbounded D-Bus round-trips can hang when bluetoothd is wedged; cap it
+    # so callers holding the popup lock are never poisoned by a stuck show.
+    timeout 5 bluetoothctl show 2>/dev/null | grep -q "Powered: yes" || exit 0
+    # 8>&-/9>&-: the holder must not inherit any lock fd. In particular fd 9 is
+    # open-popup.sh's global popup flock — inherited by this year-long scan
+    # process it would poison every future popup click until eww is reloaded.
+    nohup $SCAN_CMD >/dev/null 2>&1 8>&- 9>&- &
     echo $! > "$PIDFILE"
     ;;
 off)
     rm -f "$PIDFILE"
-    pkill -f "$SCAN_CMD" 2>/dev/null
+    timeout 5 pkill -f "$SCAN_CMD" 2>/dev/null
     ;;
 esac
 exit 0

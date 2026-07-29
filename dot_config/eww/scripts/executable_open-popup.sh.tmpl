@@ -22,10 +22,40 @@ if [ -z "$EWW_POPUP_DETACHED" ]; then
     exit 0
 fi
 
-exec 9>/tmp/eww-popup.lock
-# Bounded wait: if something ever poisons the lock, drop this invocation
-# rather than freezing every future click.
-flock -w 10 9 || exit 0
+# dbg is needed by the lock watchdog below, so define it before anything
+# that might call it. ewwc/xdc are defined after the lock (they close fd 9).
+dbg()  { [ -n "$EWW_POPUP_DEBUG" ] && echo "$(date +%H:%M:%S.%N) $$ NEW=$NEW $*" >> /tmp/popup-debug.log; return 0; }
+
+LOCKFILE=/tmp/eww-popup.lock
+exec 9>"$LOCKFILE"
+# Bounded wait + poison watchdog. A healthy invocation holds this lock for
+# well under 2s. If a previous detached invocation is stuck (an unbounded
+# D-Bus/pactl/bluetoothctl call, or eww IPC stalling through many 8s
+# timeouts), every later click would be silently dropped and the open popup
+# could never be closed. So: wait 10s, and if the lock is still held by a
+# process older than 30s, kill every OTHER holder (only open-popup.sh
+# instances and their children ever open this file; self is excluded) and
+# retry once. State interrupted mid-way is repaired by the reconcile block
+# at the end of this script.
+if ! flock -w 10 9; then
+    victims=""
+    stuck=0
+    for p in $(fuser "$LOCKFILE" 2>&1 | tr ' ' '\n' | grep -xE '[0-9]+'); do
+        [ "$p" = "$$" ] && continue
+        victims="$victims $p"
+        et=$(ps -o etimes= -p "$p" 2>/dev/null | tr -d ' ')
+        [ -n "$et" ] && [ "$et" -gt 30 ] && stuck=1
+    done
+    if [ "$stuck" = 1 ]; then
+        dbg "watchdog: killing stuck lock holders:$victims"
+        kill -9 $victims 2>/dev/null
+        sleep 0.5
+        flock -w 5 9 || { dbg "watchdog: still locked after kill"; exit 0; }
+    else
+        dbg "lock busy, holders young ($victims); dropping invocation"
+        exit 0
+    fi
+fi
 
 # Child processes MUST NOT inherit fd 9 (9>&-): an inherited reference keeps
 # the flock held even after this script dies, and eww CLI clients can hang
@@ -34,7 +64,6 @@ flock -w 10 9 || exit 0
 # cost one invocation.
 ewwc() { timeout 8 eww "$@" 9>&- 2>/dev/null; }
 xdc()  { timeout 5 xdotool "$@" 9>&- 2>/dev/null; }
-dbg()  { [ -n "$EWW_POPUP_DEBUG" ] && echo "$(date +%H:%M:%S.%N) $$ NEW=$NEW $*" >> /tmp/popup-debug.log; return 0; }
 
 POPUPS="profile-card network-popup control-center audio-popup bluetooth-popup calendar-popup notification-popup updates-popup power-popup storage-popup"
 
@@ -249,13 +278,18 @@ dbg "done FINAL=$FINAL ACTIVE=[$ACTIVE]"
 # that an open window uses, so bt-devices.sh cannot reliably stop the scan
 # after the popup closes — do it here where every close path converges.
 if [ "$FINAL" = "bluetooth-popup" ]; then
-    ~/.config/eww/scripts/bt-scan.sh on
+    timeout 8 ~/.config/eww/scripts/bt-scan.sh on 9>&-
 else
-    ~/.config/eww/scripts/bt-scan.sh off
+    timeout 8 ~/.config/eww/scripts/bt-scan.sh off 9>&-
 fi
 
-# Refresh audio devices immediately when opening control center
+# Refresh audio devices immediately when opening control center.
+# Reads the ewwstate daemon's snapshot (audio.py polls every 2s with internal
+# 3s timeouts) instead of running audio-devices.sh here: the old version made
+# four UNBOUNDED pactl round-trips while HOLDING the popup lock — a stalled
+# PipeWire wedged the lock and silently dropped every later click, leaving
+# the open popup impossible to close.
 if [ "$FINAL" = "control-center" ]; then
-    AUDIO_JSON=$($HOME/.config/eww/scripts/audio-devices.sh 9>&- | tr -d '\n')
-    ewwc update audio_devices="$AUDIO_JSON"
+    AUDIO_JSON=$(timeout 3 ~/.config/eww/scripts/ewwstate get audio_devices 9>&- | tr -d '\n' 9>&-)
+    [ -n "$AUDIO_JSON" ] && ewwc update audio_devices="$AUDIO_JSON"
 fi
