@@ -143,6 +143,9 @@ for_window [class="dropdown-.*"] \
 bindsym $mod+backslash [class="dropdown-.*"] scratchpad show
 bindsym $mod+Shift+backslash [class="dropdown-.*"] floating enable, resize set 70 ppt 70 ppt, move position center
 
+# Autostart the pi coding agent as a dropdown (parked in scratchpad, $mod+\ to toggle)
+exec --no-startup-id ~/.config/i3/scripts/pi-dropdown.sh
+
 # satty (screenshot annotator) — always float
 for_window [title="satty"] floating enable, resize set 80 ppt 80 ppt, move position center
 
