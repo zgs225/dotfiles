@@ -149,6 +149,29 @@ ps -o etimes= -p <pid>              # 持锁多久了（健康调用 <2s）
 
 ---
 
+## i3 焦点管理与 eww popup——no_focus 杀死点击，正确修法是 focus_on_window_activation none
+
+**为什么**：eww popup 在 i3 下有两个焦点相关的坑，且直觉修法（`no_focus`）会引入更严重的问题：
+
+1. **eww `:focusable false` 是 GTK 层假象**。实测 `xprop WM_HINTS` 始终显示 `Client accepts input or input focus: True`。不能依赖这个 yuck 属性做 WM 层焦点判断。
+2. **周期 `eww update`（每 2-3s）触发 GTK re-render → 发送 `_NET_ACTIVE_WINDOW` 客户端消息**。i3 的 `focus_on_window_activation smart` 会把这解读为「窗口请求激活」并聚焦它——表现为 popup 打开后每 3s 抢一次焦点，用户无法稳定操作其他窗口。
+3. **`no_focus [class="Eww"]` 会彻底杀死 popup 的鼠标点击**。i3 对 no_focus 窗口不投递 button 事件，所有 onclick 失效。这是比抢焦点更严重的回归。
+
+**怎么做**：
+- **禁止使用 `no_focus`** 来解决 eww 焦点问题。
+- 正确修法：i3 config 中 `focus_on_window_activation none`。这阻断 activation 事件引发的聚焦，但 `focus_follows_mouse yes` 仍正常工作——鼠标移入 popup 时聚焦（用户正在操作它，这是正确行为），鼠标离开后不再被周期 update 抢回。
+- 如果「抢焦点」伴随「popup 关不掉」，先查 daemon 脱同步（见下条），孤儿窗口 + 周期 update 是复合病因。
+
+**daemon 窗口注册表脱同步**（与 flock 毒化不同的卡死路径）：
+- 症状：`eww active-windows` 为空，但 `xdotool search --name "Eww"` 能看到窗口；`eww open` 客户端进程挂死数百秒（PPID=1）；`eww ping`/`get` 正常。
+- 诊断：`ps -eo pid,etimes,cmd | grep "eww open"` 找挂死客户端；`xdotool search --name "Eww" getwindowname` 对比 `eww active-windows`。
+- 修复：`kill -9 <挂死PID>` + `i3-msg exec ~/.config/eww/scripts/launch.sh` 重启 daemon。
+- 这是 eww 上游已知脆弱性（长时间运行后窗口管理层脱节），无法在配置层完全避免。
+
+**踩坑实录**：2026-07-30 用户报告电源 popup 卡住 + 不停抢焦点。诊断发现 daemon `active-windows` 为空但 X11 窗口存在（脱同步），`eww open` 客户端挂死 300+s。重启 daemon 解决卡死。随后尝试 `no_focus [class="Eww"]` 防抢焦点 → popup 所有按钮点击失效（回归）。最终改为 `focus_on_window_activation none`，既阻断周期 activation 抢焦点，又保留 focus_follows_mouse 的正常交互。
+
+---
+
 ## SCSS 非 ASCII 注释 = 全样式表丢弃
 
 **为什么**：eww 用 grass（Rust SCSS 编译器）编译样式。如果编译输出含任何非 ASCII 字节，grass 会在头部插入 `@charset "UTF-8"`。GTK3 的 CSS 解析器把 `@charset` 当无效规则，**整个样式表被丢弃**——bar 和所有 popup 瞬间变无样式裸窗。
