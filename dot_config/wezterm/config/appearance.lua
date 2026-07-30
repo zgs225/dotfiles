@@ -36,20 +36,20 @@ return {
          source = { Color = colors.background },
          height = '100%',
          width = '100%',
-         opacity = 0.96,
+         opacity = 0.88,
       },
    },
 
    -- scrollbar
    enable_scroll_bar = false,
 
-   -- tab bar
-   enable_tab_bar = true,
-   hide_tab_bar_if_only_one_tab = true,
-   use_fancy_tab_bar = false,
-   tab_max_width = 25,
-   show_tab_index_in_tab_bar = false,
-   switch_to_last_active_tab_when_closing_tab = true,
+   -- tab bar: hidden — tmux manages windows via its own (transparent) status bar.
+   -- The wezterm tab bar is a separate GPU layer that cannot render background
+   -- images, so it always appears as a solid-color strip.  Hiding it lets the
+   -- backdrop fill the entire window edge-to-edge.
+   -- If you ever need native wezterm tabs (e.g. SSH domains), set enable_tab_bar
+   -- back to true; the tab-title.lua styling and palette sync are still wired up.
+   enable_tab_bar = false,
 
    -- window
    window_padding = {

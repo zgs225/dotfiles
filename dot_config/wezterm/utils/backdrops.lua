@@ -1,6 +1,7 @@
 local wezterm = require('wezterm')
 local platform = require('utils.platform')()
 local colors = require('colors.custom')
+local tmux_palette = require('utils.tmux_palette')
 
 -- Seeding random numbers before generating for use
 -- Known issue with lua math library
@@ -44,7 +45,29 @@ function BackDrops:set_files()
    return self
 end
 
----Override the current window options for background
+---Sync tmux statusline + wezterm tab bar colors for the current background.
+---Updates wezterm.GLOBAL.tab_colors BEFORE the window redraw is triggered.
+---Wrapped in pcall: run_child_process may not be available during initial load.
+---@private
+function BackDrops:_sync_palette()
+   local ok, err = pcall(function()
+      local bg_path = wezterm.GLOBAL.background
+      if not bg_path then
+         return
+      end
+      local name = bg_path:match('([^' .. PATH_SEP .. ']+)$')
+      if name then
+         tmux_palette.apply(name)
+      end
+   end)
+   if not ok then
+      wezterm.log_warn('palette sync skipped: ' .. tostring(err))
+   end
+end
+
+---Override the current window options for background.
+---This triggers a window redraw (including tab bar), so GLOBAL.tab_colors
+---must already be updated before calling this.
 ---@private
 ---@param window any WezTerm Window see: https://wezfurlong.org/wezterm/config/lua/window/index.html
 function BackDrops:_set_opt(window)
@@ -58,7 +81,7 @@ function BackDrops:_set_opt(window)
             source = { Color = colors.background },
             height = '100%',
             width = '100%',
-            opacity = 0.96,
+            opacity = 0.88,
          },
       },
    }
@@ -86,6 +109,8 @@ function BackDrops:random(window)
    self.current_idx = math.random(#self.files)
    wezterm.GLOBAL.background = self.files[self.current_idx]
 
+   -- Sync palette FIRST (updates GLOBAL.tab_colors), then trigger redraw
+   self:_sync_palette()
    if window ~= nil then
       self:_set_opt(window)
    end
@@ -100,6 +125,7 @@ function BackDrops:cycle_forward(window)
       self.current_idx = self.current_idx + 1
    end
    wezterm.GLOBAL.background = self.files[self.current_idx]
+   self:_sync_palette()
    self:_set_opt(window)
 end
 
@@ -112,6 +138,7 @@ function BackDrops:cycle_back(window)
       self.current_idx = self.current_idx - 1
    end
    wezterm.GLOBAL.background = self.files[self.current_idx]
+   self:_sync_palette()
    self:_set_opt(window)
 end
 
@@ -126,6 +153,7 @@ function BackDrops:set_img(window, idx)
 
    self.current_idx = idx
    wezterm.GLOBAL.background = self.files[self.current_idx]
+   self:_sync_palette()
    self:_set_opt(window)
 end
 
