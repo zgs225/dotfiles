@@ -30,6 +30,13 @@
   ps = !sh -c 'git push origin $(git rev-parse --abbrev-ref HEAD)'
   sm = submodule
   cp = cherry-pick
+  # worktree management: wta/wtc create at ../<repo>-<branch>
+  wt  = worktree
+  wtl = worktree list
+  wtp = worktree prune
+  wta = !sh -c 'git worktree add -b \"$1\" \"../$(basename \"$(git rev-parse --show-toplevel)\")-$(echo \"$1\" | tr / -)\"' -
+  wtc = !sh -c 'git worktree add \"../$(basename \"$(git rev-parse --show-toplevel)\")-$(echo \"$1\" | tr / -)\" \"$1\"' -
+  wtd = !sh -c 'git worktree remove \"../$(basename \"$(git rev-parse --show-toplevel)\")-$(echo \"$1\" | tr / -)\" && git branch -d \"$1\"' -
 
 [pretty]
   colored = format:%Cred%h%Creset %s %Cgreen(%cr) %C(bold blue)%an%Creset
