@@ -1,15 +1,15 @@
 -- events/tab-title.lua
 -- Minimalist tab bar: no color blocks, no powerline glyphs.
 -- Only foreground color + weight distinguish active / inactive / hover.
--- Colors are read from wezterm.GLOBAL.tab_colors (updated on backdrop switch).
+-- Colors come from the fixed palette (colors/palette.lua).
 
 local wezterm = require('wezterm')
 local palette = require('colors.palette').palette
 
 local M = {}
 
--- Fallback colors (Tokyo Night) used before any backdrop switch
-local FALLBACK = {
+-- Fixed colors (Tokyo Night palette)
+local COLORS = {
    accent = palette.blue,
    dim    = palette.white,
    fg     = palette.foreground,
@@ -45,7 +45,7 @@ M.setup = function()
    wezterm.on('format-tab-title', function(tab, _tabs, _panes, _config, hover, max_width)
       __cells__ = {}
 
-      local tc = wezterm.GLOBAL.tab_colors or FALLBACK
+      local tc = COLORS
 
       local proc = _process_name(tab.active_pane.foreground_process_name)
       local base = tab.active_pane.title
