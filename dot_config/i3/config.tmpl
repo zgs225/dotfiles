@@ -26,13 +26,10 @@ client.background         {{ .colors.bg_base }}
 # Focus follows mouse, but mouse click doesn't change focus
 focus_follows_mouse yes
 mouse_warping output
-focus_on_window_activation smart
-
-# eww windows (bar + popups + scrim) must never steal focus.
-# GTK sets WM_HINTS input=True regardless of eww :focusable false; without
-# this rule focus_follows_mouse refocuses the fullscreen scrim on every mouse
-# move, and periodic eww-update re-renders trigger focus_on_window_activation.
-no_focus [class="Eww"]
+# "none" prevents periodic eww-update re-renders (GTK window activation events)
+# from stealing focus every 3s while a popup is open. Popups still receive
+# focus normally via focus_follows_mouse when the user moves the mouse to them.
+focus_on_window_activation none
 
 # Floating modifier
 floating_modifier $mod
