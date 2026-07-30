@@ -106,6 +106,8 @@ apply_format "window-status-current-format" "gw"
 
 # Global styles
 apply_format "status-style"
+apply_format "status-left-style"
+apply_format "status-right-style"
 apply_format "message-style"
 apply_format "message-command-style"
 apply_format "mode-style"
@@ -113,6 +115,7 @@ apply_format "pane-border-style"
 apply_format "pane-active-border-style"
 apply_format "display-panes-colour"
 apply_format "display-panes-active-colour"
+apply_format "clock-mode-colour"
 
 # Window styles
 apply_format "window-status-style" "gw"
