@@ -68,6 +68,7 @@ end, { desc = "Open Pi in new tab" })
 map("n", "tp", ":tabprevious<CR>", { desc = "Tab previous" })
 map("n", "tn", ":tabnext<CR>", { desc = "Tab next" })
 map("n", "tm", ":tabmove", { desc = "Tab move" })
+map("n", "tq", ":tabclose<CR>", { desc = "Tab close" })
 
 -- C-g prefix: tab switching + file info
 map({ "n", "i" }, "<C-g>[", "<cmd>tabprevious<CR>", { desc = "Tab previous" })
