@@ -167,7 +167,7 @@ return {
             m = { function() require("pi").select_model() end, "Pi: select model" },
             h = { function() require("pi").focus_chat_history() end, "Pi: focus history" },
             p = { function() require("pi").focus_chat_prompt() end, "Pi: focus prompt" },
-            t = { function() require("pi").toggle_chat() end, "Pi: hide/show chat float" },
+            t = { function() require("pi").tree() end, "Pi: session tree (:PiTree)" },
           }
           for key, spec in pairs(leaders) do
             vim.keymap.set({ "n", "i" }, "<C-g>" .. key, spec[1], { buffer = args.buf, desc = spec[2] })
