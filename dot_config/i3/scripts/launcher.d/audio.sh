@@ -83,28 +83,42 @@ for s in sinks:
     icon = "audio-card" if active else "audio-card"
     sel(f"{mark}{friendly}", icon, f"sink:{name}")
 
-# Available-but-inactive card profiles (HDMI/DP monitors)
+# Available-but-inactive card profiles (all output port types)
+OUT_TYPES = {"Speaker", "Headphones", "HDMI", "DP"}
 for card in cards:
     card_name = card.get("name", "")
     active_profile = card.get("active_profile", "")
     profiles = card.get("profiles", {})
+    seen = set()
+    active_out = active_profile.split("+")[0] if active_profile else ""
     for _pn, port in card.get("ports", {}).items():
-        if port.get("type") not in ("HDMI", "DP"):
+        pt = port.get("type", "")
+        if pt not in OUT_TYPES:
             continue
-        if port.get("availability") != "available":
+        if port.get("availability", "") == "not available":
             continue
-        product = port.get("properties", {}).get("device.product.name", "") or port.get("description", "")
+        if active_profile in set(port.get("profiles", [])):
+            continue
+        if pt in ("HDMI", "DP"):
+            friendly = port.get("properties", {}).get("device.product.name", "") or port.get("description", "")
+        else:
+            friendly = "内置扬声器"
         best, best_sc = "", -1
         for pname in port.get("profiles", []):
+            if pname in seen or pname == active_profile:
+                continue
+            if pname.split("+")[0] == active_out:
+                continue
             pi = profiles.get(pname, {})
-            if not pi.get("available") or pi.get("sinks", 0) < 1 or pname == active_profile:
+            if not pi.get("available") or pi.get("sinks", 0) < 1:
                 continue
             out_part = pname.split("+")[0]
             sc = (2 if "stereo" in out_part else 0) + (1 if "+input:" in pname else 0)
             if sc > best_sc:
                 best, best_sc = pname, sc
         if best:
-            sel(f"  {product}", "audio-card", f"profile:{best}:{card_name}")
+            seen.add(best)
+            sel(f"  {friendly}", "audio-card", f"profile:{best}:{card_name}")
 
 # ── Input devices ──
 label("输入设备")
