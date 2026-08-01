@@ -8,7 +8,6 @@ register_module audio "audio" plain "" "音频"
 audio_init() {
     printf '\0prompt\x1f音频\n'
     printf '\0no-custom\x1ftrue\n'
-    printf '\0message\x1fAlt+数字 快速切换\n'
 
     if ! command -v pactl >/dev/null 2>&1; then
         msg_row "未安装 pactl (pulseaudio-utils)" dialog-error
@@ -66,15 +65,8 @@ def friendly_source(name, desc):
         return "内置麦克风"
     return desc or name
 
-_key_counter = 0
-
-def sel(text, icon, info, key=False):
-    global _key_counter
-    if key:
-        _key_counter += 1
-        print(text + "\0icon\x1f" + icon + "\x1finfo\x1f" + info + "\x1fkey\x1f" + str(_key_counter))
-    else:
-        print(text + "\0icon\x1f" + icon + "\x1finfo\x1f" + info)
+def sel(text, icon, info):
+    print(text + "\0icon\x1f" + icon + "\x1finfo\x1f" + info)
 
 def label(text):
     print(text + "\0icon\x1f\x1fnonselectable\x1ftrue")
@@ -89,7 +81,7 @@ for s in sinks:
     active = name == def_sink
     mark = "✓ " if active else "  "
     icon = "audio-card" if active else "audio-card"
-    sel(f"{mark}{friendly}", icon, f"sink:{name}", key=True)
+    sel(f"{mark}{friendly}", icon, f"sink:{name}")
 
 # Available-but-inactive card profiles (all output port types)
 OUT_TYPES = {"Speaker", "Headphones", "HDMI", "DP"}
@@ -126,7 +118,7 @@ for card in cards:
                 best, best_sc = pname, sc
         if best:
             seen.add(best)
-            sel(f"  {friendly}", "audio-card", f"profile:{best}:{card_name}", key=True)
+            sel(f"  {friendly}", "audio-card", f"profile:{best}:{card_name}")
 
 # ── Input devices ──
 label("输入设备")
@@ -139,7 +131,7 @@ for s in sources:
     friendly = friendly_source(name, desc)
     active = name == def_source
     mark = "✓ " if active else "  "
-    sel(f"{mark}{friendly}", "audio-input-microphone", f"source:{name}", key=True)
+    sel(f"{mark}{friendly}", "audio-input-microphone", f"source:{name}")
 
 PYEOF
 }
