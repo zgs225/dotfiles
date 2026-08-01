@@ -128,7 +128,10 @@ audio_select() {
         sink:*)
             local name="${info#sink:}"
             setsid -f bash -c '
+                old_vol=$(pamixer --get-volume 2>/dev/null)
                 pactl set-default-sink "$1" 2>/dev/null
+                [ -n "$old_vol" ] && pamixer --set-volume "$old_vol" 2>/dev/null
+                pamixer -u 2>/dev/null
                 notify-send "音频" "输出已切换" 2>/dev/null
             ' _ "$name" >/dev/null 2>&1
             ;;
@@ -147,13 +150,18 @@ audio_select() {
             local profile="${rest%:*}"
             local card="${rest##*:}"
             setsid -f bash -c '
+                old_vol=$(pamixer --get-volume 2>/dev/null)
                 pactl set-card-profile "$2" "$1" 2>/dev/null
                 for _ in 1 2 3 4 5 6 7 8; do
                     sleep 0.25
                     new_sink=$(pactl list sinks short 2>/dev/null | awk "{print \$2}" | head -1)
                     [ -n "$new_sink" ] && break
                 done
-                [ -n "$new_sink" ] && pactl set-default-sink "$new_sink" 2>/dev/null
+                if [ -n "$new_sink" ]; then
+                    pactl set-default-sink "$new_sink" 2>/dev/null
+                    [ -n "$old_vol" ] && pamixer --set-volume "$old_vol" 2>/dev/null
+                    pamixer -u 2>/dev/null
+                fi
                 notify-send "音频" "输出已切换" 2>/dev/null
             ' _ "$profile" "$card" >/dev/null 2>&1
             ;;
