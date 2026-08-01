@@ -141,8 +141,11 @@ audio_select() {
             ;;
         profile:*)
             local rest="${info#profile:}"
-            local profile="${rest%%:*}"
-            local card="${rest#*:}"
+            # Profile names contain colons (e.g. output:hdmi-stereo+input:analog-stereo)
+            # but card names never do (alsa_card.pci-XXXX_XX_XX.X), so split on
+            # the LAST colon.
+            local profile="${rest%:*}"
+            local card="${rest##*:}"
             setsid -f bash -c '
                 pactl set-card-profile "$2" "$1" 2>/dev/null
                 for _ in 1 2 3 4 5 6 7 8; do
