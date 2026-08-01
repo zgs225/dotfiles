@@ -18,7 +18,7 @@
         (box :orientation "v" :spacing 4
           (for device in audio_sinks
             (button :class "audio-device-item ${device.active ? 'active' : ''}"
-              :onclick "~/.config/eww/scripts/audio-switch.sh sink '${device.name}'"
+              :onclick "~/.config/eww/scripts/audio-switch.sh '${device.type}' '${device.name}' '${device.card}'"
               (box :orientation "h" :spacing 8 :valign "center" :space-evenly false
                 (label :text "${device.active ? '󰄬' : '󰄰'}" :class "audio-device-check")
                 (label :text "${device.friendly}" :class "audio-device-name" :xalign 0 :limit-width 26)))))
