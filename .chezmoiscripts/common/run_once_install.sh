@@ -69,4 +69,11 @@ rename the file to zprofile:
 MSG
 fi
 
+# pi extensions (code is downloaded by pi into ~/.pi/agent/git, not tracked by
+# chezmoi; settings.json only holds the package reference)
+if command -v pi >/dev/null 2>&1; then
+  echo "==> Installing pi extensions..."
+  pi list | grep -q web-access || pi install https://github.com/nicobailon/pi-web-access
+fi
+
 echo "Done."

@@ -28,5 +28,8 @@
     "provider": {
       "maxRetryDelayMs": 300000
     }
-  }
+  },
+  "packages": [
+    "https://github.com/nicobailon/pi-web-access"
+  ]
 }

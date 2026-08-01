@@ -15,6 +15,13 @@ cursor/
 scripts/
 skills-lock.json
 
+# pi: downloaded extension code & runtime state (only settings.json is tracked)
+.pi/agent/git/
+.pi/agent/extensions/
+.pi/agent/sessions/
+.pi/agent/models-store.json
+.pi/agent/trust.json
+
 {{ if not .isLinux }}
 .chezmoiscripts/linux/**
 {{ end }}
