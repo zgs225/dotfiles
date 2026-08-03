@@ -172,6 +172,9 @@ exec --no-startup-id dunst
 exec --no-startup-id greenclip daemon
 exec --no-startup-id fcitx5 -d
 exec --no-startup-id nm-applet
+# polkit authentication agent — GUI prompt for polkit checks (Bitwarden
+# "Unlock with system authentication", pkexec, etc.). Package: polkit-gnome.
+exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 exec --no-startup-id libinput-gestures-setup start
 exec --no-startup-id ~/.config/eww/scripts/automount-daemon.sh
 {{ if and .isLinux .useI3 }}
