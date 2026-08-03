@@ -2,8 +2,8 @@
   "lastChangelogVersion": "0.81.1",
   "theme": "song-liquid-glass",
   "defaultProvider": "qwen-token-plan-cn",
-  "defaultModel": "qwen3.8-max-preview",
-  "defaultThinkingLevel": "high",
+  "defaultModel": "qwen3.8-max",
+  "defaultThinkingLevel": "xhigh",
   "hideThinkingBlock": false,
   "defaultProjectTrust": "always",
   "collapseChangelog": true,
@@ -19,7 +19,7 @@
     "kimi-for-coding",
     "deepseek-v4-pro",
     "deepseek-v4-flash",
-    "qwen3.8-max-preview",
+    "qwen3.8-max",
     "k3-256k"
   ],
   "retry": {

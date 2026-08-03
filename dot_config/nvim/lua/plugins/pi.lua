@@ -71,7 +71,7 @@ return {
       -- Curated model list for <C-g>m (pi.select_model). Without this the
       -- picker falls back to the backend's full model list (get_available_models
       -- ignores pi's enabledModels setting), so we keep an explicit shortlist.
-      models = { "k3", "kimi-for-coding", "deepseek-v4-pro", "deepseek-v4-flash", "qwen3.8-max-preview", "k3-256k" },
+      models = { "k3", "kimi-for-coding", "deepseek-v4-pro", "deepseek-v4-flash", "qwen3.8-max", "k3-256k" },
       -- Render thinking blocks in chat history (default: hidden).
       show_thinking = true,
       -- Keep the startup block (skills/extensions/announcements) collapsed.
