@@ -431,6 +431,11 @@ tmux_conf_uninstall_plugins_on_reload=true
 
 # -- custom bindings -----------------------------------------------------------
 
+# vi key table in copy-mode: enables C-u / C-d half-page scrolling and
+# activates the copy-mode-vi selection bindings (v / C-v / y / H / L)
+# defined in .tmux.conf; with the default (emacs) table those were dead
+setw -g mode-keys vi
+
 # window navigation with [ and ] (consistent with i3 / wezterm / nvim)
 #   - stock `prefix [` (copy-mode) → available on `prefix Enter`
 #   - stock `prefix ]` (paste-buffer) → available on `prefix =` (choose-buffer)
