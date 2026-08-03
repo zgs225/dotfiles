@@ -1,6 +1,6 @@
 {
   "searxngBaseUrl": "https://searxng.in.yuez.me",
   "ssrf": {
-    "allowRanges": ["192.168.2.0/24"]
+    "allowRanges": ["192.168.2.0/24", "198.18.0.0/15"]
   }
 }
