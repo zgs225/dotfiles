@@ -14,6 +14,14 @@ for w in $(xdotool search --pid "$pid" 2>/dev/null); do
 done
 
 sleep 0.5
+# Apps with "close to tray" (e.g. Bitwarden) legitimately hide to tray on
+# WM_DELETE — they must survive, not be SIGTERMed. Match on cmdline since
+# Arch's Electron-packaged apps all have comm="electron".
+cmdline=$(tr '\0' ' ' < "/proc/$pid/cmdline" 2>/dev/null)
+case "$cmdline" in
+    *[Bb]itwarden*) exit 0 ;;
+esac
+
 # Use --onlyvisible: apps like Clash Verge hide to tray by *unmapping*
 # their window, so a plain search would still find it and skip SIGTERM.
 if kill -0 "$pid" 2>/dev/null && [ -z "$(xdotool search --onlyvisible --pid "$pid" 2>/dev/null)" ]; then
