@@ -1,0 +1,10 @@
+[Unit]
+Description=Auto-import browser bookmarks into buku DB
+
+[Service]
+Type=oneshot
+# sleep 3: 合并 Chrome 短时间内的连续写入; flock: 防止并发导入
+ExecStart=/usr/bin/bash -c 'sleep 3; exec /usr/bin/flock -n %t/buku-import.lock /usr/bin/buku --tacit --nostdin --ai </dev/null'
+TimeoutStartSec=120
+StandardOutput=journal
+StandardError=journal

@@ -1,0 +1,9 @@
+[Unit]
+Description=Watch Chrome bookmarks file and auto-import into buku
+
+[Path]
+PathChanged=%h/.config/google-chrome/Default/Bookmarks
+Unit=buku-import.service
+
+[Install]
+WantedBy=default.target

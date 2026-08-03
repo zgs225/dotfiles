@@ -1,0 +1,10 @@
+{{ if and .isLinux .useI3 -}}
+#!/bin/sh
+# buku-import.service hash: {{ include "dot_config/systemd/user/buku-import.service" | sha256sum }}
+# buku-import.path hash: {{ include "dot_config/systemd/user/buku-import.path" | sha256sum }}
+
+set -e
+
+systemctl --user daemon-reload
+systemctl --user enable --now buku-import.path
+{{ end -}}
