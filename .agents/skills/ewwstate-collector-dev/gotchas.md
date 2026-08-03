@@ -250,3 +250,46 @@ AUDIO_JSON=$(timeout 3 ~/.config/eww/scripts/ewwstate get audio_devices 9>&- | t
 **怎么做**：
 1. 排查 literal 解析错误时，先怀疑「值被截断」而非「值语法错误」——看错误里的列号是否恰好在某个文本属性中间断开。
 2. 大 literal 的即时刷新优先走 gotcha #26 的 daemon 快照路径（`ewwstate get` 是原子读，不会截断）；必须跑脚本时，timeout 只裹外层 `eww`，别裹内层采集脚本，或在采集脚本内部自己保证完整性。
+
+---
+
+## 28. PipeWire 声卡 profile 互斥——`pactl list sinks` 看不到未激活 profile 的设备
+
+**为什么**：同一声卡（如 Intel HDA ALC294）的 analog 输出和 HDMI/DP 输出是互斥 profile。`pactl list sinks` 只返回当前 profile 创建的 sink——切到 analog 时 HDMI sink 不存在，反之亦然。如果 audio collector 只解析 `pactl list sinks`，用户在 eww 音频设备列表里永远看不到另一个输出设备（如显示器内置音响）。
+
+**怎么做**：
+1. collector 额外调用 `pactl --format=json list cards`，解析每张卡的 `ports` + `profiles` 结构。
+2. 遍历所有输出端口（type ∈ {Speaker, Headphones, HDMI, DP}），过滤 `availability != "not available"`。
+3. 对每个端口，找最优的 available 且 sinks≥1 且 ≠ active_profile 的 profile 作为切换目标。
+4. 如果 active_profile 已覆盖该端口（`active_profile in port.profiles`），跳过整个端口——避免同端口的 surround/stereo 变体冒出来。
+5. 生成的 profile 条目标记 `"type":"profile"` + `"card":"<card_name>"`，与真实 sink 条目（`"type":"sink"`）区分。
+6. `audio-switch.sh` 增加 `profile` 分支：先 `pactl set-card-profile`，再 retry 等待新 sink 创建（最多 2s），最后 `set-default-sink`。
+
+**踩坑实录**：2026-08 用户报告 eww 控制中心音频设备列表看不到 USB-C 连接的 DELL U2720QM 显示器音响。根因：Intel 声卡 profile = `output:analog-stereo`，HDMI sink 不存在于 `pactl list sinks`。修复后两个方向（analog↔HDMI）均可在 UI 一键切换。
+
+---
+
+## 29. Audio collector profile 解析的三个陷阱
+
+**为什么**：解析 `pactl --format=json list cards` 生成 profile 切换条目时，有三个非直觉的坑：
+
+1. **HDMI sink 的 Description 也含 "Built-in Audio"**。HDMI/DP sink 的 Description 是 `"Built-in Audio Digital Stereo (HDMI)"`，如果 `_friendly()` 只检查 `"Built-in Audio" in desc` 就返回 `"内置扬声器"`，HDMI sink 会显示错误名字。
+   **怎么做**：`_friendly()` 在匹配 `"Built-in Audio"` 后，额外检查 desc 是否含 `"HDMI"` 或 `"DisplayPort"`；如果是，从 sink name 提取后缀（如 `hdmi-stereo`），查 port product name map 取显示器型号（如 `DELL U2720QM`）。
+
+2. **Profile 评分的 stereo 误匹配**。`output:hdmi-surround+input:analog-stereo` 的 input 部分含 `stereo`，如果评分函数对整个 profile name 做 `"stereo" in name` 检查，surround+input 组合会比纯 stereo 得分更高，导致选错 profile。
+   **怎么做**：评分只检查 `+` 前的 output 部分：`output_part = profile_name.split("+")[0]`，然后 `"stereo" in output_part`。
+
+3. **活跃端口的变体泄漏**。当 active profile = `output:hdmi-stereo` 时，HDMI 端口的 `output:hdmi-surround+input:analog-stereo` 仍然 available 且 sinks≥1，如果不过滤就会在列表里多出一个同显示器的 surround 条目。
+   **怎么做**：遍历端口时，如果 `active_profile in set(port.profiles)`，跳过整个端口。同理过滤 `pname.split("+")[0] == active_output` 的变体。
+
+**踩坑实录**：三个 bug 在同一次开发中连续暴露。第一个导致 HDMI sink 显示「内置扬声器」；第二个导致选到 surround profile 而非 stereo；第三个导致 HDMI 激活时列表多出一行重复的 DELL U2720QM。
+
+---
+
+## 30. PipeWire mute/volume 是 per-sink 的——切换设备后必须 unmute
+
+**为什么**：PipeWire 为每个 sink 独立保存 mute 和 volume 状态。`pamixer --get-mute` 读的是当前 default sink 的状态。当用户通过 eww 切换输出设备（尤其是 profile 切换导致 sink 销毁/重建）时，新 sink 可能处于 muted 状态（之前被静音过），表现为「切过去没声音」。
+
+**怎么做**：`audio-switch.sh` 的 `sink` 和 `profile` 分支在 `set-default-sink` 之后必须调 `pamixer -u` 强制 unmute 新 sink。这是合理的 UX——用户主动点击切换设备，期望能听到声音；如果想静音可以用控制中心的 mute 按钮。
+
+**踩坑实录**：2026-08 用户报告「切到 DELL 显示器音响能出声，切回内置扬声器没声音」。根因：analog sink 之前被误触静音，切到 HDMI 时 HDMI sink 未静音所以有声，切回 analog 时继承了 muted 状态。加 `pamixer -u` 后解决。
