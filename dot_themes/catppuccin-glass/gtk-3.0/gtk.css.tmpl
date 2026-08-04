@@ -27,23 +27,31 @@
 @define-color blue {{ .colors.accent }};
 @define-color seal {{ .colors.error }};
 
-/* ── Menus and context menus (system tray, right-click, etc.) ── */
+/* ── Menus and context menus (system tray, right-click, etc.) ──
+ * Song standard S4.5: L4 glass 0.60 + 5px radius + tianqing hairline;
+ * item hover = S4.3 jie-yin (2px left accent bar).
+ * Font sizes and paddings are in pt: GTK converts pt through Xft.dpi, so
+ * displayctl's DPI tiers (96/144/192) keep the physical size constant —
+ * no per-tier baking needed, unlike eww geometry.
+ * Electron/Tauri tray menus (aTrust, DingTalk, clash-verge) are GtkMenu
+ * and inherit everything below. */
 menu,
 .context-menu,
 .menu {
-  background-color: alpha(@base, 0.75);
-  border: 1px solid alpha(@text, 0.18);
-  padding: 10px;
-  border-radius: 16px;
+  background-color: alpha(@base, 0.60);
+  border: 1px solid alpha(@lavender, 0.35);
+  border-radius: 5px;
+  padding: 6pt;
   color: @text;
+  font-size: 11.5pt;
 }
 
 menuitem,
 .menuitem {
   color: @subtext1;
-  padding: 8px 12px;
-  border-radius: 10px;
-  transition: all 120ms;
+  padding: 5pt 10pt;
+  border-radius: 3px;
+  border-left: 2px solid transparent;
 }
 
 menuitem:hover,
@@ -52,6 +60,7 @@ menuitem:selected,
 .menuitem:selected {
   color: @text;
   background-color: alpha(@surface1, 0.40);
+  border-left-color: @lavender;
 }
 
 menuitem:disabled,
@@ -61,45 +70,54 @@ menuitem:disabled,
 
 menu separator,
 .menu separator {
-  background-color: alpha(@text, 0.08);
+  background-color: alpha(@lavender, 0.15);
   min-height: 1px;
-  margin: 8px 4px;
+  margin: 4pt 4pt;
 }
 
-/* ── Popovers (newer GTK3 apps replace menus with popovers) ── */
+menu > arrow {
+  color: @subtext0;
+}
+
+/* ── Popovers (newer GTK3 apps replace menus with popovers) ──
+ * Popover = L2 functional panel 0.65 (S2.2). */
 popover {
-  background-color: alpha(@base, 0.75);
-  border: 1px solid alpha(@text, 0.18);
-  border-radius: 16px;
-  padding: 10px;
+  background-color: alpha(@base, 0.65);
+  border: 1px solid alpha(@lavender, 0.35);
+  border-radius: 5px;
+  padding: 6pt;
   color: @text;
+  font-size: 11.5pt;
 }
 
 popover modelbutton {
   color: @subtext1;
-  padding: 8px 12px;
-  border-radius: 10px;
+  padding: 5pt 10pt;
+  border-radius: 3px;
+  border-left: 2px solid transparent;
 }
 
 popover modelbutton:hover,
 popover modelbutton:selected {
   color: @text;
   background-color: alpha(@surface1, 0.40);
+  border-left-color: @lavender;
 }
 
 popover separator {
-  background-color: alpha(@text, 0.08);
+  background-color: alpha(@lavender, 0.15);
   min-height: 1px;
-  margin: 8px 4px;
+  margin: 4pt 4pt;
 }
 
 /* ── Tooltips ── */
 tooltip {
   background-color: alpha(@base, 0.92);
-  border: 1px solid alpha(@text, 0.15);
-  border-radius: 10px;
-  padding: 6px 10px;
+  border: 1px solid alpha(@lavender, 0.25);
+  border-radius: 5px;
+  padding: 4pt 7pt;
   color: @text;
+  font-size: 10pt;
 }
 
 /* ============================================================ MAIN APPLICATION WINDOWS ============================================================ */
@@ -246,7 +264,7 @@ separator {
   background-color: transparent;
   background-image: none;
   color: alpha(@subtext0, 0.62);
-  font: 13px;
+  font-size: 13px;
 }
 #panel_window .menubar .menuitem:hover {
   background-color: alpha(@surface1, 0.30);
@@ -284,7 +302,7 @@ separator {
 #login_window #content_frame { padding-bottom: 10px; }
 
 /* hide the avatar; collapse its column into a breathing gutter */
-#login_window #user_image { opacity: 0; -gtk-icon-size: 1px; }
+#login_window #user_image { opacity: 0; }
 #login_window #user_image_border {
   border: none;
   background: none;
@@ -303,7 +321,7 @@ separator {
   box-shadow: none;
   padding: 0;
 }
-#login_window #user_combobox { color: @text; font: bold 18px; }
+#login_window #user_combobox { color: @text; font-size: 18px; font-weight: bold; }
 
 /* 口令 fill-line — strip the entry box to a single tianqing underline */
 #login_window #password_entry,
@@ -317,7 +335,7 @@ separator {
   color: @text;
   caret-color: @lavender;
   padding: 8px 2px;
-  font: 18px;
+  font-size: 18px;
 }
 #login_window #password_entry:focus,
 #login_window #username_entry:focus {
@@ -337,7 +355,7 @@ separator {
 #login_window #greeter_infobar label,
 #login_window #greeter_infobar #message_label {
   color: @seal;
-  font: 13px;
+  font-size: 13px;
 }
 
 /* button row — cancel as quiet ghost, login as tianqing plaque */
@@ -354,7 +372,7 @@ separator {
   border: none;
   box-shadow: none;
   color: alpha(@subtext0, 0.85);
-  font: 14px;
+  font-size: 14px;
 }
 #login_window #cancel_button:hover {
   background: none;
@@ -369,7 +387,8 @@ separator {
   border-radius: 4px;
   box-shadow: none;
   color: @text;
-  font: bold 18px;
+  font-size: 18px;
+  font-weight: bold;
   padding: 9px 26px;
 }
 #login_window #login_button:hover {

@@ -8,6 +8,11 @@ export GLFW_IM_MODULE=fcitx
 export QT_STYLE_OVERRIDE=kvantum
 export KVANTUM_THEME=catppuccin-glass
 
+# Qt reads GTK settings (gtk-font-name + Xft.dpi) so Qt tray menus (fcitx5,
+# WeChat) share the GTK font and track the displayctl DPI tiers. Widget
+# drawing still comes from Kvantum via QT_STYLE_OVERRIDE above.
+export QT_QPA_PLATFORMTHEME=gtk3
+
 # Electron / Chromium — use Ozone GTK backend; dark mode comes from the
 # freedesktop color-scheme portal (no GTK_THEME override, it would shadow
 # both the GTK3 catppuccin-glass theme and GTK4 Adwaita variant selection)
@@ -29,4 +34,5 @@ export PATH="$HOME/.local/share/mise/shims:$PATH"
 # `systemctl --user` (eww, dunst, …) inherit DISPLAY and the fcitx IM vars —
 # otherwise those processes miss the input-method context (needs 5/6).
 systemctl --user import-environment DISPLAY PATH \
-    GTK_IM_MODULE QT_IM_MODULE XMODIFIERS SDL_IM_MODULE GLFW_IM_MODULE
+    GTK_IM_MODULE QT_IM_MODULE XMODIFIERS SDL_IM_MODULE GLFW_IM_MODULE \
+    QT_STYLE_OVERRIDE KVANTUM_THEME QT_QPA_PLATFORMTHEME
