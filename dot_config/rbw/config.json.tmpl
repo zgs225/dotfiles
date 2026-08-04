@@ -1,6 +1,6 @@
 {
     "email": "{{ .user.email }}",
     "base_url": "https://bit.yuez.me",
-    "lock_timeout": 3600{{ if and .isLinux .useI3 }},
+    "lock_timeout": 86400{{ if and .isLinux .useI3 }},
     "pinentry": "{{ .chezmoi.homeDir }}/.config/rbw/pinentry-wrapper.sh"{{ end }}
 }
