@@ -1,0 +1,63 @@
+{{- $eww := includeTemplate "eww-sizes" . | fromJson -}}
+;; ============================================ RECORD CONTROLS ============================================
+;; CleanShot-X-style floating control bar for screenrecord.sh, two states:
+;;   ARMED     -> [record] [region WxH] [audio toggle] [cancel]
+;;   RECORDING -> [live dot] [elapsed m:ss] [stop]
+;; Opened by screenrecord.sh with --arg pos_x/pos_y, placed OUTSIDE the
+;; captured region whenever there is room (a window overlapping the region
+;; would be baked into the video itself). Width is baked (eww-sizes):
+;; "0px" auto-width shrinks the window and clips the content.
+
+;; ============================================ RECORD FRAME ============================================
+;; Selection frame for screenrecord.sh: four 2px strips hugging the OUTSIDE
+;; of the captured region (zero overlap, so the frame never lands in the
+;; video and may stay up while recording). One defwindow, opened 4x with
+;; --id top/bottom/left/right; sizes come from the script via --arg.
+
+(defwindow rec-frame [pos_x pos_y width height]
+  :stacking "overlay"
+  :windowtype "dialog"
+  :focusable false
+  :wm-ignore true
+  :class "eww-rec-frame"
+  :geometry (geometry :width { width } :height { height }
+             :x { pos_x } :y { pos_y } :anchor "top left")
+  (box :class "rec-frame-strip"))
+
+(defwindow rec-controls [pos_x pos_y]
+  :stacking "overlay"
+  :windowtype "dialog"
+  :focusable false
+  :wm-ignore true
+  :class "eww-rec-controls"
+  :geometry (geometry :width "{{ mulf $eww.popupFontSize 21 | int }}px" :height "0px"
+             :x { pos_x } :y { pos_y } :anchor "top left")
+  (box :class "rec-controls-card" :orientation "h" :spacing 10
+       :halign "center" :valign "center" :space-evenly false
+    ;; ARMED: window only exists while armed/recording, so
+    ;; screen_recording != 'true' here means armed-and-idle
+    (box :orientation "h" :spacing 10 :valign "center" :space-evenly false
+         :visible "${screen_recording != 'true'}"
+      (button :class "rec-btn rec-start"
+              :onclick "~/.config/i3/scripts/screenrecord.sh __ui_start"
+        (box :orientation "h" :spacing 6 :valign "center" :space-evenly false
+          (box :class "rec-start-dot" :valign "center")
+          (label :text "录制" :class "rec-btn-label")))
+      (label :text "${screen_rec_region}" :class "rec-meta" :valign "center")
+      (button :class "rec-btn rec-audio${screen_rec_audio == 'sys' ? ' on' : ''}"
+              :onclick "~/.config/i3/scripts/screenrecord.sh __ui_audio"
+        (label :text "${screen_rec_audio == 'sys' ? '系统音' : '无声'}"
+               :class "rec-btn-label rec-audio-label"))
+      (button :class "rec-btn rec-cancel"
+              :onclick "~/.config/i3/scripts/screenrecord.sh __ui_cancel"
+        (label :text "✕" :class "rec-btn-label rec-cancel-label")))
+    ;; RECORDING
+    (box :orientation "h" :spacing 10 :valign "center" :space-evenly false
+         :visible "${screen_recording == 'true'}"
+      (box :class "rec-live-dot" :valign "center")
+      (label :text "${screen_rec_elapsed}" :class "rec-elapsed" :valign "center")
+      (button :class "rec-btn rec-stop"
+              :onclick "~/.config/i3/scripts/screenrecord.sh __ui_stop"
+        (box :orientation "h" :spacing 6 :valign "center" :space-evenly false
+          (box :class "rec-stop-square" :valign "center")
+          (label :text "停止" :class "rec-btn-label rec-stop-label"))))))

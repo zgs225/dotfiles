@@ -100,6 +100,18 @@
 }
 .time-btn:hover .time-main { color: lighten($text, 5%); }
 
+/* Screen recording indicator - script-driven (screenrecord.sh), shown only
+   while capturing. Badge language per S8.8: gamboge square dot, radius-sm;
+   elapsed time in crab-shell. Static on purpose (GTK3 ignores keyframes). */
+.rec-indicator { padding: 0 4px; }
+.rec-dot {
+  background-color: $warn;
+  border-radius: $radius-sm;
+  min-width: 8px;
+  min-height: 8px;
+}
+.rec-time { color: $fg-secondary; font-size: {{ mulf $eww.fontSize 1.00 | int }}px; }
+
 /* Notification bell */
 .notif-icon-wrap {
   min-width: {{ $eww.iconSize }}px;

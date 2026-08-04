@@ -34,6 +34,12 @@
 
       (label :text "·" :class "bar-sep" :valign "center")
 
+      ;; recording indicator (screenrecord.sh driven, visible only while capturing)
+      (box :class "rec-indicator" :orientation "h" :spacing 6 :space-evenly false
+           :valign "center" :visible "${screen_recording == 'true'}"
+        (box :class "rec-dot" :valign "center")
+        (label :text "${screen_rec_elapsed}" :class "rec-time"))
+
       (button :class "module-btn net-btn" :valign "center"
         :onclick "~/.config/eww/scripts/open-popup.sh network-popup"
         (label :text "${network_status.icon}" :class "module-icon"))

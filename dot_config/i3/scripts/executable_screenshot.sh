@@ -47,7 +47,7 @@ else
     thumb="/tmp/screenshot-thumb.png"
     magick "$tmp" -resize 400x300 "$thumb" 2>/dev/null || cp "$tmp" "$thumb"
 
-    eww update screenshot_path="$dir/$timestamp.png" screenshot_thumb="$thumb"
+    eww update screenshot_path="$dir/$timestamp.png" screenshot_thumb="$thumb" screenshot_kind=png
     eww open screenshot-popup
 
     timer_pid_file="/tmp/eww-screenshot-timer.pid"

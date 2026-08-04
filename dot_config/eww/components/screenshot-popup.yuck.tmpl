@@ -16,8 +16,12 @@
            :image-height {{ $eww.screenshotThumbH }})
     (box :class "screenshot-actions" :orientation "h" :spacing 10 :halign "center" :valign "center"
       (button :class "screenshot-btn screenshot-annotate"
+              :visible "${screenshot_kind == 'png'}"
               :onclick "~/.config/eww/scripts/screenshot-action.sh annotate"
         (label :text "标注" :class "screenshot-btn-label"))
+      (button :class "screenshot-btn screenshot-copy"
+              :onclick "~/.config/eww/scripts/screenshot-action.sh copy"
+        (label :text "复制" :class "screenshot-btn-label"))
       (button :class "screenshot-btn screenshot-open"
               :onclick "~/.config/eww/scripts/screenshot-action.sh open"
         (label :text "打开" :class "screenshot-btn-label"))

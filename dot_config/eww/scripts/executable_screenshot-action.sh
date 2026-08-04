@@ -47,6 +47,16 @@ case "$action" in
               --copy-command "xclip -selection clipboard -t image/png" \
               --early-exit
         ;;
+    copy)
+        close_popup
+        kind="$(eww get screenshot_kind | tr -d '"')"
+        case "$kind" in
+            gif) xclip -selection clipboard -t image/gif < "$path" ;;
+            mp4) xclip -selection clipboard -t video/mp4 < "$path" ;;
+            *)   xclip -selection clipboard -t image/png < "$path" ;;
+        esac
+        notify-send -u low -t 2000 -i "$path" "已复制到剪贴板" 2>/dev/null || true
+        ;;
     open)
         close_popup
         xdg-open "$path" &
@@ -56,7 +66,7 @@ case "$action" in
         rm -f "$path"
         ;;
     *)
-        echo "Usage: screenshot-action.sh [annotate|open|delete]" >&2
+        echo "Usage: screenshot-action.sh [annotate|copy|open|delete]" >&2
         exit 1
         ;;
 esac

@@ -13,6 +13,16 @@
 (defvar bt_pair_hint "")
 (defvar screenshot_path "")
 (defvar screenshot_thumb "")
+(defvar screenshot_kind "png")
+;; screenrecord.sh toggle state (script-driven, never polled):
+;; screen_recording="true" only while gpu-screen-recorder is capturing;
+;; screen_rec_elapsed is the m:ss string pushed by the script's 1s updater.
+(defvar screen_recording "false")
+(defvar screen_rec_elapsed "")
+;; rec-controls ARMED state: region label ("W x H") and the audio toggle
+;; (off|sys). The toggle persists in ~/.local/state/screenrecord/audio.
+(defvar screen_rec_region "")
+(defvar screen_rec_audio "off")
 (defvar storage_busy "")
 
 ;; ============================================ DATA POLLING (defpoll) ============================================

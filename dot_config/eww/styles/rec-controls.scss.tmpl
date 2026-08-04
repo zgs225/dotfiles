@@ -1,0 +1,65 @@
+{{- $eww := includeTemplate "eww-sizes" . | fromJson -}}
+
+/* ============================================================ RECORD CONTROLS ============================================================ */
+/* L4 temporary layer (0.60) like OSD; floating CleanShot-style control bar
+   for screenrecord.sh, placed outside the captured region. The warn-gamboge
+   live dot mirrors the bar recording badge (cinnabar stays reserved for the
+   current-workspace seal, so the record glyph reuses warn, not seal). */
+/* Selection frame: 2px tianqing strips outside the region, same visual
+   language as the i3 focused-window border (kuangling). Solid enough to
+   read on any wallpaper; alpha from the L1 band. */
+.rec-frame-strip {
+  background-color: rgba($accent, 0.90);
+}
+
+.rec-controls-card {
+  @include glass-shell(0.60, 0.35);
+  border-radius: $radius;
+  padding: 8px 12px;
+}
+.rec-btn { padding: 5px 12px; border-radius: $radius; transition: all 140ms; }
+.rec-btn-label { font-size: {{ mulf $eww.popupFontSize 0.88 | int }}px; font-weight: bold; }
+
+/* ARMED state: start = primary action (accent), meta = dim, cancel = discard */
+.rec-start { background-color: rgba($accent, 0.80); }
+.rec-start:hover { background-color: rgba($accent, 1.0); }
+.rec-start .rec-btn-label { color: $bg-base; }
+.rec-start-dot {
+  background-color: $bg-base;
+  border-radius: $radius-sm;
+  min-width: 8px;
+  min-height: 8px;
+}
+.rec-meta {
+  color: $fg-secondary;
+  font-size: {{ mulf $eww.popupFontSize 0.80 | int }}px;
+}
+.rec-audio { background-color: rgba($surface2, 0.50); }
+.rec-audio:hover { background-color: rgba($surface2, 0.75); }
+.rec-audio .rec-btn-label { color: $subtext0; }
+.rec-audio.on .rec-btn-label { color: $accent; }
+.rec-cancel { background-color: rgba($surface2, 0.50); }
+.rec-cancel:hover { background-color: rgba($error, 0.60); }
+.rec-cancel .rec-btn-label { color: $subtext0; }
+.rec-cancel:hover .rec-btn-label { color: $fg-primary; }
+
+/* RECORDING state: live dot + mono elapsed + neutral stop */
+.rec-live-dot {
+  background-color: $warn;
+  border-radius: $radius-sm;
+  min-width: 8px;
+  min-height: 8px;
+}
+.rec-elapsed {
+  color: $fg-primary;
+  font-size: {{ mulf $eww.popupFontSize 0.88 | int }}px;
+}
+.rec-stop { background-color: rgba($surface2, 0.50); }
+.rec-stop:hover { background-color: rgba($surface2, 0.75); }
+.rec-stop .rec-btn-label { color: $fg-primary; }
+.rec-stop-square {
+  background-color: $warn;
+  border-radius: $radius-sm;
+  min-width: 8px;
+  min-height: 8px;
+}
