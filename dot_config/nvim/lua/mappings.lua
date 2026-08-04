@@ -65,8 +65,8 @@ map("n", "<leader>aP", function()
 end, { desc = "Open Pi in new tab" })
 
 -- Tab navigation
-map("n", "tp", ":tabprevious<CR>", { desc = "Tab previous" })
-map("n", "tn", ":tabnext<CR>", { desc = "Tab next" })
+map("n", "t[", ":tabprevious<CR>", { desc = "Tab previous" })
+map("n", "t]", ":tabnext<CR>", { desc = "Tab next" })
 map("n", "tm", ":tabmove", { desc = "Tab move" })
 map("n", "tq", ":tabclose<CR>", { desc = "Tab close" })
 
