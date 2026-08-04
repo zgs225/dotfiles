@@ -52,6 +52,7 @@ skills-lock.json
 .config/rofi/**
 .config/greenclip.toml
 .config/display/**
+.config/rbw/pinentry-wrapper.sh
 .config/autostart/synology-drive-autostart.desktop
 .config/systemd/**
 .xinitrc
