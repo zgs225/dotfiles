@@ -83,6 +83,10 @@ return {
       -- Richer markdown rendering of the chat history via render-markdown.nvim
       -- (already installed). Falls back to pi's builtin renderer if absent.
       render = { engine = "render-markdown" },
+      -- Sessions overview (:PiSessions): live list of all active sessions.
+      -- auto_open shows it together with the chat; mode "follow" mirrors the
+      -- tab's chat layout (side here), pinned to the left edge like the chat.
+      sessions_list = { auto_open = true },
       -- Side layout: 60%-width vertical split on the left (position = "left"
       -- is honored natively by pi.nvim now). Switch side/float on the fly
       -- with :PiToggleLayout.
