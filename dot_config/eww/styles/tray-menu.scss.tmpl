@@ -1,0 +1,83 @@
+{{- $eww := includeTemplate "eww-sizes" . | fromJson -}}
+
+/* ============================================================ TRAY MENU ============================================================
+ * eww 0.5 renders StatusNotifier dbusmenu menus itself, as GTK menus inside
+ * eww windows - so they pick up THIS stylesheet at APPLICATION priority,
+ * after the global `* { all: unset }` reset. Without rules here they fall
+ * back to a tiny unthemed default (fixed ~96dpi metrics, square, no glass).
+ *
+ * Design: menus are floating panels - elevated-ink bg, celadon hairline,
+ * radius 5px, jieyin hover (S4.3/S4.5). Metrics mirror
+ * the GTK theme's pt values (6pt menu pad, 5pt/10pt item pad, 4pt separator
+ * margin) converted to px per DPI tier via eww-sizes, so eww-rendered menus
+ * and native GTK/Qt tray menus keep the same physical size (S4.5).
+ *
+ * NOTE on opaque menu windows: eww's systray menu windows are NOT ARGB,
+ * so rgba() backgrounds do not composite with the wallpaper - they blend
+ * with the window's own backing pixel and come out near-black. Use an
+ * opaque elevated-ink panel instead (deterministic, token-pure), and draw
+ * the hairline as an inset box-shadow: a real border on the `menu` node
+ * is clipped by the override-redirect window and never reaches the screen. */
+menu {
+  background-color: $bg-elevated;
+  border: none;
+  box-shadow: inset 0 0 0 1px rgba($accent, 0.35);
+  border-radius: $radius;
+  padding: {{ $eww.menuPad }}px;
+}
+
+menuitem {
+  color: $fg-secondary;
+  font-size: {{ mulf $eww.popupFontSize 1.00 | int }}px;
+  padding: {{ $eww.menuItemPadV }}px {{ $eww.menuItemPadH }}px;
+  border-radius: $radius-sm;
+  border-left: 2px solid transparent;
+}
+menuitem:hover, menuitem:selected {
+  color: $fg-primary;
+  background-color: rgba($surface1, 0.40);
+  border-left-color: $accent;
+}
+menuitem:disabled { color: rgba($fg-secondary, 0.50); }
+
+menu separator {
+  background-color: rgba($accent, 0.15);
+  min-height: 1px;
+  margin: {{ $eww.menuSepMargin }}px {{ $eww.menuSepMargin }}px;
+}
+
+/* submenu arrow: all:unset clears the themed -gtk-icon-source, redraw a
+ * small triangle from borders so nested dbusmenus stay discoverable */
+menu arrow {
+  min-width: {{ mulf $eww.popupFontSize 0.35 | int }}px;
+  min-height: {{ mulf $eww.popupFontSize 0.35 | int }}px;
+  border-left: {{ mulf $eww.popupFontSize 0.35 | int }}px solid $fg-secondary;
+  border-top: {{ mulf $eww.popupFontSize 0.25 | int }}px solid transparent;
+  border-bottom: {{ mulf $eww.popupFontSize 0.25 | int }}px solid transparent;
+}
+menuitem:hover arrow, menuitem:selected arrow { border-left-color: $fg-primary; }
+
+/* check/radio indicators exported by some dbusmenus (e.g. fcitx IM list) */
+menuitem check, menuitem radio {
+  min-width: {{ mulf $eww.popupFontSize 0.55 | int }}px;
+  min-height: {{ mulf $eww.popupFontSize 0.55 | int }}px;
+  border: 1px solid rgba($accent, 0.35);
+  border-radius: $radius-sm;
+  margin-right: {{ $eww.menuSepMargin }}px;
+}
+menuitem check:checked, menuitem radio:checked {
+  background-color: $accent;
+  border-color: $accent;
+}
+
+/* tray hover tooltips (eww draws them for SNI titles) - opaque elevated
+ * ink for the same non-ARGB reason as menu, 4pt/7pt pad and 10pt font
+ * baked per tier */
+tooltip {
+  background-color: $bg-elevated;
+  border: 1px solid rgba($accent, 0.25);
+  border-radius: $radius;
+  padding: {{ $eww.tipPadV }}px {{ $eww.tipPadH }}px;
+  color: $fg-primary;
+  font-size: {{ $eww.tipFontSize }}px;
+}

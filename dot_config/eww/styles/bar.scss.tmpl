@@ -45,11 +45,11 @@
 /* Group separator - interpunct, faint like a ruled line on rice paper */
 .bar-sep { color: rgba($fg-secondary, 0.32); font-size: {{ mulf $eww.fontSize 1.00 | int }}px; padding: 0 2px; }
 
-/* System tray - color enclave corralled in an ink box */
+/* System tray - color enclave corralled in an ink box (S7); pad follows DPI tier */
 .bar-tray {
   background-color: rgba($surface2, 0.40);
   border-radius: 3px;
-  padding: 4px;
+  padding: {{ $eww.trayPad }}px;
 }
 
 /* Workspaces - cinnabar seals on Heavenly Stems */

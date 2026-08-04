@@ -168,8 +168,10 @@ border: 1px solid rgba($accent, 0.15);   // 格内分隔
 
 ### 4.5 菜单 / 二级弹层
 
-- 复用"透明全屏事件层"方案（`popup-scrim`）：点击任意处关闭
+- 复用“透明全屏事件层”方案（`popup-scrim`）：点击任意处关闭
 - 菜单本体 L4 玻璃 + 5px 圆角 + 发丝线；项 hover 见 §4.3 界引规范
+- **原生工具包菜单**（托盘右键菜单：GTK3/GTK4 的 `menu`/`popover`、Qt/Kvantum）同样套用本节：L4 0.60、5px 圆角、天青发丝线、界引 hover。字体与内边距用 **pt 单位**（GTK 按 Xft.dpi 换算），随 displayctl 三档 DPI 自动保持物理尺寸恒定——与 eww-sizes 的 apply 时烘焙互补，不落 px 字面量。Qt 侧经 `QT_QPA_PLATFORMTHEME=gtk3` 共享 GTK 字体设置（`dot_xprofile`），绘制仍走 Kvantum；菜单圆角面由 Kvantum SVG 的 `menu-normal` 九片提供。fcitx5 托盘菜单字体另由其 classicui `Font` 设置控制（`dot_config/fcitx5/conf/classicui.conf`）
+- **eww 自绘托盘菜单**（2026-08-04 收编）：eww 0.5 的 systray 把 SNI dbusmenu 渲染为 eww 窗口内的 GTK menu，样式不在 GTK 主题而在 eww 自身样式表——`dot_config/eww/styles/tray-menu.scss.tmpl`（L4 0.60 + 发丝线 + 界引 hover + `menuitem check/radio` 天青选中框）。其度量是 GTK pt 值的三档像素当量（`eww-sizes.menuPad/menuItemPadV/menuItemPadH/menuSepMargin`），字号 = `popupFontSize`，与原生 GTK（11.5pt）/Qt（gtk-font-name）菜单保持同档物理尺寸。实测裁定（2026-08-04）：eww 的 systray 菜单窗口**非 ARGB**，rgba 底不与壁纸合成（叠黑变脏），故菜单面不用 L4 玻璃，改用不透明黛（`bg_elevated`）+ `box-shadow: inset` 发丝线（`menu` 节点的真 border 被 override-redirect 窗口裁掉）
 
 ### 4.6 OSD
 
@@ -244,7 +246,7 @@ eww 的 bar 与 scrim 在 rounded/shadow/blur exclude 清单中；Rofi `corner-r
 
 **终端收编**（目标已立 2026-07-22，未实施）：WezTerm / tmux / nvim / pgcli / mycli / opencode 仍持 Tokyo Night / Solarized 等外国旗，收编目标与裁定见 `docs/design/terminal-unification.md`。核心纪律预览：终端 ANSI red 必须用赭石而非朱砂；朱砂只可作 tmux 当前窗口标记（印章语义延伸）；wezterm active tab 用天青界引，不僭印；收编仅限 `useI3` 机器。
 
-**色彩飞地登记**：systray 图标色不受令牌约束（外部进程绘制），但必须被墨色容器收容（`.bar-tray`，3px 圆角 + 4px 内 padding）——全系统唯一色彩飞地。容器用墨之亮阶 `#464652`（`$surface2`）alpha 0.40：实测 `rgba($ink,0.30)` 在亮壁纸区段与 bar 底仅差 ≤2 阶近隐形（2026-07-22 裁定），亮阶浅盒在任何壁纸下保持 Δ≥9 阶。
+**色彩飞地登记**：systray 图标色不受令牌约束（外部进程绘制），但必须被墨色容器收容（`.bar-tray`，3px 圆角 + DPI 三档内 padding 4/6/8，见 `eww-sizes.trayPad`；盒内图标间距同档 4/6/8，见 `eww-sizes.trayGap`）——全系统唯一色彩飞地。容器用墨之亮阶 `#464652`（`$surface2`）alpha 0.40：实测 `rgba($ink,0.30)` 在亮壁纸区段与 bar 底仅差 ≤2 阶近隐形（2026-07-22 裁定），亮阶浅盒在任何壁纸下保持 Δ≥9 阶。
 
 ---
 
@@ -312,6 +314,7 @@ eww 0.5.0 不能在 `:geometry` 里解析变量，所有尺寸经 `.chezmoitempl
 4. **时辰只到"时"不到"刻"**：刻的划分有歧义，性价比低。
 5. **印章用崇羲篆體而非文楷**（2026-07-21 推翻旧裁定）：旧裁定"用文楷天干而非篆体 SVG"的前提是篆体只能贴 SVG；崇羲小篆以字体形态落地后，篆书印章的形制（朱底白字 + 篆籀）强于文楷，用户裁定更换。字形瘦长，以 1.20× 光学补偿，不破四印同尺寸纪律。
 6. **WezTerm/tmux 保留 Tokyo Night**：暂缓统一；统一目标已立（2026-07-22，见 `docs/design/terminal-unification.md`），实施完成后本条移除。
+7. **Chromium 壳托盘菜单不受主题控制**（2026-08-03 实证，2026-08-04 部分推翻）：钉钉（nw.js）、aTrust（Electron，且 tray 以 root 运行）的右键菜单由 Chromium 自绘，GTK/Kvantum 主题均无效，且按固定 96dpi 渲染、高 DPI 下字体过小。裁定：用户级启动 wrapper 注入 `--force-device-scale-factor`（按 96/144/192 三档取 1.0/1.5/2.0，见 `dot_local/bin/executable_dingtalk`）；root 服务（aTrust）无用户级杠杆，保持原样。**clash-verge（Tauri/muda）已出籍**：其 SNI 走标准 dbusmenu 导出，菜单实际由 eww systray 宿主渲染（2026-08-04 像素级实证：hover 界引、check 选中态均为 eww 令牌色），随 `tray-menu.scss` 一并收编，不再列为飞地。
 
 ---
 

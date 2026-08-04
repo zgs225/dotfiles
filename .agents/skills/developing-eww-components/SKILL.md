@@ -91,6 +91,7 @@ bar 的 on-click 处理器是 i3 命令;用 `xdotool` 模拟点击等价于用�
 
 - **bar 消失但日志没报错** — daemon 在跑，但 bar open 失败了。看 `eww logs` 找 `defwindow` 报错，再重载。
 - **改了不生效** — 你跑 `chezmoi apply` 了吗？`i3-msg exec launch.sh` 只重启 daemon，**不会**重新渲染 `.tmpl`。
+- **bar 突然换了一套「陌生主题」（模块变 pill 按钮、时辰字重/字体回退）** — 不是谁改了配置，是 eww 样式表 grass 编译失败、GTK 掉回 THEME 优先级（catppuccin-glass）兜底。与 @charset 丢弃的区别：@charset 是 GTK 收到表但全表拒收 → 裸窗白底；编译失败是 eww 根本没给出表 → 主题 pill 兜底。查 SCSS 注释/括号结构，见「SCSS 注释结构断裂」条。
 - **daemon 卡死，launch.sh 的等待循环超时** — `pkill -9 -f 'eww daemon'`，再重载。
 - **点击没弹出 popup** — 确认 `(defwidget ...)` 的 `:name` 和你 `eww open <name>` 用的名字一致，看 log 里那条 open 调用有没有失败。
 - **`maim -i` 截错了窗口** — 重新拿 WID：`wmctrl -l | grep eww`，daemon 每次重启后 hex ID 都会变。
@@ -182,6 +183,65 @@ ps -o etimes= -p <pid>              # 持锁多久了（健康调用 <2s）
 - 每次 apply 后验证：`LC_ALL=C grep -P '[^\x00-\x7F]' ~/.config/eww/styles/*.scss` 应无输出。
 
 **踩坑实录**：storage-popup.scss.tmpl 的注释用了 `/* ── Device card ── */`（box-drawing `──`），导致全桌面样式丢失、bar 变白底黑字。
+
+---
+
+## SCSS 注释结构断裂 = 编译失败 = 主题兜底（不是裸窗）
+
+**为什么**：grass 是编译器，不光查字节还查语法——注释提前 `*/` 闭合后，下半段注释变成游离在规则外的裸文本（或括号不配对），**整个编译失败**，eww 不给 GTK 挂任何样式表。此时 widget 回落到 THEME 优先级的 catppuccin-glass：模块按钮集体变 pill（主题 button 边框）、`.time-main` 宋体/粗体丢失。症状是「换了一套陌生主题」，不是 @charset 陷阱的白底裸窗，第一眼极易误判成「谁把样式改坏了」。
+
+**怎么做**：改完 SCSS `.tmpl`，`chezmoi apply` 后、重启前做三件事：
+
+```bash
+# 1. ASCII（§8.1 老规矩）
+LC_ALL=C grep -Pn '[^\x00-\x7F]' ~/.config/eww/styles/*.scss   # 无输出
+
+# 2. 注释剥离后括号平衡 + 无断裂注释残片（'*/' 提前闭合后,下半段
+#    注释变成规则外的 '* text' 裸行——误报为零的特征签名)
+python3 - <<'EOF'
+import re, glob
+for f in glob.glob('/home/yuez/.config/eww/styles/*.scss') + ['/home/yuez/.config/eww/eww.scss']:
+    s = re.sub(r'/\*.*?\*/', '', open(f).read(), flags=re.S)
+    assert s.count('{') == s.count('}'), f'{f}: brace mismatch'
+    stray = [l.strip() for l in s.splitlines()
+             if re.match(r'^\s*\*+\s+\S', l) and '{' not in l]
+    assert not stray, f'{f}: broken comment fragment {stray[:2]}'
+print('scss structure ok')
+EOF
+
+# 3. 重启后【先截一张 bar 全图】确认样式表活着，再开始量组件——不要只盯着你改的那个部件
+```
+
+**踩坑实录**：2026-08-04 写 tray-menu.scss.tmpl 时头部注释在中间 `*/` 提前闭合，后半段 NOTE 成了规则外游离文本 → grass 编译失败 → 全桌面 bar 掉回 catppuccin pill 主题。因为重启后只截图了菜单没看 bar，排查绕了一个小时才定位到这一行。
+
+---
+
+## 禁止直接编辑渲染产物 `~/.config/eww/**`——热重载读到中间态 + 双 bar
+
+**为什么**：eww daemon 监视配置目录、文件一变就热重载。直接 `sed -i` 渲染产物做 A/B 实验有三连坑：① sed 写到一半被 watcher 读到中间态，编译出你不想要的版本；② 热重载有已知 bug——bar 窗口被**复制而不是替换**（两个 bar 叠罗汉，看到的未必是 daemon 注册的那个）；③ 绕开 chezmoi 造成源/渲染漂移，下次 `chezmoi apply` 静默覆盖你的实验。
+
+**怎么做**：任何实验都走完整循环——改源 `.tmpl` → `chezmoi apply` → `i3-msg exec ~/.config/eww/scripts/launch.sh` → `eww ping` → 截 bar。快速试色也一样，不碰 `~/.config/eww/`。
+
+**重启静默失败三形态**（重启后必须 `eww ping` + 截图裁决，再相信后续测量）：
+- launch.sh 的 `flock -n 9 || exit 0`：锁被持有时**静默退出什么都不做**（查 `fuser -v /tmp/eww-launch.lock`）；
+- `setsid nohup launch.sh &` 挂在复合命令里，agent shell 偶发整链死亡、无任何输出；
+- `i3-msg exec` 返回 `success:true` 但 daemon 实际没起来（原因未明，重放一次即可）。
+
+**踩坑实录**：2026-08-04 上述三连全中——sed 渲染产物触发双 bar；复合命令静默死亡导致 daemon 没换血，拿着旧样式表当新样式量了一轮；flock 残留又让一次重启静默跳过。每一步单看都像「eww 疯了」，串起来全是流程违规。
+
+---
+
+## eww systray 菜单窗口非 ARGB——玻璃失效，用不透明令牌 + inset 发丝线
+
+**为什么**：eww 0.5 的 systray 把 SNI dbusmenu 自己渲染成 GTK menu 窗口，三个平台限制：
+
+1. **窗口非 ARGB visual**：`rgba($bg-base, 0.60)` 不与壁纸合成，而是叠在窗口自身黑底上——实测出来是近黑 `#17171A`，不是设计稿的 L4 玻璃。透明层级语言（§2.2）在这里整体失效。
+2. **override-redirect 裁 border**：`menu` 节点的真 `border` 画不出屏幕（左缘像素实测无发丝线）。发丝线要改用 `box-shadow: inset 0 0 0 1px rgba($accent, 0.35)`（内阴影画在背景之上，实测像素 = 0.35 天青叠黛的理论值，分毫不差）。
+3. **`all: unset` 的后遗症**：submenu 箭头的 `-gtk-icon-source` 被清零（箭头消失）、`menuitem check/radio` 指示器无样式（fcitx 输入法列表的单选点全灭）。
+
+**怎么做**：菜单面用不透明 `bg_elevated`（黛，浮层底色）代替 L4 alpha；箭头用 border 三角重绘；check/radio 手工给 1px 天青框 + `:checked` 天青填底；tooltip 同理不透明。参考实现 `styles/tray-menu.scss.tmpl`，度量取 GTK 主题 pt 值的像素当量（eww-sizes 烘焙），与原生 GTK/Qt 托盘菜单同物理尺寸。
+
+**验证手法**：右键托盘图标开菜单后 `xdotool mousemove` 悬停 + `maim` 截图，再逐像素扫边缘：发丝线、界引、hover 底都应该是可计算的令牌合成值（见本文件「视觉验证」节的采样命令）。
 
 ---
 

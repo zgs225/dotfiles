@@ -30,7 +30,7 @@
     ;; ── Right: tray · wifi · battery · updates · cc · time · bell ──
     (box :class "bar-group" :halign "end" :valign "center" :space-evenly false :spacing 8
 
-      (systray :class "bar-tray" :icon-size {{ $eww.iconSize }} :spacing 6 :valign "center")
+      (systray :class "bar-tray" :icon-size {{ $eww.iconSize }} :spacing {{ $eww.trayGap }} :valign "center")
 
       (label :text "·" :class "bar-sep" :valign "center")
 
