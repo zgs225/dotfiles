@@ -454,6 +454,10 @@ bind \$ command-prompt -p "rename ❯" -I "#S" "rename-session -- '%%'"
 # extended-keys-format to xterm when `extended-keys on` (set in .tmux.conf).
 set -g extended-keys-format csi-u
 
+# let apps behind tmux use the outer terminal's graphics protocol via DCS
+# passthrough (yazi image previews in WezTerm use the kitty protocol)
+set -g allow-passthrough on
+
 # ------------------------------------------------------------------------------
 
 # # /!\ do not remove the following line
