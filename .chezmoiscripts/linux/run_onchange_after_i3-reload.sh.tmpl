@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+{{- if and .isLinux .useI3 }}
+# Re-run trigger: this hash changes whenever the i3 config source changes.
+# dot_config/i3/config.tmpl: {{ include "dot_config/i3/config.tmpl" | sha256sum }}
+#
+# chezmoi apply renders ~/.config/i3/config but i3 keeps running the OLD
+# bindings until reloaded. When a keybind's target script changes its CLI
+# (e.g. screenrecord.sh gif -> video), the stale binding silently no-ops.
+# i3-msg may not exist / i3 may not be running (first boot, headless):
+# failure is harmless.
+command -v i3-msg >/dev/null 2>&1 || exit 0
+i3-msg reload >/dev/null 2>&1 || true
+{{- end }}
