@@ -292,6 +292,7 @@ separator {
   border-radius: 5px;
   background-color: alpha(@base, 0.65);
   background-image: linear-gradient(to bottom, alpha(@text, 0.05), alpha(@text, 0.0) 28px);
+  box-shadow: none;
   color: @text;
 }
 
@@ -316,6 +317,8 @@ separator {
 }
 
 /* identity row — the combobox stripped to bare calligraphy */
+#login_window #user_combobox,
+#login_window #user_combobox cellview,
 #login_window #user_combobox button,
 #login_window #user_combobox button:hover,
 #login_window #user_combobox button:focus,

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # dpms-auto.sh — Per-power-source DPMS timeouts (screen-off delay).
-#   AC      → DPMS_AC_SEC  (default 900s = 15 min)
+#   AC      → DPMS_AC_SEC  (default 0 = never; idle-lock.sh handles locking)
 #   battery → DPMS_BAT_SEC (default 300s = 5 min)
 #
 # Re-applies on every AC transition (udev event) and once on startup.
@@ -8,7 +8,7 @@
 set -u
 
 AC_PATH="${DPMS_AUTO_AC_PATH:-/sys/class/power_supply/AC0/online}"
-DPMS_AC_SEC="${DPMS_AC_SEC:-900}"
+DPMS_AC_SEC="${DPMS_AC_SEC:-0}"
 DPMS_BAT_SEC="${DPMS_BAT_SEC:-300}"
 DEBOUNCE_SEC=3
 
