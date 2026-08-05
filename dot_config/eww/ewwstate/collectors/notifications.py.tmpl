@@ -20,6 +20,8 @@ from __future__ import annotations
 
 import asyncio
 import json
+import sys
+from pathlib import Path
 
 from framework import PollCollector, collector
 from util import run, shell
@@ -27,30 +29,11 @@ from util import run, shell
 # Icon render size inside the notif chip (scales with DPI tier).
 _ICON_PX = {{ mulf $eww.popupFontSize 2.0 | int }}
 
-# ── GTK icon theme (lazy, optional) ───────────────────────────────────────
-try:
-    import gi
-    gi.require_version("Gtk", "3.0")
-    from gi.repository import Gtk
-except Exception:  # gi missing or GTK unusable — glyph fallback only
-    Gtk = None  # type: ignore[assignment]
-
-_ICON_THEME = None
-_ICON_THEME_DEAD = False
+# GTK icon lookup runs in a throwaway subprocess (gtk_icon_lookup.py):
+# GTK3 is not thread-safe and must never be touched inside the asyncio
+# daemon — a helper segfault must not take the daemon down.
+_LOOKUP = str(Path(__file__).resolve().parent.parent / "gtk_icon_lookup.py")
 _ICON_CACHE: dict[str, str] = {}  # appname → path ("" = confirmed miss)
-
-
-def _theme():
-    global _ICON_THEME, _ICON_THEME_DEAD
-    if Gtk is None or _ICON_THEME_DEAD:
-        return None
-    if _ICON_THEME is None:
-        try:
-            _ICON_THEME = Gtk.IconTheme.get_default()
-        except Exception:
-            _ICON_THEME_DEAD = True
-            return None
-    return _ICON_THEME
 
 
 def _icon_candidates(appname: str) -> list[str]:
@@ -63,10 +46,11 @@ def _icon_candidates(appname: str) -> list[str]:
         parts = [p for p in low.split(".") if p]
         if parts:
             cands.append(parts[-1])
-    first = low.split()[0]
-    cands.append(first)
+    # Hyphenated full name before first word: "google chrome" must hit
+    # google-chrome.svg, not the generic google.svg.
     if " " in low:
         cands.append(low.replace(" ", "-"))
+    cands.append(low.split()[0])
     seen, out = set(), []
     for c in cands:
         if c and c not in seen:
@@ -75,32 +59,20 @@ def _icon_candidates(appname: str) -> list[str]:
     return out
 
 
-def _resolve_icon_sync(appname: str) -> str:
+async def _resolve_icon(appname: str) -> str:
     """appname → icon file path via the GTK icon theme ("" if none)."""
     cached = _ICON_CACHE.get(appname)
     if cached is not None:
         return cached
+    cands = _icon_candidates(appname)
     path = ""
-    theme = _theme()
-    if theme is not None:
-        for cand in _icon_candidates(appname):
-            try:
-                info = theme.lookup_icon(cand, _ICON_PX, 0)
-            except Exception:
-                continue
-            if info:
-                fn = info.get_filename()
-                if fn:
-                    path = fn
-                    break
+    if cands:
+        out = await run([sys.executable, _LOOKUP, *cands], timeout=3.0)
+        path = out.strip().splitlines()[-1] if out.strip() else ""
     if len(_ICON_CACHE) > 256:
         _ICON_CACHE.clear()
     _ICON_CACHE[appname] = path
     return path
-
-
-async def _resolve_icon(appname: str) -> str:
-    return await asyncio.to_thread(_resolve_icon_sync, appname)
 
 
 # ── app-name → (nerd-font glyph, css-class) fallback map ─────────────────
