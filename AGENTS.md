@@ -16,7 +16,7 @@ chezmoi-based dotfiles repo. Do not edit `~/.` files directly — use chezmoi.
 - `.chezmoiscripts/common/` runs on every system. OS-specific scripts go in `.chezmoiscripts/linux/`, `.chezmoiscripts/darwin/`, or `.chezmoiscripts/windows/` and are gated by `.chezmoiignore`.
 - Use `.tmpl` with template guards (e.g. `{{ if and .isLinux .useI3 }}`) for finer per-script control.
 - Apply: `chezmoi init --source ~/dotfiles --apply` or `chezmoi update`
-- Encryption: age via chezmoi. Key: `~/.config/chezmoi/key.txt`. Receiver in `.chezmoi.yaml.tmpl`.
+- Encryption: age via chezmoi. Key: `~/.config/chezmoi/key.txt`. Receiver in `.chezmoi.yaml.tmpl`. To modify an `encrypted_*.age` file, edit the target then `chezmoi re-add` it (never hand-edit the target as the final change) — full workflow and the pi web-search curator case in `docs/chezmoi-encrypted-files.md`.
 
 ## OS targeting
 
