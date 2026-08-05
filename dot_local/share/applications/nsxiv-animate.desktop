@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=nsxiv (auto-play animation)
+GenericName=Image Viewer
+Exec=nsxiv -a %F
+MimeType=image/gif;image/webp;
+Icon=nsxiv
+Categories=Graphics;Viewer;
