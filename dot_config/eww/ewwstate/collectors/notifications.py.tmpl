@@ -59,19 +59,26 @@ def _icon_candidates(appname: str) -> list[str]:
     return out
 
 
-async def _resolve_icon(appname: str) -> str:
+# Senders that carry no app identity — fall back to the summary text
+# (e.g. notify-send "Bitwarden" "…" → look up "bitwarden").
+_GENERIC_SENDERS = {"notify-send", "dunstify", "dunst", "libnotify", "notify"}
+
+
+async def _resolve_icon(appname: str, summary: str = "") -> str:
     """appname → icon file path via the GTK icon theme ("" if none)."""
-    cached = _ICON_CACHE.get(appname)
+    generic = appname.strip().lower() in _GENERIC_SENDERS
+    key = f"{appname}\x00{summary}" if generic else appname
+    cached = _ICON_CACHE.get(key)
     if cached is not None:
         return cached
-    cands = _icon_candidates(appname)
+    cands = _icon_candidates(summary if generic else appname)
     path = ""
     if cands:
         out = await run([sys.executable, _LOOKUP, *cands], timeout=3.0)
         path = out.strip().splitlines()[-1] if out.strip() else ""
     if len(_ICON_CACHE) > 256:
         _ICON_CACHE.clear()
-    _ICON_CACHE[appname] = path
+    _ICON_CACHE[key] = path
     return path
 
 
@@ -135,11 +142,12 @@ async def _build_notif_yuck(history_json: str, uptime_s: int) -> str:
                 '(label :class "notif-empty" :xalign 0.5 :valign "center" '
                 ':text "暂无通知"))')
 
-    # Resolve themed icons once per unique app name (thread-pooled).
-    apps = sorted({((r.get("appname") or {}).get("data", "dunst") or "dunst")
-                   for r in items_raw})
-    resolved = await asyncio.gather(*[_resolve_icon(a) for a in apps])
-    icon_map = dict(zip(apps, resolved))
+    # Resolve themed icons once per unique (appname, summary) pair.
+    pairs = sorted({(((r.get("appname") or {}).get("data", "dunst") or "dunst"),
+                     (((r.get("summary") or {}).get("data", "") or "").strip()))
+                    for r in items_raw})
+    resolved = await asyncio.gather(*[_resolve_icon(a, s) for a, s in pairs])
+    icon_map = dict(zip(pairs, resolved))
 
     parts: list[str] = []
     for row in items_raw:
@@ -152,7 +160,7 @@ async def _build_notif_yuck(history_json: str, uptime_s: int) -> str:
         age = uptime_s - ts_us // 1_000_000
         ago = _age_str(age)
 
-        icon_path = icon_map.get(appname, "")
+        icon_path = icon_map.get((appname, summary.strip()), "")
         if icon_path:
             icon_w = ('(box :class "notif-appicon icon-real" :valign "start" '
                       ':halign "center" '

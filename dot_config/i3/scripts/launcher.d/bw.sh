@@ -29,7 +29,7 @@ bw_headers() {
 
 bw_notify() {
     command -v notify-send >/dev/null 2>&1 || return 0
-    setsid -f notify-send -i "${2:-$BW_APP_ICON}" "Bitwarden" "$1" >/dev/null 2>&1 || true
+    setsid -f notify-send -a Bitwarden -i "${2:-$BW_APP_ICON}" "Bitwarden" "$1" >/dev/null 2>&1 || true
 }
 
 bw_to_clipboard() {
@@ -57,18 +57,18 @@ bw_bg_flow() {
                 # so the unlock row works for first-time setup too.
                 if rbw login </dev/null >/dev/null 2>&1 && rbw unlock </dev/null >/dev/null 2>&1; then
                     rbw sync </dev/null >/dev/null 2>&1 || true
-                    notify-send -i "$app_icon" "Bitwarden" "保险库已解锁" >/dev/null 2>&1 || true
+                    notify-send -a Bitwarden -i "$app_icon" "Bitwarden" "保险库已解锁" >/dev/null 2>&1 || true
                     ok=1
                 else
-                    notify-send -i "$app_icon" "Bitwarden" "解锁失败或已取消" >/dev/null 2>&1 || true
+                    notify-send -a Bitwarden -i "$app_icon" "Bitwarden" "解锁失败或已取消" >/dev/null 2>&1 || true
                 fi
                 ;;
             sync)
                 if rbw sync </dev/null >/dev/null 2>&1; then
-                    notify-send -i "$app_icon" "Bitwarden" "同步完成" >/dev/null 2>&1 || true
+                    notify-send -a Bitwarden -i "$app_icon" "Bitwarden" "同步完成" >/dev/null 2>&1 || true
                     ok=1
                 else
-                    notify-send -i "$app_icon" "Bitwarden" "同步失败（网络或会话问题）" >/dev/null 2>&1 || true
+                    notify-send -a Bitwarden -i "$app_icon" "Bitwarden" "同步失败（网络或会话问题）" >/dev/null 2>&1 || true
                 fi
                 ;;
         esac
