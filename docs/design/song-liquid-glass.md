@@ -196,7 +196,7 @@ lightdm-gtk-greeter。主题走 `catppuccin-glass` 的主题级「门籍签」�
 - 签体：L2 绢 0.65 + 5px 圆角 + 天青发丝线；左侧乌丝栏 2px 天青 0.40 贯通全高（立轴挂绳）
 - 身份行：combobox 剥裸为纯字（月白 20px bold），下拉箭天青；无框无底
 - 口令：天青下划线填线（2px、0.50；focus 0.92，caret 天青），无输入框
-- 按钮：Log In = 天青匾额（4px 圆角 + 发丝框，hover/active 三档即时反馈）；Cancel = 蟹壳青 ghost
+- 按钮：Log In = 通宽天青匾额（block，4px 圆角 + 发丝框，hover/active 三档即时反馈），与填线同宽同 inset（外宽 300、左右 26）；Cancel 归零隐藏（不在设计里，Enter 是逃生口）
 - 顶部指示栏全透明，字幕蟹壳青 0.62，hover 月白；下拉菜单复用 §4.5
 - 验证失败：仅 infobar 染一层赭石（14%），其余元素不变色（无 CSS hook，不假装）
 - `hide-user-image = true` 折叠头像列，签成窄匾；人物意象交给壁纸立轴
@@ -327,7 +327,8 @@ eww 0.5.0 不能在 `:geometry` 里解析变量，所有尺寸经 `.chezmoitempl
 - GtkFrame 的沟线画在 `frame > border` 子节点；只样式化 `#id` 会残留黑沟。
 - **GTK3 规则块中毒**：一条非法声明（v1 的 `calc()`、v2 渐变里的 `alpha(@x, 0.0)`）会让解析器丢弃**同一块后续全部声明**。v2 的 `box-shadow: none` 因此阵亡，Adwaita `.keycap` 的 `box-shadow: inset 0 -3px` 黑条乘虚而入（贴签底 3px 黑板）。脆弱声明（渐变）必须独立成块，中毒只毒自己。
 - greeter 是全屏 ARGB 窗口，alpha 轮廓即签体。picom 的 `shadow-exclude` + `opacity-rule 100` 双豁免（`class_g *= 'lightdm'`）是防御性配置：若有朝一日 greeter 会话跑合成器，签体不会吃阴影黑板、令牌 alpha 不被 active-opacity 乘脏。（历史上贴底黑板的真凶是 `.keycap` inset，见上一条。）
-- 验收回路：`greeter-preview`（Xvfb :99 + Gtk.Builder 实例化真实 .glade + `import` 截图），免登出迭代；提交前合成/非合成两种环境各渲染一次。
+- 验收回路：`greeter-preview`（Xvfb :99 + Gtk.Builder 实例化真实 .glade + GDK 像素抓取），免登出迭代；提交前合成/非合成两种环境各渲染一次。
+- `greeter-preview` 的 DISPLAY pin 必须写在 `import gi` **之前**：PyGObject 在 import Gtk 时就打开默认 display，其后赋值 `os.environ` 无效——窗口会漏进 :0 真实桌面（2026-08-05 实测）。
 
 ---
 

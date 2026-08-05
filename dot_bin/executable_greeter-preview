@@ -6,10 +6,12 @@ for the installed version) under the catppuccin-glass theme on Xvfb :99 and
 screenshots the result, so theme iterations can be verified without logging
 out. See docs/design/song-liquid-glass.md §8.10.
 
-usage: greeter-preview [--compose] [out.png]
+usage: greeter-preview [--compose] [--error] [out.png]
   --compose   also run picom (user config) to verify the composited world
               (shadow/opacity excludes); default is the bare X world, the
               worst case the greeter actually runs in.
+  --error     show the infobar with a sample auth-failure message (the
+              production greeter hides it whenever the message is empty).
   out.png     screenshot path (default /tmp/greeter-preview.png)
 
 Requires: xorg-server-xvfb, imagemagick, python-gobject (all in eos-bootstrap
@@ -19,6 +21,10 @@ import os
 import subprocess
 import sys
 import time
+
+# pin BEFORE importing gi: PyGObject opens the default display at Gtk
+# import time; a later os.environ assignment is silently ignored
+os.environ['DISPLAY'] = ':99'
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -62,7 +68,8 @@ def ensure_display():
 
 def main():
     compose = '--compose' in sys.argv
-    args = [a for a in sys.argv[1:] if a != '--compose']
+    error = '--error' in sys.argv
+    args = [a for a in sys.argv[1:] if a not in ('--compose', '--error')]
     out = args[0] if args else '/tmp/greeter-preview.png'
 
     ensure_display()
@@ -123,9 +130,16 @@ def main():
     win.add(overlay)
     win.show_all()
 
-    # production state: single known user, avatar column collapsed
+    # production state: single known user, avatar column collapsed,
+    # infobar hidden unless a message exists (greeter c logic)
     builder.get_object('user_image_border').hide()
     builder.get_object('username_entry').hide()
+    infobar = builder.get_object('greeter_infobar')
+    if error:
+        builder.get_object('message_label').set_text('验证失败，请重试')
+        infobar.show()
+    else:
+        infobar.hide()
     user = os.environ.get('USER') or 'yuez'
     store = builder.get_object('user_liststore')
     store.append((user, user, 700))
@@ -142,8 +156,12 @@ def main():
             Gtk.STYLE_PROVIDER_PRIORITY_USER)
 
     def shoot():
-        subprocess.run(['import', '-display', DISPLAY, '-window', 'root',
-                        out], check=True)
+        # GDK pixel grab: immune to import/Xvfb flakiness; on a
+        # composited display the root grab includes picom's output
+        gw = Gdk.get_default_root_window() if compose else win.get_window()
+        pb = Gdk.pixbuf_get_from_window(gw, 0, 0,
+                                        gw.get_width(), gw.get_height())
+        pb.savev(out, 'png', [], [])
         print(out)
         Gtk.main_quit()
         return False

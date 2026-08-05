@@ -315,12 +315,15 @@ separator {
   box-shadow: none;
 }
 
-/* asymmetric breathing: roomier right, ruling-side tighter */
+/* one vertical ruling at 26px both sides: the grid's 24 column-spacing
+ * (left over from the hidden avatar column) supplies the left inset, so
+ * content padding-left is 0; box2's own 24 margins + the 2px 乌丝栏 give
+ * the same 26 on the button row; infobar margins 24 + 2 = 26 likewise */
 #login_window #content_frame {
-  padding: 26px 32px 10px 24px;
+  padding: 26px 26px 10px 0;
 }
 #login_window #buttonbox_frame {
-  padding: 6px 32px 22px 24px;
+  padding: 6px 26px 22px 0;
 }
 
 /* identity row — the combobox stripped to bare calligraphy */
@@ -344,8 +347,11 @@ separator {
   color: alpha(@lavender, 0.80);
 }
 
-/* 口令 fill-line — a single tianqing underline, no box */
+/* 口令 fill-line — a single tianqing underline, no box.
+ * outer width 300 = min-width 296 + 2px+2px side padding; the plaque is
+ * 298 + 1px+1px border = 300, so both rows prop the ticket and align */
 #login_window #prompt_entry {
+  min-width: 296px;
   background: none;
   background-image: none;
   border: none;
@@ -357,6 +363,7 @@ separator {
   padding: 8px 2px;
   font-size: 18px;
 }
+
 #login_window #prompt_entry:focus {
   border-bottom-color: alpha(@lavender, 0.92);
   box-shadow: none;
@@ -389,27 +396,30 @@ separator {
   font-size: 13px;
 }
 
-/* button row — cancel as quiet ghost, login as tianqing plaque */
+/* button row — Cancel is not in the design: collapse it to zero so the
+ * plaque can run block; Enter is the escape hatch (greeter default) */
 #login_window #buttonbox_frame {
   background: none;
   background-image: none;
   border: none;
   box-shadow: none;
 }
-#login_window #cancel_button {
+#login_window #cancel_button,
+#login_window #cancel_button:hover,
+#login_window #cancel_button:focus {
+  opacity: 0;
   background: none;
   background-image: none;
   border: none;
   box-shadow: none;
-  color: alpha(@subtext0, 0.85);
-  font-size: 14px;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  min-height: 0;
+  font-size: 0;
 }
-#login_window #cancel_button:hover {
-  background: none;
-  background-image: none;
-  box-shadow: none;
-  color: @text;
-}
+/* block plaque — min-width props the ticket; entry (hexpand) stretches
+ * to the same 24-inset row, so the plaque and the fill-line align */
 #login_window #login_button {
   background-color: alpha(@lavender, 0.12);
   background-image: none;
@@ -419,11 +429,13 @@ separator {
   color: @text;
   font-size: 16px;
   font-weight: bold;
-  padding: 9px 28px;
+  padding: 10px 0;
+  min-width: 298px;
 }
 #login_window #login_button:hover {
   background-color: alpha(@lavender, 0.24);
   border-color: alpha(@lavender, 0.70);
+  color: @text;
 }
 #login_window #login_button:active {
   background-color: alpha(@lavender, 0.32);
