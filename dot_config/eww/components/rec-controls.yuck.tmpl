@@ -1,7 +1,7 @@
 {{- $eww := includeTemplate "eww-sizes" . | fromJson -}}
 ;; ============================================ RECORD CONTROLS ============================================
 ;; CleanShot-X-style floating control bar for screenrecord.sh, two states:
-;;   ARMED     -> [record] [region WxH] [audio toggle] [cancel]
+;;   ARMED     -> [record] [region WxH] [MP4/GIF toggle] [audio toggle] [cancel]
 ;;   RECORDING -> [live dot] [elapsed m:ss] [stop]
 ;; Opened by screenrecord.sh with --arg pos_x/pos_y, placed OUTSIDE the
 ;; captured region whenever there is room (a window overlapping the region
@@ -30,7 +30,7 @@
   :focusable false
   :wm-ignore true
   :class "eww-rec-controls"
-  :geometry (geometry :width "{{ mulf $eww.popupFontSize 21 | int }}px" :height "0px"
+  :geometry (geometry :width "{{ mulf $eww.popupFontSize 26 | int }}px" :height "0px"
              :x { pos_x } :y { pos_y } :anchor "top left")
   (box :class "rec-controls-card" :orientation "h" :spacing 10
        :halign "center" :valign "center" :space-evenly false
@@ -44,6 +44,9 @@
           (box :class "rec-start-dot" :valign "center")
           (label :text "录制" :class "rec-btn-label")))
       (label :text "${screen_rec_region}" :class "rec-meta" :valign "center")
+      (button :class "rec-btn rec-format${screen_rec_format == 'GIF' ? ' gif' : ''}"
+              :onclick "~/.config/i3/scripts/screenrecord.sh __ui_format"
+        (label :text "${screen_rec_format}" :class "rec-btn-label rec-format-label"))
       (button :class "rec-btn rec-audio${screen_rec_audio == 'sys' ? ' on' : ''}"
               :onclick "~/.config/i3/scripts/screenrecord.sh __ui_audio"
         (label :text "${screen_rec_audio == 'sys' ? '系统音' : '无声'}"

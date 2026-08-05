@@ -3,7 +3,7 @@
 # (gpu-screen-recorder + eww floating control bar).
 #
 # Usage: screenrecord.sh video     (bound to $mod+Shift+5 in i3 config)
-#        screenrecord.sh __ui_start|__ui_stop|__ui_cancel|__ui_audio
+#        screenrecord.sh __ui_start|__ui_stop|__ui_cancel|__ui_audio|__ui_format
 #                                 (eww rec-controls buttons only)
 #        screenrecord.sh __stop    (internal: manual/external stop)
 #
@@ -12,9 +12,17 @@
 #   ARMED    --[record] btn--> RECORDING
 #   ARMED    --[cancel] btn / hotkey--> idle
 #   RECORDING--[stop] btn / hotkey--> finalize mkv -> remux mp4 -> preview
+#                                     (format GIF: mp4 kept, background
+#                                      ffmpeg palette convert -> gif preview)
 #
-#   ARMED:     rec-controls bar [record] [WxH] [audio toggle] [cancel]
+#   ARMED:     rec-controls bar [record] [WxH] [MP4/GIF] [audio toggle] [cancel]
 #   RECORDING: rec-controls bar [live dot] [elapsed] [stop]
+#
+# Output format preference (mp4|gif) persists like the audio preference; the
+# recording pipeline itself is format-agnostic (always mkv -> mp4 remux, so
+# a failed GIF conversion never loses the recording). GIF conversion is a
+# two-pass ffmpeg palette encode capped at REC_GIF_FPS, with dunstify -r
+# percentage progress while it runs.
 #
 # No duration cap and no resolution scaling: the mp4 keeps the full selected
 # region and runs until the user stops it (mkv intermediate -> lossless
@@ -65,16 +73,25 @@ REC_META_FILE="$STATE_DIR/screenrecord.meta"      # lines: tmp=<mkv>  start=<epo
 REC_ARMED_FILE="$STATE_DIR/screenrecord.armed"    # one line: w h x y px py inside
 LOG_FILE="$STATE_DIR/screenrecord.gsr.log"        # gsr stdout/stderr, per run
 AUDIO_PREF="${XDG_STATE_HOME:-$HOME/.local/state}/screenrecord/audio"  # off|sys
+FORMAT_PREF="${XDG_STATE_HOME:-$HOME/.local/state}/screenrecord/format"  # mp4|gif
 REC_FPS="${SCREENRECORD_REC_FPS:-30}"
+# GIF frame cap: 30fps full-size GIFs explode in size; 15fps is the default
+# tradeoff. No resolution scaling (full selected region is kept).
+REC_GIF_FPS="${SCREENRECORD_GIF_FPS:-15}"
 REC_QUALITY="${SCREENRECORD_REC_QUALITY:-high}"
 REC_AUDIO_DEVICE="${SCREENRECORD_REC_AUDIO_DEVICE:-default_output}"
 
 dir="${SCREENSHOT_DIR:-$HOME/Pictures/screenshots}"
 mkdir -p "$dir"
 
-notify() { notify-send -u low -t 4000 -a screenrecord "screenrecord" "$1" 2>/dev/null || true; }
+# notification app icon: 黛 tile + 藤黄 record dot (song-liquid-glass
+# tokens; matches the rec-controls live dot). dunst rounds corners itself.
+ICON="$HOME/.config/i3/assets/screenrecord-icon.svg"
+[[ -f "$ICON" ]] || ICON=""
+
+notify() { notify-send -u low -t 4000 -a screenrecord ${ICON:+-i "$ICON"} "screenrecord" "$1" 2>/dev/null || true; }
 # same replace-id: the "exporting" hint is swapped in-place for the result
-notify_r() { dunstify -r 9105 -u low -t "$2" -a screenrecord "screenrecord" "$1" 2>/dev/null || notify "$1"; }
+notify_r() { dunstify -r 9105 -u low -t "$2" -a screenrecord ${ICON:+-i "$ICON"} "screenrecord" "$1" 2>/dev/null || notify "$1"; }
 
 eww_reset() {
     eww update screen_recording=false screen_rec_elapsed= screen_rec_region= 2>/dev/null || true
@@ -122,7 +139,8 @@ compute_placement() {
     local w=$1 h=$2 x=$3 y=$4
     local pfs win_w win_h t=$FRAME_T gap=8
     pfs=$(dpi_font_size)
-    win_w=$(( pfs * 21 )); win_h=$(( pfs * 3 ))
+    # ARMED row: [record] [WxH] [MP4/GIF] [audio] [cancel] -- 26 chars wide
+    win_w=$(( pfs * 26 )); win_h=$(( pfs * 3 ))
     local cx=$(( x + w / 2 )) cy=$(( y + h / 2 ))
     local mo
     mo=$(xrandr --listactivemonitors 2>/dev/null | awk -v cx="$cx" -v cy="$cy" '
@@ -151,16 +169,18 @@ compute_placement() {
 }
 
 open_preview() {
-    # $1 = mp4 path; reuse screenshot-popup with the 6s auto-close timer
-    # pattern from screenshot.sh (annotate button is hidden for kind=mp4).
+    # $1 = mp4/gif path; reuse screenshot-popup with the 6s auto-close timer
+    # pattern from screenshot.sh (annotate button is hidden for non-png).
     local out="$1" thumb="/tmp/screenrecord-thumb.png"
+    local kind=mp4
+    [[ "$out" == *.gif ]] && kind=gif
     if ffmpeg -hide_banner -loglevel error -y -i "$out" -vframes 1 -f image2 "$thumb" 2>/dev/null \
        && [[ -s "$thumb" ]]; then
         magick "$thumb" -resize 400x300 "$thumb" 2>/dev/null || true
     else
         thumb=""
     fi
-    eww update screenshot_path="$out" screenshot_thumb="$thumb" screenshot_kind=mp4 2>/dev/null || true
+    eww update screenshot_path="$out" screenshot_thumb="$thumb" screenshot_kind="$kind" 2>/dev/null || true
     eww open screenshot-popup 2>/dev/null || true
 
     local timer_pid_file="/tmp/eww-screenshot-timer.pid"
@@ -191,15 +211,17 @@ arm_flow() {
         exit 1
     fi
 
-    local px py inside audio
+    local px py inside audio fmt
     read -r px py inside <<<"$(compute_placement "$w" "$h" "$x" "$y")"
     printf '%s %s %s %s %s %s %s\n' "$w" "$h" "$x" "$y" "$px" "$py" "$inside" > "$REC_ARMED_FILE"
 
     audio=$(cat "$AUDIO_PREF" 2>/dev/null || echo off)
     [[ "$audio" == "sys" ]] || audio=off
+    fmt=$(get_format)
 
     eww update screen_recording=false screen_rec_elapsed= \
-        screen_rec_region="${w} × ${h}" screen_rec_audio="$audio" 2>/dev/null || true
+        screen_rec_region="${w} × ${h}" screen_rec_audio="$audio" \
+        screen_rec_format="${fmt^^}" 2>/dev/null || true
     open_frame "$w" "$h" "$x" "$y"
     eww open rec-controls --arg "pos_x=${px}px" --arg "pos_y=${py}px" 2>/dev/null || true
 }
@@ -217,6 +239,21 @@ toggle_audio() {
     mkdir -p "$(dirname "$AUDIO_PREF")"
     printf '%s\n' "$new" > "$AUDIO_PREF"
     eww update screen_rec_audio="$new" 2>/dev/null || true
+}
+
+get_format() {
+    local fmt
+    fmt=$(cat "$FORMAT_PREF" 2>/dev/null || echo mp4)
+    [[ "$fmt" == "gif" ]] || fmt=mp4
+    echo "$fmt"
+}
+
+toggle_format() {
+    local new=mp4
+    [[ "$(get_format)" != "gif" ]] && new=gif
+    mkdir -p "$(dirname "$FORMAT_PREF")"
+    printf '%s\n' "$new" > "$FORMAT_PREF"
+    eww update screen_rec_format="${new^^}" 2>/dev/null || true
 }
 
 start_from_armed() {
@@ -281,10 +318,64 @@ start_from_armed() {
       if [[ -f "$REC_PID_FILE" ]] && [[ "$(cat "$REC_PID_FILE" 2>/dev/null)" == "$pid" ]]; then
           rm -f "$REC_PID_FILE" "$REC_META_FILE" "$tmp"
           eww_reset
-          notify-send -u normal -t 6000 -a screenrecord "screenrecord" \
+          notify-send -u normal -t 6000 -a screenrecord ${ICON:+-i "$ICON"} "screenrecord" \
               "Recording failed: $(tail -1 "$LOG_FILE" 2>/dev/null | cut -c1-100)" 2>/dev/null || true
       fi
     ) </dev/null >/dev/null 2>&1 8>&- 9>&- &
+}
+
+# Two-pass ffmpeg palette encode mp4 -> gif with dunstify -r percentage
+# progress (same replace-id as notify_r: the progress line is swapped
+# in-place for the final result). The source mp4 is ALWAYS kept; on
+# conversion failure the user is told where it is. Runs in a background
+# subshell so the stop path returns instantly.
+convert_to_gif() {
+    local mp4="$1" gif="${1%.mp4}.gif"
+    local palette prog
+    palette=$(mktemp -t screenrecord-pal.XXXXXX.png)
+    prog=$(mktemp -t screenrecord-prog.XXXXXX)
+    trap 'rm -f "$palette" "$prog"' EXIT
+
+    # total duration (us) for the percentage math; empty on probe failure
+    # -> progress loop degrades to a spinner-less static line
+    local dur total_us
+    dur=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$mp4" 2>/dev/null || echo 0)
+    total_us=$(awk -v d="${dur:-0}" 'BEGIN{printf "%d", d*1000000}')
+
+    # pass 1: palette (fast; diff mode favors changed pixels, ideal for
+    # screen content)
+    notify_r "正在分析调色板…" 30000
+    if ! ffmpeg -hide_banner -loglevel error -y -i "$mp4" \
+            -vf "fps=$REC_GIF_FPS,palettegen=stats_mode=diff" "$palette"; then
+        notify_r "GIF 转换失败，已保留 MP4: $(basename "$mp4")" 6000
+        rm -f "$gif"
+        return 1
+    fi
+
+    # pass 2: encode with progress; -progress appends key=value blocks to
+    # $prog, the poller reads the latest out_time_us each tick
+    ffmpeg -hide_banner -loglevel error -nostats -y \
+        -i "$mp4" -i "$palette" \
+        -lavfi "fps=$REC_GIF_FPS [x]; [x][1:v] paletteuse=dither=bayer:bayer_scale=5" \
+        -progress "$prog" "$gif" &
+    local ffpid=$!
+    while kill -0 "$ffpid" 2>/dev/null; do
+        sleep 0.5
+        local t_us pct
+        t_us=$(awk -F= '/^out_time_us=/{v=$2} END{print v+0}' "$prog" 2>/dev/null || echo 0)
+        pct=$(awk -v t="${t_us:-0}" -v total="$total_us" \
+            'BEGIN{if(total>0){p=int(t*100/total); if(p>99)p=99; print p}else print 0}')
+        notify_r "正在转换 GIF… ${pct}%" 30000
+    done
+    if ! wait "$ffpid"; then
+        notify_r "GIF 转换失败，已保留 MP4: $(basename "$mp4")" 6000
+        rm -f "$gif"
+        return 1
+    fi
+
+    xclip -selection clipboard -t image/gif < "$gif" 2>/dev/null || true
+    notify_r "GIF 已保存: $(basename "$gif") (已复制到剪贴板)" 4000
+    open_preview "$gif"
 }
 
 stop_recording() {
@@ -333,9 +424,16 @@ stop_recording() {
     fi
     rm -f "$tmp"
 
-    xclip -selection clipboard -t video/mp4 < "$out" 2>/dev/null || true
-    notify_r "视频已保存: $(basename "$out") (已复制到剪贴板)" 4000
-    open_preview "$out"
+    if [[ "$(get_format)" == "gif" ]]; then
+        # mp4 stays on disk (source of truth + conversion fallback); the
+        # GIF encode runs detached so the stop path returns instantly.
+        notify_r "正在转换 GIF…" 30000
+        ( convert_to_gif "$out" </dev/null >/dev/null 2>&1 8>&- 9>&- ) &
+    else
+        xclip -selection clipboard -t video/mp4 < "$out" 2>/dev/null || true
+        notify_r "视频已保存: $(basename "$out") (已复制到剪贴板)" 4000
+        open_preview "$out"
+    fi
 }
 
 case "${1:-video}" in
@@ -352,11 +450,12 @@ case "${1:-video}" in
     __ui_stop)   is_recording && stop_recording ;;
     __ui_cancel) is_armed && cancel_arming ;;
     __ui_audio)  toggle_audio ;;
+    __ui_format) toggle_format ;;
     __stop)
         is_recording && stop_recording
         ;;
     *)
-        echo "Usage: screenrecord.sh [video]" >&2
+        echo "Usage: screenrecord.sh [video|__ui_start|__ui_stop|__ui_cancel|__ui_audio|__ui_format|__stop]" >&2
         exit 1
         ;;
 esac

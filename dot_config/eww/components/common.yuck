@@ -23,6 +23,9 @@
 ;; (off|sys). The toggle persists in ~/.local/state/screenrecord/audio.
 (defvar screen_rec_region "")
 (defvar screen_rec_audio "off")
+;; screen_rec_format: output format shown/edited in the ARMED bar, "MP4"|"GIF";
+;; persisted preference, mp4 is the default (screenrecord.sh toggle_format).
+(defvar screen_rec_format "MP4")
 (defvar storage_busy "")
 
 ;; ============================================ DATA POLLING (defpoll) ============================================

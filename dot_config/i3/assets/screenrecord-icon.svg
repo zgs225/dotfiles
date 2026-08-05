@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <!-- screenrecord notification app icon (song-liquid-glass tokens):
+       黛 elevated tile + 藤黄 warn record dot (cinnabar stays reserved
+       for the workspace seal; the record glyph reuses warn like the
+       eww rec-controls live dot). dunst rounds corners itself. -->
+  <rect width="48" height="48" fill="#21212a"/>
+  <rect x="14" y="14" width="20" height="20" rx="6" fill="#d8a23c"/>
+</svg>
