@@ -12,6 +12,15 @@ register_module bw "bw" filter "Alt+Return" "密码"
 
 BW_CLEAR_AFTER=30
 
+# App icon for notifications (dunst has no icon_theme configured, so
+# theme names may not resolve — use an absolute path with fallback).
+BW_APP_ICON="dialog-password"
+for _p in /usr/share/icons/hicolor/128x128/apps/bitwarden.png \
+          /usr/share/icons/hicolor/256x256/apps/bitwarden.png; do
+    if [ -r "$_p" ]; then BW_APP_ICON="$_p"; break; fi
+done
+unset _p
+
 bw_headers() {
     printf '\0prompt\x1f%s\n' "$1"
     printf '\0no-custom\x1ftrue\n'
@@ -20,7 +29,7 @@ bw_headers() {
 
 bw_notify() {
     command -v notify-send >/dev/null 2>&1 || return 0
-    setsid -f notify-send -i "${2:-dialog-password}" "Bitwarden" "$1" >/dev/null 2>&1 || true
+    setsid -f notify-send -i "${2:-$BW_APP_ICON}" "Bitwarden" "$1" >/dev/null 2>&1 || true
 }
 
 bw_to_clipboard() {
@@ -38,7 +47,7 @@ bw_to_clipboard() {
 bw_bg_flow() {
     local action="$1" q="${LAUNCHER_Q:-}"
     setsid -f bash -c '
-        action="$1"; q="$2"; self="$3"; theme="$4"; hotkey="$5"
+        action="$1"; q="$2"; self="$3"; theme="$4"; hotkey="$5"; app_icon="$6"
         while pgrep -x rofi >/dev/null 2>&1; do sleep 0.05; done
         ok=""
         case "$action" in
@@ -48,18 +57,18 @@ bw_bg_flow() {
                 # so the unlock row works for first-time setup too.
                 if rbw login </dev/null >/dev/null 2>&1 && rbw unlock </dev/null >/dev/null 2>&1; then
                     rbw sync </dev/null >/dev/null 2>&1 || true
-                    notify-send -i dialog-password "Bitwarden" "保险库已解锁" >/dev/null 2>&1 || true
+                    notify-send -i "$app_icon" "Bitwarden" "保险库已解锁" >/dev/null 2>&1 || true
                     ok=1
                 else
-                    notify-send -i dialog-error "Bitwarden" "解锁失败或已取消" >/dev/null 2>&1 || true
+                    notify-send -i "$app_icon" "Bitwarden" "解锁失败或已取消" >/dev/null 2>&1 || true
                 fi
                 ;;
             sync)
                 if rbw sync </dev/null >/dev/null 2>&1; then
-                    notify-send -i view-refresh "Bitwarden" "同步完成" >/dev/null 2>&1 || true
+                    notify-send -i "$app_icon" "Bitwarden" "同步完成" >/dev/null 2>&1 || true
                     ok=1
                 else
-                    notify-send -i dialog-error "Bitwarden" "同步失败（网络或会话问题）" >/dev/null 2>&1 || true
+                    notify-send -i "$app_icon" "Bitwarden" "同步失败（网络或会话问题）" >/dev/null 2>&1 || true
                 fi
                 ;;
         esac
@@ -67,7 +76,7 @@ bw_bg_flow() {
         exec env LAUNCHER_Q="$q" rofi -show bw -modi "bw:$self --mod bw" \
             -theme "$theme" -filter "$q" -kb-cancel "Escape,Alt+space" \
             ${hotkey:+-kb-custom-1 "$hotkey"}
-    ' _ "$action" "$q" "$SELF" "$THEME" "${MOD_HOTKEY[bw]}" >/dev/null 2>&1
+    ' _ "$action" "$q" "$SELF" "$THEME" "${MOD_HOTKEY[bw]}" "$BW_APP_ICON" >/dev/null 2>&1
 }
 
 bw_init() {
@@ -178,7 +187,7 @@ bw_copy() {
         totp) label="TOTP" ;; uri)  label="URI" ;;
     esac
     if [ "$rc" -ne 0 ] || [ -z "$value" ]; then
-        bw_notify "复制${label}失败" dialog-error
+        bw_notify "复制${label}失败"
         return 0
     fi
     bw_to_clipboard "$value"
