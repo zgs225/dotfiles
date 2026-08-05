@@ -39,6 +39,7 @@ skills-lock.json
 .config/gtk-4.0/**
 .config/Kvantum/**
 .config/libinput-gestures.conf
+.config/mimeapps.list
 .config/sunshine/**
 {{ end }}
 

@@ -3,8 +3,8 @@
 export BROWSER=open
 export FILE_MANAGER=open
 {{ else -}}
-# Linux (i3 desktop)
-export BROWSER=google-chrome-stable
+# Linux (i3 desktop): dispatch via MIME defaults (~/.config/mimeapps.list → chrome)
+export BROWSER=xdg-open
 export FILE_MANAGER=thunar
 {{ end -}}
 export TERMINAL=wezterm
