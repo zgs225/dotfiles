@@ -19,6 +19,8 @@
   border: 1px solid rgba($accent, 0.35);
 }
 .notif-appicon label { font-family: "Symbols Nerd Font"; font-size: {{ mulf $eww.popupIconSize 0.92 | int }}px; color: $accent; }
+/* Real themed app icon resolved from the GTK icon theme: no accent chip */
+.notif-appicon.icon-real { background-color: transparent; border: none; }
 .icon-slack    { background-color: rgba($mauve, 0.2); }
 .icon-slack label { color: $mauve; }
 .icon-telegram { background-color: rgba($sapphire, 0.2); }
