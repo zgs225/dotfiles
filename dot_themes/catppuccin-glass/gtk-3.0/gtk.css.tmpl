@@ -265,7 +265,7 @@ separator {
  *     (lock-screen discipline: 静如立轴). */
 
 /* declare the take-over (see gotcha 3) */
-@define-color lightdm-gtk-greeter-override-defaults #1a1a1e;
+@define-color lightdm-gtk-greeter-override-defaults {{ .colors.bg_base }};
 
 /* top indicator bar — fully transparent, captions sunk to faint crab-green */
 #panel_window {
@@ -291,9 +291,16 @@ separator {
   border: 1px solid alpha(@lavender, 0.35);
   border-radius: 5px;
   background-color: alpha(@base, 0.65);
-  background-image: linear-gradient(to bottom, alpha(@text, 0.05), alpha(@text, 0.0) 28px);
   box-shadow: none;
   color: @text;
+}
+
+/* top light sheen — ISOLATED rule: GTK3 drops the rest of a rule block
+ * after a bad declaration; a gradient must never share a block with the
+ * box-shadow reset that kills Adwaita's .keycap inset slab (S8.10) */
+#login_window,
+#power_window {
+  background-image: linear-gradient(to bottom, alpha(@text, 0.05), transparent 28px);
 }
 
 /* 乌丝栏 — left ruling, spans the whole ticket height */

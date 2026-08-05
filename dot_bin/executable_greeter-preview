@@ -1,0 +1,160 @@
+#!/usr/bin/env python3
+"""greeter-preview — headless acceptance render of the LightDM GTK greeter.
+
+Instantiates the REAL lightdm-gtk-greeter widget tree (its .glade, fetched
+for the installed version) under the catppuccin-glass theme on Xvfb :99 and
+screenshots the result, so theme iterations can be verified without logging
+out. See docs/design/song-liquid-glass.md §8.10.
+
+usage: greeter-preview [--compose] [out.png]
+  --compose   also run picom (user config) to verify the composited world
+              (shadow/opacity excludes); default is the bare X world, the
+              worst case the greeter actually runs in.
+  out.png     screenshot path (default /tmp/greeter-preview.png)
+
+Requires: xorg-server-xvfb, imagemagick, python-gobject (all in eos-bootstrap
+package list). First run fetches the .glade into ~/.cache/greeter-preview/.
+"""
+import os
+import subprocess
+import sys
+import time
+
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, Gdk, GdkPixbuf, GLib
+
+W, H = 1600, 1000
+DISPLAY = ':99'
+WALLPAPER = '/usr/share/backgrounds/default.png'
+REPO = 'https://raw.githubusercontent.com/Xubuntu/lightdm-gtk-greeter'
+
+
+def glade_path():
+    ver = subprocess.run(
+        ['pacman', '-Q', 'lightdm-gtk-greeter'],
+        capture_output=True, text=True).stdout.split()[-1]
+    ver = ver.split(':')[-1].split('-')[0]  # strip epoch + pkgrel
+    cache = os.path.expanduser('~/.cache/greeter-preview')
+    os.makedirs(cache, exist_ok=True)
+    path = f'{cache}/lightdm-gtk-greeter-{ver}.glade'
+    if not os.path.exists(path):
+        url = f'{REPO}/lightdm-gtk-greeter-{ver}/src/lightdm-gtk-greeter.glade'
+        subprocess.run(['curl', '-fsSL', '-o', path, url], check=True)
+    return path
+
+
+def ensure_display():
+    r = subprocess.run(['xdpyinfo', '-display', DISPLAY],
+                       capture_output=True)
+    if r.returncode != 0:
+        subprocess.Popen(['Xvfb', DISPLAY, '-screen', '0',
+                          f'{W}x{H}x24', '-nolisten', 'tcp'],
+                         stdout=subprocess.DEVNULL,
+                         stderr=subprocess.DEVNULL)
+        for _ in range(30):
+            time.sleep(0.3)
+            if subprocess.run(['xdpyinfo', '-display', DISPLAY],
+                              capture_output=True).returncode == 0:
+                return
+        sys.exit('Xvfb :99 failed to start')
+
+
+def main():
+    compose = '--compose' in sys.argv
+    args = [a for a in sys.argv[1:] if a != '--compose']
+    out = args[0] if args else '/tmp/greeter-preview.png'
+
+    ensure_display()
+    env = dict(os.environ, DISPLAY=DISPLAY)
+    picom = None
+    if compose:
+        picom = subprocess.Popen(
+            ['picom', '-b', '--config',
+             os.path.expanduser('~/.config/picom/picom.conf')],
+            env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        time.sleep(1.0)
+
+    settings = Gtk.Settings.get_default()
+    settings.set_property('gtk-theme-name', 'catppuccin-glass')
+    settings.set_property('gtk-icon-theme-name', 'Papirus-Dark')
+    settings.set_property('gtk-font-name', 'LXGW WenKai 10')
+
+    xml = open(glade_path()).read()
+    xml = xml.replace('class="GreeterMenuBar"', 'class="GtkMenuBar"')
+    builder = Gtk.Builder()
+    builder.add_from_string(xml)
+
+    overlay = builder.get_object('screen_overlay')
+    panel = builder.get_object('panel_window')
+    login = builder.get_object('login_window')
+
+    try:
+        pb = GdkPixbuf.Pixbuf.new_from_file(WALLPAPER)
+        pb = pb.scale_simple(W, H, GdkPixbuf.InterpType.BILINEAR)
+        under = Gtk.Image.new_from_pixbuf(pb)
+        under.show()
+        overlay.remove(builder.get_object('screen_overlay_child'))
+        overlay.add(under)
+    except Exception as e:
+        print('backdrop skipped:', e, file=sys.stderr)
+
+    overlay.add_overlay(panel)
+    overlay.add_overlay(login)
+
+    def on_child_position(ovl, child, alloc):
+        _, nat = child.get_preferred_size()
+        if child is panel:
+            alloc.x, alloc.y = 0, 0
+            alloc.width, alloc.height = W, nat.height
+        elif child is login:
+            alloc.x = int(W * 0.50 - nat.width / 2)
+            alloc.y = int(H * 0.55 - nat.height / 2)
+            alloc.width, alloc.height = nat.width, nat.height
+        else:
+            return False
+        return True
+    overlay.connect('get-child-position', on_child_position)
+
+    win = Gtk.Window()
+    win.set_wmclass('lightdm-gtk-greeter', 'lightdm-gtk-greeter')
+    win.set_decorated(False)
+    win.set_default_size(W, H)
+    win.add(overlay)
+    win.show_all()
+
+    # production state: single known user, avatar column collapsed
+    builder.get_object('user_image_border').hide()
+    builder.get_object('username_entry').hide()
+    user = os.environ.get('USER') or 'yuez'
+    store = builder.get_object('user_liststore')
+    store.append((user, user, 700))
+    builder.get_object('user_combobox').set_active(0)
+    entry = builder.get_object('password_entry')
+    GLib.timeout_add(300, lambda: (entry.grab_focus(), False)[1])
+
+    ucss = os.environ.get('GP_USER_CSS')
+    if ucss:
+        prov = Gtk.CssProvider()
+        prov.load_from_data(ucss.encode())
+        Gtk.StyleContext.add_provider_for_screen(
+            Gdk.Screen.get_default(), prov,
+            Gtk.STYLE_PROVIDER_PRIORITY_USER)
+
+    def shoot():
+        subprocess.run(['import', '-display', DISPLAY, '-window', 'root',
+                        out], check=True)
+        print(out)
+        Gtk.main_quit()
+        return False
+    GLib.timeout_add(1500, shoot)
+
+    try:
+        Gtk.main()
+    finally:
+        if picom:
+            picom.terminate()
+
+
+if __name__ == '__main__':
+    main()

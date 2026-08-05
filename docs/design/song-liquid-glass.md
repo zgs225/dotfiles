@@ -189,6 +189,20 @@ border: 1px solid rgba($accent, 0.15);   // 格内分隔
 - 默认生成图：纯玄色 `#1a1a1e`（`run_once_after_generate-default-wallpaper.sh`）
 - picom 模糊开大，让壁纸透过玻璃只剩"色晕"——晕染在背景层完成
 
+### 4.9 登录 —— 门籍签
+
+lightdm-gtk-greeter。主题走 `catppuccin-glass` 的主题级「门籍签」章节，配置走 eos-bootstrap `lightdm.yml`。
+
+- 签体：L2 绢 0.65 + 5px 圆角 + 天青发丝线；左侧乌丝栏 2px 天青 0.40 贯通全高（立轴挂绳）
+- 身份行：combobox 剥裸为纯字（月白 20px bold），下拉箭天青；无框无底
+- 口令：天青下划线填线（2px、0.50；focus 0.92，caret 天青），无输入框
+- 按钮：Log In = 天青匾额（4px 圆角 + 发丝框，hover/active 三档即时反馈）；Cancel = 蟹壳青 ghost
+- 顶部指示栏全透明，字幕蟹壳青 0.62，hover 月白；下拉菜单复用 §4.5
+- 验证失败：仅 infobar 染一层赭石（14%），其余元素不变色（无 CSS hook，不假装）
+- `hide-user-image = true` 折叠头像列，签成窄匾；人物意象交给壁纸立轴
+- picom：shadow-exclude + opacity 100 双豁免（见 §5 清单）；无合成器时画面自洽
+- 验收：`greeter-preview` 无头渲染，见 §8.10
+
 ---
 
 ## 5. picom 配套参数（`dot_config/picom/picom.conf`）
@@ -243,6 +257,7 @@ eww 的 bar 与 scrim 在 rounded/shadow/blur exclude 清单中；Rofi `corner-r
 | 锁屏 | `dot_config/i3/scripts/lock-render.py.tmpl` + `executable_lock.sh.tmpl` + `dot_config/systemd/user/lockscreen-refresh.*` | §4.7 |
 | 壁纸 | `.chezmoiscripts/common/run_once_after_generate-default-wallpaper.sh` | 玄色生成 |
 | fontconfig | `dot_config/fontconfig/fonts.conf` | LXGW WenKai → JetBrainsMono Nerd Font 西文回退（§3） |
+| LightDM greeter | `dot_themes/catppuccin-glass/` 门籍签章节 + eos-bootstrap `lightdm.yml` + `dot_config/picom/picom.conf` 双豁免 | §4.9；entry 运行时名为 `#prompt_entry`，见 §8.10 |
 
 **终端收编**（目标已立 2026-07-22，未实施）：WezTerm / tmux / nvim / pgcli / mycli / opencode 仍持 Tokyo Night / Solarized 等外国旗，收编目标与裁定见 `docs/design/terminal-unification.md`。核心纪律预览：终端 ANSI red 必须用赭石而非朱砂；朱砂只可作 tmux 当前窗口标记（印章语义延伸）；wezterm active tab 用天青界引，不僭印；收编仅限 `useI3` 机器。
 
@@ -303,6 +318,16 @@ eww 0.5.0 不能在 `:geometry` 里解析变量，所有尺寸经 `.chezmoitempl
 
 - **带 `letter-spacing` 的 label 会被 GTK 少测宽度**（约 字距 × 间隙数），文本直接截成「…」。补偿：给 label 预留 `min-width`（`.time-main` 用 `fontSize × 7.5`，时辰串长恒定所以安全）。任何带字距的 label 改完必须截图确认未截断。
 - **label 自身不接收 `:hover`**——hover 状态落在父 button/eventbox 上。`.child:hover` 永不命中；必须写 `.parent:hover .child` 后代选择器（`.time-btn:hover .time-main` 已验证）。
+
+### 8.10 lightdm-gtk-greeter 主题接管（v1 尸检，2026-08-05）
+
+- 两个 entry 的运行时 widget 名是 **`prompt_entry`**（.glade 显式 `name` 属性）；`#password_entry` / `#username_entry` 是死选择器。
+- GTK 3.24 只认节点名（`menubar`/`menuitem`/`button`/`arrow`/`cellview`）；`.menubar`/`.button` 等 legacy class 静默不命中。combobox 当前行文本在 `cellview` 子节点，颜色/字号要写到它。
+- greeter 自带 fallback CSS 注入于 APPLICATION 优先级；主题必须声明 `@define-color lightdm-gtk-greeter-override-defaults` 才能把它降为 FALLBACK（上游接管协议）。
+- GtkFrame 的沟线画在 `frame > border` 子节点；只样式化 `#id` 会残留黑沟。
+- **GTK3 规则块中毒**：一条非法声明（v1 的 `calc()`、v2 渐变里的 `alpha(@x, 0.0)`）会让解析器丢弃**同一块后续全部声明**。v2 的 `box-shadow: none` 因此阵亡，Adwaita `.keycap` 的 `box-shadow: inset 0 -3px` 黑条乘虚而入（贴签底 3px 黑板）。脆弱声明（渐变）必须独立成块，中毒只毒自己。
+- greeter 是全屏 ARGB 窗口，alpha 轮廓即签体。picom 的 `shadow-exclude` + `opacity-rule 100` 双豁免（`class_g *= 'lightdm'`）是防御性配置：若有朝一日 greeter 会话跑合成器，签体不会吃阴影黑板、令牌 alpha 不被 active-opacity 乘脏。（历史上贴底黑板的真凶是 `.keycap` inset，见上一条。）
+- 验收回路：`greeter-preview`（Xvfb :99 + Gtk.Builder 实例化真实 .glade + `import` 截图），免登出迭代；提交前合成/非合成两种环境各渲染一次。
 
 ---
 
