@@ -1,0 +1,10 @@
+{{ if .isMacOS -}}
+# macOS: no chrome binary in PATH; use the system opener
+export BROWSER=open
+export FILE_MANAGER=open
+{{ else -}}
+# Linux (i3 desktop)
+export BROWSER=google-chrome-stable
+export FILE_MANAGER=thunar
+{{ end -}}
+export TERMINAL=wezterm
