@@ -1,11 +1,11 @@
 Include conf.d/*
 
-# github.com:22 is unreachable on this network; route via ssh.github.com:443
-# through the local Clash mixed port (HTTP+SOCKS5 on 7897).
+# Some networks block outbound :22; ssh.github.com:443 is the reliable
+# fallback. (A previous ProxyCommand via local Clash port 7897 was removed:
+# the port no longer listens now that Surge TUN handles all traffic.)
 Host github.com
     HostName ssh.github.com
     Port 443
-    ProxyCommand nc -X 5 -x 127.0.0.1:7897 %h %p
 
 Host jp1
     HostName jp1.yuez.me
