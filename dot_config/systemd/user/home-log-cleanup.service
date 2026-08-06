@@ -1,0 +1,8 @@
+[Unit]
+Description=Clean up app debug logs older than 14 days
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'for d in "$HOME/.config/DingTalk/log" "$HOME/.config/Trae/logs" "$HOME/.config/Cursor/logs" "$HOME/.local/share/opencode/log"; do [ -d "$d" ] || continue; find "$d" -type f \( -name "*.log" -o -name "*.log.*" \) -mtime +14 -delete; find "$d" -type d -empty -delete; done'
+StandardOutput=journal
+StandardError=journal
