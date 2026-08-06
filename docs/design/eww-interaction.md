@@ -142,7 +142,8 @@ eww 的点击天生"慢半拍"——`onclick` 有 200ms 死刑、界面状态靠
 8. ❌ **长操作无"进行中"指示、无 timeout 上限**——5–15s 无反馈，或卡死时"连接中"永远挂着。
 9. ❌ **长生命周期子进程继承锁 fd**——`flock` 的 fd 被子进程继承会导致锁泄漏，后续每次点击都死锁。子进程必须 `8>&-`/`9>&-` 关闭继承的锁 fd；每条 IPC 调用都要套 `timeout`（`open-popup.sh`/`bt-action.sh` 血泪教训）。
 10. ❌ **`eww open`/`close` 返回即假设窗口已就绪**——异步执行，必须 `wait_state` 轮询 `active-windows` 确认可观测后再决策（`open-popup.sh`）。
-11. ❌ **把"宋式克制"做成"无反馈"**——克制的是动画，不是响应（§1 裁定）。
+11. ❌ **每次点击同步执行完整状态机事务并经全局锁串行**——单次 ~0.4s（~20 次 IPC）意味着吞吐上限 ~2 ops/s，连点即排队、`flock -w 10` 超时静默丢弃（2026-08 压测实测丢弃率 32%），popup「卡死、无法关闭」直到停手数十秒才自愈。多生产者的高频事件必须走**意图队列 + 单 worker**（§7.6）：点击只记录意图，永不等待。
+12. ❌ **把"宋式克制"做成"无反馈"**——克制的是动画，不是响应（§1 裁定）。
 
 ---
 
@@ -190,13 +191,15 @@ eww update wifi_connecting=""                            # 清进行中
 eww update wifi_on="$("$S/network-wifi-on.sh")"          # 即时刷新真实态
 ```
 
-### 7.4 锁 + IPC 超时（串行化不可重入操作）
+### 7.4 锁 + IPC 超时（单次不可重入操作，如 bt-action）
 
 ```bash
-exec 9>/tmp/eww-popup.lock
-flock -w 10 9 || exit 0                 # 有界等待，锁被毒化也不永久冻死
-ewwc() { timeout 8 eww "$@" 9>&- 2>/dev/null; }   # 子进程不继承锁 fd(9>&-)，IPC 套 timeout
+exec 8>/tmp/eww-bt-action.lock
+flock -w 20 8 || exit 0                 # 有界等待，锁被毒化也不永久冻死
+ewwc() { timeout 4 eww "$@" 8>&- 2>/dev/null; }   # 子进程不继承锁 fd(8>&-)，IPC 套 timeout
 ```
+
+> 此模式只适合「偶尔触发、彼此独立」的动作。**高频点击 + 完整状态机**（popup 开关）禁止用一把锁串行所有点击——吞吐天花板会让连点拥塞崩溃（§6.11），必须走 §7.6。
 
 ### 7.5 轮询脚本要读的状态：用文件，不用 eww（避 §6.2 死锁）
 
@@ -216,6 +219,21 @@ if [ -f "$CF" ]; then
     [ "$age" -lt 40 ] && connecting=$(cat "$CF" 2>/dev/null)   # 年龄守卫防孤儿文件
 fi
 ```
+
+### 7.6 意图队列 + 单 worker（popup 开关的唯一范式）
+
+多生产者（bar 按钮 / scrim 点击 / 返回键）的高频事件：点击只落意图，唯一 worker 串行消费——点击永不等待、永不丢失（`open-popup.sh`，2026-08 重写）：
+
+```bash
+INTENTS=/tmp/eww-popup.intents; IWORK=$INTENTS.work
+echo "$NEW $MX" >> "$INTENTS"          # 1) 意图先落盘：<1ms，鼠标 x 此刻捕获
+exec 9>"$LOCKFILE"
+flock -w 10 9 || exit 0                # 2) 抢不到就退出：在跑的 worker 会读到意图
+# 3) 以下仅唯一 worker 到达：mv 原子取批 → 逐条执行 → 每条末尾 reconcile 镜像状态
+while [ -s "$INTENTS" ]; do mv "$INTENTS" "$IWORK"; ...process "$IWORK"...; done
+```
+
+要点：慢后端（蓝牙扫描）fire-and-forget 移出关键路径；收尾 settle 睡眠必须**意图可中断**（0.1s 轮询队列）——整段 `sleep 2` 会让每次交互后 2s 窗口内的点击多等 1-2s（实测回归）；worker 启动时回收孤儿 `intents.work`。
 
 ---
 

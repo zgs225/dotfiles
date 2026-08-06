@@ -1,6 +1,16 @@
 #!/usr/bin/env bash
-# Popup state manager — ensures only one popup open at a time
-# Usage: open-popup.sh <popup-name>
+# Popup state manager — intent queue + single worker.
+# Usage: open-popup.sh <popup-name|close>
+#
+# Architecture (2026-08 rewrite, replaces the per-click flock-queue design):
+#   Every click only APPENDS an intent line and then tries to become the
+#   worker via flock. Exactly one worker exists at any time; it drains the
+#   intent queue in order. Clicks are therefore never dropped and never
+#   wait behind a queue of heavyweight processes — the old design serialized
+#   every click behind a global lock with ~20 IPC calls + in-lock D-Bus per
+#   invocation, so bursty clicks piled up, hit `flock -w 10`, and were
+#   silently discarded (32% under stress), leaving popups unclosable and
+#   popup_open desynced from reality.
 {{- $eww := includeTemplate "eww-sizes" . | fromJson }}
 {{- $dowMdFontSize := mulf $eww.fontSize 0.74 | int }}
 {{- $timeFontSize := mulf $eww.fontSize 1.14 | int }}
@@ -12,31 +22,36 @@
 NEW="$1"
 
 # eww runs button :onclick commands with a 200ms timeout and SIGKILLs whatever
-# is still running (crates/eww/src/widgets/mod.rs). This script makes several
-# eww/xdotool IPC round-trips and cannot reliably finish in 200ms on a loaded
-# system — getting killed mid-run is what left popup_open and the real windows
-# out of sync (popups stuck open/closed, dead clicks). Detach immediately so
-# eww never kills us, then do the real work serialized behind a lock.
+# is still running (crates/eww/src/widgets/mod.rs). Detach immediately; the
+# detached child records the intent and then either becomes the worker or
+# exits (the running worker will see its intent).
 if [ -z "$EWW_POPUP_DETACHED" ]; then
     EWW_POPUP_DETACHED=1 setsid nohup "$0" "$@" >/dev/null 2>&1 &
     exit 0
 fi
 
-# dbg is needed by the lock watchdog below, so define it before anything
-# that might call it. ewwc/xdc are defined after the lock (they close fd 9).
-dbg()  { [ -n "$EWW_POPUP_DEBUG" ] && echo "$(date +%H:%M:%S.%N) $$ NEW=$NEW $*" >> /tmp/popup-debug.log; return 0; }
+dbg()  { [ -n "$EWW_POPUP_DEBUG" ] && echo "$(date +%H:%M:%S.%N) $$ $*" >> /tmp/popup-debug.log; return 0; }
 
+# ---------------------------------------------------------------------------
+# Phase 1: record the intent. This never blocks and never drops — the click
+# is durable before any lock is touched. Mouse X is captured NOW: the worker
+# may run seconds later, when the mouse has already moved elsewhere.
+# ---------------------------------------------------------------------------
+INTENTS=/tmp/eww-popup.intents
+IWORK=/tmp/eww-popup.intents.work
+MX=$(timeout 2 xdotool getmouselocation --shell 2>/dev/null | awk -F= '/^X=/ {print $2}')
+echo "$NEW $MX" >> "$INTENTS"
+dbg "intent queued: $NEW mx=$MX"
+
+# ---------------------------------------------------------------------------
+# Phase 2: worker election. The flock holder is THE popup worker and drains
+# the queue. Everyone else exits — their intent is already queued, and the
+# drain loop re-checks the queue continuously, so it cannot be missed.
+# A wedged worker (>60s; healthy cycles are well under 1s) is killed so a
+# stalled eww daemon can never freeze popups for good.
+# ---------------------------------------------------------------------------
 LOCKFILE=/tmp/eww-popup.lock
 exec 9>"$LOCKFILE"
-# Bounded wait + poison watchdog. A healthy invocation holds this lock for
-# well under 2s. If a previous detached invocation is stuck (an unbounded
-# D-Bus/pactl/bluetoothctl call, or eww IPC stalling through many 8s
-# timeouts), every later click would be silently dropped and the open popup
-# could never be closed. So: wait 10s, and if the lock is still held by a
-# process older than 30s, kill every OTHER holder (only open-popup.sh
-# instances and their children ever open this file; self is excluded) and
-# retry once. State interrupted mid-way is repaired by the reconcile block
-# at the end of this script.
 if ! flock -w 10 9; then
     victims=""
     stuck=0
@@ -44,37 +59,53 @@ if ! flock -w 10 9; then
         [ "$p" = "$$" ] && continue
         victims="$victims $p"
         et=$(ps -o etimes= -p "$p" 2>/dev/null | tr -d ' ')
-        [ -n "$et" ] && [ "$et" -gt 30 ] && stuck=1
+        [ -n "$et" ] && [ "$et" -gt 60 ] && stuck=1
     done
     if [ "$stuck" = 1 ]; then
-        dbg "watchdog: killing stuck lock holders:$victims"
+        dbg "watchdog: killing wedged worker:$victims"
         kill -9 $victims 2>/dev/null
         sleep 0.5
         flock -w 5 9 || { dbg "watchdog: still locked after kill"; exit 0; }
     else
-        dbg "lock busy, holders young ($victims); dropping invocation"
+        dbg "worker busy ($victims); intent queued, exiting"
         exit 0
     fi
 fi
 
+# ---------------------------------------------------------------------------
+# Worker section. Exactly one process ever executes this.
+# ---------------------------------------------------------------------------
+
 # Child processes MUST NOT inherit fd 9 (9>&-): an inherited reference keeps
-# the flock held even after this script dies, and eww CLI clients can hang
-# waiting on an overloaded daemon — that combination deadlocks every future
-# invocation. timeout(1) caps every IPC call so a hung daemon can at worst
-# cost one invocation.
-ewwc() { timeout 8 eww "$@" 9>&- 2>/dev/null; }
-xdc()  { timeout 5 xdotool "$@" 9>&- 2>/dev/null; }
+# the flock held even after this script dies (the year-long bluetoothctl scan
+# process once poisoned every popup click this way). Every external call is
+# time-bounded so a hung eww daemon stalls at most one bounded cycle.
+ewwc() { timeout 4 eww "$@" 9>&- 2>/dev/null; }
+xdc()  { timeout 3 xdotool "$@" 9>&- 2>/dev/null; }
+
+# Daemon health probe. A wedged eww daemon (documented long-uptime failure:
+# window registry desync, hung IPC clients) cannot be repaired from here —
+# restart it. Two failed probes guard against a transient stall.
+if ! ewwc get popup_open >/dev/null 2>&1 && ! ewwc get popup_open >/dev/null 2>&1; then
+    dbg "daemon unresponsive — restarting via launch.sh"
+    i3-msg exec ~/.config/eww/scripts/launch.sh >/dev/null 2>&1
+    exit 0
+fi
+
+# Recover a batch left behind by a killed worker.
+if [ -s "$IWORK" ]; then
+    cat "$IWORK" >> "$INTENTS"
+    rm -f "$IWORK"
+fi
 
 POPUPS="profile-card network-popup control-center audio-popup bluetooth-popup calendar-popup notification-popup updates-popup power-popup storage-popup"
-
-CURRENT=$(ewwc get popup_open || echo "none")
-dbg "acquired CURRENT=$CURRENT"
 
 BAR_HEIGHT={{ $eww.barHeight }}
 POPUP_GAP={{ $eww.popupGap }}
 ICON_SIZE={{ $eww.iconSize }}
 RIGHT_GAP={{ $eww.edgeGap }}
 TIME_COMPONENT_WIDTH={{ $timeComponentWidth }}
+RECONCILED="none"
 
 has_compositor() {
   # This dotfiles uses picom as the X11 compositor. When it is not running
@@ -120,12 +151,14 @@ compute_popup_left() {
 
 # Populate the array named by $1 with dynamic --arg arguments for right-side
 # popups so they open directly below the clicked component.
+# $2 = popup name, $3 = mouse x captured at click time (may be empty).
 get_popup_pos_args() {
   local -n arr=$1
   local popup="$2"
-  local mouse_x screen_w x y
+  local mouse_x="$3"
+  local screen_w x y
 
-  mouse_x=$(xdc getmouselocation --shell 2>/dev/null | awk -F= '/^X=/ {print $2}')
+  [ -z "$mouse_x" ] && mouse_x=$(xdc getmouselocation --shell 2>/dev/null | awk -F= '/^X=/ {print $2}')
   screen_w=$(xdc getdisplaygeometry --shell 2>/dev/null | awk -F= '/^WIDTH=/ {print $2}')
   [ -z "$mouse_x" ] || [ -z "$screen_w" ] && return
 
@@ -193,103 +226,144 @@ scrim_is_open() {
   ewwc active-windows | grep -q '^popup-scrim:'
 }
 
-# eww applies window ops asynchronously on its GTK main thread: `eww open`
-# returning does NOT mean the window exists yet. Deciding on stale state lets
-# a close land before a queued open (orphaned window with popup_open=none).
-# Every op therefore waits until the result is observable before returning.
+# Bounded wait for a window to appear/disappear in the daemon registry. eww
+# applies window ops asynchronously on its GTK main thread: `eww open`
+# returning does NOT mean the window exists yet.
 wait_state() { # $1 window name, $2 present|absent
   local w="$1" want="$2" i
-  for i in $(seq 1 15); do
+  for i in $(seq 1 10); do
     if [ "$want" = present ]; then
-      ewwc active-windows | grep -q "^${w}:" && return 0
+      timeout 2 eww active-windows 9>&- 2>/dev/null | grep -q "^${w}:" && return 0
     else
-      ewwc active-windows | grep -q "^${w}:" || return 0
+      timeout 2 eww active-windows 9>&- 2>/dev/null | grep -q "^${w}:" || return 0
     fi
     sleep 0.1
   done
   return 1
 }
 
-open_sync() { # $1 window, rest: extra args for eww open
-  local w="$1"; shift
-  ewwc open "$w" "$@"
-  wait_state "$w" present
-}
-
-close_sync() {
-  ewwc close "$1"
-  wait_state "$1" absent
-}
-
-open_scrim() {
-  has_compositor || return 0
-  # Reuse an already-open scrim: close+reopen leaves a gap with no
-  # click-catcher, and clicks landing in that gap are silently lost.
-  scrim_is_open && return 0
-  open_sync popup-scrim --arg scrim_y="$(compute_scrim_y)px"
-}
-
-close_scrim() {
-  scrim_is_open || return 0
-  close_sync popup-scrim
-}
-
-if [ "$NEW" = "close" ]; then
-    dbg "branch close"
-    [ "$CURRENT" != "none" ] && close_sync "$CURRENT"
-    close_scrim
-elif [ "$CURRENT" = "$NEW" ]; then
-    dbg "branch toggle-close"
-    close_sync "$NEW"
-    close_scrim
-else
-    dbg "branch open NEW=$NEW (close $CURRENT)"
-    [ "$CURRENT" != "none" ] && close_sync "$CURRENT"
-    open_scrim
-    pos_args=()
-    get_popup_pos_args pos_args "$NEW"
-    open_sync "$NEW" "${pos_args[@]}"
-fi
-dbg "after branch: $(ewwc active-windows | tr '\n' ' ')"
-
-# Reconcile: popup_open must always mirror reality. Whatever raced or failed
-# above, the variable ends up naming the popup that is actually open (or none),
-# and the scrim follows the presence of any popup.
-ACTIVE=$(ewwc active-windows)
-FINAL="none"
-for p in $POPUPS; do
+# popup_open must always mirror reality: it ends up naming the popup that is
+# actually open (or none), the scrim follows the presence of any popup, and
+# duplicate popups (should never happen) are closed.
+reconcile() {
+  local ACTIVE FINAL p
+  ACTIVE=$(ewwc active-windows)
+  FINAL="none"
+  for p in $POPUPS; do
     if echo "$ACTIVE" | grep -q "^${p}:"; then
-        if [ "$FINAL" = "none" ]; then
-            FINAL="$p"
-        else
-            close_sync "$p"
-        fi
+      if [ "$FINAL" = "none" ]; then
+        FINAL="$p"
+      else
+        ewwc close "$p"
+      fi
     fi
+  done
+  if [ "$FINAL" = "none" ]; then
+    scrim_is_open && ewwc close popup-scrim
+  else
+    scrim_is_open || ewwc open popup-scrim --arg scrim_y="$(compute_scrim_y)px"
+  fi
+  ewwc update popup_open="$FINAL"
+  RECONCILED="$FINAL"
+  dbg "reconcile FINAL=$FINAL ACTIVE=[$(echo "$ACTIVE" | tr '\n' ' ')]"
+}
+
+process_intent() { # $1 target, $2 mouse_x captured at click time
+  local INEW="$1" IMX="$2"
+  case " $POPUPS close " in *" $INEW "*) ;; *) dbg "drop invalid intent: $INEW"; return ;; esac
+  local CURRENT
+  CURRENT=$(ewwc get popup_open || echo "none")
+  dbg "exec NEW=$INEW CURRENT=$CURRENT mx=$IMX"
+  if [ "$INEW" = "close" ]; then
+    [ "$CURRENT" != "none" ] && { ewwc close "$CURRENT"; wait_state "$CURRENT" absent; }
+    scrim_is_open && ewwc close popup-scrim
+  elif [ "$CURRENT" = "$INEW" ]; then
+    ewwc close "$INEW"
+    wait_state "$INEW" absent
+    scrim_is_open && ewwc close popup-scrim
+  else
+    # Ops are issued back-to-back with no intermediate waits: the daemon
+    # applies them in submission order, and CURRENT != INEW is guaranteed in
+    # this branch, so there is no same-window open/close ordering hazard.
+    # A single bounded wait at the end covers the async window landing.
+    [ "$CURRENT" != "none" ] && ewwc close "$CURRENT"
+    if has_compositor && ! scrim_is_open; then
+      ewwc open popup-scrim --arg scrim_y="$(compute_scrim_y)px"
+    fi
+    local pos_args=()
+    get_popup_pos_args pos_args "$INEW" "$IMX"
+    ewwc open "$INEW" "${pos_args[@]}"
+    wait_state "$INEW" present
+  fi
+  reconcile
+}
+
+# X11 popup windows missing from the daemon registry are unclosable orphans
+# (documented eww long-uptime registry desync). Use windowclose (a polite
+# WM_DELETE the GTK window honors) — NEVER windowkill: XKillClient would kill
+# the window's X connection, i.e. the eww daemon itself.
+orphan_gc() {
+  local ACTIVE w name short
+  ACTIVE=$(ewwc active-windows)
+  for w in $(xdc search --name '^Eww - ' 2>/dev/null); do
+    name=$(xdc getwindowname "$w" 2>/dev/null) || continue
+    short="${name#Eww - }"
+    [ "$short" = "bar" ] && continue
+    echo "$ACTIVE" | grep -q "^${short}:" && continue
+    # Candidate orphan. Confirm across a second snapshot before destroying:
+    # a window whose open op merely landed late must not be killed.
+    sleep 1
+    xdc getwindowname "$w" >/dev/null 2>&1 || continue
+    ewwc active-windows | grep -q "^${short}:" && continue
+    dbg "orphan-gc: closing orphan window $w ($name)"
+    xdc windowclose "$w"
+  done
+}
+
+# Idle settle pass: absorb window ops that land late on the GTK main loop,
+# then reconcile once more and garbage-collect orphans. The settle sleep is
+# INTENT-INTERRUPTIBLE (0.1s poll): a click landing mid-settle is seen almost
+# immediately and goes straight back to the drain loop — holding the lock
+# through the settle must never delay a new click's popup.
+settle() {
+  local i
+  for i in $(seq 1 20); do
+    [ -s "$INTENTS" ] && return 1
+    sleep 0.1
+  done
+  return 0
+}
+
+# Drain loop. `mv` is atomic: intents appended after the mv land in a fresh
+# file and are picked up by the next iteration — no loss window.
+while true; do
+  while [ -s "$INTENTS" ]; do
+    mv "$INTENTS" "$IWORK"
+    while read -r INEW IMX || [ -n "$INEW" ]; do
+      [ -n "$INEW" ] && process_intent "$INEW" "$IMX"
+    done < "$IWORK"
+    rm -f "$IWORK"
+  done
+  settle || continue
+  reconcile
+  [ -s "$INTENTS" ] && continue
+  orphan_gc
+  break
 done
-if [ "$FINAL" = "none" ]; then
-    close_scrim
-else
-    open_scrim
-fi
-ewwc update popup_open="$FINAL"
-dbg "done FINAL=$FINAL ACTIVE=[$ACTIVE]"
 
-# Bluetooth discovery follows the popup lifecycle: eww only polls variables
-# that an open window uses, so bt-devices.sh cannot reliably stop the scan
-# after the popup closes — do it here where every close path converges.
-if [ "$FINAL" = "bluetooth-popup" ]; then
-    timeout 8 ~/.config/eww/scripts/bt-scan.sh on 9>&-
-else
-    timeout 8 ~/.config/eww/scripts/bt-scan.sh off 9>&-
-fi
+# Bluetooth discovery follows the final popup state, fire-and-forget:
+# bt-scan.sh sync re-reads popup_open itself, so multiple pokes coalesce to
+# the latest state, and a wedged bluetoothd cannot stall this worker.
+( setsid ~/.config/eww/scripts/bt-scan.sh sync >/dev/null 2>&1 7>&- 8>&- 9>&- & )
 
-# Refresh audio devices immediately when opening control center.
-# Reads the ewwstate daemon's snapshot (audio.py polls every 2s with internal
-# 3s timeouts) instead of running audio-devices.sh here: the old version made
-# four UNBOUNDED pactl round-trips while HOLDING the popup lock — a stalled
-# PipeWire wedged the lock and silently dropped every later click, leaving
-# the open popup impossible to close.
-if [ "$FINAL" = "control-center" ]; then
-    AUDIO_JSON=$(timeout 3 ~/.config/eww/scripts/ewwstate get audio_devices 9>&- | tr -d '\n' 9>&-)
+# Refresh audio devices when the control center ends up open. Reads the
+# ewwstate daemon's tmpfs snapshot (audio.py polls every 2s with internal 3s
+# timeouts) — never run pactl round-trips on this path; a stalled PipeWire
+# once wedged the global lock and made every popup unclosable.
+if [ "$RECONCILED" = "control-center" ]; then
+    AUDIO_JSON=$(timeout 3 ~/.config/eww/scripts/ewwstate get audio_devices 9>&- | tr -d '\n')
     [ -n "$AUDIO_JSON" ] && ewwc update audio_devices="$AUDIO_JSON"
 fi
+
+dbg "worker exit"
+exit 0

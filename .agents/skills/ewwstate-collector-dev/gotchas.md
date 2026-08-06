@@ -223,7 +223,7 @@
 
 **怎么做**：
 1. 被持锁区调用的脚本，其长寿命后台进程必须显式关闭所有外来 fd：`nohup cmd >/dev/null 2>&1 8>&- 9>&- &`（关闭未打开的 fd 是无害的 no-op）。
-2. 排查：`fuser -v <lockfile>` 列出所有持 fd 进程（打开就算，不只是 flock 持有者）；`ps -o etimes= -p <pid>` 看年龄，健康持锁 <2s，分钟级即毒化。
+2. 排查：`fuser -v <lockfile>` 列出所有持 fd 进程（打开就算，不只是 flock 持有者）；`ps -o etimes= -p <pid>` 看年龄。注意 2026-08 起 popup 管理改为**意图队列 + 单 worker**（见 developing-eww-components SKILL）：worker 排水期间持锁数秒是**正常**的，>60s 才是毒化（看门狗会自动清理）；别再以「持锁 <2s 为健康」判断 popup 锁。
 3. 诊断 popup 卡死先查这个，别急着怪 eww daemon——`eww ping` 正常 + popup 关不掉 ≈ 锁毒化。
 
 ---

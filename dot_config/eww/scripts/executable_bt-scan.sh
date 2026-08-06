@@ -12,7 +12,21 @@ PIDFILE=/tmp/eww-bt-scan.pid
 # carry it, so pkill/pgrep never touch scans owned by blueman or the user.
 SCAN_CMD='bluetoothctl --timeout 31536000 scan on'
 
-case "$1" in
+MODE="$1"
+
+# `sync` is the coalescing, fire-and-forget entry point used by open-popup.sh.
+# Callers never wait for bluetoothctl here: we re-read the DESIRED state
+# (popup_open) at execution time, so any number of queued pokes converge to
+# the latest state, and a wedged bluetoothd can stall at most this one
+# serialized process — never the popup worker.
+if [ "$MODE" = "sync" ]; then
+    exec 7>/tmp/eww-bt-scan.lock
+    flock -w 6 7 || exit 0
+    pop=$(timeout 3 eww get popup_open 2>/dev/null || echo none)
+    if [ "$pop" = "bluetooth-popup" ]; then MODE=on; else MODE=off; fi
+fi
+
+case "$MODE" in
 on)
     # A device action (pair/connect) holds the link lock — do not restart
     # discovery mid-operation, BlueZ would abort the new connection.
@@ -23,13 +37,12 @@ on)
         echo "$existing" > "$PIDFILE"
         exit 0
     fi
-    # Unbounded D-Bus round-trips can hang when bluetoothd is wedged; cap it
-    # so callers holding the popup lock are never poisoned by a stuck show.
+    # Unbounded D-Bus round-trips can hang when bluetoothd is wedged; cap it.
     timeout 5 bluetoothctl show 2>/dev/null | grep -q "Powered: yes" || exit 0
-    # 8>&-/9>&-: the holder must not inherit any lock fd. In particular fd 9 is
-    # open-popup.sh's global popup flock — inherited by this year-long scan
+    # 7>&-/8>&-/9>&-: the holder must not inherit any lock fd. In particular
+    # fd 9 is open-popup.sh's worker flock — inherited by this year-long scan
     # process it would poison every future popup click until eww is reloaded.
-    nohup $SCAN_CMD >/dev/null 2>&1 8>&- 9>&- &
+    nohup $SCAN_CMD >/dev/null 2>&1 7>&- 8>&- 9>&- &
     echo $! > "$PIDFILE"
     ;;
 off)

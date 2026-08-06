@@ -126,27 +126,36 @@ fi
 
 ---
 
-## popup 全局 flock 毒化——popup 卡死无法关闭但 eww ping 正常
+## popup 意图队列 + 单 worker 架构（2026-08 重写，取代 per-click flock 队列）
 
-**为什么**：`open-popup.sh` 是所有 popup 开关的唯一入口（bar 按钮、scrim 点击都走它），所有调用串行在全局锁 `/tmp/eww-popup.lock`（fd 9）上；`flock -w 10` 拿不到锁会**静默丢弃本次点击**。两类持锁毒化会让所有 popup 点击永久失效：
+**为什么重写**：旧设计中每次点击 fork 一个进程，抢全局 flock 后同步执行 ~20 次 IPC（含锁内 D-Bus）。单次 ~0.4s → 吞吐上限 ~2 ops/s，连点即排队，`flock -w 10` 超时**静默丢弃点击**（压测丢弃率 32%），队列期间 popup 表现为「卡死、无法关闭、点击没反馈」，且看门狗只杀 >30s 持锁者、对「大量年轻等待者」型拥塞完全无效。
 
-1. **锁持有区内的无超时外部调用**。任何 D-Bus/socket 调用（`pactl`/`bluetoothctl`/`nmcli`）都可能偶发阻塞。旧逻辑在持锁时同步跑 `audio-devices.sh`（4 次无 timeout 的 pactl 往返），PipeWire 一卡顿脚本就挂在锁内。
-2. **fd 9 泄漏给长寿命子进程**。bash 后台子进程默认继承所有 fd，而 flock 要等最后一个持 fd 的进程关闭才释放。`bt-scan.sh on` 启动的 `bluetoothctl --timeout 31536000 scan on`（故意活一年的扫描保持进程）继承了 fd 9 → **开过一次 bluetooth-popup 后锁被永久持有**（用 `fuser -v` 实证）。
+**新架构**（`open-popup.sh`）：
+1. **意图先行**：点击先把 `目标 + 点击时鼠标 x` 原子追加到 `/tmp/eww-popup.intents`（<1ms），**永不等待、永不丢失**。
+2. **单 worker**：`flock -w 10` 只用于选举唯一消费者。抢不到 → 立即退出（在跑的 worker 会读到意图）；抢到 → 循环 `mv intents intents.work`（rename 原子，无丢失窗口）逐条执行，末尾 `reconcile` 让 `popup_open` 始终镜像 `active-windows`。
+3. **事务瘦身**：同一 worker 内时序可控，close/open 连续下发、末尾只 `wait_state` 一次（CURRENT≠NEW 保证同窗口无 open/close 顺序冒险）。
+4. **慢后端移出关键路径**：蓝牙扫描改为 fire-and-forget `bt-scan.sh sync`（自读 popup_open 决定 on/off，自有锁串行合并；bluetoothd 卡 5s 对 worker 零影响）。
+5. **自愈**：daemon 两次 probe 超时 → 自动 `i3-msg exec launch.sh` 重启；settle 后 `orphan_gc` 用 `xdotool windowclose`（**禁止 windowkill**——XKillClient 会杀掉 eww daemon 的 X 连接）清除注册表外的孤儿窗口。
+6. **settle 必须意图可中断**：收尾的 settle 睡眠以 0.1s 粒度轮询意图文件，新意图到达立即回 drain 循环。首版用了整段 `sleep 2`，导致 worker 休眠期间（每次交互后 2s 窗口）的点击要等 1-2s 才被看到——「点击后 popup 出现明显变慢」的回归。**worker 持锁不是问题，睡着才是问题**：任何收尾等待都必须能被新意图打断。
 
-**症状识别**（关键鉴别特征）：popup 开着、怎么点都关不掉，但 `eww ping` 正常、bar 其它部分活着 → 几乎一定是锁毒化而非 eww daemon 卡死。诊断：
+**调试**：`EWW_POPUP_DEBUG=1` 后触发点击，查 `/tmp/popup-debug.log`：
+| 日志行 | 含义 |
+| --- | --- |
+| `intent queued: X mx=…` | 意图已落盘 |
+| `worker busy (...); intent queued, exiting` | 正常——在跑的 worker 会消费 |
+| `exec NEW=X CURRENT=…` | worker 开始执行该意图 |
+| `reconcile FINAL=…` | 状态已镜像 |
+| `watchdog: killing wedged worker` | 有 worker 卡死 >60s 被清理 |
+| `daemon unresponsive — restarting` | daemon 失能，已自动重启 |
+| `orphan-gc: closing orphan window` | 清除了注册表外孤儿窗口 |
 
-```bash
-fuser -v /tmp/eww-popup.lock        # 列出所有持 fd 进程（打开就算，不只是 flock 持有者）
-ps -o etimes= -p <pid>              # 持锁多久了（健康调用 <2s）
-```
+**对账命令**（验证零丢失）：`grep -c "intent queued:" /tmp/popup-debug.log` vs `grep -c "exec NEW="` —— 必须相等。
 
-**怎么做**：
-- 锁持有区内每个外部命令都必须有 `timeout`，并给子进程 `9>&-`；长寿命后台进程（`nohup`/`setsid`）**必须显式关闭继承的锁 fd**：`nohup cmd >/dev/null 2>&1 8>&- 9>&- &`。
-- popup 打开时的「即时刷新」不要同步跑状态脚本链，改读 daemon 快照：`timeout 3 ewwstate get <topic>` + 空值守卫 + `eww update`（见 ewwstate-collector-dev gotcha #26）。
-- 兜底看门狗（已内置于 open-popup.sh）：`flock -w 10` 失败后枚举持锁者，有进程存活 >30s 即 SIGKILL 全部持锁者（排除自身）并重试一次；年轻持锁者维持丢弃点击、不误杀。
-- 调试：`EWW_POPUP_DEBUG=1` 后触发点击，查 `/tmp/popup-debug.log` 里的 `watchdog: killing...` / `lock busy...` 记录。
-
-**踩坑实录**：2026-07 用户报告 wifi/电源/控制中心 popup 有概率卡死无法关闭。先用开关压测/竞态/浸泡/update 风暴实测排除 eww daemon（ping/CPU/线程全程健康）；人为持锁 1:1 复现症状；最终 `fuser` 实证 bluetoothctl 扫描进程永久持锁——只要会话中开过蓝牙菜单，后续所有 popup 点击全失效，表象上分不清是哪个 popup 卡住的。
+**残余约束（历史踩坑，仍然有效）**：
+- worker 持 fd 9 期间，其启动的一切长寿命子进程**必须显式关闭继承的锁 fd**（`9>&-`），否则锁被永久持有（2026-07 bluetoothctl 年活扫描进程实证）。
+- worker 关键路径上**禁止无 timeout 的外部调用**（D-Bus/socket/IPC 都可能偶发阻塞）；「即时刷新」一律读 ewwstate tmpfs 快照，不跑 pactl/bluetoothctl 链。
+- 诊断锁问题：`fuser -v /tmp/eww-popup.lock` + `ps -o etimes= -p <pid>`；worker 持续排水是正常持锁，>60s 才是毒化（看门狗会自动清理）。
+- **踩坑实录**：2026-07 wifi/电源/控制中心 popup 有概率卡死——bluetoothctl 扫描进程继承 fd 9 永久持锁；2026-08 压测实证拥塞崩溃（连点 → 队列 → `flock -w 10` 静默丢弃 32%）→ 促成本次架构重写。
 
 ---
 
@@ -163,11 +172,9 @@ ps -o etimes= -p <pid>              # 持锁多久了（健康调用 <2s）
 - 正确修法：i3 config 中 `focus_on_window_activation none`。这阻断 activation 事件引发的聚焦，但 `focus_follows_mouse yes` 仍正常工作——鼠标移入 popup 时聚焦（用户正在操作它，这是正确行为），鼠标离开后不再被周期 update 抢回。
 - 如果「抢焦点」伴随「popup 关不掉」，先查 daemon 脱同步（见下条），孤儿窗口 + 周期 update 是复合病因。
 
-**daemon 窗口注册表脱同步**（与 flock 毒化不同的卡死路径）：
+**daemon 窗口注册表脱同步**（与锁无关的卡死路径，2026-08 起由 worker 自愈）：
 - 症状：`eww active-windows` 为空，但 `xdotool search --name "Eww"` 能看到窗口；`eww open` 客户端进程挂死数百秒（PPID=1）；`eww ping`/`get` 正常。
-- 诊断：`ps -eo pid,etimes,cmd | grep "eww open"` 找挂死客户端；`xdotool search --name "Eww" getwindowname` 对比 `eww active-windows`。
-- 修复：`kill -9 <挂死PID>` + `i3-msg exec ~/.config/eww/scripts/launch.sh` 重启 daemon。
-- 这是 eww 上游已知脆弱性（长时间运行后窗口管理层脱节），无法在配置层完全避免。
+- **自动修复**：worker 启动时两次 `eww get popup_open` 超时 → 自动 `i3-msg exec launch.sh` 重启 daemon；settle 后 `orphan_gc` 自动 `windowclose` 清除注册表外的孤儿窗口。手动诊断仍可参考本文档。
 
 **踩坑实录**：2026-07-30 用户报告电源 popup 卡住 + 不停抢焦点。诊断发现 daemon `active-windows` 为空但 X11 窗口存在（脱同步），`eww open` 客户端挂死 300+s。重启 daemon 解决卡死。随后尝试 `no_focus [class="Eww"]` 防抢焦点 → popup 所有按钮点击失效（回归）。最终改为 `focus_on_window_activation none`，既阻断周期 activation 抢焦点，又保留 focus_follows_mouse 的正常交互。
 

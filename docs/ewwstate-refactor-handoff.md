@@ -154,11 +154,12 @@ D  dot_config/eww/scripts/executable_network-wired-detail.sh
 6. **视觉校验**：`maim` 截 bar；**凡组件在某 popup，必须打开该 popup 再截一张**，肉眼确认 widget 正常。**截图 read 前必压缩**（踩坑 #13）。
 7. **清理旧脚本**：**先全树 grep**（`grep -rn "<脚本名>" dot_config/eww`，含 `scripts/`！踩坑 #4）；仅被 defpoll/deflisten 引用且无 onclick → `git rm 源 + rm 目标`（踩坑 #3）；有 onclick 引用 → **保留**。
 
-**打开 popup 的方法**：优先 `~/.config/eww/scripts/open-popup.sh <name>`；若它因鼠标 anchor 算空而失败（踩坑 #10），用显式坐标兜底：
+**打开 popup 的方法**：优先 `~/.config/eww/scripts/open-popup.sh <name>`（2026-08 起为异步意图队列：调用返回 ≠ popup 已开，断言前 sleep ~1s）；若它因鼠标 anchor 算空而失败（踩坑 #10），用显式坐标兜底：
 ```bash
 eww open <name> --arg pos_x=1850px --arg pos_y=40px
 eww update popup_open="<name>"     # 触发懒加载
-# 若该 popup 有 scan-on-open 等副作用（如 bluetooth），按需复刻，如 ~/.config/eww/scripts/bt-scan.sh on
+# 若该 popup 有 scan-on-open 等副作用（如 bluetooth），用 ~/.config/eww/scripts/bt-scan.sh sync
+# （自读 popup_open 决定开/关扫描；不要再直接调 bt-scan.sh on/off）
 ```
 **判断 popup 是否打开**：`eww get popup_open`（值==popup 名；`none`=全关）。**别用 `eww list-windows`**（它列所有*定义*的窗口，踩坑 #2）。
 

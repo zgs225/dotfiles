@@ -76,10 +76,14 @@ eww get <topic>                          # eww 侧
 ### 打开 popup 的方法
 
 ```bash
-# 优先
+# 优先（2026-08 起为异步意图队列：调用返回 ≠ popup 已开，
+# 断言/截图前 sleep ~1s 等 worker 处理完）
 ~/.config/eww/scripts/open-popup.sh <name>
+sleep 1
 
 # 兜底（open-popup.sh 因无鼠标坐标偶发失败）
+# 注意：直连 eww 绕过 worker，之后 worker 的 reconcile 会收养该窗口；
+# 蓝牙扫描等副作用需手动 `bt-scan.sh sync` 触发（不要再调 on/off）
 eww open <name> --arg pos_x=1850px --arg pos_y=40px
 eww update popup_open="<name>"
 ```
