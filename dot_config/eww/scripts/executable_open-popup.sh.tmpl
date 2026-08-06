@@ -83,6 +83,23 @@ fi
 ewwc() { timeout 4 eww "$@" 9>&- 2>/dev/null; }
 xdc()  { timeout 3 xdotool "$@" 9>&- 2>/dev/null; }
 
+# picom re-evaluates name/class-based exclude rules during a window's destroy
+# frames, when WM_NAME/WM_CLASS/_NET_WM_WINDOW_TYPE are already unreadable; a
+# dying fullscreen window (popup-scrim) then receives fullscreen blur+shadow
+# painted on top of the composited scene for 2-3 frames = the visible flash
+# when a popup closes. _NET_WM_WINDOW_OPACITY is cached by picom and honored
+# at destroy (opacity 0 makes the renderer skip the dying window entirely),
+# so hide the window at the X level before asking eww to destroy it.
+# Requires detect-client-opacity = true in picom.conf.
+prehide() { # $1 = eww window name
+  local wid
+  wid=$(xdc search --name "^Eww - $1\$" | head -1)
+  [ -n "$wid" ] && timeout 2 xprop -id "$wid" -f _NET_WM_WINDOW_OPACITY 32c \
+    -set _NET_WM_WINDOW_OPACITY 0 9>&- >/dev/null 2>&1
+  return 0
+}
+close_win() { prehide "$1"; ewwc close "$1"; }
+
 # Daemon health probe. A wedged eww daemon (documented long-uptime failure:
 # window registry desync, hung IPC clients) cannot be repaired from here —
 # restart it. Two failed probes guard against a transient stall.
@@ -254,12 +271,12 @@ reconcile() {
       if [ "$FINAL" = "none" ]; then
         FINAL="$p"
       else
-        ewwc close "$p"
+        close_win "$p"
       fi
     fi
   done
   if [ "$FINAL" = "none" ]; then
-    scrim_is_open && ewwc close popup-scrim
+    scrim_is_open && close_win popup-scrim
   else
     scrim_is_open || ewwc open popup-scrim --arg scrim_y="$(compute_scrim_y)px"
   fi
@@ -275,18 +292,18 @@ process_intent() { # $1 target, $2 mouse_x captured at click time
   CURRENT=$(ewwc get popup_open || echo "none")
   dbg "exec NEW=$INEW CURRENT=$CURRENT mx=$IMX"
   if [ "$INEW" = "close" ]; then
-    [ "$CURRENT" != "none" ] && { ewwc close "$CURRENT"; wait_state "$CURRENT" absent; }
-    scrim_is_open && ewwc close popup-scrim
+    [ "$CURRENT" != "none" ] && { close_win "$CURRENT"; wait_state "$CURRENT" absent; }
+    scrim_is_open && close_win popup-scrim
   elif [ "$CURRENT" = "$INEW" ]; then
-    ewwc close "$INEW"
+    close_win "$INEW"
     wait_state "$INEW" absent
-    scrim_is_open && ewwc close popup-scrim
+    scrim_is_open && close_win popup-scrim
   else
     # Ops are issued back-to-back with no intermediate waits: the daemon
     # applies them in submission order, and CURRENT != INEW is guaranteed in
     # this branch, so there is no same-window open/close ordering hazard.
     # A single bounded wait at the end covers the async window landing.
-    [ "$CURRENT" != "none" ] && ewwc close "$CURRENT"
+    [ "$CURRENT" != "none" ] && close_win "$CURRENT"
     if has_compositor && ! scrim_is_open; then
       ewwc open popup-scrim --arg scrim_y="$(compute_scrim_y)px"
     fi
@@ -316,6 +333,7 @@ orphan_gc() {
     xdc getwindowname "$w" >/dev/null 2>&1 || continue
     ewwc active-windows | grep -q "^${short}:" && continue
     dbg "orphan-gc: closing orphan window $w ($name)"
+    prehide "$short"
     xdc windowclose "$w"
   done
 }

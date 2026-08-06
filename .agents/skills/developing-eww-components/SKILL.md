@@ -277,3 +277,21 @@ EOF
 **为什么**：`thunar-volman` 是一次性命令，由 udev 规则在设备插入时调用。`Thunar --daemon` 只启动文件管理器后台进程，**不启动** volman。i3 环境下如果缺少对应的 udev 规则（`/usr/lib/udev/rules.d/*thunar*`），插入 USB 不会自动挂载。
 
 **怎么做**：写用户级 `automount-daemon.sh`，用 `udevadm monitor --subsystem-match=block --property --udev` 监听 `add` 事件，检测到可移动分区后调 `udisksctl mount`。由 i3 config 的 `exec --no-startup-id` 启动。关键：只监听 `add`（设备插入），不监听 `change`（mount/unmount 状态变化），否则用户弹出后会被重挂。
+
+---
+
+## popup 关闭闪屏:picom destroy 期规则失效,修法是 close 前 prehide
+
+**为什么**:picom 在窗口 destroy 帧里重新求值 name/class 规则,但此时 `WM_NAME`/`WM_CLASS`/`_NET_WM_WINDOW_TYPE` 已不可读(trace 实证 `client = 0000000000`)。`popup-scrim` 活着时靠 `name = 'Eww - popup-scrim'` 豁免 shadow/blur,濒死时豁免失配,于是 2560×1600 的濒死窗口被加上全屏 blur-background + 0.35 全屏 shadow;若此刻它被 i3 restack 抬到栈顶(popup 先 destroy 时必现),就是对整屏已合成画面再糊一遍 = 关 popup 时 ~50ms 的全屏闪。单独关 scrim 不闪,popup+scrim 一起关才闪,就是这个组合条件。
+
+**怎么做**:`open-popup.sh` 的 `close_win()` 在 `eww close` 前先 `xprop -set _NET_WM_WINDOW_OPACITY 0`(`prehide`)。picom 对 client opacity 是缓存的,destroy 帧里 `opacity == 0` 让 renderer 直接跳过该 layer(blur/shadow/窗口全不画)。与分辨率、picom 版本无关,对任何 eww 窗口统一生效。前提:`detect-client-opacity = true`(picom.conf 已开)。orphan_gc 走 `prehide` + `windowclose` 同样处理。验证基线:60fps 录屏帧间差峰值 8.62(闪)→ 0.04(修复后)。
+
+**被否掉的方案**(调研结论,别再走):① picom 几何条件(`argb && width>=…`)——销毁期只有几何存活,条件必然带分辨率数字,不通用;② 常驻 scrim 不销毁——eww 0.5 和 master 的 defwindow 几何都只在 open 时烘焙一次(`eww update` 不生效,master 的 configure_event 钩子还会扳回),全屏常驻又会偷焦点吃点击,无解。
+
+---
+
+## 截图/录屏可能是捕获侧假象——用户肉眼才是 ground truth
+
+**为什么**:GLX 合成下 `maim`/`x11grab` 偶尔读到「只有糊化背景、没有任何窗口」的帧(特征:全图 stddev ≈ 0.063),用户物理屏幕完全正常。2026-08 排查闪屏时,这个假象先后被误判成「picom 卡死」「修复引入回退」,浪费数小时。
+
+**怎么做**:截图只用于量组件位置/颜色等静态验证;涉及「闪、卡、消失」类动态问题,必须用户肉眼佐证 + picom `--log-level trace` 日志交叉验证。录屏帧间差(YDIF/stddev)做自动化回归可以,但出现「整屏空白」读数时先怀疑捕获,别先怀疑会话。
