@@ -50,12 +50,8 @@ M.setup = function()
 
       local proc = _process_name(tab.active_pane.foreground_process_name)
       local base = tab.active_pane.title
-      local title
-      if #proc > 0 and proc ~= base then
-         title = proc .. ' ~ ' .. base
-      else
-         title = base
-      end
+      local title = base
+      if title == '' then title = proc end
       title = _truncate(title, max_width)
 
       -- Choose fg + attribute by state: the jie-yin is a sky-blue left
