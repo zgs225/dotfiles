@@ -2,14 +2,10 @@
 set -euo pipefail
 
 # Single lock instance: xidlehook auto-lock can overlap a manual $mod+Shift+l.
-# Two i3lock instances would each run the PAM fingerprint stack and race for
-# the fprintd device claim (2026-07: ReleaseDevice busy → auth failure).
+# A second i3lock would wait on the input grab and double up on auth handling
+# (2026-07: duplicate instances raced for the fprintd device claim).
 exec 9>"${XDG_RUNTIME_DIR:-/tmp}/i3-lock.${UID}.lock"
 flock -n 9 || exit 0
-
-# Fingerprint unlock is handled by i3lock's PAM stack (/etc/pam.d/i3lock,
-# managed by eos-bootstrap): press Enter, swipe within the 10s verify window.
-# No helper process — fprintd powers the sensor off between windows.
 
 CACHE_DIR="$HOME/.cache/lockscreen"
 RENDER_SCRIPT="$HOME/.config/i3/scripts/lock-render.py"
