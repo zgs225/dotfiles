@@ -8,9 +8,11 @@ local GLYPH_SEMI_CIRCLE_RIGHT = nf.ple_right_half_circle_thick --[[ '' ]]
 local GLYPH_KEY_TABLE = nf.md_table_key --[[ '󱏅' ]]
 local GLYPH_KEY = nf.md_key --[[ '󰌆' ]]
 
+-- Leader/key-table indicator: warn (gamboge) bg + xuan text, per
+-- terminal-unification.md §4 — attention semantics belong to warn.
 local colors = {
-   glyph_semi_circle = { bg = 'rgba(0, 0, 0, 0.4)', fg = '#fab387' },
-   text = { bg = '#fab387', fg = '#1c1b19' },
+   glyph_semi_circle = { bg = 'rgba(0, 0, 0, 0.4)', fg = '#d8a23c' },
+   text = { bg = '#d8a23c', fg = '#1a1a1e' },
 }
 
 local __cells__ = {}

@@ -65,4 +65,17 @@ local tmux_mapping = {
 return {
    palette = palette,
    tmux_mapping = tmux_mapping,
+   song = {
+      -- Song-liquid-glass chrome tokens for wezterm chrome (tab bar / status).
+      -- Source: docs/design/song-liquid-glass.md §2.1 and
+      -- docs/design/terminal-unification.md §4.
+      -- Deliberately NOT part of `palette` (Tokyo Night) — tmux sync ignores it.
+      bg_base = '#1a1a1e', -- xuan (gen)
+      ink = '#2e2e36', -- ink (dai)
+      ink_lit = '#464652', -- ink bright stage
+      fg_primary = '#e8e6df', -- moon-white
+      fg_secondary = '#9a9a92', -- crab-shell blue
+      accent = '#9ec8c0', -- sky-blue (ru kiln)
+      warn = '#d8a23c', -- gamboge
+   },
 }

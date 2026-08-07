@@ -1,19 +1,20 @@
 -- events/tab-title.lua
--- Minimalist tab bar: no color blocks, no powerline glyphs.
--- Only foreground color + weight distinguish active / inactive / hover.
--- Colors come from the fixed palette (colors/palette.lua).
+-- Jie-yin (boundary-line) tab bar: no fill, no shape — the active tab is
+-- marked by a sky-blue left vertical bar + sky-blue text on the flat
+-- mounting band, the most restrained variant. Inactive tabs stay silent
+-- (crab-shell blue). Colors: song chrome tokens (colors/palette.lua);
+-- backgrounds live in colors/custom.lua.
 
 local wezterm = require('wezterm')
-local palette = require('colors.palette').palette
+local song = require('colors.palette').song
 
 local M = {}
 
--- Fixed colors (Tokyo Night palette)
 local COLORS = {
-   accent = palette.blue,
-   dim    = palette.white,
-   fg     = palette.foreground,
-   alert  = palette.red,
+   active = song.accent,
+   hover = song.fg_primary,
+   dim = song.fg_secondary,
+   alert = song.warn,
 }
 
 local __cells__ = {}
@@ -22,7 +23,9 @@ local __cells__ = {}
 --- The tab bar's own bg_color (set in custom.lua) fills the background.
 local function _push(fg, attr, text)
    table.insert(__cells__, { Foreground = { Color = fg } })
-   table.insert(__cells__, { Attribute = attr })
+   if attr then
+      table.insert(__cells__, { Attribute = attr })
+   end
    table.insert(__cells__, { Text = text })
 end
 
@@ -45,8 +48,6 @@ M.setup = function()
    wezterm.on('format-tab-title', function(tab, _tabs, _panes, _config, hover, max_width)
       __cells__ = {}
 
-      local tc = COLORS
-
       local proc = _process_name(tab.active_pane.foreground_process_name)
       local base = tab.active_pane.title
       local title
@@ -57,16 +58,18 @@ M.setup = function()
       end
       title = _truncate(title, max_width)
 
-      -- Choose fg + attribute by state
+      -- Choose fg + attribute by state: the jie-yin is a sky-blue left
+      -- vertical bar (design §4.3) — wezterm tab cells ignore Underline,
+      -- so the bar glyph carries the mark instead.
       local fg, attr
       if tab.is_active then
-         fg   = tc.accent
+         fg = COLORS.active
          attr = { Intensity = 'Bold' }
       elseif hover then
-         fg   = tc.fg
+         fg = COLORS.hover
          attr = { Intensity = 'Normal' }
       else
-         fg   = tc.dim
+         fg = COLORS.dim
          attr = { Intensity = 'Normal' }
       end
 
@@ -79,10 +82,13 @@ M.setup = function()
          end
       end
 
-      -- Build cells: ` title ` with optional alert dot
+      -- Build cells: [bar] ` title ` with optional alert dot
+      if tab.is_active then
+         _push(COLORS.active, nil, '▎')
+      end
       _push(fg, attr, ' ' .. title)
       if has_unseen then
-         _push(tc.alert, { Intensity = 'Bold' }, ' ●')
+         _push(COLORS.alert, { Intensity = 'Bold' }, ' ●')
       end
       _push(fg, attr, ' ')
 

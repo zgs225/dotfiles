@@ -1,6 +1,7 @@
 local wezterm = require('wezterm')
 local palette_data = require('colors.palette')
 local palette = palette_data.palette
+local song = palette_data.song
 
 local M = {}
 
@@ -12,28 +13,30 @@ function M.build_colors(scheme_name)
    return {
       background = palette.background,
       tab_bar = {
-         -- All backgrounds use the same dark color → no visible color blocks.
-         -- The tab bar visually merges with the terminal viewport's overlay.
-         background = palette.background,
+         -- Flat mounting band, tabs are text-only: the active tab is marked
+         -- by a sky-blue jie-yin underline (events/tab-title.lua), never a
+         -- fill block. Song-liquid-glass chrome tokens per
+         -- terminal-unification.md §4 — no blue-purple, no color blocks.
+         background = song.bg_base,
          active_tab = {
-            bg_color = palette.background,
-            fg_color = palette.blue,
+            bg_color = song.bg_base,
+            fg_color = song.accent,
          },
          inactive_tab = {
-            bg_color = palette.background,
-            fg_color = palette.white,
+            bg_color = song.bg_base,
+            fg_color = song.fg_secondary,
          },
          inactive_tab_hover = {
-            bg_color = palette.background,
-            fg_color = palette.foreground,
+            bg_color = song.bg_base,
+            fg_color = song.fg_primary,
          },
          new_tab = {
-            bg_color = palette.background,
-            fg_color = palette.white,
+            bg_color = song.bg_base,
+            fg_color = song.fg_secondary,
          },
          new_tab_hover = {
-            bg_color = palette.background,
-            fg_color = palette.foreground,
+            bg_color = song.bg_base,
+            fg_color = song.fg_primary,
          },
       },
    }

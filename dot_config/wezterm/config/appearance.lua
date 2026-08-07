@@ -1,6 +1,7 @@
 local wezterm = require('wezterm')
 local gpu_adapters = require('utils.gpu_adapter')
 local platform = require('utils.platform')()
+local fonts = require('config.fonts')
 local colors = require('colors.custom').build_colors('Tokyo Night')
 
 local function pick_gpu()
@@ -43,13 +44,14 @@ return {
    -- scrollbar
    enable_scroll_bar = false,
 
-   -- tab bar: hidden — tmux manages windows via its own (transparent) status bar.
-   -- The wezterm tab bar is a separate GPU layer that cannot render background
-   -- images, so it always appears as a solid-color strip.  Hiding it lets the
-   -- backdrop fill the entire window edge-to-edge.
-   -- If you ever need native wezterm tabs (e.g. SSH domains), set enable_tab_bar
-   -- back to true; the tab-title.lua styling and palette sync are still wired up.
-   enable_tab_bar = false,
+   -- tab bar: visible, but hidden while there is only a single tab — tmux
+   -- manages windows via its own (transparent) status bar, so the strip only
+   -- appears when native wezterm tabs actually carry information.
+   -- The tab bar is a separate GPU layer that cannot render background
+   -- images; it is styled as a flat mounting band with the song-liquid-glass
+   -- chrome tokens (colors/custom.lua, events/tab-title.lua).
+   enable_tab_bar = true,
+   hide_tab_bar_if_only_one_tab = true,
 
    -- window
    window_padding = {
@@ -60,9 +62,9 @@ return {
    },
    window_close_confirmation = 'NeverPrompt',
    window_frame = {
-      active_titlebar_bg = '#090909',
-      -- font = fonts.font,
-      -- font_size = fonts.font_size,
+      active_titlebar_bg = colors.tab_bar.background,
+      font = fonts.font,
+      font_size = fonts.font_size,
    },
    inactive_pane_hsb = {
       saturation = 0.9,
