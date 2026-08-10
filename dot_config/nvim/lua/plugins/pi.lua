@@ -163,13 +163,14 @@ return {
 
           -- <C-g> prefix inside pi chat buffers (mirrors the pi TUI leader).
           -- s: resume session via telescope (vim.ui.select -> ui-select ext)
-          -- n: new session, m: pick from the curated model list
+          -- n: new session, m: pick from the curated model list, M: all models
           -- h/p: move focus between the history and prompt panels
           -- c: open pi in a new tab (same as <leader>aP)
           local leaders = {
             s = { function() require("pi").resume_session() end, "Pi: resume session" },
             n = { function() require("pi").new_session() end, "Pi: new session" },
             m = { function() require("pi").select_model() end, "Pi: select model" },
+            M = { function() require("pi").select_model_all() end, "Pi: select all models" },
             h = { function() require("pi").focus_chat_history() end, "Pi: focus history" },
             p = { function() require("pi").focus_chat_prompt() end, "Pi: focus prompt" },
             t = { function() require("pi").tree() end, "Pi: session tree (:PiTree)" },
