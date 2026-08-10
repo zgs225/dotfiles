@@ -1,9 +1,9 @@
 {
   "lastChangelogVersion": "0.81.1",
   "theme": "song-liquid-glass",
-  "defaultProvider": "qwen-token-plan-cn",
-  "defaultModel": "qwen3.8-max",
-  "defaultThinkingLevel": "xhigh",
+  "defaultProvider": "opencode-go",
+  "defaultModel": "deepseek-v4-flash",
+  "defaultThinkingLevel": "max",
   "hideThinkingBlock": false,
   "defaultProjectTrust": "always",
   "collapseChangelog": true,
