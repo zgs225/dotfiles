@@ -165,6 +165,7 @@ return {
           -- s: resume session via telescope (vim.ui.select -> ui-select ext)
           -- n: new session, m: pick from the curated model list
           -- h/p: move focus between the history and prompt panels
+          -- c: open pi in a new tab (same as <leader>aP)
           local leaders = {
             s = { function() require("pi").resume_session() end, "Pi: resume session" },
             n = { function() require("pi").new_session() end, "Pi: new session" },
@@ -172,6 +173,7 @@ return {
             h = { function() require("pi").focus_chat_history() end, "Pi: focus history" },
             p = { function() require("pi").focus_chat_prompt() end, "Pi: focus prompt" },
             t = { function() require("pi").tree() end, "Pi: session tree (:PiTree)" },
+            c = { pi_new_tab, "Pi: open in new tab" },
           }
           for key, spec in pairs(leaders) do
             vim.keymap.set({ "n", "i" }, "<C-g>" .. key, spec[1], { buffer = args.buf, desc = spec[2] })
