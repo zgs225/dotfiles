@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+# Fan-profile switcher (rofi). Reads `fan-profile status --json`, renders
+# one row per choice with the current one pre-highlighted (-a), shows the
+# live fan/temp status in the message line, applies the selection through
+# the NOPASSWD sudoers drop, then re-renders (loop until ESC).
+set -euo pipefail
+
+THEME=~/.config/rofi/powermenu.rasi
+
+label_of() {
+    case "$1" in
+        quiet) echo "静音" ;;
+        balanced) echo "均衡" ;;
+        performance) echo "性能" ;;
+        *) echo "$1" ;;
+    esac
+}
+
+choice_of() {
+    case "$1" in
+        "静音"*) echo quiet ;;
+        "均衡"*) echo balanced ;;
+        "性能"*) echo performance ;;
+        *) echo "$1" ;;
+    esac
+}
+
+status_msg() {
+    # "CPU 2300 · GPU 0 · 48°C" (or a friendly unsupported hint)
+    jq -r '
+      (if (.fans | length) > 0 then
+         ([.fans[] | ((.name | ascii_upcase) + " " + (.rpm | tostring))] | join(" · "))
+       else "风扇 --" end) + " · " + (.temp_c | tostring) + "°C"' <<<"$1" 2>/dev/null \
+        || echo "风扇 -- · --°C"
+}
+
+main() {
+    while true; do
+        local state supported msg items cur_idx idx sel
+        state=$(fan-profile status --json 2>/dev/null) || exit 0
+        supported=$(jq -r '.supported // false' <<<"$state")
+        msg=$(status_msg "$state")
+
+        if [ "$supported" != "true" ]; then
+            printf '此设备不支持切换风扇策略\n' |
+                rofi -dmenu -i -p "风扇策略" -theme "$THEME" -no-custom -mesg "$msg"
+            exit 0
+        fi
+
+        mapfile -t choices < <(jq -r '.choices[]' <<<"$state")
+        items=()
+        cur_idx=0
+        idx=0
+        for c in "${choices[@]}"; do
+            label=$(label_of "$c")
+            if [ "$c" = "$(jq -r '.current // empty' <<<"$state")" ]; then
+                label="$label （当前）"
+                cur_idx=$idx
+            fi
+            items+=("$label")
+            idx=$((idx + 1))
+        done
+
+        sel=$(printf '%s\n' "${items[@]}" |
+            rofi -dmenu -i -p "风扇策略" -theme "$THEME" -no-custom \
+                -a "$cur_idx" -mesg "$msg")
+        [ -n "$sel" ] || return 0
+
+        if ! sudo -n /usr/local/lib/fan-profile/fan-profile set "$(choice_of "$sel")" >/dev/null 2>&1; then
+            notify-send -a fan-profile -u critical "风扇策略" "切换失败：$sel（缺少 NOPASSWD sudo 权限？）" 2>/dev/null || true
+            return 1
+        fi
+        # Loop: re-render with the new current + fresh fan/temp status.
+    done
+}
+
+main "$@"

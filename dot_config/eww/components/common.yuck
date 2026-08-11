@@ -127,6 +127,11 @@
   :initial `{"source":"bat","watts":"--","percent":0,"health":"--","cycles":0,"eta":"--","eta_label":"剩余","threshold":"80","dgpu":"unknown","dgpu_icon":"","dgpu_holders":"","icon_fullcharge":""}`
   "~/.config/eww/scripts/ewwstate get power_info")
 
+;; ── Fan profile (fan-profile CLI, power popup fan section) ──
+(defpoll fan_profile :interval "3s"
+  :initial `{"backend":"","supported":false,"current":"","choices":[],"fans":[],"temp_c":0,"fan_line":"--","temp_line":"--","icon_quiet":"","icon_balanced":"","icon_performance":"","icon_status":""}`
+  "~/.config/eww/scripts/ewwstate get fan_profile")
+
 ;; ── System (profile card) ──
 (defpoll sysinfo :interval "3s"
   :initial `{"host":"linux","uptime":"--","cpu":0,"mem_used":"--","mem_total":"--","mem_pct":0,"disk_used":"--","disk_total":"--","disk_pct":0,"temp":0,"temp_pct":0}`

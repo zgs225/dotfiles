@@ -37,6 +37,30 @@
           (label :text "${power_profile.icon_performance}" :class "seg-icon")
           (label :text "性能" :class "seg-label"))))
 
+    (label :text "风扇策略" :class "section-label" :xalign 0
+      :visible "${fan_profile.supported}")
+    (box :class "seg-grid" :orientation "h" :spacing 10 :space-evenly false
+      :visible "${fan_profile.supported}"
+      (button :class "seg-btn ${fan_profile.current == 'quiet' ? 'active' : ''}" :hexpand true
+        :onclick "~/.config/eww/scripts/fan-profile-action.sh set quiet &"
+        (box :orientation "v" :spacing 4 :valign "center" :halign "center"
+          (label :text "${fan_profile.icon_quiet}" :class "seg-icon")
+          (label :text "静音" :class "seg-label")))
+      (button :class "seg-btn ${fan_profile.current == 'balanced' ? 'active' : ''}" :hexpand true
+        :onclick "~/.config/eww/scripts/fan-profile-action.sh set balanced &"
+        (box :orientation "v" :spacing 4 :valign "center" :halign "center"
+          (label :text "${fan_profile.icon_balanced}" :class "seg-icon")
+          (label :text "均衡" :class "seg-label")))
+      (button :class "seg-btn ${fan_profile.current == 'performance' ? 'active' : ''}" :hexpand true
+        :onclick "~/.config/eww/scripts/fan-profile-action.sh set performance &"
+        (box :orientation "v" :spacing 4 :valign "center" :halign "center"
+          (label :text "${fan_profile.icon_performance}" :class "seg-icon")
+          (label :text "性能" :class "seg-label"))))
+    (box :class "fan-status" :orientation "h" :spacing 10 :valign "center" :space-evenly false
+      (label :text "${fan_profile.icon_status}" :class "fan-status-icon")
+      (label :text "${fan_profile.fan_line}" :class "fan-status-text" :xalign 0 :hexpand true)
+      (label :text "${fan_profile.temp_line}" :class "fan-status-temp"))
+
     (label :text "充电阈值" :class "section-label" :xalign 0)
     (box :class "seg-grid" :orientation "h" :spacing 10 :space-evenly false
       (button :class "seg-btn ${power_info.threshold == '60' ? 'active' : ''}" :hexpand true
