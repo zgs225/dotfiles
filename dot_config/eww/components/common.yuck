@@ -129,7 +129,7 @@
 
 ;; ── Fan profile (fan-profile CLI, power popup fan section) ──
 (defpoll fan_profile :interval "3s"
-  :initial `{"backend":"","supported":false,"current":"","choices":[],"fans":[],"temp_c":0,"fan_line":"--","temp_line":"--","icon_quiet":"","icon_balanced":"","icon_performance":"","icon_status":""}`
+  :initial `{"backend":"","supported":false,"current":"","choices":[],"fans":[],"temp_c":0,"fan_line":"--","temp_line":"--","icon_quiet":"","icon_balanced":"","icon_performance":""}`
   "~/.config/eww/scripts/ewwstate get fan_profile")
 
 ;; ── System (profile card) ──

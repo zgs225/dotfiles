@@ -19,11 +19,12 @@ from framework import PollCollector, collector
 from util import run
 
 # Symbols Nerd Font PUA codepoints, verified via fonttools cmap
-# (SymbolsNerdFont-Regular.ttf):
-ICON_QUIET = "\uf081d"  # md-fan_off
-ICON_BALANCED = "\uf0210"  # md-fan
+# (SymbolsNerdFont-Regular.ttf). NOTE: codepoints above U+FFFF need the
+# \U 8-hex-digit escape -- a 5-hex-digit \u escape silently becomes
+# U+0XXX + a literal hex char (\uf081d = U+F081 + "d").
+ICON_QUIET = "\U000F081D"  # md-fan_off
+ICON_BALANCED = "\U000F0210"  # md-fan
 ICON_PERFORMANCE = "\uf0e7"  # fa-bolt (same glyph as TLP performance)
-ICON_STATUS = "\uf0210"  # md-fan
 
 _FALLBACK = {
     "backend": "",
@@ -88,6 +89,5 @@ class FanProfile(PollCollector):
             icon_quiet=ICON_QUIET,
             icon_balanced=ICON_BALANCED,
             icon_performance=ICON_PERFORMANCE,
-            icon_status=ICON_STATUS,
         )
         return {"fan_profile": json.dumps(data, ensure_ascii=False, separators=(",", ":"))}
