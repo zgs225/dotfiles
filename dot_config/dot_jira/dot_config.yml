@@ -1,0 +1,7 @@
+installation: local
+server: https://jira.yuez.me
+login: yuez
+auth_type: bearer
+project: ""
+board: ""
+timezone: Asia/Shanghai
