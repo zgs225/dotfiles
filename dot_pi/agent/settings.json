@@ -15,6 +15,7 @@
     "skipPrompt": true
   },
   "enabledModels": [
+    "opencode-go/deepseek-v4-flash",
     "k3",
     "kimi-for-coding",
     "deepseek-v4-pro",

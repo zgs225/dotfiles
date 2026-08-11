@@ -71,7 +71,9 @@ return {
       -- Curated model list for <C-g>m (pi.select_model). Without this the
       -- picker falls back to the backend's full model list (get_available_models
       -- ignores pi's enabledModels setting), so we keep an explicit shortlist.
-      models = { "k3", "kimi-for-coding", "deepseek-v4-pro", "deepseek-v4-flash", "qwen3.8-max", "k3-256k" },
+      -- Provider-qualified first entry pins the default (opencode-go/deepseek-v4-flash);
+      -- bare IDs still match every provider copy in the picker.
+      models = { "opencode-go/deepseek-v4-flash", "k3", "kimi-for-coding", "deepseek-v4-pro", "deepseek-v4-flash", "qwen3.8-max", "k3-256k" },
       -- Render thinking blocks in chat history (default: hidden).
       show_thinking = true,
       -- Keep the startup block (skills/extensions/announcements) collapsed.
