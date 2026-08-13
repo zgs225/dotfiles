@@ -6,7 +6,12 @@ local map = vim.keymap.set
 map("n", ";", ":", { desc = "CMD enter command mode" })
 map("n", "<leader>q", ":q<CR>", { desc = "General quit current buffer" })
 map("n", "<leader>w", ":w<CR>", { desc = "General save current buffer" })
-map("n", "<C-p>", ":Telescope find_files hidden=true<CR>", { desc = "Find files" })
+map("n", "<C-p>", function()
+  require("telescope.builtin").find_files {
+    hidden = true,
+    file_ignore_patterns = { "%.git/" },
+  }
+end, { desc = "Find files" })
 
 map("n", "<leader>h", function()
   require("toggleterm").toggle(vim.v.count1, nil, nil, "horizontal")
