@@ -1,0 +1,8 @@
+[Unit]
+Description=Clean up thumbnail caches older than 30 days
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'find "$HOME/.cache/thumbnails" -mindepth 2 -type f -mtime +30 -delete; find "$HOME/.cache/thumbnails" -mindepth 1 -type d -empty -delete'
+StandardOutput=journal
+StandardError=journal

@@ -1,0 +1,10 @@
+{{ if and .isLinux .useI3 -}}
+#!/bin/sh
+# thumbnail-cache-clean.service hash: {{ include "dot_config/systemd/user/thumbnail-cache-clean.service" | sha256sum }}
+# thumbnail-cache-clean.timer hash: {{ include "dot_config/systemd/user/thumbnail-cache-clean.timer" | sha256sum }}
+
+set -e
+
+systemctl --user daemon-reload
+systemctl --user enable --now thumbnail-cache-clean.timer
+{{ end -}}

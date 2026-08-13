@@ -1,0 +1,21 @@
+{{ if and .isLinux .useI3 -}}
+#!/bin/sh
+# Thunar thumbnail settings (issue #51).
+#
+# misc-thumbnail-mode=THUNAR_THUMBNAIL_MODE_ALWAYS: show thumbnails everywhere,
+# including remote gvfs locations (smb://, sftp://...). Default is ONLY_LOCAL.
+#
+# Deliberately applied via xfconf-query instead of managing thunar.xml as a
+# chezmoi file: xfconfd merges the property into the existing channel, while a
+# managed file would permanently drift against Thunar's volatile last-* state
+# (window geometry, column widths, zoom level) and clobber it on every apply.
+set -e
+
+command -v xfconf-query >/dev/null 2>&1 || exit 0
+
+if xfconf-query -c thunar -p /misc-thumbnail-mode >/dev/null 2>&1; then
+    xfconf-query -c thunar -p /misc-thumbnail-mode -s THUNAR_THUMBNAIL_MODE_ALWAYS
+else
+    xfconf-query -c thunar -p /misc-thumbnail-mode -n -t string -s THUNAR_THUMBNAIL_MODE_ALWAYS
+fi
+{{ end -}}

@@ -1,0 +1,10 @@
+[Unit]
+Description=Weekly thumbnail cache cleanup timer
+
+[Timer]
+OnBootSec=10min
+OnUnitActiveSec=7d
+Persistent=true
+
+[Install]
+WantedBy=timers.target
