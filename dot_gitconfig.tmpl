@@ -58,7 +58,7 @@
   prune = true
 
 [credential]
-  helper = osxkeychain
+  helper = {{ if .isMacOS }}osxkeychain{{ else }}libsecret{{ end }}
 
 [github]
   user = zgs225
