@@ -1,0 +1,15 @@
+#!/bin/sh
+# Second WeChat instance wrapper (multi-account).
+#
+# The native WeChat Linux client enforces single-instance with an flock on
+# $HOME/.xwechat/lock/lock.ini.  Pointing HOME at a dedicated data dir gives
+# us an independent lock + login state, so a second account can run
+# alongside the primary instance.
+#
+# Data lives in ~/.wechat2 (contains .xwechat/ and xwechat_files/).
+# Override the location with WECHAT2_HOME if needed.
+set -eu
+
+data_home="${WECHAT2_HOME:-$HOME/.wechat2}"
+mkdir -p "$data_home"
+exec env HOME="$data_home" /opt/wechat/wechat "$@"

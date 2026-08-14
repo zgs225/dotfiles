@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=WeChat (2nd)
+Name[zh_CN]=微信（二号）
+GenericName=WeChat second account
+Comment=Second WeChat account with isolated HOME
+Exec=/home/yuez/.local/bin/wechat2
+Icon=/usr/share/icons/hicolor/256x256/apps/wechat.png
+Terminal=false
+Categories=Network;InstantMessaging;
+StartupNotify=true
