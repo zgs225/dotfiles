@@ -1,3 +1,10 @@
 [tools]
 node = "22"
 pnpm = "latest"
+"npm:@deepseek-ai/dsh" = { version = "latest", allow_low_downloads = true }
+
+[settings]
+minimum_release_age_excludes = ["npm:@deepseek-ai/dsh"]
+
+[settings.npm]
+package_manager = "pnpm"

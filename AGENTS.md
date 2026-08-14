@@ -27,7 +27,7 @@ chezmoi-based dotfiles repo. Do not edit `~/.` files directly — use chezmoi.
 ## Key toolchain
 
 - **Shell**: zsh with Antigen plugin manager; `dot_zshrc` sources `~/.zsh/configs/*.zsh` in numeric order
-- **Version manager**: mise (`~/.config/mise/config.toml` + `conf.d/*.toml`)
+- **Version manager**: mise (`~/.config/mise/config.toml` + `conf.d/*.toml`) — npm: 后端 aube 安装器的坑（minimum_release_age 日期过滤、新包名挑战、peer 递归解析 bug）见 `docs/mise-npm-backend.md`
 - **Editor**: Neovim (NvChad v2.5 + lazy.nvim). Config: `dot_config/nvim/`
 - **Terminal**: WezTerm (`dot_config/wezterm/`)
 - **Tmux**: prefix `Ctrl+s`, based on gpakosz/.tmux; local overrides in `~/.tmux.conf.local`
