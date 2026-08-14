@@ -74,6 +74,10 @@ return {
       -- Provider-qualified first entry pins the default (opencode-go/deepseek-v4-flash);
       -- bare IDs still match every provider copy in the picker.
       models = { "opencode-go/deepseek-v4-flash", "k3", "kimi-for-coding", "deepseek-v4-pro", "deepseek-v4-flash", "qwen3.8-max", "k3-256k" },
+      -- Vision fallback: when the current main model cannot see images,
+      -- attachments are described by this vision-capable model first and the
+      -- description replaces the images (pi.nvim feat/vision-fallback).
+      vision = { model = "kimi-coding/kimi-for-coding", status_message = "描影…" },
       -- Render thinking blocks in chat history (default: hidden).
       show_thinking = true,
       -- Keep the startup block (skills/extensions/announcements) collapsed.
