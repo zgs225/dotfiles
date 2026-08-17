@@ -157,6 +157,16 @@ exec --no-startup-id ~/.config/i3/scripts/pi-dropdown.sh
 # satty (screenshot annotator) — always float
 for_window [title="satty"] floating enable, resize set 80 ppt 80 ppt, move position center
 
+# GTK file chooser dialogs (web uploads via xdg-desktop-portal) — the dialog
+# remembers its last size in gsettings (org.gtk.Settings.FileChooser
+# window-size); if that exceeds the workspace (e.g. 2560x1600 vs 2560x1554
+# after the eww bar) i3 centers it and the bottom overflows off-screen.
+# Force a safe size and center it instead.
+for_window [window_role="GtkFileChooserDialog"] \
+    resize set 70 ppt 80 ppt, move position center
+for_window [class="Xdg-desktop-portal-gtk"] \
+    resize set 70 ppt 80 ppt, move position center
+
 # i3 control
 bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
