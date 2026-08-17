@@ -1,0 +1,27 @@
+#!/bin/sh
+# 回收站管理 — rofi dmenu 小窗，风格与 powermenu 一致（复用 powermenu.rasi）
+# 空 → notify 提示；非空 → 菜单：清空 / 打开
+
+theme="$HOME/.config/rofi/powermenu.rasi"
+trash_dir="$HOME/.local/share/Trash/files"
+
+count=$(ls -A "$trash_dir" 2>/dev/null | wc -l)
+
+if [ "$count" -eq 0 ]; then
+    notify-send -u low -a trash "回收站" "回收站是空的"
+    exit 0
+fi
+
+empty=" 清空回收站（${count} 项）"
+open=" 打开回收站"
+
+chosen=$(printf "%s\n%s\n" "$empty" "$open" \
+    | rofi -dmenu -i -p "回收站" -theme "$theme" -no-custom)
+
+case "$chosen" in
+    "$empty")
+        gio trash --empty && notify-send -u low -a trash "回收站" "已清空（${count} 项）"
+        ;;
+    "$open")
+        thunar trash:/// ;;
+esac
