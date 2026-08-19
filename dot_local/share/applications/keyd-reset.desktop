@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=keyd Reset
+GenericName=Reset keyd Mappings
+Comment=Reset keyd per-app key mappings (fixes broken Alt+v/[/] shortcuts)
+Exec=bash -c '~/.config/i3/scripts/keyd-reset.sh'
+Terminal=false
+Type=Application
+Icon=view-refresh
+Keywords=keyd;reset;按键;重置;快捷键;映射;
+Categories=System;Utility;
+StartupNotify=false
