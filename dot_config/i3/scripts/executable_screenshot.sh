@@ -2,15 +2,17 @@
 # screenshot.sh — region screenshots with a FROZEN screen.
 #
 # select/ocr modes: capture the full virtual desktop the instant the hotkey
-# fires, overlay each monitor with its frozen image (feh --fullscreen), let
-# the user drag a region over the frozen picture (slop), then crop the region
-# from the frozen frame — never from a second live capture. Handles any
-# number of monitors (parsed from xrandr at runtime).
+# fires, overlay every monitor with its frozen image (freeze-overlay:
+# override-redirect + MIT-SHM, maps all screens in one XSync), let the user
+# drag a region over the frozen picture (slop), then crop the region from
+# the frozen frame — never from a second live capture. Handles any number
+# of monitors (parsed from xrandr at runtime).
 
 set -euo pipefail
 
 dir="${SCREENSHOT_DIR:-$HOME/Pictures/screenshots}"
 mkdir -p "$dir"
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 timestamp=$(date +%Y%m%d-%H%M%S)
 
@@ -30,33 +32,11 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# Show the frozen frame, one fullscreen feh per monitor.
-# Reads "idx x y w h" lines from stdin; echoes nothing.
-overlays_show() {
-    local idx x y w h
-    local nmon=0
-    while read -r idx x y w h; do
-        magick "$work/full.png" -crop "${w}x${h}+${x}+${y}" +repage \
-            "$work/mon${idx}.png"
-        feh --fullscreen --xinerama-index "$idx" \
-            --image-bg black "$work/mon${idx}.png" &
-        overlay_pids+=("$!")
-        nmon=$((nmon + 1))
-    done
-
-    # Wait until every overlay window is mapped (max ~3s). feh titles
-    # contain the full image path, so match on the unique workdir. Plus a
-    # beat so the compositor finishes fading them in.
-    local tries=0 n
-    while (( tries < 30 )); do
-        n=$(xdotool search --name "$work/" 2>/dev/null | wc -l)
-        if (( n >= nmon )); then
-            sleep 0.2
-            return 0
-        fi
-        sleep 0.1
-        tries=$((tries + 1))
-    done
+ensure_overlay_bin() {
+    local bin="$script_dir/freeze-overlay" src="$script_dir/freeze-overlay.c"
+    if [[ ! -x "$bin" || "$src" -nt "$bin" ]]; then
+        gcc -O2 -o "$bin" "$src" -lX11 -lXext -lXinerama
+    fi
 }
 
 overlays_hide() {
@@ -67,26 +47,29 @@ overlays_hide() {
     overlay_pids=()
 }
 
-# Freeze-then-select: puts the region as WxH+X+Y into $REGION.
+# Freeze-then-select: crops the chosen region into $tmp.
 # Returns 1 when the user cancels.
 freeze_select() {
     work=$(mktemp -d -t screenshot-freeze.XXXXXX)
+    mkfifo "$work/ready"
     # -u: no cursor in the frozen frame (the live cursor still moves above it)
-    maim -u "$work/full.png"
+    # bmp: ~5x faster than PNG at this size; PNG only for the final crop
+    maim -u -f bmp "$work/full.bmp"
 
-    # xrandr order == Xinerama index order (verified against
-    # XineramaQueryScreens), so NR works as feh --xinerama-index.
-    if ! overlays_show < <(xrandr --listmonitors | awk 'NR>1 {
-            split($3, g, /[x+]/)
-            split(g[1], w, "/"); split(g[2], h, "/")
-            print NR-2, g[3], g[4], w[1], h[1]
-        }'); then
+    # freeze-overlay discovers monitors itself via Xinerama (xrandr/RandR
+    # stalls >1.5s on a lazy EDID reprobe — never call it on the hot path)
+    ensure_overlay_bin
+    "$script_dir/freeze-overlay" "$work/ready" "$work/full.bmp" &
+    overlay_pids+=("$!")
+
+    # Overlay announces readiness only after every window is mapped+synced.
+    if ! read -r -t 5 _ <> "$work/ready"; then
         return 1
     fi
 
     local geo="" rc=0
     # -t 0: drag-only selection — with overlays on top, slop's window-click
-    # mode would select the feh overlay instead of the real window.
+    # mode would select the overlay instead of the real window.
     geo=$(slop -t 0 -f "%wx%h+%x+%y") || rc=$?
     overlays_hide
     if (( rc != 0 )) || [[ -z "$geo" ]]; then
@@ -94,13 +77,13 @@ freeze_select() {
     fi
 
     # Ignore empty regions (bare click).
-    local w h
-    IFS='x+' read -r w h _ <<< "$geo"
-    if (( w <= 0 || h <= 0 )); then
+    local rw rh
+    IFS='x+' read -r rw rh _ <<< "$geo"
+    if (( rw <= 0 || rh <= 0 )); then
         return 1
     fi
 
-    magick "$work/full.png" -crop "$geo" +repage "$tmp"
+    magick "$work/full.bmp" -crop "$geo" +repage "$tmp"
     return 0
 }
 
