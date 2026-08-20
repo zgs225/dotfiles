@@ -322,3 +322,23 @@ env HOME=/tmp/sbx/home XDG_CACHE_HOME=/tmp/sbx/cache \
 **警告**:stub 文件名必须是真实命令名(`brightnessctl` 不是 `stub_brightnessctl`),否则测试会调到真实命令——实测曾把用户真实屏幕亮度改掉。
 
 **踩坑实录**:2026-08 用户报告插电/断电亮度偶尔记错(现场 `ac_level==bat_level==84`)。沙盒复现:拔掉→3s 内插回→事件被防抖吞→脱节→下次拔电不恢复且把 90 存进 bat 偏好(应为 40),错误永久化。修复即上述 1-4 条;修的过程中自己踩了第 5 条(`if ! read` 取 rc 恒 0,循环第一次超时就退出)。
+
+---
+
+## eww client 自动 spawn = socket 劫持:「OSD 卡死不消失」的真正根因,所有 eww 调用必须 --no-daemonize
+
+**为什么**:eww 0.5 的 `eww open`/`open-many`(仅有的两个 `can_start_daemon=true` 命令)连不上 daemon 时——即使 daemon 活着只是卡死不响应——会进入 spawn 分支:`std::fs::remove_file(socket)` **删掉正牌 daemon 的 socket 文件**,再 fork 出第二个 daemon 重新绑定同一路径(源码 main.rs spawn arm,commit d87c2fd)。此后全系统所有 eww 命令都连到这个空壳假 daemon;正牌 daemon 还活着、已打开的窗口还在屏幕上画着,但永远不可达。`eww close/update/get` 不会 spawn,只会报错退出。
+
+**踩坑实录**(2026-08-20,「插拔电源亮度 OSD 卡住不消失」):电源事件 → brightness-auto → osd.sh `eww open osd`。daemon 处理这次 open 时卡死(日志链:`Opening window osd` → `ERROR sending response from main thread` → 之后彻底静默,bar 时钟同刻冻结)。client 收到 Err → spawn 分支 → 假 daemon(cmdline 停留在 `eww open osd`)劫持 socket。osd.sh 的 2s 自动关闭 timer 把 `eww close osd` 发给假 daemon(它上面没有窗口)后「成功」退出、状态文件清理干净——真 daemon 上的 OSD 窗口永远留在屏幕。附带损伤:bar 停更(所有 update 都发给假 daemon)、popup 全部失效。
+
+**取证指纹**(下次遇到「窗口卡住 + active-windows 为空」先看这三样):
+1. `ss -lxp | grep eww-server` — 同一路径出现**两个** LISTEN 进程 = 已被劫持。
+2. `xprop -id <卡住窗口> _NET_WM_PID` — 指向 active-windows 不承认的那个 daemon。
+3. `ps aux | grep eww` — 假 daemon 的 cmdline 是触发它的 client 命令(如 `eww open osd`)而非 `eww daemon`;journal 里能搜到它打的 `Initializing eww daemon` 横幅(亮度事件来源是 brightness-auto.service 的 stdout)。
+
+**怎么做**:
+1. 脚本里所有 `eww` client 调用一律 `timeout N eww ... --no-daemonize`。能 spawn 的只有 open/open-many,但全部调用统一加,防后患。
+2. 脚本需要 daemon 时先 `eww ping --no-daemonize` 探活;不活就 `i3-msg exec ~/.config/eww/scripts/launch.sh` 重启并限时等待,等不到就放弃本次操作——绝不 fall through 到不带 `--no-daemonize` 的 `eww open`(参考 osd.sh 的探活段)。
+3. launch.sh 清场用 `pgrep/pkill -x eww`(按 comm 匹配,能抓到 cmdline 伪装成 client 命令的假 daemon),并 `rm -f $XDG_RUNTIME_DIR/eww-server_*` 清残留 socket。
+4. 已卡住的窗口只能整体重启 daemon 恢复(launch.sh);只杀假 daemon 没用——正牌 daemon 的 socket 文件已被删除,无法恢复可达性。
+5. osd.sh 防御性重置要用 `eww active-windows`(真正打开的窗口)而非 `list-windows`——后者列出所有**定义过**的窗口,永远包含 osd,旧检查恒为 no-op。

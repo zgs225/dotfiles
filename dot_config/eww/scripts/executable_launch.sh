@@ -16,16 +16,24 @@ eww kill 2>/dev/null
 [ -f /tmp/eww-bt-agent.pid ] && kill "$(cat /tmp/eww-bt-agent.pid)" 2>/dev/null
 rm -f /tmp/eww-bt-agent.pid
 
+# Match ANY process named eww, not just 'eww daemon': when a client like
+# `eww open osd` cannot reach the daemon it auto-spawns an imposter whose
+# cmdline is the client command (e.g. 'eww open osd') while comm stays 'eww'.
+# Such an imposter holds the socket path and must die before we restart.
 wait=0
-while pgrep -f 'eww daemon' > /dev/null 2>&1 && [ $wait -lt 30 ]; do
+while pgrep -x eww > /dev/null 2>&1 && [ $wait -lt 30 ]; do
   sleep 0.1
   wait=$((wait + 1))
 done
 
-if pgrep -f 'eww daemon' > /dev/null 2>&1; then
-  pkill -9 -f 'eww daemon' 2>/dev/null
+if pgrep -x eww > /dev/null 2>&1; then
+  pkill -9 -x eww 2>/dev/null
   sleep 0.2
 fi
+
+# Remove any stale socket file (left by a dead daemon or rebound by an
+# imposter) so the fresh daemon binds cleanly.
+rm -f "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"/eww-server_*
 
 eww daemon 9>&-
 # `eww daemon` double-forks and returns before its IPC socket is bound (GTK

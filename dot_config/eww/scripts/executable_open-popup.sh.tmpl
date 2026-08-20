@@ -80,7 +80,10 @@ fi
 # the flock held even after this script dies (the year-long bluetoothctl scan
 # process once poisoned every popup click this way). Every external call is
 # time-bounded so a hung eww daemon stalls at most one bounded cycle.
-ewwc() { timeout 4 eww "$@" 9>&- 2>/dev/null; }
+# --no-daemonize is load-bearing: `eww open` that cannot reach the daemon
+# auto-spawns an imposter which deletes the real daemon's socket and rebinds
+# the path — silently hijacking ALL eww traffic (2026-08 stuck-OSD incident).
+ewwc() { timeout 4 eww "$@" --no-daemonize 9>&- 2>/dev/null; }
 xdc()  { timeout 3 xdotool "$@" 9>&- 2>/dev/null; }
 
 # picom re-evaluates name/class-based exclude rules during a window's destroy
@@ -250,9 +253,9 @@ wait_state() { # $1 window name, $2 present|absent
   local w="$1" want="$2" i
   for i in $(seq 1 10); do
     if [ "$want" = present ]; then
-      timeout 2 eww active-windows 9>&- 2>/dev/null | grep -q "^${w}:" && return 0
+      timeout 2 eww active-windows --no-daemonize 9>&- 2>/dev/null | grep -q "^${w}:" && return 0
     else
-      timeout 2 eww active-windows 9>&- 2>/dev/null | grep -q "^${w}:" || return 0
+      timeout 2 eww active-windows --no-daemonize 9>&- 2>/dev/null | grep -q "^${w}:" || return 0
     fi
     sleep 0.1
   done
