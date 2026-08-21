@@ -1,5 +1,17 @@
 {
   "providers": {
+    "deepseek": {
+      "modelOverrides": {
+        "deepseek-v4-flash": { "maxTokens": 131072 },
+        "deepseek-v4-pro": { "maxTokens": 131072 }
+      }
+    },
+    "opencode-go": {
+      "modelOverrides": {
+        "deepseek-v4-flash": { "maxTokens": 131072 },
+        "deepseek-v4-pro": { "maxTokens": 131072 }
+      }
+    },
     "qwen-token-plan-cn": {
       "models": [
         {

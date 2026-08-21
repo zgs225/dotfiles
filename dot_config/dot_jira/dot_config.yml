@@ -1,4 +1,4 @@
-installation: local
+installation: Local
 server: https://jira.yuez.me
 login: yuez
 auth_type: bearer
