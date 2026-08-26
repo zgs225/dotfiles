@@ -5,3 +5,34 @@ auth_type: bearer
 project: ""
 board: ""
 timezone: Asia/Shanghai
+issue:
+  types:
+    - name: 故事
+      id: "10204"
+      handle: story
+      subtask: false
+    - name: Epic
+      id: "10000"
+      handle: epic
+      subtask: false
+    - name: 任务
+      id: "10205"
+      handle: task
+      subtask: false
+    - name: 故障
+      id: "10207"
+      handle: bug
+      subtask: false
+  fields:
+    custom:
+      - name: Epic Name
+        key: customfield_10103
+        schema:
+          datatype: string
+      - name: Epic Link
+        key: customfield_10101
+        schema:
+          datatype: any
+epic:
+  name: customfield_10103
+  link: customfield_10101
