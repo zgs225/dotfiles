@@ -78,6 +78,11 @@ return {
       -- attachments are described by this vision-capable model first and the
       -- description replaces the images (pi.nvim feat/vision-fallback).
       vision = { model = "kimi-coding/kimi-for-coding", status_message = "描影…" },
+      title = {
+        enabled = true,
+        max_chars = 20,
+        model = "opencode-go/deepseek-v4-flash",
+      },
       -- Render thinking blocks in chat history (default: hidden).
       show_thinking = true,
       -- Keep the startup block (skills/extensions/announcements) collapsed.
