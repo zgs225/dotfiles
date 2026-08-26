@@ -1,0 +1,22 @@
+# Lock the X session when the machine suspends.
+#
+# Started on demand by the root-level /etc/systemd/system-sleep/50-lock
+# hook (eos-bootstrap power role) — that hook is the only user of this
+# unit, so it must NOT be enabled at login. Dispatched through the user
+# manager (rather than backgrounded from the hook) because systemd-suspend
+# service's control-group cleanup would kill an i3lock started there when
+# the sleep cycle finishes.
+#
+# Type=simple: ExecStart is lock.sh, which blocks until unlock, so the
+# unit stays active for the whole duration of the lock. A second
+# `systemctl --user start` while already locked is a no-op; lock.sh also
+# self-guards with a flock against manual $mod+Shift+l / xidlehook races.
+[Unit]
+Description=Lock X session on suspend (started by system-sleep 50-lock)
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.config/i3/scripts/lock.sh
+StandardOutput=journal
+StandardError=journal

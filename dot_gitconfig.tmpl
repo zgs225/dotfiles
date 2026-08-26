@@ -60,6 +60,15 @@
 [credential]
   helper = {{ if .isMacOS }}osxkeychain{{ else }}libsecret{{ end }}
 
+# gh CLI credential helper for GitHub/Gist over HTTPS (written by `gh auth login`;
+# the empty helper line disables libsecret for these hosts so gh wins).
+[credential "https://github.com"]
+  helper = 
+  helper = !/usr/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+  helper = 
+  helper = !/usr/bin/gh auth git-credential
+
 [github]
   user = zgs225
 
