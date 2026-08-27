@@ -1,11 +1,13 @@
 [Unit]
 Description=Per-power-source DPMS screen-off timeouts
-After=graphical-session.target
+After=graphical-session-pre.target
+# default.target starts us at login; script waits for X before applying DPMS.
 
 [Service]
 Type=simple
 Environment="PATH=/usr/local/bin:/usr/bin:/bin"
 Environment="DISPLAY=:0"
+Environment="XAUTHORITY=%h/.Xauthority"
 ExecStart=%h/.config/eww/scripts/dpms-auto.sh
 Restart=on-failure
 RestartSec=5
