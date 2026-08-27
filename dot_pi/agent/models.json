@@ -10,7 +10,34 @@
       "modelOverrides": {
         "deepseek-v4-flash": { "maxTokens": 131072 },
         "deepseek-v4-pro": { "maxTokens": 131072 }
-      }
+      },
+      "models": [
+        {
+          "id": "glm-5.3-flash",
+          "name": "GLM-5.3-Flash",
+          "api": "openai-completions",
+          "baseUrl": "https://opencode.ai/zen/go/v1",
+          "reasoning": true,
+          "input": ["text", "image"],
+          "contextWindow": 1000000,
+          "maxTokens": 131072,
+          "cost": { "input": 1.4, "output": 4.4, "cacheRead": 0.26, "cacheWrite": 0 },
+          "compat": {
+            "supportsStore": false,
+            "supportsDeveloperRole": false,
+            "maxTokensField": "max_tokens"
+          },
+          "thinkingLevelMap": {
+            "off": null,
+            "minimal": null,
+            "low": "low",
+            "medium": null,
+            "high": "high",
+            "xhigh": null,
+            "max": "max"
+          }
+        }
+      ]
     },
     "qwen-token-plan-cn": {
       "models": [
