@@ -34,12 +34,6 @@ local function toggle_pi()
   end
 end
 
-local function pi_new_tab()
-  local pi = require "pi"
-  vim.cmd "tabnew"
-  show_pi_here(pi)
-end
-
 return {
   {
     "https://github.com/zgs225/pi2.nvim.git",
@@ -97,7 +91,7 @@ return {
       },
       {
         "<leader>aP",
-        pi_new_tab,
+        "<Cmd>PiNewTab<CR>",
         desc = "Pi (new tab)",
       },
     },
@@ -163,7 +157,7 @@ return {
               end,
               "Pi: session tree (:PiTree)",
             },
-            c = { pi_new_tab, "Pi: open in new tab" },
+            c = { "<Cmd>PiNewTab<CR>", "Pi: open in new tab" },
           }
           for key, spec in pairs(leaders) do
             vim.keymap.set({ "n", "i" }, "<C-g>" .. key, spec[1], { buffer = args.buf, desc = spec[2] })
