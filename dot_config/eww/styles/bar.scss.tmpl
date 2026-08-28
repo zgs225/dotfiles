@@ -101,9 +101,10 @@
 .time-btn:hover .time-main { color: lighten($text, 5%); }
 
 /* Screen recording indicator - script-driven (screenrecord.sh), shown only
-   while capturing. Badge language per S8.8: gamboge square dot, radius-sm;
-   elapsed time in crab-shell. Static on purpose (GTK3 ignores keyframes). */
-.rec-indicator { padding: 0 4px; }
+   while capturing. Click to stop (__ui_stop). Badge language per S8.8:
+   gamboge square dot, radius-sm; elapsed time in crab-shell. */
+.rec-indicator { padding: 0 6px; border-radius: $radius-sm; transition: background-color 140ms; }
+.rec-indicator:hover { background-color: rgba($surface2, 0.45); }
 .rec-dot {
   background-color: $warn;
   border-radius: $radius-sm;

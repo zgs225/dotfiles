@@ -37,11 +37,13 @@
 #   - All recorder state lives in pidfiles under XDG_RUNTIME_DIR; no pkill -f
 #     (self-match trap).
 #   - h264 wants even WxH: slop output is normalized down to even numbers.
-#   - The control bar must sit OUTSIDE the captured region whenever there is
-#     room -- a window overlapping the region would be baked into the video.
-#     Fallback chain: below-right -> above-right -> inside-bottom-right
-#     (ARMED only; on record-start an inside bar closes and the bar badge
-#     carries the timer, stop falls back to the hotkey).
+#   - The control bar must sit OUTSIDE the captured region while recording --
+#     overlap would be baked into the video. Placement on the capture monitor
+#     tries, in order: below-right -> above-right -> right-bottom ->
+#     left-bottom, each clamped to the monitor and rejected on region overlap.
+#     If no outside slot exists: ARMED may float inside (start button only);
+#     on record-start we recompute and close the float bar, leaving the
+#     clickable bar indicator + hotkey to stop.
 #   - The selection frame is 4 eww strip windows hugging the OUTSIDE of the
 #     region (zero overlap with the capture), so it can stay up while
 #     recording without contaminating the video.
@@ -70,7 +72,7 @@ set -euo pipefail
 STATE_DIR="${XDG_RUNTIME_DIR:-/tmp}"
 REC_PID_FILE="$STATE_DIR/screenrecord.gsr.pid"    # gpu-screen-recorder pid
 REC_META_FILE="$STATE_DIR/screenrecord.meta"      # lines: tmp=<mkv>  start=<epoch>
-REC_ARMED_FILE="$STATE_DIR/screenrecord.armed"    # one line: w h x y px py inside
+REC_ARMED_FILE="$STATE_DIR/screenrecord.armed"    # one line: w h x y px py placement
 LOG_FILE="$STATE_DIR/screenrecord.gsr.log"        # gsr stdout/stderr, per run
 AUDIO_PREF="${XDG_STATE_HOME:-$HOME/.local/state}/screenrecord/audio"  # off|sys
 FORMAT_PREF="${XDG_STATE_HOME:-$HOME/.local/state}/screenrecord/format"  # mp4|gif
@@ -95,7 +97,7 @@ notify_r() { dunstify -r 9105 -u low -t "$2" -a screenrecord ${ICON:+-i "$ICON"}
 
 eww_reset() {
     eww update screen_recording=false screen_rec_elapsed= screen_rec_region= 2>/dev/null || true
-    eww close rec-controls 2>/dev/null || true
+    close_rec_controls
     close_frame
 }
 
@@ -131,41 +133,88 @@ dpi_font_size() {
     if (( dpi >= 192 )); then echo 26; elif (( dpi >= 144 )); then echo 20; else echo 15; fi
 }
 
-# compute_placement w h x y -> "px py inside": panel bottom-RIGHT outside
-# the frame (right edge aligned with the frame's outer right edge);
-# inside=1 means the bar floats over the region bottom-right: only used for
-# ARMED when no room exists outside.
-compute_placement() {
-    local w=$1 h=$2 x=$3 y=$4
-    local pfs win_w win_h t=$FRAME_T gap=8
-    pfs=$(dpi_font_size)
-    # ARMED row: [record] [WxH] [MP4/GIF] [audio] [cancel] -- 26 chars wide
-    win_w=$(( pfs * 26 )); win_h=$(( pfs * 3 ))
+# Monitor containing the region center: prints "ox oy mw mh".
+monitor_for_region() {
+    local x=$1 y=$2 w=$3 h=$4
     local cx=$(( x + w / 2 )) cy=$(( y + h / 2 ))
-    local mo
-    mo=$(xrandr --listactivemonitors 2>/dev/null | awk -v cx="$cx" -v cy="$cy" '
+    xrandr --listactivemonitors 2>/dev/null | awk -v cx="$cx" -v cy="$cy" '
         /^ +[0-9]+:/ {
-            # $3 = "2560/344x1600/215+0+0" -> split on non-digits:
-            # g[1]=px_w g[2]=mm_w g[3]=px_h g[4]=mm_h g[5]=off_x g[6]=off_y
             split($3, g, /[^0-9]+/); mw=g[1]; mh=g[3]; ox=g[5]; oy=g[6]
             if (cx >= ox && cx < ox + mw && cy >= oy && cy < oy + mh) {
                 print ox, oy, mw, mh; exit
             }
-        }')
-    local ox=0 oy=0 mw=99999 mh=99999 px py inside=0
-    [[ -n "$mo" ]] && read -r ox oy mw mh <<<"$mo"
-    px=$(( x + w + t - win_w ))
-    if (( y + h + t + gap + win_h <= oy + mh )); then
-        py=$(( y + h + t + gap ))              # below the frame, right-aligned
-    elif (( y - t - gap - win_h >= oy )); then
-        py=$(( y - t - gap - win_h ))          # above the frame, right-aligned
-    else
-        px=$(( x + w - win_w - 12 ))
-        py=$(( y + h - win_h - 12 )); inside=1 # no room: float inside bottom-right
-    fi
+        }'
+}
+
+# True when bar rect overlaps the capture rect (would be baked into the video).
+bar_overlaps_region() {
+    local px=$1 py=$2 win_w=$3 win_h=$4 x=$5 y=$6 w=$7 h=$8
+    (( px < x + w && px + win_w > x && py < y + h && py + win_h > y ))
+}
+
+# Clamp bar top-left so the full window stays inside the monitor.
+clamp_bar_to_monitor() {
+    local px=$1 py=$2 win_w=$3 win_h=$4 ox=$5 oy=$6 mw=$7 mh=$8
     (( px + win_w > ox + mw )) && px=$(( ox + mw - win_w ))
     (( px < ox )) && px=$ox
-    echo "$px $py $inside"
+    (( py + win_h > oy + mh )) && py=$(( oy + mh - win_h ))
+    (( py < oy )) && py=$oy
+    echo "$px $py"
+}
+
+control_bar_size() {
+    local pfs
+    pfs=$(dpi_font_size)
+    # ARMED row: [record] [WxH] [MP4/GIF] [audio] [cancel] -- 26 chars wide
+    echo "$(( pfs * 26 )) $(( pfs * 3 ))"
+}
+
+# compute_placement w h x y -> "px py placement"
+# placement: outside | inside_armed (float over region; ARMED only, never while
+# recording). Tries capture-monitor candidates in order, clamping each to the
+# monitor and rejecting region overlap.
+compute_placement() {
+    local w=$1 h=$2 x=$3 y=$4
+    local win_w win_h t=$FRAME_T gap=8
+    read -r win_w win_h <<<"$(control_bar_size)"
+    local mo ox=0 oy=0 mw=99999 mh=99999
+    mo=$(monitor_for_region "$x" "$y" "$w" "$h")
+    [[ -n "$mo" ]] && read -r ox oy mw mh <<<"$mo"
+
+    local px py candidate
+    for candidate in \
+        "below-right $(( x + w + t - win_w )) $(( y + h + t + gap ))" \
+        "above-right $(( x + w + t - win_w )) $(( y - t - gap - win_h ))" \
+        "right-bottom $(( x + w + t + gap )) $(( y + h - win_h ))" \
+        "left-bottom $(( x - t - gap - win_w )) $(( y + h - win_h ))"
+    do
+        read -r _ px py <<<"$candidate"
+        read -r px py <<<"$(clamp_bar_to_monitor "$px" "$py" "$win_w" "$win_h" "$ox" "$oy" "$mw" "$mh")"
+        bar_overlaps_region "$px" "$py" "$win_w" "$win_h" "$x" "$y" "$w" "$h" && continue
+        echo "$px $py outside"
+        return 0
+    done
+
+    # No outside slot on the capture monitor: ARMED may float inside so the
+    # user can still press [record]; recording repositions or falls back to bar.
+    px=$(( x + w - win_w - 12 ))
+    py=$(( y + h - win_h - 12 ))
+    read -r px py <<<"$(clamp_bar_to_monitor "$px" "$py" "$win_w" "$win_h" "$ox" "$oy" "$mw" "$mh")"
+    echo "$px $py inside_armed"
+}
+
+close_rec_controls() {
+    eww close rec-controls 2>/dev/null || true
+    while read -r wid; do
+        [[ -z "$wid" ]] && continue
+        xdotool windowkill "$wid" 2>/dev/null || true
+    done < <(xdotool search --name "Eww - rec-controls" 2>/dev/null || true)
+}
+
+open_rec_controls() {
+    local px=$1 py=$2
+    close_rec_controls
+    eww open rec-controls --arg "pos_x=${px}px" --arg "pos_y=${py}px" 2>/dev/null || true
 }
 
 open_preview() {
@@ -211,9 +260,9 @@ arm_flow() {
         exit 1
     fi
 
-    local px py inside audio fmt
-    read -r px py inside <<<"$(compute_placement "$w" "$h" "$x" "$y")"
-    printf '%s %s %s %s %s %s %s\n' "$w" "$h" "$x" "$y" "$px" "$py" "$inside" > "$REC_ARMED_FILE"
+    local px py placement audio fmt
+    read -r px py placement <<<"$(compute_placement "$w" "$h" "$x" "$y")"
+    printf '%s %s %s %s %s %s %s\n' "$w" "$h" "$x" "$y" "$px" "$py" "$placement" > "$REC_ARMED_FILE"
 
     audio=$(cat "$AUDIO_PREF" 2>/dev/null || echo off)
     [[ "$audio" == "sys" ]] || audio=off
@@ -223,7 +272,7 @@ arm_flow() {
         screen_rec_region="${w} × ${h}" screen_rec_audio="$audio" \
         screen_rec_format="${fmt^^}" 2>/dev/null || true
     open_frame "$w" "$h" "$x" "$y"
-    eww open rec-controls --arg "pos_x=${px}px" --arg "pos_y=${py}px" 2>/dev/null || true
+    open_rec_controls "$px" "$py"
 }
 
 cancel_arming() {
@@ -261,8 +310,8 @@ start_from_armed() {
     # no-ops (plain rm has a check-then-act race between detached clicks)
     local consumed="$STATE_DIR/screenrecord.armed.consumed.$$"
     mv "$REC_ARMED_FILE" "$consumed" 2>/dev/null || exit 0
-    local w h x y px py inside
-    read -r w h x y px py inside < "$consumed"
+    local w h x y _px _py _placement
+    read -r w h x y _px _py _placement < "$consumed"
     rm -f "$consumed"
     is_recording && exit 0                 # safety: never double-record
 
@@ -289,9 +338,15 @@ start_from_armed() {
     # The frame stays up: it hugs the region from outside and is never
     # captured, and it marks exactly what is being recorded.
     eww update screen_recording=true screen_rec_elapsed="0:00" 2>/dev/null || true
-    # bar floating INSIDE the region would be baked into the video: close it
-    # (bar badge + hotkey carry the recording state in that case)
-    (( inside )) && eww close rec-controls 2>/dev/null || true
+    # Recompute on the capture monitor: keep the bar outside the region while
+    # recording, or close it and let the bar indicator / hotkey stop.
+    local px py placement
+    read -r px py placement <<<"$(compute_placement "$w" "$h" "$x" "$y")"
+    if [[ "$placement" == "outside" ]]; then
+        open_rec_controls "$px" "$py"
+    else
+        close_rec_controls
+    fi
 
     # startup health check: codec/monitor init failures kill GSR within 2-3s
     # (e.g. X11 capture with all monitors DPMS-off)
