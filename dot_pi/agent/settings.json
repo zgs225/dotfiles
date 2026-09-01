@@ -22,8 +22,6 @@
     "deepseek-v4-flash",
     "qwen3.8-max",
     "glm-5.3-flash",
-    "b-ai/deepseek-v4-flash",
-    "b-ai/glm-5.3-flash",
     "k3-256k"
   ],
   "retry": {
