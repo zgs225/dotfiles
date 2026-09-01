@@ -1,1 +1,64 @@
-{"lastChangelogVersion":"0.84.4","theme":"song-liquid-glass","defaultProvider":"commandcode","defaultModel":"deepseek/deepseek-v4-flash","defaultThinkingLevel":"max","hideThinkingBlock":false,"defaultProjectTrust":"always","collapseChangelog":true,"enableInstallTelemetry":false,"quietStartup":true,"editorPaddingX":1,"autocompleteMaxVisible":10,"branchSummary":{"skipPrompt":true},"enabledModels":["commandcode/deepseek/deepseek-v4-pro","commandcode/deepseek/deepseek-v4-flash-fast","commandcode/deepseek/deepseek-v4-flash","opencode-go/deepseek-v4-flash","k3","kimi-for-coding","deepseek-v4-pro","deepseek-v4-flash","qwen3.8-max","glm-5.3-flash","k3-256k"],"retry":{"enabled":true,"maxRetries":100,"baseDelayMs":2000,"provider":{"maxRetryDelayMs":300000}},"packages":["https://github.com/nicobailon/pi-web-access"]}
+{
+  "lastChangelogVersion": "0.84.4",
+  "theme": "song-liquid-glass",
+  "defaultProvider": "commandcode",
+  "defaultModel": "deepseek/deepseek-v4-flash",
+  "defaultThinkingLevel": "max",
+  "hideThinkingBlock": false,
+  "defaultProjectTrust": "always",
+  "collapseChangelog": true,
+  "enableInstallTelemetry": false,
+  "quietStartup": true,
+  "editorPaddingX": 1,
+  "autocompleteMaxVisible": 10,
+  "branchSummary": {
+    "skipPrompt": true
+  },
+  "enabledModels": [
+    "commandcode/deepseek/deepseek-v4-pro",
+    "commandcode/deepseek/deepseek-v4-flash-fast",
+    "commandcode/deepseek/deepseek-v4-flash",
+    "opencode-go/deepseek-v4-flash",
+    "k3",
+    "kimi-for-coding",
+    "deepseek-v4-pro",
+    "deepseek-v4-flash",
+    "qwen3.8-max",
+    "glm-5.3-flash",
+    "k3-256k"
+  ],
+  "subagents": {
+    "agentOverrides": {
+      "oracle": {
+        "model": "kimi-coding/k3-256k"
+      },
+      "reviewer": {
+        "model": "kimi-coding/k3-256k"
+      },
+      "researcher": {
+        "model": "kimi-coding/k3-256k"
+      },
+      "scout": {
+        "model": "commandcode/deepseek/deepseek-v4-flash"
+      },
+      "worker": {
+        "model": "commandcode/deepseek/deepseek-v4-flash"
+      },
+      "delegate": {
+        "model": "commandcode/deepseek/deepseek-v4-flash"
+      }
+    }
+  },
+  "retry": {
+    "enabled": true,
+    "maxRetries": 100,
+    "baseDelayMs": 2000,
+    "provider": {
+      "maxRetryDelayMs": 300000
+    }
+  },
+  "packages": [
+    "https://github.com/nicobailon/pi-web-access",
+    "npm:pi-subagents"
+  ]
+}
