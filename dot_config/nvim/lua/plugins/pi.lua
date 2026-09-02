@@ -39,6 +39,8 @@ return {
     "https://github.com/zgs225/pi2.nvim.git",
     -- Dev escape hatch: point lazy at a feature worktree by launching nvim
     -- with PI_DEV_DIR set (nil = normal installed path). See pi.nvim G23.
+    -- Temporary: track feat/sub-sessions for field testing (revert branch to main when merged).
+    branch = vim.env.PI_DEV_DIR and nil or "feat/sub-sessions",
     dir = vim.env.PI_DEV_DIR or nil,
     dependencies = {
       { "HakonHarnes/img-clip.nvim", opts = { default = { drag_and_drop = { enabled = false } } } },
