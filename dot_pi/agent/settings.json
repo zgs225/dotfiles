@@ -27,28 +27,6 @@
     "glm-5.3-flash",
     "k3-256k"
   ],
-  "subagents": {
-    "agentOverrides": {
-      "oracle": {
-        "model": "kimi-coding/k3-256k"
-      },
-      "reviewer": {
-        "model": "kimi-coding/k3-256k"
-      },
-      "researcher": {
-        "model": "kimi-coding/k3-256k"
-      },
-      "scout": {
-        "model": "commandcode/deepseek/deepseek-v4-flash"
-      },
-      "worker": {
-        "model": "commandcode/deepseek/deepseek-v4-flash"
-      },
-      "delegate": {
-        "model": "commandcode/deepseek/deepseek-v4-flash"
-      }
-    }
-  },
   "retry": {
     "enabled": true,
     "maxRetries": 100,
@@ -58,7 +36,6 @@
     }
   },
   "packages": [
-    "npm:pi-web-access",
-    "npm:pi-subagents"
+    "npm:pi-web-access"
   ]
 }
