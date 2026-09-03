@@ -9,6 +9,7 @@
   "collapseChangelog": true,
   "enableInstallTelemetry": false,
   "quietStartup": true,
+  "transport": "websocket-cached",
   "editorPaddingX": 1,
   "autocompleteMaxVisible": 10,
   "branchSummary": {
@@ -36,6 +37,7 @@
     }
   },
   "packages": [
-    "npm:pi-web-access"
+    "npm:pi-web-access",
+    "npm:@router-for-me/pi-cliproxyapi-provider"
   ]
 }
