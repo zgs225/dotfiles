@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.84.4",
+  "lastChangelogVersion": "0.85.1",
   "theme": "song-liquid-glass",
   "defaultProvider": "cliproxyapi",
   "defaultModel": "deepseek-v4-flash",
@@ -12,6 +12,13 @@
   "transport": "websocket-cached",
   "editorPaddingX": 1,
   "autocompleteMaxVisible": 10,
+  "defaultTools": [
+    "read",
+    "bash",
+    "edit",
+    "write",
+    "grep"
+  ],
   "branchSummary": {
     "skipPrompt": true
   },
