@@ -278,18 +278,29 @@ tmux_conf_theme_right_separator_sub="|"
 # artefacts at the ends. All section backgrounds are 'default' (transparent),
 # so the statusline floats over the wezterm backdrop with only thin dividers.
 tmux_conf_theme_status_left=" ❐ #S |│| ↑#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,} "
-tmux_conf_theme_status_right=" #{prefix}#{mouse}#{pairing}#{synchronized}#{?battery_status,#{battery_status},}#{?battery_percentage, #{battery_percentage},}#{?battery_bar, #{battery_bar},} |│| %R |│| %d %b |│| #{username}#{root}@#{hostname} "
 
 # status left style  (sections: [#S] [│] [uptime])
 tmux_conf_theme_status_left_fg="$tmux_conf_theme_colour_4,$tmux_conf_theme_colour_3,$tmux_conf_theme_colour_6"
 tmux_conf_theme_status_left_bg="default,default,default"
 tmux_conf_theme_status_left_attr="bold,none,none"
 
-# status right style (sections: [indicators+battery] [│] [time] [│] [date] [│] [user@host])
+{{ if .hasBattery -}}
+tmux_conf_theme_status_right=" #{@sysmon}#{?client_prefix, 🎹,}#{?mouse, 🖱️,}#{?session_many_attached, ⚇,}#{?pane_synchronized, ⚏,} |│| #{?battery_status,#{battery_status},}#{?battery_percentage, #{battery_percentage},}#{?battery_bar, #{battery_bar},} |│| %R |│| %d %b |│| #{username}#{root}@#{hostname} "
+
+# status right style (sections: [sysmon+indicators] [│] [battery] [│] [time] [│] [date] [│] [user@host])
+tmux_conf_theme_status_right_fg="$tmux_conf_theme_colour_6,$tmux_conf_theme_colour_3,$tmux_conf_theme_colour_6,$tmux_conf_theme_colour_3,$tmux_conf_theme_colour_6,$tmux_conf_theme_colour_3,$tmux_conf_theme_colour_3,$tmux_conf_theme_colour_3,$tmux_conf_theme_colour_4"
+tmux_conf_theme_status_right_bg="default,default,default,default,default,default,default,default,default"
+tmux_conf_theme_status_right_attr="none,none,none,none,none,none,none,none,bold"
+{{ else -}}
+tmux_conf_theme_status_right=" #{@sysmon}#{?client_prefix, 🎹,}#{?mouse, 🖱️,}#{?session_many_attached, ⚇,}#{?pane_synchronized, ⚏,} |│| %R |│| %d %b |│| #{username}#{root}@#{hostname} "
+
+# status right style (sections: [sysmon+indicators] [│] [time] [│] [date] [│] [user@host])
 tmux_conf_theme_status_right_fg="$tmux_conf_theme_colour_6,$tmux_conf_theme_colour_3,$tmux_conf_theme_colour_6,$tmux_conf_theme_colour_3,$tmux_conf_theme_colour_3,$tmux_conf_theme_colour_3,$tmux_conf_theme_colour_4"
 tmux_conf_theme_status_right_bg="default,default,default,default,default,default,default"
 tmux_conf_theme_status_right_attr="none,none,none,none,none,none,bold"
+{{ end -}}
 
+# 指示器已作为动态条件直接内联到 status_right 中，以消除未激活时的死空格占位
 # pairing indicator
 tmux_conf_theme_pairing="⚇"                 # U+2687
 tmux_conf_theme_pairing_fg="none"
@@ -457,6 +468,10 @@ set -g extended-keys-format csi-u
 # let apps behind tmux use the outer terminal's graphics protocol via DCS
 # passthrough (yazi image previews in WezTerm use the kitty protocol)
 set -g allow-passthrough on
+
+# sysmon daemon & initial placeholder (Scheme A)
+set -g @sysmon " --  --"
+run -b '$HOME/.bin/tmux-sysmon daemon 2 "#{pid}" "#{socket_path}"'
 
 # ------------------------------------------------------------------------------
 

@@ -12,6 +12,7 @@ data:
   isLinux: {{ eq .chezmoi.os "linux" }}
   isWindows: {{ eq .chezmoi.os "windows" }}
   isVM: {{ and (lookPath "systemd-detect-virt") (output "sh" "-c" "systemd-detect-virt 2>/dev/null || true" | trim | ne "none") }}
+  hasBattery: {{ if or (glob "/sys/class/power_supply/BAT*") (eq (output "sh" "-c" "pmset -g batt 2>/dev/null | grep -qc InternalBattery && echo yes || true" | trim) "yes") }}true{{ else }}false{{ end }}
   useI3: {{ lookPath "i3" | ne "" }}
 
   # Song-dynasty minimalist palette ("juansha liuli") — the single source of

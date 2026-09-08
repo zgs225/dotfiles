@@ -1,0 +1,575 @@
+#!/bin/sh
+# tmux-sysmon: Cross-platform CPU & Memory status provider for tmux
+#
+# Algorithms:
+#   Linux:
+#     - Daemon mode:
+#       Pure POSIX shell 0-fork loop; directly reads /proc/stat and /proc/meminfo.
+#       CPU delta ticks computed from in-memory state across intervals (no disk I/O).
+#       Memory parsed from MemTotal & MemAvailable (fallback Free+Buffers+Cached).
+#     - One-shot mode:
+#       Non-blocking delta ticks from /proc/stat with state caching in $XDG_RUNTIME_DIR.
+#       Memory: (MemTotal - MemAvailable) / MemTotal from /proc/meminfo.
+#   macOS (Darwin):
+#     - CPU: ps -A -o %cpu= sum divided by ncpu (non-blocking approximation).
+#            Note: ps %cpu reflects decaying average over process lifetime rather than
+#            instantaneous sampling; high-precision alternative is `top -l 2 -n 0 -s 0`
+#            which blocks for ~1s.
+#     - Memory: vm_stat (active + wired + compressor) * page_size / hw.memsize.
+#     - Daemon mode caches hw.ncpu and hw.memsize in process memory across loops.
+#
+# Modes:
+#   - One-shot: `tmux-sysmon`
+#     For CLI inspection, debugging, and offline testing.
+#   - Daemon: `tmux-sysmon daemon [interval] [server_pid] [socket_path]`
+#     Long-running background daemon updating tmux option `@sysmon` via IPC only on change.
+#     Includes singleton handshake guard and auto-terminates when tmux server exits.
+#
+# Nerd Font Glyphs:
+#   CPU: U+F4BC (nf-oct-cpu, )
+#   MEM: U+EFC5 (nf-md-memory / RAM stick, )
+#
+# Design discipline:
+#   Complies with Song Liquid Glass & Tokyo Night styling; strictly avoids #f7768e (cinnabar).
+
+# 图标定义（支持变量方便测试与覆盖）
+if [ "${SYSMON_ASCII:-0}" = "1" ]; then
+  ICON_CPU="${ICON_CPU:-CPU}"
+  ICON_MEM="${ICON_MEM:-MEM}"
+else
+  ICON_CPU="${ICON_CPU:-}"
+  ICON_MEM="${ICON_MEM:-}"
+fi
+
+# 格式化百分比显示（内嵌 tmux 警告样式，严禁朱砂色 #f7768e）
+# 同时设置 _fmt_res 变量（允许直接读取免 subshell fork）并输出
+format_pct() {
+  _val="$1"
+  case "$_val" in
+    ''|*[!0-9]*)
+      _fmt_res="--"
+      ;;
+    *)
+      if [ "$_val" -ge 90 ]; then
+        _fmt_res="#[fg=#e0af68,bold]${_val}%#[fg=#c0caf5,none]"
+      elif [ "$_val" -ge 80 ]; then
+        _fmt_res="#[fg=#e0af68]${_val}%#[fg=#c0caf5]"
+      else
+        _fmt_res="${_val}%"
+      fi
+      ;;
+  esac
+}
+
+# 操作系统探测与测试桩覆盖
+OS="${SYSMON_FAKE_OS:-$(uname -s 2>/dev/null)}"
+
+# ==============================================================================
+# DAEMON MODE: tmux-sysmon daemon [interval] [server_pid] [socket_path]
+# ==============================================================================
+if [ "$1" = "daemon" ]; then
+  interval="${2:-2}"
+  case "$interval" in
+    ''|*[!0-9]*)
+      echo "tmux-sysmon: invalid interval: '$interval' (must be an integer >= 1)" >&2
+      exit 2
+      ;;
+    *)
+      if [ "$interval" -lt 1 ]; then
+        echo "tmux-sysmon: invalid interval: '$interval' (must be an integer >= 1)" >&2
+        exit 2
+      fi
+      ;;
+  esac
+
+  socket_path="$4"
+  if [ -z "$socket_path" ]; then
+    socket_path=$(tmux display -p '#{socket_path}' 2>/dev/null)
+  fi
+  TMUX_CMD="tmux ${socket_path:+-S "$socket_path"}"
+
+  server_pid="$3"
+  if [ -z "$server_pid" ]; then
+    # shellcheck disable=SC2086
+    server_pid=$($TMUX_CMD display -p '#{pid}' 2>/dev/null)
+  fi
+
+  case "$server_pid" in
+    ''|*[!0-9]*|0)
+      exit 1
+      ;;
+  esac
+
+  if ! kill -0 "$server_pid" 2>/dev/null; then
+    exit 1
+  fi
+
+  # 单例守卫（握手机制）
+  # shellcheck disable=SC2086
+  cur=$($TMUX_CMD show -gqv @sysmon_daemon_pid 2>/dev/null)
+  if [ -n "$cur" ] && [ "$cur" != "$$" ] && kill -0 "$cur" 2>/dev/null; then
+    if ps -p "$cur" -o args= 2>/dev/null | grep -q "tmux-sysmon daemon"; then
+      exit 0
+    fi
+  fi
+
+  # shellcheck disable=SC2086
+  $TMUX_CMD set -g @sysmon_daemon_pid "$$" 2>/dev/null
+
+  sleep "${SYSMON_HANDSHAKE_SLEEP:-1}" 2>/dev/null
+
+  # shellcheck disable=SC2086
+  check_pid=$($TMUX_CMD show -gqv @sysmon_daemon_pid 2>/dev/null)
+  if [ "$check_pid" != "$$" ]; then
+    exit 0
+  fi
+
+  trap 'exit 0' TERM INT HUP
+
+  has_prev=0
+  prev_total=0
+  prev_idle=0
+  last_rendered=""
+  loop_count=0
+
+  darwin_ncpu=""
+  darwin_memsize=""
+  if [ "$OS" = "Darwin" ]; then
+    darwin_ncpu=$(sysctl -n hw.ncpu 2>/dev/null)
+    case "$darwin_ncpu" in
+      ''|*[!0-9]*|0) darwin_ncpu="" ;;
+    esac
+    darwin_memsize=$(sysctl -n hw.memsize 2>/dev/null)
+    case "$darwin_memsize" in
+      ''|*[!0-9]*|0) darwin_memsize="" ;;
+    esac
+  fi
+
+  while kill -0 "$server_pid" 2>/dev/null; do
+    if [ -n "$SYSMON_DAEMON_MAX_LOOPS" ] && [ "$SYSMON_DAEMON_MAX_LOOPS" -le 0 ] 2>/dev/null; then
+      exit 0
+    fi
+
+    case "$OS" in
+      Linux)
+        cpu_val="--"
+        if read -r _cpu u n s id io irq sirq st _rest < "${SYSMON_PROC_STAT:-/proc/stat}" 2>/dev/null && [ "$_cpu" = "cpu" ]; then
+          case "$u" in
+            ''|*[!0-9]*) cpu_val="--" ;;
+            *)
+              u="${u:-0}"; n="${n:-0}"; s="${s:-0}"; id="${id:-0}"; io="${io:-0}"; irq="${irq:-0}"; sirq="${sirq:-0}"; st="${st:-0}"
+              cur_total=$((u + n + s + id + io + irq + sirq + st))
+              cur_idle=$((id + io))
+              if [ "$has_prev" = "1" ]; then
+                dtotal=$((cur_total - prev_total))
+                didle=$((cur_idle - prev_idle))
+                prev_total=$cur_total
+                prev_idle=$cur_idle
+                if [ "$dtotal" -gt 0 ]; then
+                  cpu_val=$(( (100 * (dtotal - didle) + dtotal / 2) / dtotal ))
+                  if [ "$cpu_val" -lt 0 ]; then
+                    cpu_val=0
+                  elif [ "$cpu_val" -gt 100 ]; then
+                    cpu_val=100
+                  fi
+                else
+                  cpu_val="--"
+                fi
+              else
+                prev_total=$cur_total
+                prev_idle=$cur_idle
+                has_prev=1
+                cpu_val="--"
+              fi
+              ;;
+          esac
+        fi
+
+        mem_val="--"
+        mt=0
+        ma=-1
+        mf=0
+        mb=0
+        mc=0
+        if [ -r "${SYSMON_PROC_MEMINFO:-/proc/meminfo}" ]; then
+          while read -r key val _rest; do
+            case "$key" in
+              MemTotal:) mt=$val ;;
+              MemAvailable:) ma=$val ;;
+              MemFree:) mf=$val ;;
+              Buffers:) mb=$val ;;
+              Cached:) mc=$val ;;
+            esac
+            if [ "$mt" -gt 0 ] && [ "$ma" -ge 0 ]; then
+              break
+            fi
+          done < "${SYSMON_PROC_MEMINFO:-/proc/meminfo}" 2>/dev/null
+
+          if [ "$mt" -gt 0 ] 2>/dev/null; then
+            if [ "$ma" -ge 0 ] 2>/dev/null; then
+              avail=$ma
+            else
+              avail=$((mf + mb + mc))
+            fi
+            used=$((mt - avail))
+            if [ "$used" -lt 0 ]; then
+              used=0
+            fi
+            mem_val=$(( (100 * used + mt / 2) / mt ))
+            if [ "$mem_val" -lt 0 ]; then
+              mem_val=0
+            elif [ "$mem_val" -gt 100 ]; then
+              mem_val=100
+            fi
+          fi
+        fi
+        ;;
+
+      Darwin)
+        if [ -z "$darwin_ncpu" ]; then
+          darwin_ncpu=$(sysctl -n hw.ncpu 2>/dev/null)
+          case "$darwin_ncpu" in
+            ''|*[!0-9]*|0) darwin_ncpu="" ;;
+          esac
+        fi
+        if [ -z "$darwin_memsize" ]; then
+          darwin_memsize=$(sysctl -n hw.memsize 2>/dev/null)
+          case "$darwin_memsize" in
+            ''|*[!0-9]*|0) darwin_memsize="" ;;
+          esac
+        fi
+
+        cpu_val="--"
+        if [ -n "$darwin_ncpu" ] && [ "$darwin_ncpu" -gt 0 ] 2>/dev/null; then
+          _calc_cpu=$(ps -A -o %cpu= 2>/dev/null | awk -v ncpu="$darwin_ncpu" '
+            BEGIN { sum = 0; count = 0 }
+            {
+              if ($1 ~ /^[0-9]+(\.[0-9]+)?$/) {
+                sum += $1
+                count++
+              }
+            }
+            END {
+              if (count == 0 || ncpu <= 0) {
+                print "--"
+                exit
+              }
+              pct = int((sum / ncpu) + 0.5)
+              if (pct < 0) pct = 0
+              if (pct > 100) pct = 100
+              print pct
+            }
+          ' 2>/dev/null)
+          case "$_calc_cpu" in
+            ''|*[!0-9]*) cpu_val="--" ;;
+            *) cpu_val="$_calc_cpu" ;;
+          esac
+        fi
+
+        mem_val="--"
+        if [ -n "$darwin_memsize" ] && [ "$darwin_memsize" -gt 0 ] 2>/dev/null; then
+          _calc_mem=$(vm_stat 2>/dev/null | awk -v memsize="$darwin_memsize" '
+            BEGIN {
+              page_size = 4096
+              active = 0; wired = 0; compressor = 0
+              got_active = 0; got_wired = 0; got_comp = 0
+            }
+            /page size of [0-9]+ bytes/ {
+              for (i = 1; i <= NF; i++) {
+                if ($i ~ /^[0-9]+$/) {
+                  page_size = $i + 0
+                  break
+                }
+              }
+            }
+            /^Pages active:/ {
+              val = $NF; gsub(/[^0-9]/, "", val); active = val + 0; got_active = 1
+            }
+            /^Pages wired down:/ {
+              val = $NF; gsub(/[^0-9]/, "", val); wired = val + 0; got_wired = 1
+            }
+            /^Pages occupied by compressor:/ {
+              val = $NF; gsub(/[^0-9]/, "", val); compressor = val + 0; got_comp = 1
+            }
+            END {
+              if (memsize <= 0 || (!got_active || !got_wired || !got_comp)) {
+                print "--"
+                exit
+              }
+              used_bytes = (active + wired + compressor) * page_size
+              pct = int(100 * used_bytes / memsize + 0.5)
+              if (pct < 0) pct = 0
+              if (pct > 100) pct = 100
+              print pct
+            }
+          ' 2>/dev/null)
+          case "$_calc_mem" in
+            ''|*[!0-9]*) mem_val="--" ;;
+            *) mem_val="$_calc_mem" ;;
+          esac
+        fi
+        ;;
+
+      *)
+        cpu_val="--"
+        mem_val="--"
+        ;;
+    esac
+
+    format_pct "$cpu_val"; cpu_disp="$_fmt_res"
+    format_pct "$mem_val"; mem_disp="$_fmt_res"
+    rendered="$ICON_CPU $cpu_disp $ICON_MEM $mem_disp"
+
+    if [ "$rendered" != "$last_rendered" ]; then
+      # shellcheck disable=SC2086
+      $TMUX_CMD set -g @sysmon "$rendered" 2>/dev/null || exit 0
+      last_rendered="$rendered"
+    fi
+
+    loop_count=$((loop_count + 1))
+    if [ -n "$SYSMON_DAEMON_MAX_LOOPS" ] && [ "$loop_count" -ge "$SYSMON_DAEMON_MAX_LOOPS" ] 2>/dev/null; then
+      exit 0
+    fi
+
+    sleep "$interval" 2>/dev/null || exit 0
+  done
+
+  exit 0
+fi
+
+# ==============================================================================
+# ONE-SHOT MODE (default / CLI inspection)
+# ==============================================================================
+case "$OS" in
+  Linux)
+    _user="${USER:-$(id -un 2>/dev/null)}"
+    _user="${_user:-default}"
+    _state_dir="${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}"
+    _state_file="${_state_dir}/tmux-sysmon.${_user}.state"
+    _tmp_file="${_state_file}.$$.tmp"
+    [ -w "$_state_dir" ] || _tmp_file=""
+    _now=$(date +%s 2>/dev/null)
+    _proc_stat="${SYSMON_PROC_STAT:-/proc/stat}"
+    _proc_meminfo="${SYSMON_PROC_MEMINFO:-/proc/meminfo}"
+
+    _res=$(awk -v now="$_now" -v state_file="$_state_file" -v tmp_file="$_tmp_file" '
+    BEGIN {
+      prev_epoch = -1
+      prev_total = -1
+      prev_idle = -1
+      prev_pct = "--"
+      has_valid_prev = 0
+
+      if (state_file != "") {
+        if ((getline line < state_file) > 0) {
+          n = split(line, f)
+          if (n >= 4 && f[1] ~ /^[0-9]+$/ && f[2] ~ /^[0-9]+$/ && f[3] ~ /^[0-9]+$/) {
+            prev_epoch = f[1] + 0
+            prev_total = f[2] + 0
+            prev_idle = f[3] + 0
+            prev_pct = f[4]
+            if (now != "" && now >= prev_epoch && (now - prev_epoch) <= 50) {
+              has_valid_prev = 1
+            }
+          }
+          close(state_file)
+        }
+      }
+
+      got_cpu = 0
+      mem_total = 0
+      mem_avail = -1
+      mem_free = 0
+      mem_buffers = 0
+      mem_cached = 0
+    }
+
+    $1 == "cpu" && !got_cpu {
+      got_cpu = 1
+      user = $2; nice = $3; sys = $4; idle = $5; iowait = $6; irq = $7; softirq = $8; steal = $9
+      total = user + nice + sys + idle + iowait + irq + softirq + steal
+      idle_all = idle + iowait
+    }
+
+    $1 == "MemTotal:" { mem_total = $2 + 0 }
+    $1 == "MemAvailable:" { mem_avail = $2 + 0 }
+    $1 == "MemFree:" { mem_free = $2 + 0 }
+    $1 == "Buffers:" { mem_buffers = $2 + 0 }
+    $1 == "Cached:" { mem_cached = $2 + 0 }
+
+    END {
+      cpu_pct = "--"
+      if (got_cpu) {
+        if (has_valid_prev) {
+          dtotal = total - prev_total
+          didle = idle_all - prev_idle
+          if (dtotal > 0) {
+            calc = int(100 * (1 - didle / dtotal) + 0.5)
+            if (calc < 0) calc = 0
+            if (calc > 100) calc = 100
+            cpu_pct = calc
+          } else {
+            if (prev_pct ~ /^[0-9]+$/) {
+              cpu_pct = prev_pct
+            } else {
+              cpu_pct = "--"
+            }
+          }
+        } else {
+          cpu_pct = "--"
+        }
+
+        if (tmp_file != "" && now != "") {
+          print now, total, idle_all, cpu_pct > tmp_file
+          close(tmp_file)
+        }
+      }
+
+      mem_pct = "--"
+      if (mem_total > 0) {
+        avail = (mem_avail >= 0) ? mem_avail : (mem_free + mem_buffers + mem_cached)
+        used = mem_total - avail
+        if (used < 0) used = 0
+        calc_mem = int(100 * used / mem_total + 0.5)
+        if (calc_mem < 0) calc_mem = 0
+        if (calc_mem > 100) calc_mem = 100
+        mem_pct = calc_mem
+      }
+
+      print cpu_pct, mem_pct
+    }
+    ' "$_proc_stat" "$_proc_meminfo" 2>/dev/null)
+
+    if [ -f "$_tmp_file" ]; then
+      mv -f "$_tmp_file" "$_state_file" 2>/dev/null
+    fi
+
+    cpu_val="--"
+    mem_val="--"
+    if [ -n "$_res" ]; then
+      cpu_val="${_res%% *}"
+      mem_val="${_res##* }"
+    fi
+    ;;
+
+  Darwin)
+    _state_dir="${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}"
+    _ncpu_file="${_state_dir}/tmux-sysmon.hw.ncpu"
+    _ncpu=""
+    if [ -r "$_ncpu_file" ]; then
+      read -r _ncpu < "$_ncpu_file" 2>/dev/null
+    fi
+    case "$_ncpu" in
+      ''|*[!0-9]*|0)
+        _ncpu=$(sysctl -n hw.ncpu 2>/dev/null)
+        case "$_ncpu" in
+          ''|*[!0-9]*|0)
+            _ncpu=""
+            ;;
+          *)
+            printf '%s\n' "$_ncpu" > "$_ncpu_file" 2>/dev/null
+            ;;
+        esac
+        ;;
+    esac
+
+    cpu_val="--"
+    if [ -n "$_ncpu" ] && [ "$_ncpu" -gt 0 ] 2>/dev/null; then
+      _calc_cpu=$(ps -A -o %cpu= 2>/dev/null | awk -v ncpu="$_ncpu" '
+        BEGIN { sum = 0; count = 0 }
+        {
+          if ($1 ~ /^[0-9]+(\.[0-9]+)?$/) {
+            sum += $1
+            count++
+          }
+        }
+        END {
+          if (count == 0 || ncpu <= 0) {
+            print "--"
+            exit
+          }
+          pct = int((sum / ncpu) + 0.5)
+          if (pct < 0) pct = 0
+          if (pct > 100) pct = 100
+          print pct
+        }
+      ' 2>/dev/null)
+      case "$_calc_cpu" in
+        ''|*[!0-9]*) cpu_val="--" ;;
+        *) cpu_val="$_calc_cpu" ;;
+      esac
+    fi
+
+    _memsize_file="${_state_dir}/tmux-sysmon.hw.memsize"
+    _memsize=""
+    if [ -r "$_memsize_file" ]; then
+      read -r _memsize < "$_memsize_file" 2>/dev/null
+    fi
+    case "$_memsize" in
+      ''|*[!0-9]*|0)
+        _memsize=$(sysctl -n hw.memsize 2>/dev/null)
+        case "$_memsize" in
+          ''|*[!0-9]*|0)
+            _memsize=""
+            ;;
+          *)
+            printf '%s\n' "$_memsize" > "$_memsize_file" 2>/dev/null
+            ;;
+        esac
+        ;;
+    esac
+
+    mem_val="--"
+    if [ -n "$_memsize" ] && [ "$_memsize" -gt 0 ] 2>/dev/null; then
+      _calc_mem=$(vm_stat 2>/dev/null | awk -v memsize="$_memsize" '
+        BEGIN {
+          page_size = 4096
+          active = 0; wired = 0; compressor = 0
+          got_active = 0; got_wired = 0; got_comp = 0
+        }
+        /page size of [0-9]+ bytes/ {
+          for (i = 1; i <= NF; i++) {
+            if ($i ~ /^[0-9]+$/) {
+              page_size = $i + 0
+              break
+            }
+          }
+        }
+        /^Pages active:/ {
+          val = $NF; gsub(/[^0-9]/, "", val); active = val + 0; got_active = 1
+        }
+        /^Pages wired down:/ {
+          val = $NF; gsub(/[^0-9]/, "", val); wired = val + 0; got_wired = 1
+        }
+        /^Pages occupied by compressor:/ {
+          val = $NF; gsub(/[^0-9]/, "", val); compressor = val + 0; got_comp = 1
+        }
+        END {
+          if (memsize <= 0 || (!got_active || !got_wired || !got_comp)) {
+            print "--"
+            exit
+          }
+          used_bytes = (active + wired + compressor) * page_size
+          pct = int(100 * used_bytes / memsize + 0.5)
+          if (pct < 0) pct = 0
+          if (pct > 100) pct = 100
+          print pct
+        }
+      ' 2>/dev/null)
+      case "$_calc_mem" in
+        ''|*[!0-9]*) mem_val="--" ;;
+        *) mem_val="$_calc_mem" ;;
+      esac
+    fi
+    ;;
+
+  *)
+    printf '%s %s %s %s\n' "$ICON_CPU" "--" "$ICON_MEM" "--"
+    exit 0
+    ;;
+esac
+
+format_pct "$cpu_val"; cpu_display="$_fmt_res"
+format_pct "$mem_val"; mem_display="$_fmt_res"
+
+printf '%s %s %s %s\n' "$ICON_CPU" "$cpu_display" "$ICON_MEM" "$mem_display"
