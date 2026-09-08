@@ -3,7 +3,7 @@
   "theme": "song-liquid-glass",
   "defaultProvider": "cliproxyapi",
   "defaultModel": "deepseek-v4-flash",
-  "defaultThinkingLevel": "max",
+  "defaultThinkingLevel": "high",
   "hideThinkingBlock": false,
   "defaultProjectTrust": "always",
   "collapseChangelog": true,
