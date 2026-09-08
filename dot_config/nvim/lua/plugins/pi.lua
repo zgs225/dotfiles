@@ -50,7 +50,7 @@ return {
       title = {
         enabled = true,
         max_chars = 20,
-        model = "commandcode/deepseek/deepseek-v4-flash",
+        model = "deepseek/deepseek-v4-flash",
       },
       show_thinking = true,
       expand_startup_details = false,
