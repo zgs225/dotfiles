@@ -48,7 +48,7 @@ return {
       title = {
         enabled = true,
         max_chars = 20,
-        model = "deepseek/deepseek-v4-flash",
+        model = "cliproxyapi/siliconflow/deepseek-v3.2",
       },
       show_thinking = true,
       expand_startup_details = false,
