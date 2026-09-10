@@ -26,6 +26,21 @@ package_manager = "pnpm"
 - **`npm.package_manager = "pnpm"`** —— 这是绕开下面坑 2/3 的关键；`pnpm` 必须是已安装的工具（`pnpm = "latest"` 已有）。
 - 保持 `version = "latest"` 能正常工作，`mise install` / `mise upgrade` 即升级。
 
+## 升级记录
+
+| 时间 | 操作 | 结果 |
+|------|------|------|
+| 2026-08 | 首次安装 | `0.1.0-rc.6`（走 pnpm，38.7s） |
+| 2026-09 | `mise upgrade npm:@deepseek-ai/dsh` | `0.1.0-rc.6 → 0.1.5-rc.1`（pnpm，1m0.4s） |
+
+升级路径已验证：**配置零改动**，`version = "latest"` + `minimum_release_age_excludes` + `package_manager = "pnpm"` 三项组合下，一条 `mise upgrade` 直接到位，坑 1/2/3 均不再触发（aube 已被 pnpm 绕开）。
+
+升级后注意：
+
+- **当前 shell 的 `PATH` 是激活时缓存的**，`mise upgrade` 不会改写它 —— `which dsh` 仍指向旧版本目录。`mise reshim` 只影响 shim 路径，不修正在前的高优先级条目。
+  新开 shell 即生效；本终端内立刻生效用 `hash -r && exec zsh`。
+- 旧版本保留 24h 后自动 prune，期间 `mise ls` 会显示 `(pruned in 24h)`。
+
 ## 坑 1：`minimum_release_age`（默认 24h）挡掉新版本
 
 mise 2026.6+ 默认 `minimum_release_age = "24h"`（env: `MISE_MINIMUM_RELEASE_AGE`）：
