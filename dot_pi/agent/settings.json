@@ -25,6 +25,7 @@
   "enabledModels": [
     "commandcode/deepseek/deepseek-v4-pro",
     "commandcode/deepseek/deepseek-v4-flash-fast",
+    "commandcode/deepseek/deepseek-v4.1-flash",
     "commandcode/deepseek/deepseek-v4-flash",
     "opencode-go/deepseek-v4-flash",
     "cliproxyapi/deepseek-v4-flash",
