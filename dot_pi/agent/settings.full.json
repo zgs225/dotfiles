@@ -23,7 +23,13 @@
     "skipPrompt": true
   },
   "enabledModels": [
-    "cliproxyapi/*"
+    "cliproxyapi/gemini-3.8-flash-high",
+    "cliproxyapi/kimi-k3-256k",
+    "k3",
+    "kimi-for-coding",
+    "deepseek-flash",
+    "glm-5.3-flash",
+    "k3-256k"
   ],
   "retry": {
     "enabled": true,
