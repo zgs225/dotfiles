@@ -37,7 +37,6 @@ end
 return {
   {
     "https://github.com/zgs225/pi2.nvim.git",
-    branch = "fix/review-hardening-high",
     -- Dev escape hatch: point lazy at a feature worktree by launching nvim
     -- with PI_DEV_DIR set (nil = normal installed path). See pi.nvim G23.
     dir = vim.env.PI_DEV_DIR or nil,
