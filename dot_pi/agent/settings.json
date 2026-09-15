@@ -2,7 +2,7 @@
   "lastChangelogVersion": "0.85.1",
   "theme": "song-liquid-glass",
   "defaultProvider": "cliproxyapi",
-  "defaultModel": "deepseek-flash",
+  "defaultModel": "opencode/glm-5.3-flash",
   "defaultThinkingLevel": "high",
   "hideThinkingBlock": false,
   "defaultProjectTrust": "always",
@@ -23,7 +23,9 @@
     "skipPrompt": true
   },
   "enabledModels": [
-    "cliproxyapi/*"
+    "cliproxyapi/*",
+    "cliproxyapi/official/*",
+    "cliproxyapi/opencode/*"
   ],
   "retry": {
     "enabled": true,

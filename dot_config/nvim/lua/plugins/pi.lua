@@ -37,6 +37,7 @@ end
 return {
   {
     "https://github.com/zgs225/pi2.nvim.git",
+    branch = "fix/review-hardening-high",
     -- Dev escape hatch: point lazy at a feature worktree by launching nvim
     -- with PI_DEV_DIR set (nil = normal installed path). See pi.nvim G23.
     dir = vim.env.PI_DEV_DIR or nil,
@@ -164,6 +165,7 @@ return {
               "Pi: session tree (:PiTree)",
             },
             c = { "<Cmd>PiNewTab<CR>", "Pi: open in new tab" },
+            e = { "<Cmd>PiSessions<CR>", "Pi: toggle sessions bar" },
           }
           for key, spec in pairs(leaders) do
             vim.keymap.set({ "n", "i" }, "<C-g>" .. key, spec[1], { buffer = args.buf, desc = spec[2] })
