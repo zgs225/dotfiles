@@ -52,7 +52,6 @@ return {
       },
       show_thinking = true,
       expand_startup_details = false,
-      -- 思考等级指示器不按等级着色（colored 默认 true）
       statusline = {
         components = {
           thinking = { colored = false },
@@ -61,6 +60,13 @@ return {
       abort = { enabled = true, timeout = 1500, message = "再按一次 <Esc> 中断当前回合" },
       render = { engine = "render-markdown" },
       sessions_list = { auto_open = true },
+      todo = {
+        panel = {
+          auto_open = true,
+          hide_when_empty = true,
+          position = "below",
+        },
+      },
       layout = {
         default = "side",
         side = { position = "left", width = 0.6 },
