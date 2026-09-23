@@ -52,19 +52,38 @@ return {
       },
       show_thinking = true,
       expand_startup_details = false,
+      -- 思考等级指示器不按等级着色（colored 默认 true）
       statusline = {
         components = {
           thinking = { colored = false },
         },
       },
+      density = "compact",
       abort = { enabled = true, timeout = 1500, message = "再按一次 <Esc> 中断当前回合" },
       render = { engine = "render-markdown" },
       sessions_list = { auto_open = true },
       todo = {
         panel = {
-          auto_open = true,
+          auto_open = true, -- todo list 首次写入时自动弹出面板
           hide_when_empty = true,
-          position = "below",
+          position = "below", -- 堆叠在 PiSessions 侧栏下方
+        },
+      },
+      -- Sub-session viewer (:PiSubView / `p` in :PiSessions): float sizing
+      -- + todo footer summary & `T` list panel inside the viewer
+      subagent = {
+        viewer = {
+          width = 0.7,
+          height = 0.75,
+          border = "rounded",
+          statusline = true, -- footer statusline（todo 摘要 chunk 依附其上）
+          todo = {
+            enabled = true, -- footer ✓/◐/○ 摘要 + viewer 内 `T` 面板
+            auto_open = true, -- 被查看会话 todo 从空→非空时自动弹出面板
+            position = "below", -- 面板锚定在 viewer 底部（"above" 挂顶部，均右对齐）
+            height = 0.35, -- 面板高度占 viewer 高度比例
+            max_items = 20, -- 面板最多显示条目数（超出 `… N more`）
+          },
         },
       },
       layout = {
