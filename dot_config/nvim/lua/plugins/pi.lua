@@ -62,6 +62,8 @@ return {
       abort = { enabled = true, timeout = 1500, message = "再按一次 <Esc> 中断当前回合" },
       render = { engine = "render-markdown" },
       sessions_list = { auto_open = true },
+      -- 后台任务启动时自动弹出任务面板（该 session 任务全部完成后面板自动关闭）
+      tasks_panel = { auto_open = true },
       todo = {
         panel = {
           auto_open = true, -- todo list 首次写入时自动弹出面板
