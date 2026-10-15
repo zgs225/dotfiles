@@ -1,0 +1,55 @@
+onboarding = false
+
+[theme]
+name = "tokyo-night"   # 对齐 tmux：Tokyo Night 主题
+auto_switch = false
+
+[ui]
+tab_bar_position = "bottom"    # 对齐 tmux：status 在底部
+mouse_capture = false          # 对齐 tmux：mouse off（默认关）
+status_indicators = "dots"
+
+[ui.toast]
+delivery = "off"
+
+[keys]
+prefix = "ctrl+b"             # 对齐 tmux：prefix C-b
+
+# tabs ≈ tmux windows
+new_tab = "prefix+c"                                  # tmux new-window
+previous_tab = ["prefix+p", "prefix+["]               # 对齐 tmux：prefix [ 上一窗口
+next_tab = ["prefix+n", "prefix+]"]                   # 对齐 tmux：prefix ] 下一窗口
+rename_tab = ["prefix+shift+t", "prefix+comma"]       # 对齐 tmux：prefix , 重命名窗口
+close_tab = ["prefix+shift+x", "prefix+ampersand"]    # 对齐 tmux：prefix & kill-window
+new_workspace = ["prefix+shift+n", "prefix+ctrl+c"]   # 对齐 tmux：C-c 新建会话
+
+# panes
+focus_pane_left = "prefix+h"        # 对齐 tmux：h/j/k/l 面板导航
+focus_pane_down = "prefix+j"
+focus_pane_up = "prefix+k"
+focus_pane_right = "prefix+l"
+cycle_pane_next = ["prefix+tab", "prefix+o"]   # 对齐 tmux：prefix o 轮换面板
+
+# resize（占用 prefix+shift+hjkl）
+resize_pane_left = "prefix+shift+h"    # 对齐 tmux：H/J/K/L resize
+resize_pane_down = "prefix+shift+j"
+resize_pane_up = "prefix+shift+k"
+resize_pane_right = "prefix+shift+l"
+
+# swap 默认也占 prefix+shift+hjkl，与 resize 冲突，挪到 alt+shift 变体
+swap_pane_left = "prefix+alt+shift+h"
+swap_pane_down = "prefix+alt+shift+j"
+swap_pane_up = "prefix+alt+shift+k"
+swap_pane_right = "prefix+alt+shift+l"
+
+resize_mode = "prefix+ctrl+r"                          # 让出默认的 prefix+r 给 reload
+split_horizontal = "prefix+minus"                      # 对齐 tmux：prefix - 上下分割
+split_vertical = ["prefix+v", "prefix+shift+minus"]    # 对齐 tmux：prefix _ 左右分割
+close_pane = "prefix+x"                                # 对齐 tmux：prefix x kill-pane
+zoom = "prefix+z"                                      # 对齐 tmux：prefix z zoom
+copy_mode = "prefix+enter"                             # 对齐 tmux：Enter 进 copy-mode（内部为 vi 键位）
+detach = ["prefix+q", "prefix+d"]                      # 对齐 tmux：prefix d detach（保留默认 q）
+reload_config = ["prefix+shift+r", "prefix+r"]         # 对齐 tmux：prefix r reload config（保留默认 shift+r）
+
+# 腾出 prefix+o 给上面 cycle_pane_next；通知目标跳转不再占用该键
+open_notification_target = ""

@@ -1,0 +1,64 @@
+#!/bin/sh
+#
+# Attach or create herdr session named the same as current directory.
+
+command -v herdr >/dev/null 2>&1 || { echo "hat: herdr not found" >&2; exit 1; }
+
+# --- session 名推导（同 tat：默认取当前目录名，$1 可覆盖）---
+# herdr session 名只接受 ASCII 字母/数字/./_/-，其余字符（空格、斜杠、Unicode…）
+# 一律换成 '-'。注意：tr -cs 的 -s 挤压的是 set2（即 '-'）的连续重复，所以连续非法串
+# 被压成一个 '-'，原有连续 '-' 也会一并归一化（如 a--b -> a-b），无害且结果确定。
+raw="$(basename -- "$PWD")"
+path_name="$(printf '%s' "$raw" | tr -cs 'A-Za-z0-9._-' '-' | sed -e 's/^-*//' -e 's/-*$//' | cut -c1-64)"
+# 全部非法字符（或目录就是根 "/"）会洗成空串，回退到 workspace。
+[ -n "$path_name" ] || path_name=workspace
+# 上一步输出保证是纯 ASCII，此时 cut -c1-64 即 herdr 的 64 字节上限。
+
+# $1 覆盖时不做字符清洗（与 tat 一致）；但 "."/".." 仍要挡住，
+# 因为 herdr status/server 会对它报 "session name cannot be . or .."（exit 2）。
+# 名字恰好是 "default" 时不特殊处理：herdr 会把它归一化到默认 session（可接受边界行为）。
+session_name=${1-$path_name}
+case "$session_name" in
+  . | ..) session_name=workspace ;;
+esac
+
+# --- 外部：herdr --session 即 use-or-create（不存在则建，存在则 attach，可多 client 并存）---
+if [ "${HERDR_ENV:-}" != "1" ]; then
+  exec herdr --session "$session_name"
+fi
+
+# --- 内部（pane 里，HERDR_ENV=1）---
+# herdr 默认禁止嵌套 full-UI client（[experimental] allow_nested=false），也没有
+# switch-client 等价物；只能预启动目标 session 的 headless server，让用户 detach 后再进。
+# pane 里没有 HERDR_SESSION，只能从 HERDR_SOCKET_PATH 反推当前 session：
+#   <config>/sessions/<name>/herdr.sock → <name>
+#   <config>/herdr.sock                 → default
+current_session() {
+  case "${HERDR_SOCKET_PATH:-}" in
+    */sessions/*/herdr.sock) basename -- "${HERDR_SOCKET_PATH%/herdr.sock}" ;;
+    */herdr.sock) echo default ;;
+    *) echo unknown ;;
+  esac
+}
+
+if [ "$(current_session)" = "$session_name" ]; then
+  echo "hat: already in herdr session '$session_name'"
+  exit 0
+fi
+
+# 无副作用地查询目标 session 的 server 是否在跑（实测 exit 恒 0，也不会创建 session 目录）。
+herdr_server_running() {
+  HERDR_SESSION="$session_name" herdr status server --json 2>/dev/null | grep -q '"running":true'
+}
+
+if ! herdr_server_running; then
+  # headless server 不受嵌套保护。setsid 让它脱离当前 pane 的会话（缺失 setsid 则跳过预启动）。
+  # 同名 server 已存在时 herdr server 自己报错退出，无害。
+  if command -v setsid >/dev/null 2>&1; then
+    HERDR_SESSION="$session_name" setsid herdr server </dev/null >/dev/null 2>&1 &
+  fi
+fi
+
+echo "hat: herdr session '$session_name' is ready"
+echo "hat: press prefix+q to detach, then run hat (or 'herdr --session $session_name') to enter"
+exit 0
