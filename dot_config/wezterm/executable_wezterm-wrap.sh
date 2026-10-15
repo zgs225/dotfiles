@@ -28,4 +28,25 @@ if [ "$has_nv" = 1 ] && [ "$has_other" = 1 ]; then
     if [ -n "$egl" ]; then export __EGL_VENDOR_LIBRARY_FILENAMES="$egl"; fi
 fi
 
+# Prefer process isolation: every `start` gets its own wezterm-gui process, so
+# one window's death never takes down other windows (they otherwise share a
+# process). Subcommands (cli, ssh, connect, serial, imgcat, show-keys, ...) are
+# forwarded untouched.
+if [ "$#" -eq 0 ]; then
+    set -- start --always-new-process
+elif [ "$1" = start ]; then
+    has_flag=0
+    for a in "$@"; do
+        if [ "$a" = '--always-new-process' ]; then
+            has_flag=1
+        fi
+    done
+    shift
+    if [ "$has_flag" = 1 ]; then
+        set -- start "$@"
+    else
+        set -- start --always-new-process "$@"
+    fi
+fi
+
 exec wezterm "$@"

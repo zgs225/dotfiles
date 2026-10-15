@@ -129,7 +129,7 @@ local keys = {
 
    -- panes: zoom+close pane
    { key = 'Enter', mods = mod.SUPER,     action = act.TogglePaneZoomState },
-   { key = 'w',     mods = mod.SUPER,     action = act.CloseCurrentPane({ confirm = false }) },
+   { key = 'w',     mods = 'SHIFT|' .. mod.SUPER, action = act.CloseCurrentPane({ confirm = false }) },
 
    -- panes: navigation
    { key = 'K',     mods = mod.SUPER, action = act.ActivatePaneDirection('Up') },
