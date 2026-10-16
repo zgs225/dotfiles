@@ -4,6 +4,14 @@ export XMODIFIERS=@im=fcitx
 export SDL_IM_MODULE=fcitx
 export GLFW_IM_MODULE=fcitx
 
+# FreeType stem darkening — lightweight stand-in for macOS font smoothing.
+# Both rasteriser paths are covered: `autofitter` for TrueType outlines (DejaVu,
+# JetBrainsMono, LXGW WenKai) and `cff` for CFF/OTF outlines (Noto Sans CJK,
+# which ships as an OTC collection). no-stem-darkening=0 means do NOT disable
+# it, i.e. keep darkening enabled — the property name is inverted from what it
+# sounds, and the module-name prefix selects the driver.
+export FREETYPE_PROPERTIES="autofitter:no-stem-darkening=0 cff:no-stem-darkening=0"
+
 # Kvantum Qt theme
 export QT_STYLE_OVERRIDE=kvantum
 export KVANTUM_THEME=catppuccin-glass
@@ -36,4 +44,5 @@ export PATH="$HOME/.local/share/mise/shims:$PATH"
 # input-method context (needs 5/6).
 systemctl --user import-environment DISPLAY XAUTHORITY PATH \
     GTK_IM_MODULE QT_IM_MODULE XMODIFIERS SDL_IM_MODULE GLFW_IM_MODULE \
-    QT_STYLE_OVERRIDE KVANTUM_THEME QT_QPA_PLATFORMTHEME
+    QT_STYLE_OVERRIDE KVANTUM_THEME QT_QPA_PLATFORMTHEME \
+    FREETYPE_PROPERTIES
