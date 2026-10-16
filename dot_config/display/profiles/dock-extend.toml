@@ -1,16 +1,18 @@
-# 坞站扩展：内屏 eDP-1 + 外接 DP-1 (Dell U2720QM 4K) 双屏扩展。
-# 指纹 3e12ee9ba2b37229 = docked 组合 (DP-1:7a00daa0 + eDP-1:686973d4)。
+# 坞站扩展：内屏 eDP-1 + 外接 DP-1-1 (Dell U2720QM 4K) 双屏扩展。
+# 指纹 7b2da8b95a1a5b63 = 实测 docked 组合 (DP-1-1:df140b96 + eDP-1:686973d4)。
+# 输出键名用 xrandr 实测名 DP-1-1（DP MST 分支），不是父口 DP-1。
 # 由 `displayctl save dock-extend` 在真实扩展态捕获，几何为实测值。
+# DPI 固定 168（= 1.75x 缩放），对齐 MacBook 13 默认观感。
 # 机器特定：其他机器上指纹不匹配即惰性，无害。
 default = false
 layout = "extend"
 manage = "full"
 
 [match]
-id = "3e12ee9ba2b37229"
-outputs = ["DP-1:7a00daa0", "eDP-1:686973d4"]
+id = "7b2da8b95a1a5b63"
+outputs = ["DP-1-1:df140b96", "eDP-1:686973d4"]
 
-[outputs.DP-1]
+[outputs.DP-1-1]
 mode = "3840x2160"
 pos = "2560x0"
 
@@ -20,5 +22,4 @@ pos = "0x0"
 primary = true
 
 [dpi]
-tiers = true
-reference = "eDP-1"
+value = 168

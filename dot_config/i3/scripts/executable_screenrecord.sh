@@ -124,13 +124,13 @@ is_recording() {
 
 is_armed() { [[ -f "$REC_ARMED_FILE" ]]; }
 
-# popupFontSize tier, mirroring .chezmoitemplates/eww-sizes (15/20/26) so the
+# popupFontSize tier, mirroring .chezmoitemplates/eww-sizes (15/20/23/26) so the
 # placement math below uses the same baked window width as the yuck template.
 dpi_font_size() {
     local dpi
     dpi=$(xrdb -query 2>/dev/null | awk '/Xft.dpi/ {print $2; exit}' | cut -d. -f1)
     dpi=${dpi:-96}
-    if (( dpi >= 192 )); then echo 26; elif (( dpi >= 144 )); then echo 20; else echo 15; fi
+    if (( dpi >= 192 )); then echo 26; elif (( dpi >= 168 )); then echo 23; elif (( dpi >= 144 )); then echo 20; else echo 15; fi
 }
 
 # Monitor containing the region center: prints "ox oy mw mh".

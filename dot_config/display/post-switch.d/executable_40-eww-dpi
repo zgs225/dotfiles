@@ -1,0 +1,9 @@
+#!/bin/sh
+# Regenerate eww size tiers from the freshly applied Xft.dpi and restart the bar.
+# CRITICAL: redirect all output — daemons spawned by launch.sh (eww) must NOT
+# inherit this hook's stdout/stderr pipe, or displayctl's CombinedOutput never
+# sees EOF and its daemon wedges permanently.
+[ -z "$DISPLAYCTL_DPI" ] && exit 0
+[ "$DISPLAYCTL_DPI" = "0" ] && exit 0
+chezmoi apply --force /home/yuez/.config/eww >/dev/null 2>&1 \
+  && /home/yuez/.config/eww/scripts/launch.sh >/dev/null 2>&1
