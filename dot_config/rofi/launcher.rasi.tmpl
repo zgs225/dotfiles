@@ -8,12 +8,12 @@
 @import "~/.config/rofi/themes/palette.rasi"
 
 * {
-    font:               "LXGW WenKai 18";
+    font:               @rofi-font;
 }
 
 window {
     location:        center;
-    width:           55%;
+    width:           @rofi-launcher-width;
     padding:         @rofi-pad-16;
 
     border:          1px;
@@ -43,7 +43,7 @@ inputbar {
 icon-search {
     expand:        false;
     filename:      "search";
-    size:          32px;
+    size:          0.9em;
     vertical-align: 0.5;
 }
 

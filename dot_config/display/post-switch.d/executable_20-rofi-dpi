@@ -2,15 +2,29 @@
 [ -z "$DISPLAYCTL_DPI" ] && exit 0
 [ "$DISPLAYCTL_DPI" = "0" ] && exit 0
 
+# Force C locale so bc/printf use '.' as the decimal separator
+export LC_ALL=C
+
 scale=$(echo "$DISPLAYCTL_DPI / 96" | bc -l)
+
+# Adaptive factor relative to the 144 DPI baseline (scale 1.5 => factor 1.0)
+rel=$(echo "$scale / 1.5" | bc -l)
 
 # Base sizes (scaled)
 font_size=$(printf "%.0f" "$(echo "12 * $scale" | bc -l)")
 padding=$(printf "%.0f" "$(echo "8 * $scale" | bc -l)")
-border=$(printf "%.0f" "$(echo "2 * $scale" | bc -l)")
+border=$(printf "%.0f" "$(echo "3 * $rel" | bc -l)")
 icon_size=$(printf "%.1f" "$(echo "1.333 * $scale" | bc -l)")
 window_width=$(printf "%.0f" "$(echo "25 * $scale" | bc -l)")
 window_md=$(printf "%.0f" "$(echo "18 * $scale" | bc -l)")
+
+# Adaptive spacing / typography / launcher width (scales with DPI, baseline 144)
+pad_4=$(printf "%.0f" "$(echo "4 * $rel" | bc -l)")
+pad_8=$(printf "%.0f" "$(echo "8 * $rel" | bc -l)")
+pad_12=$(printf "%.0f" "$(echo "12 * $rel" | bc -l)")
+pad_16=$(printf "%.0f" "$(echo "16 * $rel" | bc -l)")
+font_pt=$(printf "%.0f" "$(echo "18 * $rel" | bc -l)")
+launcher_width=$(printf "%.0f" "$(echo "55 * $rel" | bc -l)")
 
 # Dynamic fallback for small screens
 [ "$window_width" -lt 35 ] && window_width=35
@@ -27,16 +41,20 @@ cat > /tmp/rofi-dpi.rasi << EOF
     rofi-window-width: ${window_width}%;
     rofi-win-md: ${window_md}%;
 
+    // Adaptive typography (whole font string — rasi cannot interpolate inside strings)
+    rofi-font: "LXGW WenKai ${font_pt}";
+    rofi-launcher-width: ${launcher_width}%;
+
     // Border radius (fixed, Song restraint: 3-6px)
     rofi-bdr-radius4: 3px;
     rofi-bdr-radius8: 5px;
     rofi-bdr-radius-lg: 5px;
 
-    // Spacing system (fixed)
-    rofi-pad-4: 4px;
-    rofi-pad-8: 8px;
-    rofi-pad-12: 12px;
-    rofi-pad-16: 16px;
+    // Spacing system (scaled by DPI, baseline 144)
+    rofi-pad-4: ${pad_4}px;
+    rofi-pad-8: ${pad_8}px;
+    rofi-pad-12: ${pad_12}px;
+    rofi-pad-16: ${pad_16}px;
 
     // Component margins
     rofi-inputbar-margin: 8px;
