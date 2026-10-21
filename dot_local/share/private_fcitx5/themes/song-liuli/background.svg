@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 绢纱琉璃 · 候选窗/菜单底：墨底 bg_base@0.65 + 1px 天青发丝线 accent@0.35 + 5px 圆角
+     九片切片（Margin 8）；宽高为 96dpi 设计基准，ScaleWithDPI 时由 librsvg 按目标尺寸矢量重渲染 -->
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <rect x="0.5" y="0.5" width="23" height="23" rx="4.5" ry="4.5"
+        fill="#1a1a1e" fill-opacity="0.65"
+        stroke="#9ec8c0" stroke-opacity="0.35" stroke-width="1"/>
+</svg>

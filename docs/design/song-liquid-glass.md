@@ -203,6 +203,19 @@ lightdm-gtk-greeter。主题走 `catppuccin-glass` 的主题级「门籍签」�
 - picom：shadow-exclude + opacity 100 双豁免（见 §5 清单）；无合成器时画面自洽
 - 验收：`greeter-preview` 无头渲染，见 §8.10
 
+### 4.10 输入法候选窗 —— 案头笔砚
+
+- 绘制者：**fcitx5 classicui**（Rime 只供词，`style/*` 与候选窗外观无关），主题 `song-liuli`；源文件 `dot_local/share/private_fcitx5/themes/song-liuli/{theme.conf,background.svg,highlight.svg,radio.svg,arrow.svg}`（fcitx5 目录整体为 private，沿用既有布局）
+- 面板：`bg_base`@0.65（L2）+ 1px 天青发丝线 `accent`@0.35 + 5px 圆角；圆角与发丝线均由九片背景 `background.svg` 自绘（Margin 8，`ScaleWithDPI=True`，librsvg 按三档 DPI 矢量重渲染）
+- 文字：preedit 与候选正文 **月白 `fg_primary`**（可读性优先，高亮不改文字色）；序号 `fg_secondary` + `LabelTextSizeFactor=85`；注释 `fg_secondary` + 75%（万象超注释当前未启用，配色预留）
+- 高亮：**天青 14% 淡染 + 3px 圆角**（`highlight.svg`）。**不用界引竖条**（2026-10-21 裁定：横排单行里 2px 竖条读作刻度而非界引，语义不成立）
+- 布局：横排单行 6 候选（`Vertical Candidate List=False` 显式固定，键名含空格）；preedit 交客户端内联；**翻页箭头删除**（`[ ]` / `- =` 已足够），页码 `PageButtonAlignment=Last Candidate`
+- `[Menu]` 同步套用本节：同底同发丝线；勾选/子菜单图标重上色为天青/蟹壳青（内置 `radio.svg`/`arrow.svg` 为深色，在墨底上不可见）
+- **picom 例外（必须）**：候选窗是 `override_redirect` 的 32bit ARGB 窗口，不放行则既无模糊也无阴影，0.65 的玻璃压在锐壁纸上会发脏——`blur-background-exclude` 与 `shadow-exclude` 里的 `override_redirect = true` 收窄为 `override_redirect = true && class_g != 'fcitx'`（用条件取反，不依赖列表顺序）。圆角仍由主题自绘，`rounded-corners-exclude` 不动，避免双重圆角
+- 主题键 `EnableBlur` / `BlurMask` 是 **KWin 专用**（只下发 `_KDE_NET_WM_BLUR_BEHIND_REGION`），i3+picom 下无效，禁止依赖；模糊只走 picom
+- 验收：`xterm` + `xdotool type` + `import -window root` 截图并按 §10 采样。实测（168dpi）：面板底在深色应用上 (27,27,34)、在近白壁纸上 (100,100,101)，月白对比分别为 13.7:1 / **4.7:1**（AA 边界）；序号蟹壳青在浅壁纸底色上仅 2.1:1
+- 已知取舍：0.65 在浅壁纸上呈中灰，与 `.popup` 同病。若"文字临界"体感不足，两个可登记的旋钮：①`background.svg` 的 `fill-opacity` 0.65 → 0.90（= L1 bar 级，月白对比升到 10.6:1，代价是玻璃感基本消失）②序号换 `#cfccc2`（月白次阶，浅壁纸上约 3.9:1）。**改动须回本节登记，禁止就地硬编码第三个值**
+
 ---
 
 ## 5. picom 配套参数（`dot_config/picom/picom.conf`）
@@ -258,6 +271,7 @@ eww 的 bar 与 scrim 在 rounded/shadow/blur exclude 清单中；Rofi `corner-r
 | 壁纸 | `.chezmoiscripts/common/run_once_after_generate-default-wallpaper.sh` | 玄色生成 |
 | fontconfig | `dot_config/fontconfig/fonts.conf` | LXGW WenKai → JetBrainsMono Nerd Font 西文回退（§3） |
 | LightDM greeter | `dot_themes/catppuccin-glass/` 门籍签章节 + eos-bootstrap `lightdm.yml` + `dot_config/picom/picom.conf` 双豁免 | §4.9；entry 运行时名为 `#prompt_entry`，见 §8.10 |
+| fcitx5 候选窗 | `dot_local/share/private_fcitx5/themes/song-liuli/` + `dot_config/fcitx5/conf/classicui.conf` | §4.10；picom 模糊/阴影给 `class_g='fcitx'` 开口 |
 
 **终端收编**（目标已立 2026-07-22，未实施）：WezTerm / tmux / nvim / pgcli / mycli / opencode 仍持 Tokyo Night / Solarized 等外国旗，收编目标与裁定见 `docs/design/terminal-unification.md`。核心纪律预览：终端 ANSI red 必须用赭石而非朱砂；朱砂只可作 tmux 当前窗口标记（印章语义延伸）；wezterm active tab 用天青界引，不僭印；收编仅限 `useI3` 机器。
 

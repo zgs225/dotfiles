@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 高亮：天青 accent@14% 淡染，3px 圆角（无界引竖条 —— 用户裁定）
+     九片切片（Margin 2） -->
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <rect x="0" y="0" width="24" height="24" rx="3" ry="3"
+        fill="#9ec8c0" fill-opacity="0.14"/>
+</svg>
