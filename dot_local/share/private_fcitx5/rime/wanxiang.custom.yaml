@@ -1,0 +1,50 @@
+# 万象拼音 · 个人补丁
+# 由 chezmoi 管理（dot_local/share/fcitx5/rime/wanxiang.custom.yaml）
+# 升级万象只需解压新版覆盖，本文件不会被覆盖。
+patch:
+  # ================= 输入方案：微软双拼 =================
+  # 与原 fcitx5-pinyin 的 ShuangpinProfile=MS 完全一致，键位零迁移成本
+  speller/algebra:
+    __patch:
+      #- wanxiang_algebra:/模糊音_nl
+      #- wanxiang_algebra:/模糊音_ry
+      #- wanxiang_algebra:/模糊音_hf
+      #- wanxiang_algebra:/模糊音_rl
+      #- wanxiang_algebra:/模糊音_kg
+      #- wanxiang_algebra:/模糊音_en_eng
+      #- wanxiang_algebra:/模糊音_in_ing
+      #- wanxiang_algebra:/模糊音_c_ch
+      #- wanxiang_algebra:/模糊音_z_zh
+      #- wanxiang_algebra:/模糊音_s_sh
+      - wanxiang_algebra:/base/微软双拼
+      - wanxiang_algebra:/26jian
+
+  # ================= 候选数量 =================
+  menu/page_size: 6
+
+  # ================= 翻页键：与原 fcitx5-pinyin 一致 =================
+  # 原来是 [ 上页 / ] 下页（fcitx5 全局 + pinyin 组件都这么绑的）。
+  # 万象默认只用 - / =，这里追加回 [ ]，两套并存互不影响。
+  # 用 when: has_menu（而不是 paging），保证输入过程中 [ ] 一律当翻页键，
+  # 不会被 punctuator 变成【】——与旧输入法的行为完全一致。
+  key_binder/bindings/+:
+    - {when: has_menu, accept: bracketleft, send: Page_Up}
+    - {when: has_menu, accept: bracketright, send: Page_Down}
+
+  # ================= 词库积累（核心）=================
+  # 1) 自动调频：每次上屏都记入用户词库 wanxiang.userdb（commits + 新鲜度 + 时间戳）
+  translator/enable_user_dict: true
+  # 2) 按段学词：连续输入时把相邻片段拼成新词写入用户库
+  translator/core_word_length: 4
+  # 3) 过长不记整词，只加元素权重，避免垃圾长词
+  translator/max_word_length: 7
+
+  # 4) 无感造词：连续选字/选词最终拼出的新词，自动写入 wanxiang.userdb
+  #    （auto_phrase.lua 在 translator/enable_user_dict=true 时直接使用主用户词典，
+  #     不需要 add_user_dict/* 那套 Pro 专属开关；Base 版加上 `` 引导反而会把
+  #     "``+字母" 原样上屏，故此处保持默认不启用）
+
+  # ================= 可选：把历史上屏记录也编码成词 =================
+  # 打开后上屏历史会被自动编码进用户库，词库涨得更快，但也更容易积累冗余条目。
+  # 想更激进地"吃掉历史输入"时取消注释：
+  #translator/encode_commit_history: true

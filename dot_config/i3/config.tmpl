@@ -186,7 +186,13 @@ exec --no-startup-id env PATH=$HOME/.local/share/mise/shims:$PATH displayctl dae
 exec_always --no-startup-id ~/.config/eww/scripts/launch.sh
 exec --no-startup-id dunst
 exec --no-startup-id greenclip daemon
-exec --no-startup-id fcitx5 -d
+# Input method: fcitx5 with Rime/万象 (微软双拼).
+# --disable: pinyin/cloudpinyin (built-in engine, superseded by Rime) and
+# wayland (this session is X11; the module only logs "Failed to open wayland
+# connection"). fcitx5 keeps addon enable state in a HiddenOption its ini
+# parser cannot read back, so the flags are the only persistent way. Keep
+# fcitx4frontend loaded — WPS Office and wemeetapp speak the fcitx4 DBus API.
+exec --no-startup-id fcitx5 -d --disable=pinyin,cloudpinyin,wayland
 exec --no-startup-id nm-applet
 # polkit authentication agent — GUI prompt for polkit checks (Bitwarden
 # "Unlock with system authentication", pkexec, etc.). Package: polkit-gnome.

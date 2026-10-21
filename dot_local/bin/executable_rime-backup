@@ -1,0 +1,55 @@
+#!/bin/sh
+# rime-backup — 备份 Rime/万象 用户词库（LevelDB 原始副本 + 可读文本导出）
+#
+# 为什么要导出文本：userdb 是 LevelDB 二进制，只能整体合并；
+# 文本导出可以直接 grep、可以跨机器 --import 合并、可以人工审查垃圾词。
+#
+# 用法: rime-backup [保留天数]   默认保留 14 天
+set -eu
+
+RIME_DIR="${RIME_DIR:-$HOME/.local/share/fcitx5/rime}"
+DEST="${DEST:-$HOME/backups/rime}"
+KEEP="${1:-14}"
+OUT="$DEST/$(date +%Y-%m-%d)"
+TMP="$(mktemp -d)"
+
+cleanup() { rm -rf "$TMP"; }
+trap cleanup EXIT INT TERM
+
+[ -d "$RIME_DIR" ] || { echo "rime dir not found: $RIME_DIR" >&2; exit 1; }
+mkdir -p "$OUT"
+
+# 1) 原始 LevelDB 副本（快照，可直接 --restore 回滚）
+for db in "$RIME_DIR"/*.userdb; do
+  [ -d "$db" ] || continue
+  rm -rf "$OUT/$(basename "$db")"
+  cp -a "$db" "$OUT/$(basename "$db")"
+done
+
+# 2) 个人配置与安装信息（恢复时对齐用）
+for f in "$RIME_DIR"/*.custom.yaml "$RIME_DIR/installation.yaml"; do
+  [ -f "$f" ] || continue
+  cp -a "$f" "$OUT/"
+done
+
+# 3) 文本导出：在副本上跑，不占用正在运行的 fcitx5 的 LOCK
+cid=0
+for db in "$OUT"/*.userdb; do
+  [ -d "$db" ] || continue
+  name="$(basename "$db" .userdb)"
+  cid=$((cid + 1))
+  work="$TMP/$cid"
+  mkdir -p "$work"
+  cp -a "$db" "$work/$name.userdb"
+  if ( cd "$work" && rime_dict_manager --export "$name" "$OUT/$name.txt" >/dev/null 2>&1 ); then
+    :
+  else
+    rm -f "$OUT/$name.txt"
+  fi
+done
+
+# 4) 轮转
+find "$DEST" -mindepth 1 -maxdepth 1 -type d -name '20*' -mtime +"$KEEP" -exec rm -rf {} + 2>/dev/null || true
+
+entries=$(cat "$OUT"/*.txt 2>/dev/null | grep -vc '^#' || true)
+echo "rime backup -> $OUT (${entries:-0} 词条)"

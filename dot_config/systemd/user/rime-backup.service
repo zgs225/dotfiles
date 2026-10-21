@@ -1,0 +1,9 @@
+[Unit]
+Description=Backup Rime/万象 user dictionaries
+Documentation=file:%h/.local/bin/rime-backup
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/rime-backup 14
+StandardOutput=journal
+StandardError=journal
