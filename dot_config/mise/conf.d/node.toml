@@ -1,7 +1,7 @@
 [tools]
 node = "22"
 pnpm = "latest"
-"npm:@deepseek-ai/dsh" = { version = "latest", allow_low_downloads = true }
+"npm:@deepseek-ai/dsh" = { version = "latest", allow_low_downloads = true, pnpm_args = "--config.enable-global-virtual-store=false" }
 
 [settings]
 minimum_release_age_excludes = ["npm:@deepseek-ai/dsh"]
