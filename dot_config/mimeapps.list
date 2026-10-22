@@ -79,5 +79,8 @@ application/x-synology-drive-sheet=synology-drive-open-file.desktop
 application/x-synology-drive-slides=synology-drive-open-file.desktop
 x-scheme-handler/mailto=google-chrome.desktop
 x-scheme-handler/bilipc=bilibili.desktop
+x-scheme-handler/baiduyunguanjia=baidunetdisk.desktop
 
 [Added Associations]
+x-scheme-handler/clash=clash-verge.desktop;
+x-scheme-handler/clash-verge=clash-verge.desktop;
