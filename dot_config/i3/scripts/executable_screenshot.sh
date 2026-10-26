@@ -13,6 +13,7 @@ set -euo pipefail
 dir="${SCREENSHOT_DIR:-$HOME/Pictures/screenshots}"
 mkdir -p "$dir"
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$HOME/.config/eww/scripts/eww-guard.sh"
 
 timestamp=$(date +%Y%m%d-%H%M%S)
 
@@ -76,10 +77,12 @@ freeze_select() {
         return 1
     fi
 
-    # Ignore empty regions (bare click).
+    # Ignore degenerate regions. A bare click returns 0x0, but slop has also
+    # returned 1x1 under load -- that passed the old `<= 0` test and left a 1x1
+    # PNG behind, which the preview popup scaled into a solid block.
     local rw rh
     IFS='x+' read -r rw rh _ <<< "$geo"
-    if (( rw <= 0 || rh <= 0 )); then
+    if (( rw < 8 || rh < 8 )); then
         return 1
     fi
 
@@ -122,13 +125,21 @@ else
     thumb="/tmp/screenshot-thumb.png"
     magick "$tmp" -resize 400x300 "$thumb" 2>/dev/null || cp "$tmp" "$thumb"
 
-    eww update screenshot_path="$dir/$timestamp.png" screenshot_thumb="$thumb" screenshot_kind=png
-    eww open screenshot-popup
+    eww_ensure
+    ewwc update screenshot_path="$dir/$timestamp.png" screenshot_thumb="$thumb" screenshot_kind=png || true
+    ewwc open screenshot-popup || true
 
     timer_pid_file="/tmp/eww-screenshot-timer.pid"
     if [ -f "$timer_pid_file" ]; then
         kill "$(cat "$timer_pid_file")" 2>/dev/null || true
     fi
-    (sleep 6; eww close screenshot-popup 2>/dev/null || true; rm -f "$timer_pid_file") &
+    (
+        sleep 6
+        # A hijacked daemon answers `close` with success and closes nothing, so
+        # re-check the registry before the popup is stuck for good.
+        eww_ensure
+        ewwc close screenshot-popup 2>/dev/null || true
+        rm -f "$timer_pid_file"
+    ) &
     echo $! > "$timer_pid_file"
 fi

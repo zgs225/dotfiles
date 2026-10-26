@@ -69,6 +69,8 @@ esac
 
 set -euo pipefail
 
+source "$HOME/.config/eww/scripts/eww-guard.sh"
+
 STATE_DIR="${XDG_RUNTIME_DIR:-/tmp}"
 REC_PID_FILE="$STATE_DIR/screenrecord.gsr.pid"    # gpu-screen-recorder pid
 REC_META_FILE="$STATE_DIR/screenrecord.meta"      # lines: tmp=<mkv>  start=<epoch>
@@ -96,7 +98,7 @@ notify() { notify-send -u low -t 4000 -a screenrecord ${ICON:+-i "$ICON"} "scree
 notify_r() { dunstify -r 9105 -u low -t "$2" -a screenrecord ${ICON:+-i "$ICON"} "screenrecord" "$1" 2>/dev/null || notify "$1"; }
 
 eww_reset() {
-    eww update screen_recording=false screen_rec_elapsed= screen_rec_region= 2>/dev/null || true
+    ewwc update screen_recording=false screen_rec_elapsed= screen_rec_region= 2>/dev/null || true
     close_rec_controls
     close_frame
 }
@@ -108,12 +110,12 @@ eww_reset() {
 FRAME_T=2
 open_frame() {   # w h x y
     local w=$1 h=$2 x=$3 y=$4 t=$FRAME_T
-    eww open rec-frame --id top    --arg "pos_x=$((x-t))px" --arg "pos_y=$((y-t))px" --arg "width=$((w+2*t))px" --arg "height=${t}px" 2>/dev/null || true
-    eww open rec-frame --id bottom --arg "pos_x=$((x-t))px" --arg "pos_y=$((y+h))px"  --arg "width=$((w+2*t))px" --arg "height=${t}px" 2>/dev/null || true
-    eww open rec-frame --id left   --arg "pos_x=$((x-t))px" --arg "pos_y=${y}px"      --arg "width=${t}px"      --arg "height=${h}px" 2>/dev/null || true
-    eww open rec-frame --id right  --arg "pos_x=$((x+w))px"  --arg "pos_y=${y}px"      --arg "width=${t}px"      --arg "height=${h}px" 2>/dev/null || true
+    ewwc open rec-frame --id top    --arg "pos_x=$((x-t))px" --arg "pos_y=$((y-t))px" --arg "width=$((w+2*t))px" --arg "height=${t}px" 2>/dev/null || true
+    ewwc open rec-frame --id bottom --arg "pos_x=$((x-t))px" --arg "pos_y=$((y+h))px"  --arg "width=$((w+2*t))px" --arg "height=${t}px" 2>/dev/null || true
+    ewwc open rec-frame --id left   --arg "pos_x=$((x-t))px" --arg "pos_y=${y}px"      --arg "width=${t}px"      --arg "height=${h}px" 2>/dev/null || true
+    ewwc open rec-frame --id right  --arg "pos_x=$((x+w))px"  --arg "pos_y=${y}px"      --arg "width=${t}px"      --arg "height=${h}px" 2>/dev/null || true
 }
-close_frame() { eww close top bottom left right 2>/dev/null || true; }
+close_frame() { ewwc close top bottom left right 2>/dev/null || true; }
 
 is_recording() {
     [[ -f "$REC_PID_FILE" ]] || return 1
@@ -204,7 +206,7 @@ compute_placement() {
 }
 
 close_rec_controls() {
-    eww close rec-controls 2>/dev/null || true
+    ewwc close rec-controls 2>/dev/null || true
     while read -r wid; do
         [[ -z "$wid" ]] && continue
         xdotool windowkill "$wid" 2>/dev/null || true
@@ -214,7 +216,7 @@ close_rec_controls() {
 open_rec_controls() {
     local px=$1 py=$2
     close_rec_controls
-    eww open rec-controls --arg "pos_x=${px}px" --arg "pos_y=${py}px" 2>/dev/null || true
+    ewwc open rec-controls --arg "pos_x=${px}px" --arg "pos_y=${py}px" 2>/dev/null || true
 }
 
 open_preview() {
@@ -229,14 +231,20 @@ open_preview() {
     else
         thumb=""
     fi
-    eww update screenshot_path="$out" screenshot_thumb="$thumb" screenshot_kind="$kind" 2>/dev/null || true
-    eww open screenshot-popup 2>/dev/null || true
+    eww_ensure
+    ewwc update screenshot_path="$out" screenshot_thumb="$thumb" screenshot_kind="$kind" 2>/dev/null || true
+    ewwc open screenshot-popup 2>/dev/null || true
 
     local timer_pid_file="/tmp/eww-screenshot-timer.pid"
     if [ -f "$timer_pid_file" ]; then
         kill "$(cat "$timer_pid_file")" 2>/dev/null || true
     fi
-    (sleep 6; eww close screenshot-popup 2>/dev/null || true; rm -f "$timer_pid_file") &
+    (
+        sleep 6
+        eww_ensure   # a hijacked daemon closes nothing; this repairs it
+        ewwc close screenshot-popup 2>/dev/null || true
+        rm -f "$timer_pid_file"
+    ) &
     echo $! > "$timer_pid_file"
 }
 
@@ -268,7 +276,7 @@ arm_flow() {
     [[ "$audio" == "sys" ]] || audio=off
     fmt=$(get_format)
 
-    eww update screen_recording=false screen_rec_elapsed= \
+    ewwc update screen_recording=false screen_rec_elapsed= \
         screen_rec_region="${w} × ${h}" screen_rec_audio="$audio" \
         screen_rec_format="${fmt^^}" 2>/dev/null || true
     open_frame "$w" "$h" "$x" "$y"
@@ -287,7 +295,7 @@ toggle_audio() {
     [[ "$cur" != "sys" ]] && new=sys
     mkdir -p "$(dirname "$AUDIO_PREF")"
     printf '%s\n' "$new" > "$AUDIO_PREF"
-    eww update screen_rec_audio="$new" 2>/dev/null || true
+    ewwc update screen_rec_audio="$new" 2>/dev/null || true
 }
 
 get_format() {
@@ -302,7 +310,7 @@ toggle_format() {
     [[ "$(get_format)" != "gif" ]] && new=gif
     mkdir -p "$(dirname "$FORMAT_PREF")"
     printf '%s\n' "$new" > "$FORMAT_PREF"
-    eww update screen_rec_format="${new^^}" 2>/dev/null || true
+    ewwc update screen_rec_format="${new^^}" 2>/dev/null || true
 }
 
 start_from_armed() {
@@ -337,7 +345,7 @@ start_from_armed() {
     # recording state; the 3s health check below rolls this back on failure.
     # The frame stays up: it hugs the region from outside and is never
     # captured, and it marks exactly what is being recorded.
-    eww update screen_recording=true screen_rec_elapsed="0:00" 2>/dev/null || true
+    ewwc update screen_recording=true screen_rec_elapsed="0:00" 2>/dev/null || true
     # Recompute on the capture monitor: keep the bar outside the region while
     # recording, or close it and let the bar indicator / hotkey stop.
     local px py placement
@@ -367,7 +375,7 @@ start_from_armed() {
     ( while kill -0 "$pid" 2>/dev/null; do
           now=$(date +%s)
           el=$(( now - start_epoch ))
-          eww update screen_rec_elapsed=$(( el / 60 )):$(printf '%02d' $(( el % 60 ))) 2>/dev/null || true
+          ewwc update screen_rec_elapsed=$(( el / 60 )):$(printf '%02d' $(( el % 60 ))) 2>/dev/null || true
           sleep 1
       done
       if [[ -f "$REC_PID_FILE" ]] && [[ "$(cat "$REC_PID_FILE" 2>/dev/null)" == "$pid" ]]; then
