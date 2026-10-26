@@ -14,6 +14,7 @@
 |---|---|---|---|---|
 | `~/.config/mimeapps.list` | `xdg-mime`（手动）、百度网盘（Electron）、clash-verge（Tauri） | `baidunetdisk` 的 `x-scheme-handler/baiduyunguanjia`；clash-verge 在 `[Added Associations]` 另写一份 `x-scheme-handler/clash{,-verge}` | 每次这两个 app 启动（幂等，re-add 后不再漂） | re-add |
 | `~/.pi/agent/settings.json` | pi 自身 | `lastChangelogVersion`（已看过的 changelog 版本） | 每次 pi 升级 | re-add，接受周期性一行漂移 |
+| `~/.pi/agent/mcp.json` | pi 的 `/mcp` 面板 | 在面板里改 exposure 或启用/禁用 server 时回写该条目 | 仅在面板里改设置时 | re-add；想保留仓库里的写法就别在面板里改这两项 |
 
 ## 指纹速查
 
