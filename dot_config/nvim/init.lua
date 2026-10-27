@@ -1,6 +1,10 @@
 vim.g.base46_cache = vim.fn.stdpath "data" .. "/nvchad/base46/"
 vim.g.mapleader = ","
 
+-- keep ~/.local/state/nvim/shada clean: no concurrent-ShaDa-write leftovers
+-- (see lua/configs/shada.lua for the long explanation)
+require "configs.shada"
+
 -- bootstrap lazy and all plugins
 local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
 
