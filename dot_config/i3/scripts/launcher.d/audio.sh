@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # audio — 音频输入/输出设备管理模块
 # 前缀：audio。列出输出设备（含 HDMI/DP profile）和输入设备，点击切换。

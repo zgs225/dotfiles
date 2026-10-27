@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/rofi-launcher"
 APPS_CACHE="$CACHE_DIR/apps.list"

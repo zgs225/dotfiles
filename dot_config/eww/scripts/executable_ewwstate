@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 # ewwstate — client for the eww state daemon (see ~/.config/eww/ewwstate/).
 #
 # Stable invocation path used by common.yuck defpoll/deflisten and by action
@@ -8,4 +8,8 @@
 #   ewwstate get <topic> [fallback]   last collected value (fallback if none)
 #   ewwstate listen <topic>           value + re-emit on change (for deflisten)
 #   ewwstate dump | status | daemon   debug / lifecycle
-exec python3 "$HOME/.config/eww/ewwstate/main.py" "$@"
+# Absolute interpreter on purpose: a bare `python3` resolves to the mise shim
+# under eww's PATH, and every mise shim invocation runs the rust backend probe
+# (`rustup show profile` + `rustup component list --installed`). These defpolls
+# fire several times per second, which made rustup the top process spawner.
+exec /usr/bin/python3 "$HOME/.config/eww/ewwstate/main.py" "$@"

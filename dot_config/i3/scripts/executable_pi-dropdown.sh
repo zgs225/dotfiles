@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Launch the pi coding agent as a dropdown (scratchpad) terminal, running
 # inside a dedicated, persistent tmux session.
 #

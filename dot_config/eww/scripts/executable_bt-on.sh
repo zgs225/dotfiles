@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Poll bluetooth power state → 1 (on) / 0 (off).
 if command -v bluetoothctl >/dev/null 2>&1; then
     bluetoothctl show 2>/dev/null | grep -q "Powered: yes" && echo 1 || echo 0

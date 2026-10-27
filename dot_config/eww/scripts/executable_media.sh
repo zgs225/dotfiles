@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Called by defpoll (~2s). Emits JSON describing the active media player.
 # Uses playerctl when available; degrades gracefully to an idle placeholder.
 # Fields: has (bool), title, artist, status ("Playing"|"Paused"), icon.

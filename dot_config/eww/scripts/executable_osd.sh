@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # EWW on-screen display for volume/brightness/mic media keys.
 # Usage: osd.sh <volume-up|volume-down|volume-mute|mic-mute|brightness-up|brightness-down|brightness-auto [val]>
 #

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 register_module find "find" filter "Alt+Return" "查找"
 

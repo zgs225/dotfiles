@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Connect to a Wi-Fi network with immediate in-row "连接中…" feedback.
 # onclick: wifi-connect.sh <ssid>
 # Detach so eww's 200ms onclick SIGKILL can't kill the connect (nmcli can take

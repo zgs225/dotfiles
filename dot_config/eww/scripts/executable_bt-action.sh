@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Bluetooth device actions for the bluetooth-popup device rows.
 # Usage: bt-action.sh <connect|disconnect|pair|forget> <mac>
 #

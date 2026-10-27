@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Responds to a Bluetooth pairing confirmation dialog via the daemon.
 # Usage: bt-pair-respond.sh <yes|no>
 dbus-send --session --dest=org.eww.BtAgent --type=method_call \

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Called by defpoll/deflisten. Emits a SINGLE root (box ...) yuck element listing
 # available Wi-Fi networks (eww `literal` needs exactly one root).
 # Each row: [connected dot] SSID .......... [lock] [signal]

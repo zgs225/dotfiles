@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # Bitwarden module backed by rbw. Enter copies the primary secret,
 # Alt+Return opens a per-entry action menu (rofi multi-level script mode).

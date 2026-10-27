@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Privileged power actions (charge threshold / temporary full charge).
 # onclick: power-admin.sh threshold <60|80|100> | power-admin.sh fullcharge
 # Detach so eww's 200ms onclick SIGKILL can't kill us, then push the fresh

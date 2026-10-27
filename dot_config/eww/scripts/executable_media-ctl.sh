@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Media transport control. Usage: media-ctl.sh {play-pause|next|previous}
 command -v playerctl >/dev/null 2>&1 || exit 0
 case "$1" in

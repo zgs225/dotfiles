@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Output devices as a JSON array. Friendly name = real Description, except the
 # generic on-board "Built-in Audio" which we map to a localized label.
 # HDMI/DP sinks that also say "Built-in Audio" get the monitor product name

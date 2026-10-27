@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Aggregate audio state for the control-center summary row. Reuses the
 # per-list scripts so the friendly-name logic lives in exactly one place and
 # the row never disagrees with the popup list.

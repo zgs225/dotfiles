@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # storage-open.sh -- open a mountpoint in Thunar.
 # Usage: storage-open.sh <mountpoint>
 #

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # keyd per-app 按键映射重置
 # 用途:Alt+v / Alt+[ / Alt+] 等快捷键突然失效时,从 rofi 运行本工具
 # (或直接执行)。原理:

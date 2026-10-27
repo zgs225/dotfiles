@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # fan — 风扇策略模块（fan-profile 框架）
 # 前缀：fan。菜单 = 状态行（当前档位 + 风扇转速 + 温度）+ 档位选择。

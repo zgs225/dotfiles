@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Holds a BlueZ discovery session alive while the bluetooth popup is open.
 # BlueZ stops discovery as soon as the requesting bluetoothctl client
 # disconnects from D-Bus, so a short-lived `bluetoothctl scan on` is useless —

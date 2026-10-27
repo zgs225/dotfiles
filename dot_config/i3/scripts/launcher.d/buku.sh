@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 register_module buku "b" filter "" "书签"
 

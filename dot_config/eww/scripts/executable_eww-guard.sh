@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # eww-guard.sh -- sourced helper for scripts that drive eww windows.
 # Source this file: source "$HOME/.config/eww/scripts/eww-guard.sh"
 #

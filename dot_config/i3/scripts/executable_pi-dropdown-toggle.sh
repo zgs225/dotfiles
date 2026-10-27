@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Robust show/hide toggle for the pi dropdown (bound to $mod+backslash).
 #
 # Handles every case:

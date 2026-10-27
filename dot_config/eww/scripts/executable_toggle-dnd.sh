@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Toggle dunst do-not-disturb.
 if [ -z "$EWW_TOGGLE_DND_DETACHED" ]; then
     EWW_TOGGLE_DND_DETACHED=1 setsid nohup "$0" "$@" >/dev/null 2>&1 &

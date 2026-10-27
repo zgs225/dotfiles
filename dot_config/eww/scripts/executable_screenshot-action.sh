@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # screenshot-action.sh -- handle screenshot-popup button clicks (annotate/open/delete).
 #
 # IMPORTANT -- eww onclick 200ms kill:

@@ -1,2 +1,2 @@
-#!/usr/bin/env bash
+#!/bin/bash
 systemctl --user start --no-block update-check.service

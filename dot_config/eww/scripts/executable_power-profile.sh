@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Power profile via TLP >= 1.9 profiles (tlpctl, no root needed).
 #   get  — called by defpoll (~3s). Emits JSON {mode,profile,source,icon,label}.
 #          mode: auto = profile follows the power-source default (smart switch),

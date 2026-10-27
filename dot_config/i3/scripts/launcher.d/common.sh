@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 THEME="$HOME/.config/rofi/launcher.rasi"
 SELF="$HOME/.config/i3/scripts/launcher.sh"

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # brightness-auto.sh — Auto-adjust screen brightness on AC/battery switch.
 # Remembers user's preferred brightness per power state (macOS-style):
 #   on transition, save current brightness for the OLD state,

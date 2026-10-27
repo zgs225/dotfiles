@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # dpms-auto.sh — Per-power-source DPMS timeouts (screen-off delay).
 #   AC      → DPMS_AC_SEC  (default 0 = never; idle-lock.sh handles locking)
 #   battery → DPMS_BAT_SEC (default 300s = 5 min)

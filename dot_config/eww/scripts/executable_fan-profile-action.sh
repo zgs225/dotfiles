@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Fan-profile seg-btn onclick: apply the choice and refresh the eww
 # variable from sysfs immediately. Unlike tlpctl, the sysfs write is
 # synchronous, so the read-back is authoritative -- no optimistic emit.

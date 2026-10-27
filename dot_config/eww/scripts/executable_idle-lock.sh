@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # idle-lock.sh — Auto-lock on idle via xidlehook, per power source.
 #   AC      → lock after LOCK_AC_SEC  (default 900s = 15 min)
 #   battery → lock after LOCK_BAT_SEC (default 300s = 5 min)

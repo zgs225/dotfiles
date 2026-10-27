@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # eww SIGKILLs onclick children after 200ms; the sleep + `eww update` below
 # exceed that, so detach immediately or the instant refresh never runs and the
 # tile waits for the 2s poll.

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # screenrecord.sh -- CleanShot-X-style region VIDEO recording
 # (gpu-screen-recorder + eww floating control bar).
 #

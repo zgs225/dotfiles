@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Update widget launcher.
 #
 # Runs the full system upgrade in a wezterm window, teeing output to

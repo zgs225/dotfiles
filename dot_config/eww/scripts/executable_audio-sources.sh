@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Input devices as a JSON array (monitors excluded). Friendly name = real
 # Description, except the generic on-board "Built-in Audio" -> localized label.
 

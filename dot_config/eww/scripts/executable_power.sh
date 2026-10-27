@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # power.sh — execute power actions
 case "$1" in
     lock)     ~/.config/i3/scripts/lock.sh ;;

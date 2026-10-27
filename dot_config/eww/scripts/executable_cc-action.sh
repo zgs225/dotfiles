@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Control-center bottom action buttons.
 # Usage: cc-action.sh {night-light|screenshot}
 # Detach so eww's 200ms onclick SIGKILL can't kill the post-action `eww update`.

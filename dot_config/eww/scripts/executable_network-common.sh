@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Shared network filtering logic for eww network scripts.
 # Source this file: source "$(dirname "$0")/network-common.sh"
 

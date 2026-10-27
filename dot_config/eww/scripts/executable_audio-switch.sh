@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Switch default audio device or sound card profile.
 # Usage: audio-switch.sh <type> <name> [card]
 #   type=sink    name=<sink_name>           → pactl set-default-sink

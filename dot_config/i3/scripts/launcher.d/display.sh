@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # display — 显示器管理模块（displayctl v2）
 # 前缀：display。菜单 = 状态行 / 布局快捷 / 已存配置 / 管理。

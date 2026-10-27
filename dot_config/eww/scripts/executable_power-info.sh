@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Power panel info for the eww power popup.
 # Called by defpoll (~3s). Emits JSON:
 # {source,watts,percent,health,cycles,eta,eta_label,threshold,dgpu,dgpu_icon,dgpu_holders,icon_fullcharge}

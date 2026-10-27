@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # screenshot.sh — region screenshots with a FROZEN screen.
 #
 # select/ocr modes: capture the full virtual desktop the instant the hotkey

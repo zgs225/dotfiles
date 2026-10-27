@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 register_module calc "=" plain "" "计算"
 

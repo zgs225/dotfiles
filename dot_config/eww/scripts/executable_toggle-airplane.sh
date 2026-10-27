@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Toggle airplane mode: block/unblock all radios.
 if [ -z "$EWW_TOGGLE_AIRPLANE_DETACHED" ]; then
     EWW_TOGGLE_AIRPLANE_DETACHED=1 setsid nohup "$0" "$@" >/dev/null 2>&1 &

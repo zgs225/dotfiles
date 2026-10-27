@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Called by defpoll bt_devices. Emits a SINGLE root (box ...) yuck element
 # listing known Bluetooth devices with per-device actions (eww `literal`
 # needs exactly one root).

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Toggle whether this adapter is visible to other devices.
 # `discoverable on` uses BlueZ's default DiscoverableTimeout (180s), after
 # which the adapter auto-hides — the 2s defpoll reflects that back to the

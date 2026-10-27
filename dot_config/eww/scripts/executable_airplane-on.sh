@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Poll airplane mode → 1 when all radios soft-blocked, else 0.
 out=$(rfkill list 2>/dev/null)
 [ -z "$out" ] && { echo 0; exit 0; }

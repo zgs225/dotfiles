@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # storage-eject.sh -- safe unmount + power-off for removable devices.
 #
 # Usage: storage-eject.sh <mountpoint> <device>

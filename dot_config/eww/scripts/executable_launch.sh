@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Eww bar launch — start daemon and open the bar.
 #
 # DPI-dependent sizes (bar height, icon/font sizes, workspace dots, popups) are

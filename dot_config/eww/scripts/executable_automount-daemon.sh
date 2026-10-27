@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # automount-daemon.sh -- user-level auto-mount for removable devices.
 #
 # Replaces the missing udev -> thunar-volman chain.  Listens to kernel block
