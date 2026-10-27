@@ -19,7 +19,13 @@ img=""
 
 if [[ -S "$SOCK" ]] && python3 -c '
 import socket, sys, os
-s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM); s.settimeout(3)
+# The daemon renders the whole X root (multi-monitor stitching, e.g.
+# 6400x2160) in 1.5-2s once warm; a cold start (blurred base rebuild) is ~4s.
+# 8s is already 2x headroom over the cold path. Do NOT raise it: a wedged
+# daemon would then keep this script blocked for ten-plus extra seconds with
+# the desktop still visible, which is a privacy regression. Timing out here
+# only costs the synchronous fallback render (~2s).
+s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM); s.settimeout(8)
 try:
     s.connect(os.path.expanduser("~/.cache/lockscreen/sock"))
     s.sendall(b"L\n")

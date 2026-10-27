@@ -17,6 +17,14 @@ gi.require_version("Pango", "1.0")
 gi.require_version("PangoCairo", "1.0")
 from gi.repository import Pango, PangoCairo
 
+MONITOR_RE = re.compile(
+    r"^\s*(\d+):\s+([+*]*)(\S+)\s+(\d+)(?:/\d+)?x(\d+)(?:/\d+)?\+(-?\d+)\+(-?\d+)")
+# `xrandr --query` connected line, e.g.
+#   eDP-1 connected primary 2560x1600+0+0 (normal ...) 344mm x 215mm
+# Offsets may come out as `+2560` or (xrandr's negative spelling) `+-3840`.
+QUERY_MON_RE = re.compile(
+    r"^\s*([A-Za-z0-9-]+) connected (primary )?(\d+)x(\d+)\+([+-]?\d+)\+([+-]?\d+)")
+
 FG_PRIMARY = "{{ .colors.fg_primary }}"
 FG_SECONDARY = "{{ .colors.fg_secondary }}"
 SEAL_COLOR = "{{ .colors.error }}"
@@ -149,24 +157,128 @@ def luo_kuan_str(t):
     return year_ganzhi(t.year) + "年" + current_jieqi(t)
 
 
-def get_screen_geometry():
+def get_monitors():
+    """Connected monitors in `xrandr --listmonitors` order.
+
+    Returns a list of dicts with keys name/primary/x/y/w/h. Falls back to every
+    connected output of `xrandr --query`, then to a single 2560x1600 screen
+    flagged with ``fallback=True`` (see monitors_reliable).
+    """
     try:
         out = subprocess.check_output(
-            ["xrandr", "--query"], text=True, stderr=subprocess.DEVNULL
-        )
+            ["xrandr", "--listmonitors"], text=True, stderr=subprocess.DEVNULL)
+        mons = []
         for line in out.splitlines():
-            if " connected" in line and "primary" in line:
-                m = re.search(r"(\d+)x(\d+)\+", line)
-                if m:
-                    return int(m.group(1)), int(m.group(2))
-        for line in out.splitlines():
-            if " connected" in line:
-                m = re.search(r"(\d+)x(\d+)\+", line)
-                if m:
-                    return int(m.group(1)), int(m.group(2))
+            m = MONITOR_RE.match(line)
+            if m:
+                mons.append({
+                    "name": m.group(3),
+                    "primary": "*" in m.group(2),
+                    "w": int(m.group(4)),
+                    "h": int(m.group(5)),
+                    "x": int(m.group(6)),
+                    "y": int(m.group(7)),
+                })
+        if mons:
+            return mons
     except Exception:
         pass
-    return 2560, 1600
+    try:
+        out = subprocess.check_output(
+            ["xrandr", "--query"], text=True, stderr=subprocess.DEVNULL)
+        mons = []
+        for line in out.splitlines():
+            m = QUERY_MON_RE.match(line)
+            if not m:
+                continue
+            mons.append({
+                "name": m.group(1),
+                "primary": bool(m.group(2)) or not mons,
+                "w": int(m.group(3)),
+                "h": int(m.group(4)),
+                "x": int(m.group(5)),
+                "y": int(m.group(6)),
+            })
+        if mons:
+            return mons
+    except Exception:
+        pass
+    return [{"name": "screen", "primary": True, "w": 2560, "h": 1600,
+             "x": 0, "y": 0, "fallback": True}]
+
+
+def monitors_reliable(mons):
+    """False when get_monitors() had to guess a hardcoded single screen."""
+    return not any(m.get("fallback") for m in mons)
+
+
+def virtual_box(mons):
+    """Bounding box of all monitors as (minx, miny, width, height)."""
+    minx = min(m["x"] for m in mons)
+    miny = min(m["y"] for m in mons)
+    w = max(m["x"] + m["w"] for m in mons) - minx
+    h = max(m["y"] + m["h"] for m in mons) - miny
+    return minx, miny, w, h
+
+
+def root_geometry():
+    """X root window geometry (what i3lock sizes its pixmap to)."""
+    try:
+        out = subprocess.check_output(["xrandr", "--current"], text=True,
+                                      stderr=subprocess.DEVNULL)
+        m = re.search(r"current\s+(\d+)\s*x\s*(\d+)", out)
+        if m:
+            return int(m.group(1)), int(m.group(2))
+    except Exception:
+        pass
+    try:
+        out = subprocess.check_output(["xdpyinfo"], text=True,
+                                      stderr=subprocess.DEVNULL)
+        m = re.search(r"dimensions:\s+(\d+)x(\d+) pixels", out)
+        if m:
+            return int(m.group(1)), int(m.group(2))
+    except Exception:
+        pass
+    return None
+
+
+def canvas_size(mons):
+    """Canvas geometry (minx, miny, W, H) for i3lock's root pixmap.
+
+    i3lock paints the `-i` image unscaled at the root origin, so the canvas has
+    to be the X root size whenever that is known. Monitors reporting negative
+    offsets grow the canvas so every monitor offset stays non-negative. Without
+    a known root geometry this falls back to the monitor bounding box.
+    """
+    bx, by, bw, bh = virtual_box(mons)
+    root = root_geometry()
+    if root is None:
+        return bx, by, bw, bh
+    minx = min(0, min(m["x"] for m in mons))
+    miny = min(0, min(m["y"] for m in mons))
+    w = max(root[0], bw + (bx - minx))
+    h = max(root[1], bh + (by - miny))
+    return minx, miny, w, h
+
+
+def layout_key(mons):
+    """Stable hash of the monitor layout, used in the base cache filename."""
+    raw = "|".join(
+        f'{m["name"]}:{m["w"]}x{m["h"]}+{m["x"]}+{m["y"]}'
+        for m in sorted(mons, key=lambda m: (m["x"], m["y"], m["name"])))
+    return hashlib.sha256(raw.encode()).hexdigest()[:8]
+
+
+def primary_rect(mons, minx, miny):
+    """Primary monitor rect relative to the canvas origin: (x, y, w, h)."""
+    pm = next((m for m in mons if m.get("primary")), mons[0])
+    return pm["x"] - minx, pm["y"] - miny, pm["w"], pm["h"]
+
+
+def get_screen_geometry():
+    """Canvas geometry (virtual-screen bounding box) — kept for callers."""
+    _, _, w, h = virtual_box(get_monitors())
+    return w, h
 
 
 def get_wallpaper_path():
@@ -190,36 +302,68 @@ def wallpaper_hash(wp_path):
     return "solid"
 
 
-def blur_wallpaper(src, width, height, dst):
-    subprocess.run(
-        [
-            "magick", str(src),
-            "-resize", f"{width}x{height}^",
+def build_base_canvas(src, mons, dst):
+    """Compose the blurred wallpaper on the root-sized canvas.
+
+    Every monitor gets its own cover-fitted (aspect preserved, cropped) and
+    blurred copy, pasted at its own offset. i3lock paints `-i` images unscaled
+    at the root origin, so the canvas must match the X root size (not just the
+    monitor bounding box) or the uncovered area shows i3lock's gray background.
+    """
+    minx, miny, vw, vh = canvas_size(mons)
+    args = ["magick", "-size", f"{vw}x{vh}", "xc:#1a1a1e", "-depth", "8"]
+    for m in mons:
+        args += [
+            "(", str(src),
+            "-resize", f'{m["w"]}x{m["h"]}^',
             "-gravity", "center",
-            "-extent", f"{width}x{height}",
-            "-blur", "0x20",
-            str(dst),
-        ],
-        check=True,
-        capture_output=True,
-    )
+            "-extent", f'{m["w"]}x{m["h"]}',
+            "-blur", "0x20", ")",
+            "-gravity", "None",
+            "-geometry", f'+{m["x"] - minx}+{m["y"] - miny}',
+            "-composite",
+        ]
+    args.append(str(dst))
+    subprocess.run(args, check=True, capture_output=True)
+
+
+def prune_bases(keep=8):
+    """Keep only the most recent base-*.png so layout/wallpaper changes
+    don't pile up (one file per wallpaper x layout combination)."""
+    try:
+        bases = sorted(CACHE_DIR.glob("base-*.png"),
+                       key=lambda p: p.stat().st_mtime, reverse=True)
+        for p in bases[keep:]:
+            p.unlink()
+    except Exception:
+        pass
 
 
 def ensure_base():
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     wp_path = get_wallpaper_path()
     h = wallpaper_hash(wp_path)
-    base = CACHE_DIR / f"base-{h}.png"
+    mons = get_monitors()
+    if not monitors_reliable(mons):
+        # xrandr gave us nothing usable: rebuilding from the guessed single
+        # screen would shrink the canvas and leave the real monitors gray.
+        # Any existing base is at least as good, so reuse the newest one.
+        existing = sorted(CACHE_DIR.glob("base-*.png"),
+                          key=lambda p: p.stat().st_mtime, reverse=True)
+        if existing:
+            return existing[0]
+    lk = layout_key(mons)
+    base = CACHE_DIR / f"base-{h}-{lk}.png"
     if base.exists():
         return base
-    W, H = get_screen_geometry()
-    tmp = CACHE_DIR / f"base-{h}.tmp.{os.getpid()}"
+    tmp = CACHE_DIR / f".tmp-{h}-{lk}-{os.getpid()}.png"
     try:
         if wp_path and wp_path.exists():
-            blur_wallpaper(wp_path, W, H, tmp)
+            build_base_canvas(wp_path, mons, tmp)
         else:
+            _, _, vw, vh = canvas_size(mons)
             subprocess.run(
-                ["magick", "-size", f"{W}x{H}", "xc:#1a1a1e", str(tmp)],
+                ["magick", "-size", f"{vw}x{vh}", "xc:#1a1a1e", str(tmp)],
                 check=True, capture_output=True,
             )
         os.replace(tmp, base)
@@ -227,6 +371,7 @@ def ensure_base():
         if tmp.exists():
             tmp.unlink()
         raise
+    prune_bases()
     return base
 
 
@@ -376,6 +521,15 @@ def build_surface(base_path, poem, sc_name, gz, luo_kuan):
     base = cairo.ImageSurface.create_from_png(str(base_path))
     W, H = base.get_width(), base.get_height()
 
+    mons = get_monitors()
+    minx, miny, vw, vh = canvas_size(mons)
+    if (vw, vh) != (W, H):
+        # layout changed between base build and compose: fall back to a
+        # whole-canvas primary rect so decorations stay inside the canvas
+        px, py, pw, ph = 0, 0, W, H
+    else:
+        px, py, pw, ph = primary_rect(mons, minx, miny)
+
     fg_rgb = hex_to_rgb(FG_PRIMARY)
     fg2_rgb = hex_to_rgb(FG_SECONDARY)
     seal_rgb = hex_to_rgb(SEAL_COLOR)
@@ -389,16 +543,16 @@ def build_surface(base_path, poem, sc_name, gz, luo_kuan):
     ink_text_rgb = hex_to_rgb(INK_TEXT)
     ink_text_dim_rgb = hex_to_rgb(INK_TEXT_DIM)
 
-    poem_cx = int(W * 0.88)
-    poem_top = int(H * 0.10)
+    poem_cx = px + int(pw * 0.88)
+    poem_top = py + int(ph * 0.10)
     y_after = draw_vertical_text(
         cr, poem, poem_cx, poem_top, "Source Han Serif CN 36", 56, fg_rgb,
         bg=bg, color_dark=ink_text_rgb,
     )
     draw_seal(cr, gz, poem_cx, y_after + 40, SEAL_FONT, 8, seal_rgb, fg_rgb)
 
-    shichen_x = int(W * 0.06)
-    shichen_y = int(H * 0.82)
+    shichen_x = px + int(pw * 0.06)
+    shichen_y = py + int(ph * 0.82)
     draw_shichen(cr, sc_name, shichen_x, shichen_y, "Source Han Serif CN Bold 72", fg_rgb,
                  bg=bg, color_dark=ink_text_rgb)
     tmp_lay = PangoCairo.create_layout(cr)
@@ -414,43 +568,73 @@ def build_surface(base_path, poem, sc_name, gz, luo_kuan):
     draw_seal(cr, LUO_SEAL_TEXT, luo_cx, y_luo_end + 12, SEAL_FONT, 8, seal_rgb, fg_rgb,
               shape="freeform")
 
-    return surface
+    return surface, (px, py, pw, ph)
 
 
 def write_jpeg(surface, out_path):
+    """Write the composite atomically so lock.sh never reads a partial JPEG."""
     W = surface.get_width()
     H = surface.get_height()
     raw = bytes(surface.get_data())
-    subprocess.run(
-        [
-            "magick", "-size", f"{W}x{H}", "-depth", "8", "bgra:-",
-            "-quality", "92", "-sampling-factor", "4:2:0", str(out_path),
-        ],
-        input=raw,
-        check=True,
-        capture_output=True,
-    )
-
-
-def sync_greeter_background(src):
-    """Best-effort mirror of the rendered composite to the system background
-    so the lightdm greeter shows the same artwork as the lock screen.
-    Requires NOPASSWD sudo (wheel). Failures are silent — the greeter simply
-    keeps the previous background."""
+    out_path = Path(out_path)
+    # The temporary file must still end in .jpg, otherwise magick cannot infer
+    # the output format from its name.
+    tmp = out_path.with_name(f".{out_path.stem}.tmp{os.getpid()}.jpg")
     try:
-        subprocess.run(["sudo", "-n", "cp", str(src), str(GREETER_BG)],
-                       check=False, capture_output=True)
-        subprocess.run(["sudo", "-n", "chmod", "644", str(GREETER_BG)],
+        subprocess.run(
+            [
+                "magick", "-size", f"{W}x{H}", "-depth", "8", "bgra:-",
+                "-quality", "92", "-sampling-factor", "4:2:0", str(tmp),
+            ],
+            input=raw,
+            check=True,
+            capture_output=True,
+        )
+        os.replace(tmp, out_path)
+    except Exception:
+        if tmp.exists():
+            tmp.unlink()
+        raise
+
+
+def mirror_greeter_to_greeter(src):
+    """Crop the primary monitor out of SRC and mirror it to the greeter bg.
+
+    Runs in a detached helper process (see compose_to): the greeter background
+    only matters at the next login, so it must never delay locking.
+    """
+    mons = get_monitors()
+    # Crop relative to the canvas origin (canvas_size), not the bounding box,
+    # so the crop lines up with the composite even when the two differ.
+    minx, miny, _vw, _vh = canvas_size(mons)
+    px, py, pw, ph = primary_rect(mons, minx, miny)
+    out = CACHE_DIR / "_greeter.jpg"
+    try:
+        subprocess.run(
+            ["magick", str(src), "-crop", f"{pw}x{ph}+{px}+{py}",
+             "+repage", "-quality", "92", str(out)],
+            check=True, capture_output=True,
+        )
+        subprocess.run(["sudo", "-n", "cp", str(out), str(GREETER_BG)],
                        check=False, capture_output=True)
     except Exception:
         pass
 
 
 def compose_to(base_path, poem, sc_name, gz, luo_kuan, out_path):
-    surface = build_surface(base_path, poem, sc_name, gz, luo_kuan)
+    surface, _primary = build_surface(base_path, poem, sc_name, gz, luo_kuan)
     write_jpeg(surface, out_path)
     if Path(out_path) == COMPOSE:
-        sync_greeter_background(out_path)
+        try:
+            subprocess.Popen(
+                [sys.executable, str(Path(__file__).resolve()),
+                 "--mirror-greeter", str(out_path)],
+                stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL, start_new_session=True,
+                close_fds=True,
+            )
+        except Exception:
+            pass
 
 
 def make_lock_image(out_path):
@@ -468,6 +652,7 @@ class RenderDaemon:
     def __init__(self):
         self.poems = load_poems()
         self.last_mtime = None
+        self.last_layout = None
         self.base_path = None
 
     def ensure(self):
@@ -475,9 +660,12 @@ class RenderDaemon:
             mt = FEHBG.stat().st_mtime
         except FileNotFoundError:
             mt = 0
-        if mt != self.last_mtime or self.base_path is None:
+        layout = layout_key(get_monitors())
+        if (mt != self.last_mtime or layout != self.last_layout
+                or self.base_path is None):
             self.base_path = ensure_base()
             self.last_mtime = mt
+            self.last_layout = layout
         return self.base_path
 
     def handle(self):
@@ -521,8 +709,13 @@ def main():
                         help="synchronously compose one lock image to OUT (fallback path)")
     parser.add_argument("--ensure-base", action="store_true",
                         help="ensure blurred base exists and print its path")
+    parser.add_argument("--mirror-greeter", metavar="SRC",
+                        help="crop the primary monitor out of SRC and mirror it to the greeter background (detached helper)")
     args = parser.parse_args()
 
+    if args.mirror_greeter:
+        mirror_greeter_to_greeter(Path(args.mirror_greeter))
+        return
     if args.daemon:
         RenderDaemon().serve()
     elif args.lock_image:
