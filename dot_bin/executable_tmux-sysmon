@@ -18,12 +18,26 @@
 #     - Memory: vm_stat (active + wired + compressor) * page_size / hw.memsize.
 #     - Daemon mode caches hw.ncpu and hw.memsize in process memory across loops.
 #
+# Battery (merged into the same daemon; no extra process, no extra timer):
+#   Reads /sys/class/power_supply/BAT*/{capacity,status} using shell builtins
+#   only, and publishes `@battery_status` / `@battery_percentage` /
+#   `@battery_bar`, each written only when its value actually changes.
+#
+# Refresh policy (foreground / background):
+#   2s while a tmux client has focus, 10s while clients are attached but
+#   unfocused, 60s when nobody is attached. The mode comes from a tiny state
+#   file maintained by the tmux client-* hooks, so it is event-driven -- the
+#   daemon never polls to discover the mode.
+#
 # Modes:
 #   - One-shot: `tmux-sysmon`
 #     For CLI inspection, debugging, and offline testing.
 #   - Daemon: `tmux-sysmon daemon [interval] [server_pid] [socket_path]`
-#     Long-running background daemon updating tmux option `@sysmon` via IPC only on change.
+#     Long-running background daemon updating the tmux options `@sysmon` and
+#     `@battery_*` via IPC only on change.
 #     Includes singleton handshake guard and auto-terminates when tmux server exits.
+#   - State: `tmux-sysmon state focus|attach|init ...`
+#     Called from the tmux client-* hooks; only rewrites the mode file.
 #
 # Nerd Font Glyphs:
 #   CPU: U+F4BC (nf-oct-cpu, )
@@ -36,9 +50,11 @@
 if [ "${SYSMON_ASCII:-0}" = "1" ]; then
   ICON_CPU="${ICON_CPU:-CPU}"
   ICON_MEM="${ICON_MEM:-MEM}"
+  ICON_BAT_CHARGING="${ICON_BAT_CHARGING:-CHG}"
 else
   ICON_CPU="${ICON_CPU:-}"
   ICON_MEM="${ICON_MEM:-}"
+  ICON_BAT_CHARGING="${ICON_BAT_CHARGING:-}"  # nf-fa-bolt
 fi
 
 # 格式化百分比显示（内嵌 tmux 警告样式，严禁朱砂色 #f7768e）
@@ -63,6 +79,139 @@ format_pct() {
 
 # 操作系统探测与测试桩覆盖
 OS="${SYSMON_FAKE_OS:-$(uname -s 2>/dev/null)}"
+
+# ==============================================================================
+# SHARED: mode state (foreground/background) + battery scan
+# ==============================================================================
+# Everything below is fork-free: plain `read`s, shell arithmetic and string
+# building. The daemon's steady-state cost is one `sleep` per tick.
+
+STATE_DIR="${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}"
+MODE_FILE="${STATE_DIR}/tmux-sysmon.${USER:-default}.mode"
+
+# Sets MODE_FOCUS (1 = a client has terminal focus) and MODE_CLIENTS (count).
+mode_read() {
+  MODE_FOCUS=1
+  MODE_CLIENTS=1
+  if [ -r "$MODE_FILE" ]; then
+    read -r MODE_FOCUS MODE_CLIENTS <"$MODE_FILE" 2>/dev/null || true
+  fi
+  case "$MODE_FOCUS" in
+    0 | 1) ;;
+    *) MODE_FOCUS=1 ;;
+  esac
+  case "$MODE_CLIENTS" in
+    '' | *[!0-9]*) MODE_CLIENTS=1 ;;
+  esac
+  [ "$MODE_CLIENTS" -lt 0 ] 2>/dev/null && MODE_CLIENTS=0
+  return 0
+}
+
+mode_write() { # $1 = focus, $2 = clients
+  if printf '%s %s\n' "$1" "$2" >"${MODE_FILE}.$$" 2>/dev/null; then
+    mv -f "${MODE_FILE}.$$" "$MODE_FILE" 2>/dev/null || rm -f "${MODE_FILE}.$$" 2>/dev/null
+  fi
+  return 0
+}
+
+# Sets BAT_PRESENT, BAT_PCT, BAT_CHARGING. Never forks.
+battery_scan() {
+  BAT_PRESENT=0
+  BAT_PCT=0
+  BAT_CHARGING=0
+  _bat_n=0
+  _bat_sum=0
+  for _bat_dir in "${SYSMON_SYS_BATTERY:-/sys/class/power_supply}"/BAT* \
+    "${SYSMON_SYS_BATTERY:-/sys/class/power_supply}"/*battery*; do
+    [ -r "$_bat_dir/capacity" ] || continue
+    read -r _bat_cap <"$_bat_dir/capacity" 2>/dev/null || continue
+    case "$_bat_cap" in
+      '' | *[!0-9]*) continue ;;
+    esac
+    _bat_sum=$((_bat_sum + _bat_cap))
+    _bat_n=$((_bat_n + 1))
+    if [ -r "$_bat_dir/status" ]; then
+      read -r _bat_state <"$_bat_dir/status" 2>/dev/null || _bat_state=""
+      case "$_bat_state" in
+        Charging | Full) BAT_CHARGING=1 ;;
+      esac
+    fi
+  done
+  [ "$_bat_n" -eq 0 ] && return 0
+  BAT_PRESENT=1
+  BAT_PCT=$(((_bat_sum + _bat_n / 2) / _bat_n))
+  [ "$BAT_PCT" -gt 100 ] && BAT_PCT=100
+  return 0
+}
+
+# Sets BAT_STATUS (icon), BAT_PERCENT ("80%"), BAT_BAR (styled blocks).
+battery_render() {
+  BAT_STATUS=""
+  BAT_PERCENT=""
+  BAT_BAR=""
+  [ "$BAT_PRESENT" = 1 ] || return 0
+  [ "$BAT_CHARGING" = 1 ] && BAT_STATUS="$ICON_BAT_CHARGING"
+  BAT_PERCENT="${BAT_PCT}%"
+  _bar_lvl=$(((BAT_PCT * BAT_BAR_LEN + 50) / 100))
+  [ "$_bar_lvl" -gt "$BAT_BAR_LEN" ] && _bar_lvl=$BAT_BAR_LEN
+  _bar_i=0
+  _bar_full=""
+  _bar_empty=""
+  while [ "$_bar_i" -lt "$_bar_lvl" ]; do
+    _bar_full="$_bar_full$BAT_BAR_FULL"
+    _bar_i=$((_bar_i + 1))
+  done
+  while [ "$_bar_i" -lt "$BAT_BAR_LEN" ]; do
+    _bar_empty="$_bar_empty$BAT_BAR_EMPTY"
+    _bar_i=$((_bar_i + 1))
+  done
+  if [ -n "$_bar_empty" ]; then
+    BAT_BAR="#[fg=$BAT_FG_FULL]$_bar_full#[fg=$BAT_FG_EMPTY]$_bar_empty#[fg=$FG_RESET]"
+  else
+    BAT_BAR="#[fg=$BAT_FG_FULL]$_bar_full#[fg=$FG_RESET]"
+  fi
+  return 0
+}
+
+# ==============================================================================
+# STATE MODE: tmux-sysmon state focus|attach|init ...
+#   Called from the tmux client-* hooks. Rewrites the mode file only.
+# ==============================================================================
+if [ "$1" = "state" ]; then
+  mode_read
+  case "${2:-}" in
+    focus)
+      case "${3:-}" in
+        0 | 1) MODE_FOCUS="$3" ;;
+        *) exit 2 ;;
+      esac
+      ;;
+    attach)
+      case "${3:-}" in
+        +*) MODE_CLIENTS=$((MODE_CLIENTS + ${3#+})) ;;
+        -*) MODE_CLIENTS=$((MODE_CLIENTS - ${3#-})) ;;
+        '' | *[!0-9]*) exit 2 ;;
+        *) MODE_CLIENTS="$3" ;;
+      esac
+      # a fresh attach always arrives focused
+      [ "${3:-}" = "+1" ] && MODE_FOCUS=1
+      ;;
+    init)
+      case "${3:-1}" in
+        '' | *[!0-9]*) MODE_CLIENTS=1 ;;
+        *) MODE_CLIENTS="$3" ;;
+      esac
+      MODE_FOCUS=1
+      ;;
+    *)
+      echo "usage: tmux-sysmon state focus <0|1> | attach <+N|-N> | init [clients]" >&2
+      exit 2
+      ;;
+  esac
+  [ "$MODE_CLIENTS" -lt 0 ] 2>/dev/null && MODE_CLIENTS=0
+  mode_write "$MODE_FOCUS" "$MODE_CLIENTS"
+  exit 0
+fi
 
 # ==============================================================================
 # DAEMON MODE: tmux-sysmon daemon [interval] [server_pid] [socket_path]
@@ -126,10 +275,71 @@ if [ "$1" = "daemon" ]; then
 
   trap 'exit 0' TERM INT HUP
 
+  # --- battery bar look + refresh policy: read once, the theme stays the ------
+  # --- single source of truth (.tmux.conf.local exports these as @sysmon_*) ---
+  cfg_get() {
+    # shellcheck disable=SC2086
+    $TMUX_CMD show -gqv "$1" 2>/dev/null
+  }
+
+  BAT_BAR_LEN=$(cfg_get @sysmon_battery_len)
+  case "$BAT_BAR_LEN" in
+    '' | *[!0-9]* | 0) BAT_BAR_LEN=5 ;;
+  esac
+  BAT_BAR_FULL=$(cfg_get @sysmon_battery_full)
+  BAT_BAR_FULL=${BAT_BAR_FULL:-◼}
+  BAT_BAR_EMPTY=$(cfg_get @sysmon_battery_empty)
+  BAT_BAR_EMPTY=${BAT_BAR_EMPTY:-◻}
+  BAT_FG_FULL=$(cfg_get @sysmon_battery_fg_full)
+  BAT_FG_FULL=${BAT_FG_FULL:-#7aa2f7}
+  BAT_FG_EMPTY=$(cfg_get @sysmon_battery_fg_empty)
+  BAT_FG_EMPTY=${BAT_FG_EMPTY:-#414868}
+  FG_RESET=$(cfg_get @sysmon_fg_reset)
+  FG_RESET=${FG_RESET:-#c0caf5}
+  _cfg_icon=$(cfg_get @sysmon_battery_charging)
+  [ -n "$_cfg_icon" ] && ICON_BAT_CHARGING="$_cfg_icon"
+
+  INT_FOCUS=$(cfg_get @sysmon_interval_focus)
+  case "$INT_FOCUS" in
+    '' | *[!0-9]* | 0) INT_FOCUS=$interval ;;
+  esac
+  INT_ATTACHED=$(cfg_get @sysmon_interval_attached)
+  case "$INT_ATTACHED" in
+    '' | *[!0-9]* | 0) INT_ATTACHED=10 ;;
+  esac
+  INT_DETACHED=$(cfg_get @sysmon_interval_detached)
+  case "$INT_DETACHED" in
+    '' | *[!0-9]* | 0) INT_DETACHED=60 ;;
+  esac
+
+  # Seed the mode file from the live client list: attach/detach hooks may have
+  # been missed while no daemon was running (e.g. before a config reload).
+  # SYSMON_MODE_KEEP=1 keeps the existing file (used by the test suite).
+  if [ "${SYSMON_MODE_KEEP:-0}" != "1" ]; then
+    # shellcheck disable=SC2086
+    _mode_tmp="${MODE_FILE}.clients.$$"
+    _mode_clients=0
+    if $TMUX_CMD list-clients >"$_mode_tmp" 2>/dev/null; then
+      while read -r _mode_line; do
+        _mode_clients=$((_mode_clients + 1))
+      done <"$_mode_tmp" 2>/dev/null
+    fi
+    rm -f "$_mode_tmp" 2>/dev/null
+    # no client attached => nothing has focus
+    if [ "$_mode_clients" -gt 0 ]; then
+      mode_write 1 "$_mode_clients"
+    else
+      mode_write 0 0
+    fi
+  fi
+
   has_prev=0
   prev_total=0
   prev_idle=0
   last_rendered=""
+  last_bat_status="[[init]]"
+  last_bat_percent="[[init]]"
+  last_bat_bar="[[init]]"
   loop_count=0
 
   darwin_ncpu=""
@@ -326,12 +536,57 @@ if [ "$1" = "daemon" ]; then
       last_rendered="$rendered"
     fi
 
+    # Battery: merged into this daemon -- no second process, no second timer.
+    battery_scan
+    battery_render
+    if [ "$BAT_STATUS" != "$last_bat_status" ]; then
+      # shellcheck disable=SC2086
+      $TMUX_CMD set -g @battery_status "$BAT_STATUS" 2>/dev/null || exit 0
+      last_bat_status="$BAT_STATUS"
+    fi
+    if [ "$BAT_PERCENT" != "$last_bat_percent" ]; then
+      # shellcheck disable=SC2086
+      $TMUX_CMD set -g @battery_percentage "$BAT_PERCENT" 2>/dev/null || exit 0
+      last_bat_percent="$BAT_PERCENT"
+    fi
+    if [ "$BAT_BAR" != "$last_bat_bar" ]; then
+      # shellcheck disable=SC2086
+      $TMUX_CMD set -g @battery_bar "$BAT_BAR" 2>/dev/null || exit 0
+      last_bat_bar="$BAT_BAR"
+    fi
+
     loop_count=$((loop_count + 1))
     if [ -n "$SYSMON_DAEMON_MAX_LOOPS" ] && [ "$loop_count" -ge "$SYSMON_DAEMON_MAX_LOOPS" ] 2>/dev/null; then
       exit 0
     fi
 
-    sleep "$interval" 2>/dev/null || exit 0
+    # --- adaptive refresh: foreground / attached-unfocused / detached --------
+    mode_read
+    if [ "$MODE_CLIENTS" -eq 0 ]; then
+      _tick=$INT_DETACHED
+    elif [ "$MODE_FOCUS" = 1 ]; then
+      _tick=$INT_FOCUS
+    else
+      _tick=$INT_ATTACHED
+    fi
+
+    # Sleep in <=5s chunks so attach/focus transitions are picked up promptly
+    # even in the 60s detached mode.
+    _slept=0
+    while [ "$_slept" -lt "$_tick" ]; do
+      _rem=$((_tick - _slept))
+      _step=$_rem
+      [ "$_step" -gt 5 ] && _step=5
+      sleep "$_step" 2>/dev/null || exit 0
+      _slept=$((_slept + _step))
+      [ "$_slept" -ge "$_tick" ] && break
+      _prev_focus=$MODE_FOCUS
+      _prev_clients=$MODE_CLIENTS
+      mode_read
+      if [ "$MODE_FOCUS" != "$_prev_focus" ] || [ "$MODE_CLIENTS" != "$_prev_clients" ]; then
+        break
+      fi
+    done
   done
 
   exit 0

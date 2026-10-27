@@ -285,14 +285,14 @@ tmux_conf_theme_status_left_bg="default,default,default"
 tmux_conf_theme_status_left_attr="bold,none,none"
 
 {{ if .hasBattery -}}
-tmux_conf_theme_status_right=" #{?client_prefix,󰌌 ,}#{?mouse,󰍽 ,}#{?session_many_attached,󰀎 ,}#{?pane_synchronized,󰍺 ,}#{@sysmon} |│| #{?battery_status,#{battery_status},}#{?battery_percentage, #{battery_percentage},}#{?battery_bar, #{battery_bar},} |│| %R |│| %d %b |│| #{username}#{root}@#{hostname} "
+tmux_conf_theme_status_right=" #{?client_prefix,󰌌 ,}#{?mouse,󰍽 ,}#{?session_many_attached,󰀎 ,}#{?pane_synchronized,󰍺 ,}#{@sysmon} |│| #{@battery_status}#{@battery_percentage} #{@battery_bar} |│| %R |│| %d %b |│| #{user}#{?#{==:#{uid},0},#,}@#{host_short} "
 
 # status right style (sections: [indicators+sysmon] [│] [battery] [│] [time] [│] [date] [│] [user@host])
 tmux_conf_theme_status_right_fg="$tmux_conf_theme_colour_6,$tmux_conf_theme_colour_3,$tmux_conf_theme_colour_6,$tmux_conf_theme_colour_3,$tmux_conf_theme_colour_6,$tmux_conf_theme_colour_3,$tmux_conf_theme_colour_3,$tmux_conf_theme_colour_3,$tmux_conf_theme_colour_4"
 tmux_conf_theme_status_right_bg="default,default,default,default,default,default,default,default,default"
 tmux_conf_theme_status_right_attr="none,none,none,none,none,none,none,none,bold"
 {{ else -}}
-tmux_conf_theme_status_right=" #{?client_prefix,󰌌 ,}#{?mouse,󰍽 ,}#{?session_many_attached,󰀎 ,}#{?pane_synchronized,󰍺 ,}#{@sysmon} |│| %R |│| %d %b |│| #{username}#{root}@#{hostname} "
+tmux_conf_theme_status_right=" #{?client_prefix,󰌌 ,}#{?mouse,󰍽 ,}#{?session_many_attached,󰀎 ,}#{?pane_synchronized,󰍺 ,}#{@sysmon} |│| %R |│| %d %b |│| #{user}#{?#{==:#{uid},0},#,}@#{host_short} "
 
 # status right style (sections: [indicators+sysmon] [│] [time] [│] [date] [│] [user@host])
 tmux_conf_theme_status_right_fg="$tmux_conf_theme_colour_6,$tmux_conf_theme_colour_3,$tmux_conf_theme_colour_6,$tmux_conf_theme_colour_3,$tmux_conf_theme_colour_3,$tmux_conf_theme_colour_3,$tmux_conf_theme_colour_4"
@@ -362,7 +362,7 @@ tmux_conf_battery_vbar_palette="gradient"
 
 # symbols used to indicate whether battery is charging or discharging
 # glyph-only, no emoji: bolt when charging, silence (normal state) otherwise
-tmux_conf_battery_status_charging="\uF0E7"      # nf-fa-bolt
+tmux_conf_battery_status_charging=""         # nf-fa-bolt
 tmux_conf_battery_status_discharging=""
 
 # clock style (when you hit <prefix> + t)
@@ -469,9 +469,44 @@ set -g extended-keys-format csi-u
 # passthrough (yazi image previews in WezTerm use the kitty protocol)
 set -g allow-passthrough on
 
+# sysmon daemon (Scheme A) -- owns @sysmon AND the battery options, so the
+# status line needs no `#()` shell scripts at all. Those caused a redraw feedback
+# loop: a `#()` that writes a tmux option re-triggers every client's status
+# redraw, which re-runs that `#()` ... forever (~39 forks/s on this machine).
+set -g @battery_status ""
+set -g @battery_percentage ""
+set -g @battery_bar ""
+
+# battery bar look: derived from the battery section above so the theme stays
+# the single source of truth; the daemon reads these once at startup.
+set -g @sysmon_battery_len "$tmux_conf_battery_bar_length"
+set -g @sysmon_battery_full "$tmux_conf_battery_bar_symbol_full"
+set -g @sysmon_battery_empty "$tmux_conf_battery_bar_symbol_empty"
+set -g @sysmon_battery_fg_full "$tmux_conf_theme_colour_4"
+set -g @sysmon_battery_fg_empty "$tmux_conf_theme_colour_2"
+set -g @sysmon_fg_reset "$tmux_conf_theme_colour_6"
+set -g @sysmon_battery_charging "$tmux_conf_battery_status_charging"
+
+# refresh policy: focused client / attached-but-unfocused / detached (seconds)
+set -g @sysmon_interval_focus 2
+set -g @sysmon_interval_attached 10
+set -g @sysmon_interval_detached 60
+
+# client hooks keep the daemon's mode file in sync -- event-driven, no polling
+set-hook -g client-attached 'run -b "$HOME/.bin/tmux-sysmon state attach +1"'
+set-hook -g client-detached 'run -b "$HOME/.bin/tmux-sysmon state attach -1"'
+set-hook -g client-focus-in 'run -b "$HOME/.bin/tmux-sysmon state focus 1"'
+set-hook -g client-focus-out 'run -b "$HOME/.bin/tmux-sysmon state focus 0"'
+
 # sysmon daemon & initial placeholder (Scheme A)
 set -g @sysmon " --  --"
-run -b '$HOME/.bin/tmux-sysmon daemon 2 "#{pid}" "#{socket_path}"'
+# Restart (not just spawn) so a config change always takes effect: the
+# singleton guard alone would keep the old process, whose cached
+# "last rendered value" no longer matches the freshly reset options above.
+# Kill the previous instance by its recorded pid (never by a `pkill -f`
+# pattern: that would also match any shell whose command line happens to
+# mention the daemon, including this one).
+run -b 'kill #{@sysmon_daemon_pid} 2>/dev/null; $HOME/.bin/tmux-sysmon daemon 2 "#{pid}" "#{socket_path}"'
 
 # ------------------------------------------------------------------------------
 
