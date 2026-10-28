@@ -48,3 +48,14 @@ patch:
   # 打开后上屏历史会被自动编码进用户库，词库涨得更快，但也更容易积累冗余条目。
   # 想更激进地"吃掉历史输入"时取消注释：
   #translator/encode_commit_history: true
+
+  # ================= 关闭「全拼提示」（候选注释 / 预编辑区里的拼音）=================
+  # 万象状态面板（Ctrl+`）里有两组开关会把双拼还原成全拼显示，这里把默认态钉回关闭：
+  #   switches[6] [raw_input, tone_display, full_pinyin]      原编码 / 有声调 / 无声调
+  #                → 非「原编码」时，预编辑区（正在输入的编码）被转写成全拼
+  #   switches[9] [comment_off, tone_hint, toneless_hint]     注释关 / 有声调 / 无声调
+  #                → 非「注释关」时，每个候选词后面跟出对应全拼拼音
+  # 由 lua/wanxiang/super_comment_preedit.lua 实现；reset: 0 = 默认取组内第一个（关闭）。
+  # 需要时可临时用 Ctrl+` 打开，重启/切换方案后回到这里的状态。
+  "switches/@6/reset": 0
+  "switches/@9/reset": 0
