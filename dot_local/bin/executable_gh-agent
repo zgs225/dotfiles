@@ -1,0 +1,2 @@
+#!/bin/sh
+GH_CONFIG_DIR="$HOME/.config/gh-agent" exec gh "$@"
