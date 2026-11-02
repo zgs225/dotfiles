@@ -1,0 +1,46 @@
+# Your patch layer for this dsh profile, applied after every bundle layer:
+# a top-level YAML array of loader patch entries (id-targeted config
+# overrides, disables, and insert lists; `!!js` expressions allowed).
+- id: ui-settings-general
+  name: "@deepseek-ai/dsh-client-ui-settings-general"
+  config:
+    welcomeNoticeVersion: 2026-09-28.1
+- id: ui-theme
+  name: "@deepseek-ai/dsh-client-ui-theme"
+  config:
+    preference: system
+- id: ui-chat
+  name: "@deepseek-ai/dsh-client-ui-chat"
+  config:
+    transcriptView: standard
+    performanceUsage: compact
+- id: llm-pi-ai
+  name: "@deepseek-ai/dsh-llm-pi-ai"
+  config:
+    providers:
+      cliproxyapi:
+        apiKeyEnv: CLIPROXYAPI_API_KEY
+        api: openai-completions
+        baseURL: https://cli-proxy-api.in.yuez.me/v1
+        models:
+          - id: opencode/deepseek-v4.1-flash
+            name: opencode/deepseek-v4.1-flash
+          - id: kimi-k2.8-code
+            name: kimi-k2.8-code
+          - id: opencode/glm-5.3-flash
+            name: opencode/glm-5.3-flash
+          - id: kimi-k3
+            name: kimi-k3
+          - id: official/deepseek-flash
+            name: official/deepseek-flash
+          - id: kimi-k3-256k
+            name: kimi-k3-256k
+          - id: deepseek-flash
+            name: deepseek-flash
+          - id: glm-5.3-flash
+            name: glm-5.3-flash
+- id: agent-default-model
+  name: "@deepseek-ai/dsh-agent-default-model"
+  config:
+    provider: cliproxyapi
+    model: opencode/deepseek-v4.1-flash
