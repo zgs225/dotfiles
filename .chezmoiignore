@@ -9,7 +9,6 @@ CODE_OF_CONDUCT.md
 *.swp
 **/__pycache__/
 **/*.pyc
-AGENTS.md
 docs/
 cursor/
 scripts/
