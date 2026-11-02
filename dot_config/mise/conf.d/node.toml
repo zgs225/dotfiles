@@ -1,5 +1,5 @@
 [tools]
-node = "22"
+node = "24"
 pnpm = "latest"
 "npm:@deepseek-ai/dsh" = { version = "latest", allow_low_downloads = true, pnpm_args = "--config.enable-global-virtual-store=false" }
 
