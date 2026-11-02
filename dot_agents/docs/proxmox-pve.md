@@ -1,6 +1,6 @@
 # Proxmox VE — Host & Guests
 
-Access: `ssh pve` | Host: `pve` @ 192.168.2.254
+Access: `ssh pve` | Host: `pve` (address: [internal-topology.md](internal-topology.md))
 OS: PVE 9.0.3 (`pve-manager/9.0.3`) | Kernel: 6.17.13-2-pve | Ctrl: `pct` (CT) / `qm` (VM)
 
 Storage: **single 1 TB NVMe** (Fanxiang S500Pro, consumer/DRAM-less) → LVM VG `pve` →
@@ -10,18 +10,18 @@ thin pool `pve/data` (816 GiB) + `pve/root` (96 G) + swap. Every guest disk is a
 
 ### LXC containers (`pct list`)
 
-| VMID | Hostname | IP | Disk | State | Role |
-|------|----------|----|------|-------|------|
-| 102 | mysql | 192.168.2.8 | 16 G | running | MySQL |
-| 104 | redis | 192.168.2.7 | 8 G | running | Redis |
-| 1003 | pihole | 192.168.2.3 | 8 G | stopped | DNS |
-| 1005 | apache-cassandra | 192.168.2.5 | 4 G | running | Cassandra |
-| 1006 | influxdb | 192.168.2.6 | 74 G | running | InfluxDB 2.7.12 (PVE/Grafana/scrutiny metrics) |
-| 1009 | postgresql | 192.168.2.9 | 32 G | running | PostgreSQL |
-| 1010 | nginxproxymanager | 192.168.2.10 | 4 G | running | NPM (reverse proxy) |
-| 1014 | rabbitmq | 192.168.2.14 | 4 G | running | RabbitMQ |
+| VMID | Hostname | Disk | State | Role |
+|------|----------|------|-------|------|
+| 102 | mysql | 16 G | running | MySQL |
+| 104 | redis | 8 G | running | Redis |
+| 1003 | pihole | 8 G | stopped | DNS |
+| 1005 | apache-cassandra | 4 G | running | Cassandra |
+| 1006 | influxdb | 74 G | running | InfluxDB 2.7.12 (PVE/Grafana/scrutiny metrics) |
+| 1009 | postgresql | 32 G | running | PostgreSQL |
+| 1010 | nginxproxymanager | 4 G | running | NPM (reverse proxy) |
+| 1014 | rabbitmq | 4 G | running | RabbitMQ |
 
-All containers also have a second NIC on `vmbr1` = 10.10.1.<last-octet>/16.
+All containers also have a second NIC on `vmbr1` (addresses: [internal-topology.md](internal-topology.md)).
 
 ### VMs (`qm list`)
 
@@ -142,7 +142,7 @@ pct unmount 1003
 Current state (2026-11-02): 102=100M, 104=50M, 1003=50M, 1005=50M, 1006=100M, 1009=100M,
 1010=50M, 1014=50M. Freed ~2.4 G total and returned it to the pool.
 
-## InfluxDB LXC (1006) — 192.168.2.6
+## InfluxDB LXC (1006)
 
 2 vCPU / 2 GB RAM / 74 G. Consumers: **PVE** (`/etc/pve/status.cfg` → bucket `pve`, every ~10 s),
 **Grafana** (influxdb datasource, `defaultBucket=pve`), **scrutiny** (k3s, buckets `scrutiny*`).
@@ -206,10 +206,11 @@ Admin token lives in the k3s repo: `~/Workspace/Misc/k3s-admin/scrutiny/kustomiz
 buckets/scrapers).
 
 ```bash
-T=$(curl ... )   # or: kubectl -n scrutiny get secret -o jsonpath=... | base64 -d
-curl -s -H "Authorization: Token $T" http://192.168.2.6:8086/api/v2/buckets   | jq
-curl -s -H "Authorization: Token $T" http://192.168.2.6:8086/api/v2/scrapers  | jq
-curl -s http://192.168.2.6:8086/health
+INFLUX=http://<influxdb-lan-ip>:8086    # see internal-topology.md
+T=<admin-token>     # k3s-admin/scrutiny/kustomization.yaml → SCRUTINY_WEB_INFLUXDB_TOKEN
+curl -s -H "Authorization: Token $T" $INFLUX/api/v2/buckets   | jq
+curl -s -H "Authorization: Token $T" $INFLUX/api/v2/scrapers  | jq
+curl -s $INFLUX/health
 ```
 
 ## Runbook: storage incident
@@ -227,7 +228,7 @@ curl -s http://192.168.2.6:8086/health
 | Symptom | Cause |
 |---------|-------|
 | k8s `scrutiny` web `CrashLoopBackOff`, exit code 2 after ~30 s | influxd unreachable at startup |
-| `curl 192.168.2.6:8086/health` times out | influxd HTTP accept queue full (`ss -ltn` → `Recv-Q 4097/4096`) |
+| `curl $INFLUX/health` times out | influxd HTTP accept queue full (`ss -ltn` → `Recv-Q 4097/4096`) |
 | influxd log `no space left on device` + `Error compacting TSM files` | thin LV at 100 %, no temp space for compaction |
 | systemd `Failed with result 'oom-kill'`, `oom_memcg=/lxc/1006` | 2 GB cgroup + 1 GiB/shard write cache + compaction retry storm |
 | `retention_check_duration_count = 0` | retention service never completes while the engine is stalled |

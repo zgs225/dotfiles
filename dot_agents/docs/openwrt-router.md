@@ -1,6 +1,6 @@
 # OpenWrt Router
 
-Access: `ssh router` | LAN IP: 192.168.2.1
+Access: `ssh router` | LAN IP: see [internal-topology.md](internal-topology.md)
 OS: OpenWrt 23.05.5 (r24106) | Arch: aarch64 (Rockchip ARMv8) | Kernel: 6.6.54
 Installed packages: ~717
 
@@ -8,10 +8,10 @@ Installed packages: ~717
 
 | Interface | Device | Config |
 |-----------|--------|--------|
-| LAN | `br-lan` (bridge: eth1 + eth2) | static 192.168.2.1/23 |
+| LAN | `br-lan` (bridge: eth1 + eth2) | static `<lan-ip>`/23 (see [internal-topology.md](internal-topology.md)) |
 | WAN | eth0 | (upstream) |
 
-- Subnet: `192.168.2.0/23` (mask 255.255.254.0)
+- Subnet: see [internal-topology.md](internal-topology.md) — must match `uci show network.lan`
 - DNS: dnsmasq → forwards to `127.0.0.1#7874` (local proxy), `noresolv`, `rebind_protection` off
 - Domain: `lan`
 - DHCP: dnsmasq on LAN
@@ -35,7 +35,7 @@ uci show firewall
 uci get network.lan.ipaddr
 
 # Modify config (always commit + apply)
-uci set network.lan.ipaddr='192.168.2.1'
+uci set network.lan.ipaddr='<lan-ip>'    # see internal-topology.md
 uci commit network
 /etc/init.d/network restart
 

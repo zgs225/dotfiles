@@ -1,6 +1,6 @@
 # Synology NAS — DS3622xs+
 
-Access: `ssh dsm` | Host: HomeDSM | LAN IP: 192.168.2.x
+Access: `ssh dsm` | Host: HomeDSM | LAN IP: see [internal-topology.md](internal-topology.md)
 OS: DSM 7.2.1-69057 (Update 4) | Arch: x86_64 (Broadwell) | Kernel: 4.4.302+
 
 ## Key Paths

@@ -5,13 +5,15 @@ GitOps: ArgoCD watches this repo → auto-syncs to cluster. **Do not `kubectl ap
 
 ## Cluster Topology
 
-| Node | IP | Role | Notes |
-|------|----|------|-------|
-| k3sserver01 | 192.168.2.21 | control-plane, etcd | kernel 6.1 |
-| k3sagent01 | 192.168.2.31 | worker | Intel GPU (i915), kernel 6.12 |
-| k3sagent02 | 192.168.2.32 | worker | kernel 6.1 |
-| k3sagent03 | 192.168.2.33 | worker | kernel 6.1 |
-| k3sagent04-2 | 192.168.2.34 | worker | kernel 6.1 |
+| Node | Role | Notes |
+|------|------|-------|
+| k3sserver01 | control-plane, etcd | kernel 6.1 |
+| k3sagent01 | worker | Intel GPU (i915), kernel 6.12 |
+| k3sagent02 | worker | kernel 6.1 |
+| k3sagent03 | worker | kernel 6.1 |
+| k3sagent04-2 | worker | kernel 6.1 |
+
+Node IPs → [internal-topology.md](internal-topology.md).
 
 Version: v1.34.1+k3s1 | Runtime: containerd | OS: Debian 12
 
@@ -20,7 +22,7 @@ Version: v1.34.1+k3s1 | Runtime: containerd | OS: Debian 12
 | Layer | Components |
 |-------|-----------|
 | GitOps | ArgoCD + argocd-image-updater (semver, write-back to git) |
-| Ingress | Traefik (default) + MetalLB (L2, `192.168.2.x` pool) |
+| Ingress | Traefik (default) + MetalLB (L2) — VIP pool: [internal-topology.md](internal-topology.md) |
 | Storage | Piraeus/LINSTOR (replicated DRBD), NFS subdir provisioner, local-path |
 | Monitoring | kube-prometheus-stack (Prometheus + Grafana + Alertmanager), Loki + Promtail |
 | Backup | Velero + Kopia (per-namespace repo maintenance) |

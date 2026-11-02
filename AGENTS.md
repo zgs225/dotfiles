@@ -12,7 +12,9 @@ This file is the entry point for managing all infrastructure. Detailed docs in `
 | **OpenWrt Router** | Rockchip ARM64 | OpenWrt 23.05.5 | `ssh router` |
 | **Proxmox VE** (`pve`) | 单块 NVMe + LVM-thin，跑 8 个 LXC + 7 个 VM | PVE 9.0.3 / kernel 6.17 | `ssh pve` |
 
-Network: `192.168.2.0/23`（掩码 255.255.254.0，以路由器 `uci show network.lan` 为准）— router `.1`, k3s server `.21`, agents `.31-.34`, NAS on LAN, PVE `.254`。
+Internal addresses (subnets, IP plan, device inventory, SSH aliases) live in **one** file:
+[`.agents/docs/internal-topology.md`](.agents/docs/internal-topology.md) — read it whenever a concrete
+address is needed. IPs are deliberately **not** repeated here or in the other docs; add a pointer instead.
 
 ## Configuration Management
 
@@ -79,12 +81,14 @@ opkg list-installed            # installed packages
 ## k3s Cluster Topology
 
 ```
-k3sserver01  192.168.2.21  control-plane/etcd   (Debian 12, kernel 6.1)
-k3sagent01   192.168.2.31  worker + Intel GPU    (Debian 12, kernel 6.12)
-k3sagent02   192.168.2.32  worker                (Debian 12, kernel 6.1)
-k3sagent03   192.168.2.33  worker                (Debian 12, kernel 6.1)
-k3sagent04-2 192.168.2.34  worker                (Debian 12, kernel 6.1)
+k3sserver01   control-plane/etcd   (Debian 12, kernel 6.1)
+k3sagent01    worker + Intel GPU    (Debian 12, kernel 6.12)
+k3sagent02    worker                (Debian 12, kernel 6.1)
+k3sagent03    worker                (Debian 12, kernel 6.1)
+k3sagent04-2  worker                (Debian 12, kernel 6.1)
 ```
+
+Node addresses → [`.agents/docs/internal-topology.md`](.agents/docs/internal-topology.md).
 
 Storage: Piraeus/LINSTOR (replicated) + NFS subdir provisioner + local-path
 Ingress: Traefik + MetalLB | Monitoring: Prometheus + Grafana + Loki
