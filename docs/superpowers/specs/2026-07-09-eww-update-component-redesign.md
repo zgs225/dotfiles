@@ -52,12 +52,12 @@
 
 ### 缓存文件
 
-- `~/.cache/eww/updates.json`：现有结构，包含 `last_check`、`total`、`official_count`、`aur_count`、`official`、`aur`、`error`。
+- `~/.cache/eww/updates.json`：现有结构，包含 `last_check`、`total`、`official_count`、`aur_count`、`extra_count`、`official`、`aur`、`extra`、`error`。其中 `extra` 是仓库和 AUR 之外的本地重打包包（目前只有 `arto-bin`，由 eos-bootstrap 的 `tasks/arto.yml` 维护），数据来自 `/usr/local/bin/arto-check-update`，该命令无升级时不输出。
 - `~/.cache/eww/updates.checking`：临时状态文件，存在表示正在检查。
 
 ### eww 状态
 
-- `updates_filter`：当前列表筛选，值 `all` | `official` | `aur`，默认 `all`。
+- `updates_filter`：当前列表筛选，值 `all` | `official` | `aur` | `extra`，默认 `all`。
 - `updates_checking`：布尔，由 `update-checking-state.sh` 返回 `true` / `false` 字符串。eww 表达式直接按布尔使用。
 
 ### 新增/修改脚本

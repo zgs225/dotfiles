@@ -6,9 +6,14 @@
 # keeps the window open until the user acknowledges it.
 #
 # Usage:
-#   update-apply.sh          # repo + AUR (paru -Syu)
+#   update-apply.sh          # repo + AUR + local packages (paru -Syu)
 #   update-apply.sh aur      # AUR only (paru -Sua)
 #   update-apply.sh repo     # official repos only (pacman -Syu)
+#
+# "Local packages" are ones repacked outside both the repos and the AUR — today
+# just arto-bin (eos-bootstrap: ansible/roles/packages/tasks/arto.yml). The
+# update check sees them via /usr/local/bin/arto-check-update, and they are
+# upgraded by /usr/local/bin/arto-upgrade, which runs that role.
 
 CACHE_DIR="$HOME/.cache/eww"
 LOG_FILE="$CACHE_DIR/update.log"
@@ -27,6 +32,14 @@ if command -v paru > /dev/null 2>&1; then
 else
     upgrade_cmd="sudo pacman -Syu --noconfirm"
     label="pacman (repo)"
+fi
+
+# Append the local packages when one is pending. Chained with && so a broken
+# repo transaction leaves them alone; `arto-upgrade` escalates by itself.
+if [ "$mode" != "repo" ] && command -v arto-upgrade > /dev/null 2>&1 \
+        && [ -n "$(arto-check-update 2>/dev/null)" ]; then
+    upgrade_cmd="$upgrade_cmd && arto-upgrade"
+    label="$label + 本地包"
 fi
 
 if ! command -v wezterm > /dev/null 2>&1; then

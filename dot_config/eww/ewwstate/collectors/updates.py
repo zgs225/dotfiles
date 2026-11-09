@@ -30,8 +30,8 @@ _REFRESH_FLAG = os.path.join(_CACHE_DIR, "update-list-refresh.flag")
 
 _DEFAULT_UPDATES = json.dumps({
     "last_check": "Never", "total": 0,
-    "official_count": 0, "aur_count": 0,
-    "official": [], "aur": [], "error": None,
+    "official_count": 0, "aur_count": 0, "extra_count": 0,
+    "official": [], "aur": [], "extra": [], "error": None,
 }, separators=(",", ":"))
 
 
@@ -44,11 +44,13 @@ def _source_icon(source: str) -> str:
         return "\uf303"  # Arch logo nerd font
     if source == "aur":
         return "\uf005"  # star
+    if source == "extra":
+        return "\uf0ad"  # wrench: repacked locally, neither repo nor AUR
     return ""
 
 
 def _source_class(source: str) -> str:
-    return source if source in ("official", "aur") else "unknown"
+    return source if source in ("official", "aur", "extra") else "unknown"
 
 
 def _render_update_list(cache_data: Optional[dict], filter_val: str) -> str:
@@ -59,7 +61,7 @@ def _render_update_list(cache_data: Optional[dict], filter_val: str) -> str:
                 ':text "暂无数据"))')
 
     # Validate filter
-    if filter_val not in ("all", "official", "aur"):
+    if filter_val not in ("all", "official", "aur", "extra"):
         filter_val = "all"
 
     items: list[str] = []
@@ -86,6 +88,7 @@ def _render_update_list(cache_data: Optional[dict], filter_val: str) -> str:
     if filter_val == "all":
         _render_group("official")
         _render_group("aur")
+        _render_group("extra")
     else:
         _render_group(filter_val)
 

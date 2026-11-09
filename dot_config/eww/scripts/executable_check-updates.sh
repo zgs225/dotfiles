@@ -25,6 +25,16 @@ get_aur() {
     fi
 }
 
+# Local packages repacked outside both the repos and the AUR (currently just
+# arto-bin, from eos-bootstrap's tasks/arto.yml). The helper prints a
+# checkupdates-style line only when an upgrade is pending, and stays silent
+# when it is up to date or offline.
+get_extra() {
+    if command -v arto-check-update >/dev/null 2>&1; then
+        timeout 30 arto-check-update 2>/dev/null || true
+    fi
+}
+
 parse_lines() {
     while IFS= read -r line; do
         [ -z "$line" ] && continue
@@ -38,18 +48,22 @@ parse_lines() {
 
 official_json=$(get_official | parse_lines | jq -s '.')
 aur_json=$(get_aur | parse_lines | jq -s '.')
+extra_json=$(get_extra | parse_lines | jq -s '.')
 
 official_count=$(printf '%s' "$official_json" | jq 'length')
 aur_count=$(printf '%s' "$aur_json" | jq 'length')
-total=$((official_count + aur_count))
+extra_count=$(printf '%s' "$extra_json" | jq 'length')
+total=$((official_count + aur_count + extra_count))
 
 jq -n \
     --arg last_check "$now" \
     --argjson total "$total" \
     --argjson official_count "$official_count" \
     --argjson aur_count "$aur_count" \
+    --argjson extra_count "$extra_count" \
     --argjson official "$official_json" \
     --argjson aur "$aur_json" \
-    '{last_check:$last_check,total:$total,official_count:$official_count,aur_count:$aur_count,official:$official,aur:$aur,error:null}' \
+    --argjson extra "$extra_json" \
+    '{last_check:$last_check,total:$total,official_count:$official_count,aur_count:$aur_count,extra_count:$extra_count,official:$official,aur:$aur,extra:$extra,error:null}' \
     > "$CACHE_FILE.tmp"
 mv "$CACHE_FILE.tmp" "$CACHE_FILE"

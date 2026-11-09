@@ -30,7 +30,10 @@
         (label :text "官方"))
       (button :class "update-chip ${updates_filter == 'aur' ? 'active' : ''}"
           :onclick "eww update updates_filter='aur'; touch ~/.cache/eww/update-list-refresh.flag"
-        (label :text "AUR")))
+        (label :text "AUR"))
+      (button :class "update-chip ${updates_filter == 'extra' ? 'active' : ''}"
+          :onclick "eww update updates_filter='extra'; touch ~/.cache/eww/update-list-refresh.flag"
+        (label :text "本地")))
 
     (box :class "update-list-panel" :orientation "v" :hexpand true :vexpand true
       (literal :content "${update_list}"))
