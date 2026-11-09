@@ -80,6 +80,8 @@ application/x-synology-drive-slides=synology-drive-open-file.desktop
 x-scheme-handler/mailto=google-chrome.desktop
 x-scheme-handler/bilipc=bilibili.desktop
 x-scheme-handler/baiduyunguanjia=baidunetdisk.desktop
+text/markdown=arto.desktop
+text/x-markdown=arto.desktop
 
 [Added Associations]
 x-scheme-handler/clash=clash-verge.desktop;
