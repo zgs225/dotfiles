@@ -26,7 +26,13 @@ function BackDrops:init()
       files = {},
    }
    local backdrops = setmetatable(inital, self)
-   wezterm.GLOBAL.background = nil
+   -- Only clear on the first evaluation in this process: wezterm re-runs this
+   -- config file on every `window:set_config_overrides` (events/dpi.lua does
+   -- that when the terminal moves to a display with a different DPI), and
+   -- clearing here would re-roll the backdrop on every one of those.
+   if not wezterm.GLOBAL.backdrop_picked then
+      wezterm.GLOBAL.background = nil
+   end
    return backdrops
 end
 
@@ -40,7 +46,10 @@ end
 ---   initial load of the Terminal config.
 function BackDrops:set_files()
    self.files = wezterm.read_dir(wezterm.config_dir .. PATH_SEP .. 'backdrops')
-   wezterm.GLOBAL.background = self.files[1]
+   -- Keep an already-picked backdrop across config re-evaluations.
+   if wezterm.GLOBAL.background == nil then
+      wezterm.GLOBAL.background = self.files[1]
+   end
    return self
 end
 
@@ -84,8 +93,23 @@ end
 ---Pass in `Window` object to override the current window options
 ---@param window any? WezTerm `Window` see: https://wezfurlong.org/wezterm/config/lua/window/index.html
 function BackDrops:random(window)
+   -- Config-load call (`wezterm.lua` passes no window): keep whatever backdrop
+   -- this process already picked so that re-evaluations triggered by
+   -- `set_config_overrides` don't shuffle the wallpaper under the user. Only the
+   -- explicit, window-bound invocation (random-background keybinding) re-rolls.
+   if window == nil and wezterm.GLOBAL.backdrop_picked then
+      for idx, file in ipairs(self.files) do
+         if file == wezterm.GLOBAL.background then
+            self.current_idx = idx
+            break
+         end
+      end
+      return
+   end
+
    self.current_idx = math.random(#self.files)
    wezterm.GLOBAL.background = self.files[self.current_idx]
+   wezterm.GLOBAL.backdrop_picked = true
 
    if window ~= nil then
       self:_set_opt(window)
