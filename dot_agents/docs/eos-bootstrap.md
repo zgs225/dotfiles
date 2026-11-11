@@ -21,13 +21,14 @@ Boundary: Ansible never writes under `~`. chezmoi never installs packages or ena
 ## Ansible Roles (order matters)
 
 ```
-packages → mise → services → network → kernel → logging → power → fingerprint → user → display
+packages → fonts → mise → docker → services → network → kernel → logging → power → fan-profile → fingerprint → user → display
 ```
 
 | Role | Key files | What it does |
 |------|-----------|-------------|
 | `packages` | `defaults/main.yml` | pacman + AUR (via paru) package lists; bundled fonts (`wps_fonts`) + best-effort AUR (`aur_packages_interactive`); bluetooth/thunderbolt/keyd auto-detect |
 | `mise` | `tasks/main.yml` | Installs mise binary only (tool versions in dotfiles repo) |
+| `docker` | `defaults/main.yml::docker_daemon_config`, `templates/daemon.json.j2` | Renders `/etc/docker/daemon.json`; `dockerd --validate` guards the restart; handler `Restart docker daemon` |
 | `services` | `vars/core_services.yml` | Enables core systemd services (hardcoded, code-review required) |
 | `network` | `files/nmconnection/` | Drop-in NetworkManager profiles → `/etc/NetworkManager/system-connections/` |
 | `kernel` | `templates/sysctl.d.conf.j2` | sysctl tunables (file-max, inotify, swappiness, BBR); `defaults/main.yml::kernel_modules` |
@@ -63,6 +64,7 @@ tests/idempotency.sh                              # runs playbook twice, fails o
 - **NM profile**: drop `.nmconnection` file in `ansible/roles/network/files/nmconnection/`
 - **Polkit rule**: drop in `ansible/roles/user/files/polkit/`
 - **Kernel module**: append to `kernel_modules` in `ansible/roles/kernel/defaults/main.yml`
+- **Docker daemon option**: add a key to `docker_daemon_config` in `ansible/roles/docker/defaults/main.yml` (rendered as-is to `/etc/docker/daemon.json`; e.g. `insecure-registries` for plain-HTTP registries)
 - **Dotfile**: that's chezmoi, not this repo
 
 ## Gotchas
