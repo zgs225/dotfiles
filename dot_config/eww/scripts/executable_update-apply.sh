@@ -15,6 +15,18 @@
 # update check sees them via /usr/local/bin/arto-check-update, and they are
 # upgraded by /usr/local/bin/arto-upgrade, which runs that role.
 
+# --- eww kill guard -------------------------------------------------------
+# eww runs button :onclick commands with a ~200ms timeout and SIGKILLs whatever
+# is still running (crates/eww/src/widgets/mod.rs; open-popup.sh works around
+# the same thing). Everything below is far slower than that: the local-package
+# probe is a GitHub API call (~1.5s) and wezterm itself takes a moment to
+# start, so the click used to die silently during the probe and no window ever
+# appeared. Detach first and let the detached copy do the real work.
+if [ -z "$EWW_UPDATE_APPLY_DETACHED" ]; then
+    EWW_UPDATE_APPLY_DETACHED=1 setsid nohup "$(readlink -f "$0")" "$@" >/dev/null 2>&1 &
+    exit 0
+fi
+
 CACHE_DIR="$HOME/.cache/eww"
 LOG_FILE="$CACHE_DIR/update.log"
 CHECK="$HOME/.config/eww/scripts/check-updates.sh"
