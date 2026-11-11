@@ -1,0 +1,38 @@
+# mise — single source of truth for all dev tool versions.
+#
+# One file, all tools (no conf.d/ split): 编辑这里 = 改全部工具的版本。
+# 版本策略：
+#   - 大多数工具跟 `latest`
+#   - `node = "24"` / `lua = "5.1"` 是结构性 pin（LTS 线 / Neovim 生态），不要改成 latest
+#   - `staticcheck = "2026.1"` 固定 release 线
+#   - `displayctl` 仅 Linux + i3 环境需要，用模板条件包裹
+[tools]
+go = "latest"
+rust = "latest"
+node = "24"
+pnpm = "latest"
+bun = "latest"
+poetry = "latest"
+lua = "5.1"
+
+staticcheck = "2026.1"
+gomplate = "latest"
+air = "latest"
+
+"npm:playwright" = "latest"
+"npm:@deepseek-ai/dsh" = { version = "latest", allow_low_downloads = true, pnpm_args = "--config.enable-global-virtual-store=false" }
+
+"go:github.com/zgs225/simple-server" = "latest"
+"go:github.com/go-critic/go-critic/cmd/gocritic" = "latest"
+
+# Atlas — database schema management CLI (aqua backend, 官方 release 二进制)
+"aqua:ariga/atlas" = "latest"
+{{ if and .isLinux .useI3 }}
+"go:github.com/zgs225/displayctl" = "v1.4.2"
+{{ end }}
+
+[settings]
+minimum_release_age_excludes = ["npm:@deepseek-ai/dsh"]
+
+[settings.npm]
+package_manager = "pnpm"

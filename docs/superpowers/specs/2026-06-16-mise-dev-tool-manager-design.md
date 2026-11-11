@@ -3,6 +3,9 @@
 **Date:** 2026-06-16
 **Status:** Draft
 
+> **后续变更（2026-11）**：`conf.d/` 拆分已取消，所有工具版本聚合到单一 `dot_config/mise/config.toml.tmpl`
+> （渲染为 `~/.config/mise/config.toml`）。下文 `conf.d/*.toml` 的文件结构仅作历史记录。
+
 ## Overview
 
 Adopt [mise](https://mise.jdx.dev/) (formerly rtx) as the dev tool version manager for the dotfiles, replacing the ad-hoc tool installs. Mise manages python, node, rust, golang, and lua via a chezmoi-managed config so tool versions stay in sync across machines. LuaRocks is installed as a side effect of the lua 5.1 install (vfox-lua plugin auto-bundles it).

@@ -5,17 +5,17 @@
 
 ## 最终配置
 
-`~/.config/mise/conf.d/playwright.toml`（chezmoi 源：`dot_config/mise/conf.d/playwright.toml`）：
+`~/.config/mise/config.toml` → `[tools]` 段（chezmoi 源：`dot_config/mise/config.toml.tmpl`；
+所有工具已聚合到这一个文件，不再有 `conf.d/`）：
 
 ```toml
-[tools]
 "npm:playwright" = "latest"
 ```
 
 要点：
 
 - **键必须加引号** —— TOML 裸键不允许 `npm:` 前缀（同 `npm:@deepseek-ai/dsh`）。
-- 安装器沿用 `conf.d/node.toml` 的 `[settings.npm] package_manager = "pnpm"`。
+- 安装器沿用同一文件的 `[settings.npm] package_manager = "pnpm"`。
 - `mise install` 后 shim `~/.local/share/mise/shims/playwright` 全局可用，替代 `npx playwright`。
 - **mise 只装 CLI，不装浏览器。** 浏览器由 `playwright install` 下载到 `~/.cache/ms-playwright`；
   mise/pnpm 安装时不会执行 playwright 的 postinstall（pnpm 默认不跑包自身的 build script），

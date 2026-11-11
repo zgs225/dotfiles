@@ -1,2 +1,0 @@
-# mise base config
-# Per-tool versions live in conf.d/*.toml (mise merges these on top of this file).
