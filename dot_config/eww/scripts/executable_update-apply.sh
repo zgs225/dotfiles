@@ -47,11 +47,21 @@ else
 fi
 
 # Append the local packages when one is pending. Chained with && so a broken
-# repo transaction leaves them alone; `arto-upgrade` escalates by itself.
+# repo transaction leaves them alone; the *-upgrade helpers escalate by
+# themselves.
 if [ "$mode" != "repo" ] && command -v arto-upgrade > /dev/null 2>&1 \
         && [ -n "$(arto-check-update 2>/dev/null)" ]; then
     upgrade_cmd="$upgrade_cmd && arto-upgrade"
     label="$label + 本地包"
+fi
+
+if [ "$mode" != "repo" ] && command -v bowel-upgrade > /dev/null 2>&1 \
+        && [ -n "$(bowel-check-update 2>/dev/null)" ]; then
+    upgrade_cmd="$upgrade_cmd && bowel-upgrade"
+    case "$label" in
+        *本地包*) ;;
+        *) label="$label + 本地包" ;;
+    esac
 fi
 
 if ! command -v wezterm > /dev/null 2>&1; then

@@ -25,13 +25,16 @@ get_aur() {
     fi
 }
 
-# Local packages repacked outside both the repos and the AUR (currently just
-# arto-bin, from eos-bootstrap's tasks/arto.yml). The helper prints a
-# checkupdates-style line only when an upgrade is pending, and stays silent
-# when it is up to date or offline.
+# Local packages repacked outside both the repos and the AUR (arto-bin from
+# eos-bootstrap's tasks/arto.yml, bowel-bin from tasks/bowel.yml). Each helper
+# prints a checkupdates-style line only when an upgrade is pending, and stays
+# silent when it is up to date or offline.
 get_extra() {
     if command -v arto-check-update >/dev/null 2>&1; then
         timeout 30 arto-check-update 2>/dev/null || true
+    fi
+    if command -v bowel-check-update >/dev/null 2>&1; then
+        timeout 30 bowel-check-update 2>/dev/null || true
     fi
 }
 
