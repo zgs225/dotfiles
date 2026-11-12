@@ -1,0 +1,19 @@
+#!/bin/sh
+# bowel wrapper: inject an integer GTK scale factor.
+#
+# bowel's desktop UI is drawn by Go itself (mygo: GTK3 + cairo/pango + GL, no
+# WebView).  It sizes everything in px and only honours GTK's *integer* scale
+# factor, so it ignores the fractional scaling this session uses (`Xft.dpi` is
+# set by displayctl, currently 168 = 1.75x).  Launched as-is the window renders
+# 1 CSS px per physical pixel, i.e. the UI ends up at ~57% of its intended
+# physical size on a 189 PPI panel.
+#
+# GTK3 on X11 cannot do fractional scaling, so derive the nearest integer
+# factor from the session's Xft.dpi and pass it as GDK_SCALE
+# (96 -> 1, 144/168/192 -> 2).
+set -eu
+
+dpi=$(xrdb -query 2>/dev/null | awk -F': *' '/^Xft\.dpi:/ {print $2; exit}')
+scale=$(awk -v d="${dpi:-96}" 'BEGIN { s = int((d + 48) / 96); if (s < 1) s = 1; print s }')
+
+exec env GDK_SCALE="$scale" /opt/bowel/bowel "$@"

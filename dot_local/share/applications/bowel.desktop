@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=bowel
+Comment=A desktop client for mihomo
+# Upstream's /usr/share/applications/bowel.desktop runs the bare binary, which
+# renders its self-drawn UI at 1x on this HiDPI session.  Go through the wrapper
+# so GDK_SCALE follows Xft.dpi (see ~/.local/bin/bowel).
+Exec=/home/yuez/.local/bin/bowel
+Icon=bowel
+Categories=Utility;
+Terminal=false
+StartupWMClass=bowel
