@@ -40,6 +40,10 @@ return {
     -- Dev escape hatch: point lazy at a feature worktree by launching nvim
     -- with PI_DEV_DIR set (nil = normal installed path). See pi.nvim G23.
     dir = vim.env.PI_DEV_DIR or nil,
+    -- Track the dev integration branch (worktree isolation + background tasks +
+    -- harness checks). Keep lazy-lock.json's entry in sync; switch back to main
+    -- once dev is merged into it.
+    branch = "dev",
     dependencies = {
       { "HakonHarnes/img-clip.nvim", opts = { default = { drag_and_drop = { enabled = false } } } },
     },
@@ -70,6 +74,11 @@ return {
           hide_when_empty = true,
           position = "below", -- 堆叠在 PiSessions 侧栏下方
         },
+      },
+      -- Git worktree（doc/worktrees.md）：会话级隔离；子会话跑在父会话的 checkout 里
+      worktree = {
+        -- 删除 worktree 之前先写 patch 快照（失败则保留，不丢工作）
+        snapshot_before_remove = true,
       },
       -- Sub-session viewer (:PiSubView / `p` in :PiSessions): float sizing
       -- + todo footer summary & `T` list panel inside the viewer
