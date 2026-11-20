@@ -40,10 +40,11 @@ return {
     -- Dev escape hatch: point lazy at a feature worktree by launching nvim
     -- with PI_DEV_DIR set (nil = normal installed path). See pi.nvim G23.
     dir = vim.env.PI_DEV_DIR or nil,
-    -- Track the dev integration branch (worktree isolation + background tasks +
-    -- harness checks). Keep lazy-lock.json's entry in sync; switch back to main
-    -- once dev is merged into it.
-    branch = "dev",
+    -- No `branch` / `tag` / `commit` pin: lazy follows the repository's
+    -- default branch, i.e. the released line, so update detection keeps
+    -- working; the resolved commit lives in lazy-lock.json. The `dir` escape
+    -- hatch above still points lazy at a feature worktree when PI_DEV_DIR is
+    -- set.
     dependencies = {
       { "HakonHarnes/img-clip.nvim", opts = { default = { drag_and_drop = { enabled = false } } } },
     },
