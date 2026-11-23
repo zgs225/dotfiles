@@ -68,7 +68,7 @@ return {
         panel = {
           auto_open = true, -- todo list 首次写入时自动弹出面板
           hide_when_empty = true,
-          position = "below", -- 堆叠在 PiSessions 侧栏下方
+          position = "right", -- 右列，与 PiTasks 叠在同一列（左列留给 PiSessions）
         },
       },
       -- Git worktree（doc/worktrees.md）：会话级隔离；子会话跑在父会话的 checkout 里
