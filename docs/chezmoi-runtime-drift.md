@@ -15,6 +15,8 @@
 | `~/.config/mimeapps.list` | `xdg-mime`（手动）、百度网盘（Electron）、clash-verge（Tauri） | `baidunetdisk` 的 `x-scheme-handler/baiduyunguanjia`；clash-verge 在 `[Added Associations]` 另写一份 `x-scheme-handler/clash{,-verge}` | 每次这两个 app 启动（幂等，re-add 后不再漂） | re-add |
 | `~/.pi/agent/settings.json` | pi 自身 | `lastChangelogVersion`（已看过的 changelog 版本） | 每次 pi 升级 | re-add，接受周期性一行漂移 |
 | `~/.pi/agent/mcp.json` | pi 的 `/mcp` 面板 | 在面板里改 exposure 或启用/禁用 server 时回写该条目 | 仅在面板里改设置时 | re-add；想保留仓库里的写法就别在面板里改这两项 |
+| `~/.config/gtk-3.0/bookmarks` | Thunar 侧栏（Add Bookmark / 拖拽 / rename / remove-bookmark）、GTK 文件对话框（Ctrl+B）、XDG portal 文件框 | XDG 书签行 `file:///path`（可选 `\t名称`），行序即侧栏顺序 | 每次在 Thunar 侧栏或任何 GTK 文件对话框里增删/改书签 | re-add（应用写的即"事实"）；想让仓库做权威就改源文件后 `chezmoi apply` |
+| `~/.config/user-dirs.dirs` + `user-dirs.locale` | `xdg-user-dirs-update`（登录时 systemd user unit `xdg-user-dirs.service`，挂在 `graphical-session-pre.target`） | `XDG_*_DIR="$HOME/..."`；仍有默认值的条目会按当前 locale 重新翻译 | 仅当 `user-dirs.locale` 与当前 LANG 不一致时 | re-add；注意本仓库把 Desktop/Music/Templates/Public/Projects 有意设为 `$HOME`（=禁用，GLib 返回 `$HOME`、GTK/Thunar 不展示），不要当错误改回默认路径 |
 
 ## 指纹速查
 
@@ -26,6 +28,7 @@ stat -c '%y %n' ~/.config/mimeapps.list
 
 - `~/.local/share/applications/mimeapps.list` 恒为 0 字节，实际生效的是 `~/.config/mimeapps.list`。
 - 源文件里 clash 两行在 `[Default Applications]`（手工维护）；live 里 `[Added Associations]` 的两行是 app 写的，两份并存不冲突。
+- `bookmarks` 里的 Downloads/Documents/Pictures/Videos **故意与 XDG 标准目录重合**，不是重复配置：Thunar 4.20 的侧栏（`thunar-shortcuts-model.c: thunar_shortcuts_model_shortcut_places`）只放 Home/Desktop/书签/Trash/Computer/Recent，**从不显示 XDG 用户目录**；而 GTK 文件框（Chrome 的 portal、钉钉的进程内 GTK）用 `GtkPlacesSidebar`，它把 XDG 目录当 place 显示、并对指向同一路径的书签去重（`gtkplacessidebar.c` 里 `_gtk_bookmarks_manager_get_is_builtin()` 为真的书签直接 `continue`）。两边合起来才既不丢条目也不出现双份。
 
 ## 待观察
 

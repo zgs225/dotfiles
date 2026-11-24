@@ -1,0 +1,13 @@
+# Written by xdg-user-dirs-update, managed by chezmoi.
+# Entries set to "$HOME" are disabled: GLib returns NULL for them, so Thunar /
+# GTK file choosers do not show them at all (keep ~ clean on an i3 box).
+# Local edits survive xdg-user-dirs-update as long as they are not the defaults.
+XDG_DESKTOP_DIR="$HOME"
+XDG_DOWNLOAD_DIR="$HOME/Downloads"
+XDG_TEMPLATES_DIR="$HOME"
+XDG_PUBLICSHARE_DIR="$HOME"
+XDG_DOCUMENTS_DIR="$HOME/Documents"
+XDG_MUSIC_DIR="$HOME"
+XDG_PICTURES_DIR="$HOME/Pictures"
+XDG_VIDEOS_DIR="$HOME/Videos"
+XDG_PROJECTS_DIR="$HOME"
