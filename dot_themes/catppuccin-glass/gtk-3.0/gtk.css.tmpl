@@ -190,6 +190,31 @@ menubar {
   color: @text;
 }
 
+/* ── Thunar: location bar density ──
+ * Two things stack up in that one row: Thunar hard-codes its toolbar images to
+ * GTK_ICON_SIZE_LARGE_TOOLBAR (thunar-window.c:6742; the "small icons" pref only
+ * drops to 16px), so the GDK_SCALE=2 wrapper asks for 48px assets, and Adwaita's
+ * entry/button min-height (32 CSS px) is doubled to 64px as well - that tallest
+ * child is what actually dictates the bar height. Both are trimmed here, scoped
+ * to Thunar's own window style class ("thunar", thunar-window.c:1019), so every
+ * other GTK3 app keeps the roomier buttons and eww is untouched (theme priority).
+ * px on purpose: the wrapper's GDK_DPI_SCALE=0.5 halves the pt conversion, so pt
+ * numbers here would not mean what they do elsewhere in this file. */
+window.thunar toolbar {
+  padding: 0;
+  min-height: 0;
+}
+
+window.thunar toolbar * {
+  min-height: 0;
+  min-width: 0;
+}
+
+window.thunar toolbar button,
+window.thunar toolbar entry {
+  padding: 2px 6px;
+}
+
 /* Entries / inputs */
 entry {
   background-color: alpha(@surface0, 0.55);
