@@ -1,0 +1,33 @@
+#!/bin/sh
+# thunar wrapper: give Thunar an integer GTK scale factor matching this session.
+#
+# The whole session scales through Xft.dpi (displayctl tiers, currently 168 =
+# 1.75x).  GTK3 only converts *pt-based* things through that DPI: fonts and the
+# catppuccin-glass theme's pt paddings grow 1.75x, while hard-coded pixel sizes
+# stay at 1 CSS px - Thunar's 16px places icons, 24px toolbar buttons, sidebar
+# row heights and details-view rows.  Result: 1.75x text inside 1x chrome, i.e.
+# the file manager looks cramped/small next to everything else.
+#
+# GTK3 on X11 has no fractional scaling, so pin the nearest integer factor and
+# divide the font side back out again:
+#   GDK_SCALE=S           multiplies widget metrics (icons, rows, hit targets)
+#   GDK_DPI_SCALE=TEXT/S  leaves text at TEXT x its current physical size
+# TEXT_SCALE=1.00 -> chrome 2x, text unchanged; 1.75 -> everything 1.75x bigger.
+# Current choice: 1.00.  The text is already 1.75x from Xft.dpi and reads fine;
+# what looked cramped was the 1x shell around it (24px toolbar icons, 16/24px
+# places icons, row heights), so only that half gets scaled.
+set -eu
+
+TEXT_SCALE=1.00
+
+dpi=$(xrdb -query 2>/dev/null | awk -F':' '/^Xft\.dpi:/ { gsub(/[ \t]/, "", $2); print $2; exit }')
+scale=$(awk -v d="${dpi:-96}" 'BEGIN { s = int((d + 48) / 96); if (s < 1) s = 1; print s }')
+
+# A 1x display already has metrics and text in proportion - nothing to do.
+if [ "$scale" -le 1 ]; then
+    exec /usr/bin/thunar "$@"
+fi
+
+dpi_scale=$(awk -v t="$TEXT_SCALE" -v s="$scale" 'BEGIN { printf "%.4f", t / s }')
+
+exec env GDK_SCALE="$scale" GDK_DPI_SCALE="$dpi_scale" /usr/bin/thunar "$@"

@@ -1,0 +1,32 @@
+[Desktop Entry]
+Type=Application
+Name=Thunar File Manager
+Name[zh_CN]=Thunar 文件管理器
+Comment=Browse the filesystem with the file manager
+Comment[zh_CN]=用文件管理器浏览文件系统
+# Upstream ships Exec=thunar, but i3's session PATH has no ~/.local/bin, so
+# anything launched from i3/rofi resolves that to /usr/bin/thunar and never gets
+# the HiDPI GDK_SCALE.  Point the entry at the wrapper explicitly - see
+# ~/.local/bin/thunar for why the scaling has to be injected at launch.
+Exec={{ .chezmoi.homeDir }}/.local/bin/thunar %U
+Icon=org.xfce.thunar
+Terminal=false
+StartupNotify=true
+Categories=System;Core;GTK;FileTools;FileManager;
+MimeType=inode/directory;
+Actions=open-home;open-computer;open-trash;
+
+[Desktop Action open-home]
+Name=Home
+Name[zh_CN]=主文件夹
+Exec={{ .chezmoi.homeDir }}/.local/bin/thunar %U
+
+[Desktop Action open-computer]
+Name=Computer
+Name[zh_CN]=计算机
+Exec={{ .chezmoi.homeDir }}/.local/bin/thunar computer:///
+
+[Desktop Action open-trash]
+Name=Trash
+Name[zh_CN]=回收站
+Exec={{ .chezmoi.homeDir }}/.local/bin/thunar trash:///
