@@ -13,11 +13,9 @@
   "editorPaddingX": 1,
   "autocompleteMaxVisible": 10,
   "defaultTools": [
-    "read",
-    "bash",
-    "edit",
-    "write",
-    "grep"
+    "+grep",
+    "+find",
+    "+ls"
   ],
   "branchSummary": {
     "skipPrompt": true
