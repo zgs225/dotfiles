@@ -58,6 +58,8 @@ return {
       },
       show_thinking = true,
       expand_startup_details = false,
+      -- 用户消息右对齐：标签和正文一起贴窗口右边缘（默认 left；历史里已渲染的消息保持原样）
+      user_message_align = "right",
       -- 思考等级指示器不按等级着色（colored 默认 true）
       -- 压缩倒计时默认 false（只显示 󰏗 图标）；"near" = 上下文到达阈值的 near% 才显示剩余量
       statusline = {
