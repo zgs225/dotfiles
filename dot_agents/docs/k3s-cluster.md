@@ -3,6 +3,9 @@
 Repo: `~/Workspace/Misc/k3s-admin`
 GitOps: ArgoCD watches this repo → auto-syncs to cluster. **Do not `kubectl apply` manually.**
 
+Node-level ops (change SOP, k3s service lifecycle pitfalls, kubelet config, disk/umount,
+audit + ntfy): [k3s-cluster-ops.md](k3s-cluster-ops.md).
+
 ## Cluster Topology
 
 | Node | Role | Notes |
