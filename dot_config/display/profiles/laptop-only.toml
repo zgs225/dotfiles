@@ -1,5 +1,7 @@
 # 纯笔记本（undocked）：仅内屏 eDP-1 连接时自动匹配。
 # 指纹 = sha256("eDP-1:686973d4")[:16]，686973d4 是本机 BOE 面板 EDID 哈希。
+# ids 是不含输出名的 EDID 集合指纹：坞站切换 SST/MST 时 xrandr 输出名会变
+# （DP-1 ↔ DP-1-1），按名字算的指纹会失效，这一份仍能命中。
 # DPI 固定 168（= 1.75x 缩放），对齐 MacBook 13 默认观感，不随 tiers 自动计算。
 # 机器特定：其他机器上指纹不匹配即惰性，无害。
 default = false
@@ -8,6 +10,7 @@ manage = "full"
 
 [match]
 id = "ef2d1cc808d7c811"
+ids = ["d4797bb38dea7709"]
 outputs = ["eDP-1:686973d4"]
 
 [outputs.eDP-1]

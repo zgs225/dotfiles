@@ -1,6 +1,10 @@
 # 坞站扩展：内屏 eDP-1 + 外接 DP-1-1 (Dell U2720QM 4K) 双屏扩展。
 # 指纹 7b2da8b95a1a5b63 = 实测 docked 组合 (DP-1-1:df140b96 + eDP-1:686973d4)。
 # 输出键名用 xrandr 实测名 DP-1-1（DP MST 分支），不是父口 DP-1。
+# ids 是不含输出名的 EDID 集合指纹，列了两种已知枚举：
+#   e454ece0ed7f8acf = {df140b96, 686973d4}（MST 分支 DP-1-1）
+#   480275d49ee8085a = {7a00daa0, 686973d4}（SST 直连 DP-1，7 月真机采集）
+# 同一个显示器在 SST/MST 下 EDID 读数和输出名都会变，只靠 id 会匹配失败。
 # 由 `displayctl save dock-extend` 在真实扩展态捕获，几何为实测值。
 # DPI 固定 168（= 1.75x 缩放），对齐 MacBook 13 默认观感。
 # 机器特定：其他机器上指纹不匹配即惰性，无害。
@@ -10,6 +14,7 @@ manage = "full"
 
 [match]
 id = "7b2da8b95a1a5b63"
+ids = ["e454ece0ed7f8acf", "480275d49ee8085a"]
 outputs = ["DP-1-1:df140b96", "eDP-1:686973d4"]
 
 [outputs.DP-1-1]

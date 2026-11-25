@@ -1,0 +1,11 @@
+# displayctl 机器级设置（config.toml）。
+#
+# X11 全屏只有一个 Xft.dpi，所以任何"按参考屏宽度推导 DPI"都会让同一块内屏在
+# 插/拔坞站时换一个尺寸渲染：未命中指纹的坞站组合曾按 2560 宽算出 144，而单内屏
+# 是 168 —— GTK/Qt 的 pt 字号、eww 的尺寸档位、rofi 的 /tmp/rofi-dpi.rasi 会一起跳变。
+#
+# [defaults] dpi 只会钉在"生成型"profile 上（auto-arrange 未知组合、layout extend/
+# mirror/single、apply <WxH>）。显式 profile 仍以自身 [dpi] value 为准；XRDP/
+# Sunshine 的虚拟 profile 保留 tiers（远端分辨率连接时才知道），本机物理屏不受影响。
+[defaults]
+dpi = 168
