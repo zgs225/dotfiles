@@ -53,9 +53,11 @@ return {
       show_thinking = true,
       expand_startup_details = false,
       -- 思考等级指示器不按等级着色（colored 默认 true）
+      -- 压缩倒计时默认 false（只显示 󰏗 图标）；"near" = 上下文到达阈值的 near% 才显示剩余量
       statusline = {
         components = {
           thinking = { colored = false },
+          compaction = { countdown = "near" },
         },
       },
       density = "compact",
@@ -63,12 +65,14 @@ return {
       render = { engine = "render-markdown" },
       sessions_list = { auto_open = true },
       -- 后台任务启动时自动弹出任务面板（该 session 任务全部完成后面板自动关闭）
-      tasks_panel = { auto_open = true },
+      -- 放在左列，与 PiSessions / PiTodo 同一列（堆叠顺序：sessions → tasks → todo）
+      tasks_panel = { auto_open = true, position = "right" },
       todo = {
         panel = {
           auto_open = true, -- todo list 首次写入时自动弹出面板
-          hide_when_empty = true,
-          position = "right", -- 右列，与 PiTasks 叠在同一列（左列留给 PiSessions）
+          hide_when_empty = false,
+          -- 左列 sidebar：与 PiSessions / PiTasks 堆叠（左列宽度由 sessions_list.width 决定）
+          position = "right",
         },
       },
       -- Git worktree（doc/worktrees.md）：会话级隔离；子会话跑在父会话的 checkout 里
