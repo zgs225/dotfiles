@@ -1,3 +1,9 @@
+-- 三列宽度（比例，随编辑器宽度自适应）：
+-- full-tab 模式下聊天列 = 编辑器宽度 − 2 条分隔 − 左列 − 右列，所以只能配左右列，
+-- 中心列由它们反推。左右等宽 = 各占 (1 − CENTER_RATIO) / 2。
+local CENTER_RATIO = 0.6
+local SIDE_RATIO = (1 - CENTER_RATIO) / 2 -- = 0.20，左右各一份
+
 local function get_chat()
   local session = require("pi.sessions.manager").get()
   return session and session.chat or nil
@@ -63,16 +69,19 @@ return {
       density = "compact",
       abort = { enabled = true, timeout = 1500, message = "再按一次 <Esc> 中断当前回合" },
       render = { engine = "render-markdown" },
-      sessions_list = { auto_open = true },
+      -- 左列宽度 = SIDE_RATIO（比例，随编辑器宽度缩放；上限是编辑器宽度的 40%）
+      sessions_list = { auto_open = true, width = SIDE_RATIO },
       -- 后台任务启动时自动弹出任务面板（该 session 任务全部完成后面板自动关闭）
-      -- 放在左列，与 PiSessions / PiTodo 同一列（堆叠顺序：sessions → tasks → todo）
-      tasks_panel = { auto_open = true, position = "right" },
+      -- 右列，与 PiTodo 同一列（堆叠顺序：tasks → todo）。
+      -- 注意：列宽归「先打开这一列的面板」，所以 tasks / todo 都写同一个比例。
+      tasks_panel = { auto_open = true, position = "right", width = SIDE_RATIO },
       todo = {
         panel = {
           auto_open = true, -- todo list 首次写入时自动弹出面板
           hide_when_empty = false,
-          -- 左列 sidebar：与 PiSessions / PiTasks 堆叠（左列宽度由 sessions_list.width 决定）
+          -- 右列 sidebar：与 PiTasks 堆叠（若它先打开右列，则右列宽度由这里决定）
           position = "right",
+          width = SIDE_RATIO,
         },
       },
       -- Git worktree（doc/worktrees.md）：会话级隔离；子会话跑在父会话的 checkout 里
@@ -99,7 +108,7 @@ return {
       },
       layout = {
         default = "side",
-        side = { position = "left", width = 0.6 },
+        side = { position = "left", width = CENTER_RATIO },
         float = { width = 120, height = 0.85, border = "rounded" },
       },
       verbs = {
