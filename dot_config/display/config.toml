@@ -7,5 +7,12 @@
 # [defaults] dpi 只会钉在"生成型"profile 上（auto-arrange 未知组合、layout extend/
 # mirror/single、apply <WxH>）。显式 profile 仍以自身 [dpi] value 为准；XRDP/
 # Sunshine 的虚拟 profile 保留 tiers（远端分辨率连接时才知道），本机物理屏不受影响。
+#
+# 派生自 DPI 的产物不再需要随显示器事件重建：eww 的尺寸档位
+# （.chezmoitemplates/eww-sizes，四档）在 DPI 固定后是常量，只在 `chezmoi apply`
+# 时重新烘。原先的 post-switch 钩子 40-eww-dpi 会在每次插/拔时 `chezmoi apply`
+# 整个 eww 子树并重启 eww + ewwstate（i3 的 exec_always launch.sh 还会再重启一次），
+# 恒定 DPI 下属纯重复劳动，已删除——只有改 DPI 时才需手动 `chezmoi apply ~/.config/eww`。
+# 20-rofi-dpi 保留（/tmp/rofi-dpi.rasi 是 /tmp 文件，需要有人负责生成）。
 [defaults]
 dpi = 168

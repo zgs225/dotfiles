@@ -5,7 +5,10 @@
 # baked into eww.yuck/eww.scss at `chezmoi apply` time via the shared
 # .chezmoitemplates/eww-sizes partial, because eww 0.5.0 cannot resolve
 # variables inside a window :geometry and GTK will not size empty boxes from
-# runtime CSS variables. Re-run `chezmoi apply` after changing the display DPI.
+# runtime CSS variables. Re-run `chezmoi apply` after changing the display DPI —
+# there is deliberately no post-switch hook doing it: the DPI is pinned (see
+# ~/.config/display/config.toml), so re-baking + restarting the bar on every
+# plug/unplug was pure repetition.
 
 exec 9>/tmp/eww-launch.lock
 flock -n 9 || exit 0
