@@ -9,9 +9,30 @@ flock -n 9 || exit 0
 
 CACHE_DIR="$HOME/.cache/lockscreen"
 RENDER_SCRIPT="$HOME/.config/i3/scripts/lock-render.py"
+ESC_BLANK_SCRIPT="$HOME/.config/i3/scripts/esc-blank.py"
+
+# i3lock-color is based on i3lock 2.13, which dropped DPMS support: ESC with an
+# empty password buffer no longer turns the monitors off. esc-blank.py brings
+# that back by watching XI2 raw key events (i3lock's input grab hides the key
+# from every ordinary X client). It lives exactly as long as this script — a
+# leftover watcher would blank the screen on ESC in a normal session — and it
+# also arms PR_SET_PDEATHSIG so a SIGKILLed lock.sh cannot orphan it.
+ESC_BLANK_PID=""
+
+start_esc_blank() {
+    [[ -n "$ESC_BLANK_PID" ]] && return 0
+    python3 "$ESC_BLANK_SCRIPT" &
+    ESC_BLANK_PID=$!
+}
+
+stop_esc_blank() {
+    [[ -n "$ESC_BLANK_PID" ]] || return 0
+    kill "$ESC_BLANK_PID" 2>/dev/null || true
+    ESC_BLANK_PID=""
+}
 
 dunstctl set-paused true 2>/dev/null || true
-trap 'dunstctl set-paused false 2>/dev/null || true' EXIT
+trap 'stop_esc_blank; dunstctl set-paused false 2>/dev/null || true' EXIT
 
 COMPOSE="$CACHE_DIR/_compose.jpg"
 SOCK="$CACHE_DIR/sock"
@@ -39,6 +60,7 @@ elif img=$(python3 "$RENDER_SCRIPT" --lock-image "$COMPOSE" 2>/dev/null) && [[ -
     :
 else
     dunstctl set-paused false 2>/dev/null || true
+    start_esc_blank
     i3lock -n -c 1a1a1e &
     lock_pid=$!
     trap 'kill "$lock_pid" 2>/dev/null || true' TERM INT
@@ -60,6 +82,7 @@ read -r cx cy radius ringw < <(awk -v w="$W" -v h="$H" -v dpi="$dpi" 'BEGIN{
   printf "%d %d %d %.2f\n", (w/2)/s, (h*0.55)/s, 80/s, 4/s
 }')
 
+start_esc_blank
 i3lock \
     -n \
     -i "$img" \
