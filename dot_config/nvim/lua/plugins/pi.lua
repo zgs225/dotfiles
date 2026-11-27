@@ -40,6 +40,33 @@ local function toggle_pi()
   end
 end
 
+-- ── 面板堆叠顺序：todo 在 tasks 上方 ───────────────────────────────────────────
+-- pi2.nvim 内置 ORDER = { sessions = 1, tasks = 2, todo = 3 }（同一列里 tasks 在 todo
+-- 之上），没有对外配置项，所以这里覆写 side-panel 注册表的两个入口：
+--   * order_of(key)   —— 打开面板时决定插入位置（物理上下顺序）
+--   * claim(...)      —— 注册时的 order，决定 restack 时按哪份高度分配
+-- 都改成 todo = 2 / tasks = 3，右侧列于是变成 todo 在上、tasks 在下。
+local STACK_ORDER = { sessions = 1, todo = 2, tasks = 3, compactions = 4 }
+
+local function put_todo_above_tasks()
+  local ok, Sidebar = pcall(require, "pi.ui.sidebar")
+  if not ok or Sidebar._todo_above_tasks then
+    return
+  end
+  Sidebar._todo_above_tasks = true
+  Sidebar.order_of = function(key)
+    return STACK_ORDER[key] or math.huge
+  end
+  local claim = Sidebar.claim
+  Sidebar.claim = function(tab, edge, key, win, opts)
+    -- 面板自己给了 order（例如 todo 的 legacy position="above" → 0.5）就让它优先
+    if not (opts and opts.order) and STACK_ORDER[key] then
+      opts = vim.tbl_extend("force", opts or {}, { order = STACK_ORDER[key] })
+    end
+    return claim(tab, edge, key, win, opts)
+  end
+end
+
 return {
   {
     "https://github.com/zgs225/pi2.nvim.git",
@@ -76,7 +103,7 @@ return {
       -- 后台任务启动时自动弹出任务面板（该 session 任务全部完成后面板自动关闭）
       -- open_with_chat = 跟着 Pi 一起打开（session 一出现就在，切换布局/开关 UI 后回来）；
       --   开启后「任务全部完成自动关闭」被禁用，面板常驻（显示 no tasks 占位）。
-      -- 右列，与 PiTodo 同一列（堆叠顺序：tasks → todo）。
+      -- 右列，与 PiTodo 同一列（堆叠顺序已改为 todo → tasks，见上方 put_todo_above_tasks）。
       -- 注意：列宽归「先打开这一列的面板」，所以 tasks / todo 都写同一个比例。
       tasks_panel = { auto_open = true, open_with_chat = true, position = "right", width = SIDE_RATIO },
       todo = {
@@ -85,7 +112,7 @@ return {
           -- 跟着 Pi 一起打开：面板常驻，列表清空后保留 no todos 占位（等同手动打开）
           open_with_chat = true,
           hide_when_empty = false,
-          -- 右列 sidebar：与 PiTasks 堆叠（若它先打开右列，则右列宽度由这里决定）
+          -- 右列 sidebar：与 PiTasks 堆叠，todo 在上、tasks 在下（若它先打开右列，则右列宽度由这里决定）
           position = "right",
           width = SIDE_RATIO,
         },
@@ -140,6 +167,12 @@ return {
         },
       },
     },
+    -- opts 里没有 config 时 lazy 默认就是 require("pi").setup(opts)；这里显式写出，
+    -- 好在 setup 之后立刻装上「todo 在 tasks 上方」的堆叠顺序。
+    config = function(_, opts)
+      require("pi").setup(opts)
+      put_todo_above_tasks()
+    end,
     keys = {
       {
         "<leader>ap",
