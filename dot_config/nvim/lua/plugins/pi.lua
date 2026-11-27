@@ -74,12 +74,16 @@ return {
       -- 左列宽度 = SIDE_RATIO（比例，随编辑器宽度缩放；上限是编辑器宽度的 40%）
       sessions_list = { auto_open = true, width = SIDE_RATIO },
       -- 后台任务启动时自动弹出任务面板（该 session 任务全部完成后面板自动关闭）
+      -- open_with_chat = 跟着 Pi 一起打开（session 一出现就在，切换布局/开关 UI 后回来）；
+      --   开启后「任务全部完成自动关闭」被禁用，面板常驻（显示 no tasks 占位）。
       -- 右列，与 PiTodo 同一列（堆叠顺序：tasks → todo）。
       -- 注意：列宽归「先打开这一列的面板」，所以 tasks / todo 都写同一个比例。
-      tasks_panel = { auto_open = true, position = "right", width = SIDE_RATIO },
+      tasks_panel = { auto_open = true, open_with_chat = true, position = "right", width = SIDE_RATIO },
       todo = {
         panel = {
           auto_open = true, -- todo list 首次写入时自动弹出面板
+          -- 跟着 Pi 一起打开：面板常驻，列表清空后保留 no todos 占位（等同手动打开）
+          open_with_chat = true,
           hide_when_empty = false,
           -- 右列 sidebar：与 PiTasks 堆叠（若它先打开右列，则右列宽度由这里决定）
           position = "right",
